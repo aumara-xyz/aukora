@@ -1,0 +1,26 @@
+{
+  "name": "@aukora/workspace",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Aukora — canonical portable core for recursive digital organism governance",
+  "license": "AGPL-3.0-or-later",
+  "workspaces": [
+    "packages/kernel",
+    "packages/evidence",
+    "packages/council"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces",
+    "test:release": "npm run test --workspaces && npm run typecheck --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "lint": "npm run lint --workspaces",
+    "build": "npm run build --workspaces"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
