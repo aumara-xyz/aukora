@@ -1,27 +1,30 @@
 # Contributing
 
-This repository contains the canonical portable core only. Product surfaces (chat, dashboard, Wolf, spatial UI) are in separate repositories.
+Aukora is the distilled canonical core. Contributions should keep it small, pure, and honest.
 
-## What Belongs Here
+## Ground rules
 
-- Post-quantum cryptographic primitives
-- Evidence validation and immune gates
-- Advisory council logic
-- Governance law (staleness, policy, consent)
-- Deterministic tests and conformance vectors
+- **One canonical implementation per primitive.** Do not add a second copy of anything that
+  already exists in a package. Applications consume these packages; they are not mirrored here.
+- **Canonical sources are donor-pinned.** The primitive sources under `packages/*/src` are
+  byte-identical to the reviewed donor and pinned by git-blob hash in `docs/PROVENANCE.md`.
+  `npm run verify:provenance` fails on drift. A behavioural change to a pinned primitive must
+  land in the donor first (or a later application rebase), then be re-promoted here — not edited
+  in place.
+- **Keep pure packages pure.** No `fs`, network, `child_process`, `vm`, or authority/organism
+  imports in `@aukora/evidence` or `@aukora/council`. New I/O goes in a clearly-named adapter
+  package (as `@aukora/council-node` is for the ledger). `npm run boundary` enforces this.
+- **No authority.** No signing, live-apply, key generation, or ceremony/custody code enters
+  these packages.
+- **Claims must be earned.** Anything added to `CLAIMS.md` needs source, tests that exercise it,
+  and a package export. Designs and hypotheses stay in issues, not in the claims table.
 
-## What Does NOT Belong Here
+## Running the gate
 
-- Applications or product UI
-- Deployment-specific code
-- Research documents or hypotheses
-- Model weights or training artifacts
-- Private planning or strategy material
+```bash
+npm install
+npm run test:all
+```
 
-## Pull Request Requirements
-
-1. All tests pass (`npm run test:release`)
-2. No new I/O in portable packages (no fs, network, env)
-3. Authority containment maintained (`*GrantsAuthority() === false`)
-4. Truth labels updated for any new capability
-5. Provenance manifest updated for any donor material
+`test:all` runs provenance, the canonical boundary, the package suites, and the full kernel gate
+(typecheck, tests, build, compatibility manifest, SBOM, runtime matrix, package tarball).

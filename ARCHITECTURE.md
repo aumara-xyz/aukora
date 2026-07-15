@@ -1,49 +1,63 @@
-# Aukora Architecture
+# Architecture
 
-## Package Graph
+Aukora is a monorepo of small, independent, dependency-light library packages. The design goal
+is a *distilled* core: one canonical implementation per primitive, an acyclic dependency graph
+that never points at an application, and a hard boundary between pure logic and I/O.
+
+## Package graph
 
 ```
-                    @aukora/workspace
-                    (root, private)
-                          |
-          +---------------+---------------+
-          |               |               |
-          v               v               v
-   @aukora/kernel   @aukora/evidence  @aukora/council
-   (crypto + law)   (immune gate)     (advisory council)
+  applications (elsewhere: aukora-symbiote, aukora-fu)
+        │  import
+        ▼
+  ┌───────────────┬────────────────┬────────────────┬─────────────────────┐
+  │ @aukora/kernel│ @aukora/evidence│ @aukora/council │ @aukora/council-node │
+  │  (pure)       │  (pure)         │  (pure)         │  (Node fs adapter)   │
+  └───────────────┴────────────────┴────────────────┴─────────────────────┘
+        │ @noble/*        │ node:crypto      │ (none)          │ node:fs, node:path
 ```
 
-**Dependency direction**: Packages never import from apps. Apps (aukora-symbiote, aukora-fu) import from packages.
+- **Every arrow points inward.** Applications depend on these packages; these packages depend
+  only on Node built-ins and `@noble/*`. **No package imports another package here, and no
+  package imports from any application.** The four are independent leaves.
+- **Acyclic by construction** — there is nothing to cycle: the graph is four disconnected nodes.
 
-## Capability Truth Table
+## The council / council-node split
 
-| Capability | Package | Status | Tests |
-|------------|---------|--------|-------|
-| ML-DSA-65 post-quantum signing | `@aukora/kernel` | CANONICAL_PORTABLE | 397 |
-| Merkle append-only receipt history | `@aukora/kernel` | CANONICAL_PORTABLE | 397 |
-| Authority schema + registry | `@aukora/kernel` | CANONICAL_PORTABLE | 397 |
-| Staleness law ( expiry → flagged ) | `@aukora/kernel` | CANONICAL_PORTABLE | 80 |
-| EvidencePack V1 D6 (9-projection secret scanner) | `@aukora/evidence` | CANONICAL_PORTABLE | 146 |
-| Canonical digest (JCS-aligned) | `@aukora/evidence` | CANONICAL_PORTABLE | 146 |
-| Fail-closed validator (positive-allow-list) | `@aukora/evidence` | CANONICAL_PORTABLE | 146 |
-| 8-seat Fu Council H1-H8 | `@aukora/council` | CANONICAL_PORTABLE | 60+ |
-| KL-divergence perceiver + phase-lock | `@aukora/council` | CANONICAL_PORTABLE | 60+ |
-| Spend metering ($2/pass, $10/day) | `@aukora/council` | CANONICAL_PORTABLE | 60+ |
-| Core memory envelope (consent scope) | — | DESIGN_ONLY | 0 |
-| Policy kernel (ring table) | — | DESIGN_ONLY | 0 |
-| Proposal intent (self-mod governance) | — | DESIGN_ONLY | 0 |
-| Resource governor | — | DESIGN_ONLY | 0 |
-| Digital metabolism / DHFI | — | RESEARCH_ONLY | 0 |
-| Borromean topology | — | RESEARCH_ONLY | 0 |
+`@aukora/council` is the advisory core: it verifies which model actually answered, parses the
+glyph packets, computes quorum, and *estimates* spend — all pure, offline computation. It must
+never touch the filesystem, the network, or ambient authority, so it can be reasoned about and
+run anywhere.
 
-## Authority Containment
+The one piece that genuinely needs I/O — a persistent daily spend **ledger** that appends to a
+JSONL file — is isolated in `@aukora/council-node`. This keeps the advisory core pure and makes
+the impure surface a single, obvious, auditable file. The boundary is enforced mechanically:
+`scripts/check-canonical-boundary.mjs` fails if any file under `packages/evidence/src`,
+`packages/council/src`, or `packages/council-node/src` imports a forbidden module (network,
+`child_process`, `vm`, authority/organism modules), and forbids `fs` everywhere except the
+sanctioned ledger file.
 
-Every package exports `*GrantsAuthority(): false` as a testable invariant. No code path assigns `grantsAuthority: true`. The council is advisory-only. Signing and live-apply require owner AUMLOK authorization and are NOT in these portable packages.
+## Authority stays out
 
-## Naming Discipline
+Nothing in these packages grants, signs, or applies authority. `@aukora/council` is
+**advisory only** — its output is evidence for a human/governance decision, never a decision.
+`@aukora/kernel` *verifies* authority artifacts deterministically; it does not mint them. There
+is no signing key, no live-apply, and no ceremony/custody code in this repository.
 
-Production code uses boring engineering names:
-- `ResourceSignal`, `AdmissionController`, `CoordinationSignal`, `IncidentShape`
-- `cascade`, `interlocked`
+## Provenance without imported history
 
-No Borromean, trefoil, biological isomorphism, consciousness, or aliveness claims in production code.
+The repository root is a fresh orphan commit — it deliberately carries none of the donor's Git
+history. The canonical primitive sources are instead copied byte-identical from the frozen
+donor `aukora-kernel` and pinned by their donor git-blob object hash (see
+[docs/PROVENANCE.md](docs/PROVENANCE.md)). `npm run verify:provenance` recomputes each blob hash
+and fails on any drift, which is what lets us claim "this is exactly the reviewed donor code,
+single-sourced" without dragging the donor history — or the donor's applications — along.
+
+## Testing layout
+
+- `@aukora/kernel` self-tests through its own `vitest.config.ts` and is exercised by the full
+  `test:kernel` gate (boundary, typecheck, tests, build, compatibility manifest, SBOM, runtime
+  matrix, package tarball).
+- `@aukora/evidence`, `@aukora/council`, `@aukora/council-node` are tested by the root
+  `vitest.config.ts`, alongside a repo-level boundary-script test and a package-export smoke
+  test. No test count is borrowed from any application.
