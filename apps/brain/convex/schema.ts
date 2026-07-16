@@ -108,6 +108,41 @@ export default defineSchema({
   // start beyond capacity refuses (fail-closed). Concurrency is attention, and attention is bounded.
   attentionPool: defineTable({ maxConcurrent: v.number() }),
 
+  // WAVE 2 — consume-once anti-replay nonces for signed erase attestations. A nonce row is inserted in the SAME
+  // transaction that removes the plaintext; a second presentation of the same attestation digest refuses.
+  attestationNonces: defineTable({ nonce: v.string(), consumedAtMs: v.number() }).index('by_nonce', ['nonce']),
+
+  // WAVE 2 — signed erase-attestation EVIDENCE rows (public material only: reason, digest, signature, public
+  // key). Convex stores and projects this evidence; it never decides — the owner's signature was minted outside.
+  eraseAttestations: defineTable({
+    recordId: v.string(),
+    digest: v.string(),
+    ownerRootId: v.string(),
+    eraseReason: v.string(),
+    timestamp: v.number(),
+    signatureHex: v.string(),
+    publicKeyHex: v.string(),
+    originalReceiptHash: v.string(),
+    advisoryOnly: v.literal(true),
+    grantsAuthority: v.literal(false),
+  }).index('by_record', ['recordId']).index('by_digest', ['digest']),
+
+  // WAVE 2 — PQC-SIGNED CHAIN HEADS (donor SignedChainHeadV3/V4, vendored). Mutable row per chainKey under a
+  // MONOTONICITY law: a lower chainLength or older timestamp than the stored head refuses (truncation/rollback
+  // detection, donor high-water semantics). Signature minted OUTSIDE; the store verifies-and-records.
+  signedHeads: defineTable({
+    chainKey: v.string(),
+    version: v.union(v.literal(3), v.literal(4)),
+    timestamp: v.number(),
+    chainLength: v.number(),
+    chainHeadHash: v.string(),
+    merkleRootHex: v.union(v.string(), v.null()),
+    signatureHex: v.string(),
+    publicKeyHex: v.string(),
+    advisoryOnly: v.literal(true),
+    grantsAuthority: v.literal(false),
+  }).index('by_chainKey', ['chainKey']),
+
   // DURABLE RECURSION WORKFLOW PROJECTIONS (R36): the persistence rows behind Sam 3's `WorkflowStore` contract
   // (apps/seed/src/durableRecursion.ts). PROJECTIONS ONLY — never an authorization, signature, key, or proposal
   // content; the kernel/AUMLOK gate re-verifies from scratch outside Convex, so a tampered row decides nothing.

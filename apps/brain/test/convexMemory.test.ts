@@ -18,6 +18,10 @@ import { describe, it, expect, vi } from 'vitest';
 import schema from '../convex/schema';
 import { api } from '../convex/_generated/api';
 import { buildMemoryRecord } from '@aukora/memory';
+import { signEraseAttestation } from '../src/index.js';
+
+const ERASE_SEED = 'a'.repeat(64); // disposable owner seed for tests only
+const eraseFor = (recordId: string) => signEraseAttestation(ERASE_SEED, { ownerRootId: 'owner-test', key: recordId, eraseReason: 'test erase', timestamp: Date.now() });
 
 // convex-test locates the module root from the `_generated` directory in these keys.
 const modules = import.meta.glob('../convex/**/*.*s');
@@ -96,13 +100,13 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     await t.action(api.ingest.ingest, { record: secretish });
     await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'kept memory', createdAt: at(2) }) });
 
-    // Refuse without owner authorization — still visible.
-    const denied = await t.mutation(api.memory.forget, { recordId: secretish.recordId, at: at(3), ownerAuthorized: false });
+    // Refuse without a signed erase attestation — still visible.
+    const denied = await t.mutation(api.memory.forget, { recordId: secretish.recordId, at: at(3), attestation: { bogus: true } });
     expect(denied.ok).toBe(false);
     expect((await t.query(api.memory.recall, { text: 'diary' })).length).toBe(1);
 
-    // Owner-authorized forget.
-    const done = await t.mutation(api.memory.forget, { recordId: secretish.recordId, at: at(4), ownerAuthorized: true });
+    // Owner-signed erase attestation (WAVE 2).
+    const done = await t.mutation(api.memory.forget, { recordId: secretish.recordId, at: at(4), attestation: await eraseFor(secretish.recordId) });
     expect(done.ok).toBe(true);
 
     // Plaintext no longer recalled; snapshot shrank; a tombstone was appended.
@@ -267,7 +271,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     const ingestBlocked = await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'gamma', createdAt: at(3) }) });
     expect(ingestBlocked.ok).toBe(false);
     expect(ingestBlocked.refusal).toContain('corrupt store');
-    const forgetBlocked = await t.mutation(api.memory.forget, { recordId: first.recordId, at: at(4), ownerAuthorized: true });
+    const forgetBlocked = await t.mutation(api.memory.forget, { recordId: first.recordId, at: at(4), attestation: await eraseFor(first.recordId) });
     expect(forgetBlocked.ok).toBe(false);
     expect(forgetBlocked.refusal).toContain('corrupt store');
   });
