@@ -1,11 +1,11 @@
-# Lane stall audit — R42 overnight (one page)
+# Lane stall audit — R42 overnight (live)
 
-| lane | last posted result | status tonight | evidence |
+| lane | overnight status | last checkpoint | evidence |
 | --- | --- | --- | --- |
-| Sam 2 (#21) | Wave 2 signed-continuity, 13:48 | **IDLE BY DESIGN** — Wave 2 result integrated + merged in #61; no new directive addressed to it tonight | issue #21 timeline |
-| Sam 3 (#22) | Wave 2 AUMLOK membrane, 13:51 | **IDLE BY DESIGN** — same | issue #22 timeline |
-| Sam 4 (#23) | Wave 2 supervisor/gateway, 13:42 | **IDLE BY DESIGN** — same | issue #23 timeline |
-| Sam 1 (#20) | this atlas round | ACTIVE | this PR |
-| Lead (Codex) | merged #61 at 14:14 | responsive today (merged #52/#57/#61 same-day) | PR timeline |
+| Sam 2 (#21) | **ACTIVE** — overnight memory/identity atlas + scope-aware recall | 14:38 | issue #21 |
+| Sam 3 (#22) | **ACTIVE** — overnight forensic issue queue (Ring 0 audit) | 14:38 | issue #22 |
+| Sam 4 (#23) | **ACTIVE** — custody + truth-label sweep, checkpoint 3 | 14:37 | issue #23 |
+| Sam 1 (#20) | ACTIVE — atlas loop, checkpoint 2 complete (10/10 closures resolved, families enriched) | this commit | PR #62 |
+| Lead (Codex) | last merge #61 at 14:14; morning review queue = PR #62 | — | PR timeline |
 
-**No lane is STALLED under the directive's definition** (no lane owes a response to an unanswered directive). The gentle-nudge/60-minute clock never started because no work was assigned to 2–4 tonight. Infra notes carried forward: GitHub Actions had intermittent dispatch stalls earlier (R35/R38 era; none observed tonight); `secret-pii-scan` is now a live required check and passing.
+No lane stalled; all four running their overnight contracts. No nudges needed. Actions/CI healthy tonight (all PR #62 checks green).
