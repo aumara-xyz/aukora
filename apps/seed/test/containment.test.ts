@@ -19,7 +19,7 @@ const RUNTIME_MODULES = [
   'src/pathFence.ts', 'src/ideEnvelope.ts', 'src/eventStream.ts', 'src/metabolism.ts', 'src/councilPack.ts',
   'src/memoryConstitution.ts', 'src/maternalAnchor.ts', 'src/memorySelection.ts', 'src/councilRunnerBoundary.ts',
   'src/ideSession.ts', 'src/selectionAcceptance.ts', 'src/spatialCeremonyAdapter.ts', 'src/contracts.ts',
-  'src/durableRecursion.ts', 'src/fuStructuredAdapter.ts',
+  'src/durableRecursion.ts', 'src/fuStructuredAdapter.ts', 'src/localCeremonyRunner.ts',
 ];
 
 const FORBIDDEN_IMPORT = /\bfrom\s+['"](?:node:)?(?:fs|fs\/promises|child_process|net|tls|http|https|dns|dgram|worker_threads|cluster|vm|repl)['"]/;
@@ -67,6 +67,25 @@ describe('the candidate stage (the ONE effectful adapter) is contained by its ow
   it('no network module — fs + child_process(git) only', () => {
     const s = src();
     expect(/\bfrom\s+'(?:node:)?(?:net|tls|http|https|dns|dgram)'/.test(s)).toBe(false);
+  });
+});
+
+describe('the provider transport edge (the ONLY network module) embeds no credential', () => {
+  const edge = ['src/providerTransport.ts', 'src/fuLiveSmoke.ts', 'scripts/fu-live-smoke.ts'];
+
+  it('holds no hardcoded key/token/endpoint credential and never signs', () => {
+    for (const mod of edge) {
+      const src = read(mod);
+      expect(src.includes('.sign(')).toBe(false);
+      expect(src.includes('ownerFixture')).toBe(false);
+      // no bearer/sk-/AKIA literal, and the token is used only via a `Bearer ${token}` header interpolation
+      expect(/\bsk-[A-Za-z0-9]{16,}\b|\bAKIA[0-9A-Z]{16}\b|Bearer\s+[A-Za-z0-9._-]{16,}/.test(src)).toBe(false);
+    }
+    // the credential is retrieved via a reference, never embedded, and the redactor emits [redacted]
+    const pt = read('src/providerTransport.ts');
+    expect(pt).toContain('credentialRef');
+    expect(pt).toContain('[redacted]');
+    expect(pt.includes('writeFileSync') || pt.includes("from 'node:fs'")).toBe(false); // never writes a key to disk
   });
 });
 
