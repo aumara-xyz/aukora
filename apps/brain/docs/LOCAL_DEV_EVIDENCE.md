@@ -87,6 +87,35 @@ impulseBudgetRemaining → 62 (of 64)                          ← spend ceiling
 **Idempotent ingest** is proven under convex-test (same content-addressed record twice ⇒ one row, same
 receipt), as are cancellation and the exhausted-ceiling refusal (fail-closed).
 
+## R35 — durable rehearsal (workflow) evidence (same anonymous LOCAL deployment, sanitized)
+
+**Forced restart/RESUME mid-workflow:** a 32-step rehearsal was started (idempotent, consumed-authority
+evidence reference recorded) and the backend was killed with `kill -9` while it was RUNNING at step 3:
+
+```
+before crash → status=running, currentStep=3, effectsApplied=3
+kill -9      → nothing listening on 3210
+restart      → status=running, currentStep=6   ← the overdue scheduled continuation FIRED on restart
+(held up)    → status=completed, currentStep=32, effectsApplied=32   ← EXACTLY 32 effects: none lost,
+                                                                        none duplicated through the crash
+verifyReceiptEvents → valid: true, eventCount=66                     ← started + 32 receipts + 32 effects
+                                                                        + completed; kernel chain intact
+```
+
+**Zero outbound network:** during the exercise the backend process held ONLY its two local listeners —
+`TCP *:3210 (LISTEN)` and `TCP *:3211 (LISTEN)` — and **zero established/outbound connections** to any
+external host (`lsof -a -p <pid> -i -nP`). The stubbed external nerve refused LIVE:
+
+```
+nerves:external {"target":"https://example.com"}
+→ { ok: false, refusal: "disabled: external nerves are stubbed this round — no outbound I/O …",
+    networkPerformed: false }
+```
+
+Two-phase receipt-before-effect, idempotent start, exactly-once effects, bounded attention, cancellation, and
+logical-time receipt chaining are proven under convex-test (`test/rehearsal.test.ts`). Clean stop verified
+(port empty).
+
 ## Architecture note surfaced by the REAL runtime
 
 The Convex isolate does not provide `node:crypto`, which the provenance-locked `@aukora/evidence` digest module
