@@ -1,52 +1,58 @@
 # Aukora
 
-The canonical, portable core of Aukora — a small set of dependency-light TypeScript packages
-for deterministic authority verification, tamper-evident evidence, and advisory multi-model
-review. **Library code only.** There is no application, product UI, game, organism, research
-corpus, or cloud backend in this repository, and there never will be — those consume these
-packages from their own repositories, never the other way around.
+The fresh, public seed of a **governed recursive digital organism** — distilled to its
+constitutional core and built outward under strict governance. The Kernel is the constitutional
+spine *inside* Aukora, not a separate product: authority is verified, never minted; evidence is
+advisory, never authority; memory grows under consent and governed forgetting; self-change is
+proposed, rehearsed, reviewed, and owner-gated before it ever touches anything real.
 
-## Packages
+This repository is a **seed**, and it says so honestly: the constitutional core is implemented
+and tested today; the organism surfaces (memory, brain, recursion, console) are scaffolded with
+their contracts and built in the open. Every claim maps to code + tests + export or is labelled
+scaffold/design. See [docs/CAPABILITY_MATRIX.md](docs/CAPABILITY_MATRIX.md).
 
-| Package | What it is | Purity | Depends on |
-| --- | --- | --- | --- |
-| [`@aukora/kernel`](packages/kernel) | Deterministic authority verifier + reducer, canonical encoding, Merkle, registries, conformance vectors, SBOM. Runs on Edge/Bun/browser. | pure | `@noble/*` only |
-| [`@aukora/evidence`](packages/evidence) | EvidencePack: closed-schema validation, JCS-aligned canonical JSON, domain-separated digest, confusable-resistant secret projections. | pure, offline | none (`node:crypto`) |
-| [`@aukora/council`](packages/council) | Advisory multi-model council core: seat verification, glyph-packet parsing, quorum, spend estimation. **Never grants authority.** | pure, offline | none |
-| [`@aukora/council-node`](packages/council-node) | The one Node-only I/O adapter: a filesystem-backed persistent daily spend ledger, kept out of the pure council. | Node fs adapter | none |
+## The spine
 
-The four packages are independent leaves — none imports another, and none imports from any
-application. See [ARCHITECTURE.md](ARCHITECTURE.md).
+| | | Status |
+| --- | --- | --- |
+| **AUMLOK** | owner authority + fail-closed governance: deterministic verification, consumed-authority reducer, Merkle, canonical hashing | implemented in `@aukora/kernel` |
+| **AURA** | evidence, receipts, provenance, secret projections; advisory, never authority | implemented in `@aukora/evidence` |
+| **Fu** | advisory multi-model council + glyph geometry; grants no authority | implemented in `@aukora/council` (+ `@aukora/council-node` fs ledger) |
+| **KIRA** | memory identity, consent-scoped recall, governed forgetting | contract scaffold in `packages/memory` |
+| **Convex brain** | persistent growing reactive memory | scaffold in `apps/brain` |
+| **Recursion** | propose → ground → rehearse → advisory review → owner-gate → sandbox → receipt | scaffold in `apps/seed` |
+| **Console** | read-only operator visibility, no authority leakage | scaffold in `apps/console` |
+| **Models** | provider-neutral brain attachment, no bundled weights | scaffold in `models/` |
+
+## Packages (implemented, tested)
+
+| Package | Role | Purity |
+| --- | --- | --- |
+| [`@aukora/kernel`](packages/kernel) | deterministic authority verifier + reducer, Merkle, canonical encoding, conformance vectors, SBOM | pure (`@noble/*`) |
+| [`@aukora/evidence`](packages/evidence) | EvidencePack validation, canonical JSON, digest, secret projections | pure (`node:crypto`) |
+| [`@aukora/council`](packages/council) | advisory council + glyph geometry; no authority | pure |
+| [`@aukora/council-node`](packages/council-node) | the one Node fs adapter: persistent daily spend ledger | fs adapter |
+
+Packages never import an app, Convex, UI, signer, or deployment code. External consumers
+(`aukora-symbiote`, `aukora-fu`) point inward to these — never the reverse.
+See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Use
 
 ```bash
 npm install
-npm run test:all      # provenance + boundary + package suites + full kernel gate
+npm run test:all      # provenance + boundary + package suites + full kernel gate (159 tests)
 ```
-
-Individual gates:
-
-```bash
-npm run verify:provenance   # canonical sources are byte-identical to the reviewed donor
-npm run boundary            # evidence/council/council-node import no fs/network/authority
-npm test                    # evidence + council + council-node + export/boundary smoke (145)
-npm run test:kernel         # kernel: boundary, typecheck, tests, build, compat, SBOM, runtimes, package
-```
-
-`@aukora/kernel` publishes built `dist`; `@aukora/evidence`, `@aukora/council`, and
-`@aukora/council-node` publish TypeScript source consumed by a bundler (the same way the
-Symbiote and Fu applications consume them).
 
 ## Provenance and honesty
 
-This repository has a **fresh root history** — no donor commits are imported. The canonical
-sources were copied byte-identical from the frozen public donor
-[`aukora-kernel`](https://github.com/aumara-xyz/aukora-kernel) and pinned by donor git-blob
-hash in [docs/PROVENANCE.md](docs/PROVENANCE.md); `npm run verify:provenance` fails if any
-source drifts. Every capability the docs call implemented has source, tests that exercise it,
-and a package export — see [CLAIMS.md](CLAIMS.md). Anything not built is absent from these
-claims, not described as if it exists.
+Fresh root history — no donor commits imported. The canonical sources are byte-identical to the
+frozen donor [`aukora-kernel`](https://github.com/aumara-xyz/aukora-kernel) and pinned by
+git-blob hash ([docs/PROVENANCE.md](docs/PROVENANCE.md)); `npm run verify:provenance` fails on
+drift. What is implemented, scaffolded, and design-only is spelled out in
+[docs/CAPABILITY_MATRIX.md](docs/CAPABILITY_MATRIX.md); the disposition of every donor
+capability and old issue is in [docs/PUBLIC_CAPABILITY_INVENTORY.md](docs/PUBLIC_CAPABILITY_INVENTORY.md)
+and [docs/ISSUE_MIGRATION_INDEX.md](docs/ISSUE_MIGRATION_INDEX.md).
 
 ## License
 

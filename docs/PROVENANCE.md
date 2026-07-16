@@ -60,3 +60,15 @@ Importing the donor history would drag in the applications, organism, quarantine
 private-planning material this repository is defined to exclude. A fresh root plus blob-pinned
 provenance gives the same auditable guarantee — "this is exactly the reviewed donor code" —
 without any of that payload, and without rewriting or deleting the frozen donor.
+
+## Private master inventory (integrity anchor)
+
+The fuller, sensitivity-flagged capability/issue disposition is kept **private** (full paths,
+infra identifiers, patent-sensitivity flags, model-weight pointers) and is NOT committed here.
+Only its integrity hash is recorded, so the private master can be authenticated later without
+exposing its contents:
+
+- `PRIVATE_MASTER_INVENTORY.md` SHA-256: `e79befa72123973350515bf566bd164e1e270c64bc8d3a730f8cae818237b35a`
+
+The public, sanitized views are `docs/PUBLIC_CAPABILITY_INVENTORY.md` and
+`docs/ISSUE_MIGRATION_INDEX.md`.

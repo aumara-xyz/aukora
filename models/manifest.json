@@ -1,0 +1,11 @@
+{
+  "schema": "aukora-models-manifest-v0",
+  "note": "Sanitized placeholder. No weights, endpoint/job/bucket IDs, or tokens. Entries gain checksums only when evidence exists.",
+  "providers": [
+    { "id": "deterministic-offline", "label": "IMPLEMENTED", "purpose": "test/demo provider; no network", "artifacts": [] },
+    { "id": "auma-vl", "base": "Qwen2.5-VL-32B-Instruct", "ladder": "v5..v17", "label": "AVAILABLE_PRIVATE", "weightsPublic": false, "evaluationProvenance": "UNVERIFIED", "artifacts": [] },
+    { "id": "liquid-candidate", "label": "REJECTED", "reason": "licensing concerns; untrained", "artifacts": [] },
+    { "id": "nemotron", "label": "BLOCKED", "reason": "untrained", "artifacts": [] },
+    { "id": "router-3b", "label": "DESIGN_ONLY", "artifacts": [] }
+  ]
+}
