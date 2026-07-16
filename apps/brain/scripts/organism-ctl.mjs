@@ -20,6 +20,9 @@ import { spawn, execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  DOOR_TOKEN_ENV, TOKEN_LOG_LAW, mintDoorToken, writeTokenFile, clearTokenFile, describeTokenPresence,
+} from './doorCustody.mjs';
 
 const APP_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const CHECKOUT = resolve(APP_DIR, '..', '..');
@@ -140,9 +143,14 @@ async function up() {
   if (!existsSync(mindEntry)) { degraded.push('mind: entry not found on this tree'); loud('mind: not present — DEGRADED'); }
   else if (assertPortUsable('mind', PORTS.mind) === true) {
     try {
+      // R44 LAW 1: the SUPERVISOR (the one lifecycle owner) mints the per-boot POST token and preserves it —
+      // env to the child + ONE 0600 file under the gitignored organism dir. The value is never printed.
+      const token = mintDoorToken();
+      writeTokenFile(ORG_DIR, token);
+      log(`mind: ${TOKEN_LOG_LAW}`);
       const out = join(ORG_DIR, 'mind-door.mjs');
       bundle('apps/seed/scripts/mind-door-7097.ts', out);
-      startDetached('mind', 'node', [out], {}, join(CHECKOUT, 'apps/seed'));
+      startDetached('mind', 'node', [out], { [DOOR_TOKEN_ENV]: token }, join(CHECKOUT, 'apps/seed'));
       if (!(await waitForPort(PORTS.mind, 20))) { degraded.push('mind: started but never bound 7097'); loud('mind: did not bind 7097 — DEGRADED'); }
       else log(`mind: healthy on ${PORTS.mind}`);
     } catch (err) {
@@ -180,6 +188,9 @@ function status() {
     log(`${name}: pid=${held ? pid : 'none'}${held ? (verified ? ' (verified)' : ' (UNVERIFIED)') : ''} · port ${port} listening=${listening}`);
     if ((name === 'convex' || name === 'door') && !(listening)) coreOk = false;
   }
+  // R44: token PRESENCE only — the value is never printed.
+  const tok = describeTokenPresence(ORG_DIR);
+  log(`mind-token: ${tok.present ? (tok.mode0600 ? 'held (0600)' : 'held but NOT 0600 — tighten it') : 'absent'}`);
   process.exit(coreOk ? 0 : 1);
 }
 
@@ -204,8 +215,9 @@ function down() {
     if (owner !== null && belongsToCheckout(owner)) { try { process.kill(owner, 'SIGTERM'); log(`${name}: stopped verified straggler pid ${owner}`); } catch { /* gone */ } }
     else if (owner !== null) loud(`${name}: pid ${owner} on ${port} does NOT verify as ours — left running`);
   }
+  clearTokenFile(ORG_DIR); // R44: the per-boot token dies with the boot
   rmSync(LOCK_FILE, { force: true });
-  log('organism down; pidfiles + lock cleared');
+  log('organism down; pidfiles + lock + per-boot mind token cleared');
 }
 
 const cmd = process.argv[2];

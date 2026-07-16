@@ -18,15 +18,17 @@ tell **"identity corpus absent"** from **"retrieval bias"**.
 - `isTestFile` = `/(^|\/)tests?\//` on the path OR `\.(test|spec)\.[tj]sx?$` on the name,
 - the #62 census that proved the defect: `tests:70, evidence:5, architecture:1, identity:0`.
 
-## What was added (additive; default recall byte-identical)
+## What was added (opt-in contract split — default recall byte-exact, per WAVE 3)
 
 - `src/scope.ts`: `classifyScope(record) → MemoryScope` (identity/architecture/evidence/doc/test/code/general),
   `scopeCensus(records, forgotten)` (the #62 diagnostic), `hasScope(records, scope, forgotten)` (the honest
   "is the shelf empty?" signal). Pure — provenance + content, no I/O.
-- `src/recall.ts`: opt-in `RecallQuery.scopes` / `excludeScopes` / `preferScopes`, and an additive `scope` on
-  every `RecallHit`. With NO scope options the ordering and results are byte-for-byte the pre-#62 law (proven).
+- `src/recall.ts`: the STABLE contract v1 (`RecallQuery`/`RecallHit`/`recall`) is the exact pre-#62 shape —
+  `recall()` never computes or emits scope. Scope-aware recall is a SEPARATE, explicitly opt-in contract:
+  `ScopedRecallQuery` (adds `scopes`/`excludeScopes`/`preferScopes`) + `ScopedRecallHit` (adds `scope` as an
+  additive last key) + `recallScoped()`, mirrored by `ReactiveMemoryStore.recallScoped`.
 
-## Falsification cycles (max 3 — honest keep)
+## Falsification cycles (honest keep — cycle 4 came from review)
 
 1. **Write + prove.** Classifier vectors; empty-shelf reproduction (plain recall floods with `test`); fix
    (`preferScopes:['identity']` floats identity to #1; `excludeScopes:['test','code']` suppresses the flood);
@@ -38,7 +40,17 @@ tell **"identity corpus absent"** from **"retrieval bias"**.
    under a non-test provenance still surfaces. Test updated to assert the donor-authoritative rule.
 3. **Regression.** Full downstream battery unchanged: `@aukora/memory` 14 (7→14), `@aukora/brain` 122,
    `@aukora/seed` 255, root 145; kernel/memory typechecks clean; provenance byte-identity ✓; portable +
-   canonical boundary ✓. `recall` default path proven byte-identical.
+   canonical boundary ✓.
+4. **External falsification (owner review, WAVE 3) → contract split.** The original design put an additive
+   `scope` field on EVERY `RecallHit`, so the "default recall byte-identical" claim was FALSE — every default
+   serialized hit changed shape even with no scope option requested. Fixed by splitting the contract (above):
+   the default `recall` is restored to the exact pre-#62 five-key shape and never computes scope; scope lives
+   only on the opt-in `recallScoped`. New exact serialization-shape regression tests freeze the default hit's
+   keys/order/JSON bytes (no `scope` key), prove the opt-in hit's first five keys+values equal the default hit,
+   and prove scope selectors passed to the default `recall` are ignored. Stored-consumer proof: on the WAVE 3
+   head (merged onto main `486322ff`) the full gate was green — root 149, kernel chain PASS, memory 17, brain
+   122/2skip, seed 257, console 44, spatial 27 — and `fixture:console` regenerated the committed fixture
+   **byte-identical**, so serialized, hashed AND stored consumers were all proven unaffected.
 
 ## Honest scope of the fix (what it does NOT claim)
 
