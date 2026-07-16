@@ -210,3 +210,46 @@ the #62 law, now anchored to the exact donor fields the bridge carries vs the on
 authority-decision link as audit-only), honors the donor countable-stub / no-resurrection erasure law, and — by the
 same content-free design — cannot and does not deliver retrievable identity without gated plaintext import + correct
 scope + recall resolution. That gap is the #62 falsifier, not a bridge defect.
+
+---
+
+## Appendix E (overnight atlas verification) — door read surface vs donor content-minimization law
+
+Verified the current door recall surface `apps/brain/src/localDoor.ts` (+ live query `convex/memory.ts` `recall`,
+pure `packages/memory/src/recall.ts`) against the donor law in `core/src/memoryRecall.ts`: the kernel's
+`aukora_memory` table "has NO search or vector index and exposes no content-listing query"; donor recall is a
+KEYED POINT READ (owner id + exact key) under owner proof-of-possession, `advisoryOnly`. Read-only; no seed read.
+
+### The door read endpoints — exactly ONE is content-bearing
+
+- **Content-FREE (counts / hashes / references):** `/health`, `/snapshot` (`liveCount, chainLength, forgottenCount,
+  headHash, merkleRootHex, lastEventAt`), `/receipts` (receipt references), `/workflow/:id`, `/workflows`,
+  `/candidates`, `/aumlok`, `/fu`, `/truth`, `/events` (snapshot stream). None return memory plaintext.
+- **Content-BEARING:** `/memory/recall?text=` → live `recall` returns `{recordId, createdAt, **content**}[]` — the
+  plaintext of live, non-forgotten records. With `text=''` it returns ALL live records = a content-listing /
+  ENUMERATION query (substring/keyword scan; the pure store additionally score-ranks). Forgotten records are
+  invisible and their plaintext is already removed (read-time forgetting rail — Wave-1 §1b).
+
+### Classification vs the donor law — ADAPTED_BOUNDARY, with a flagged divergence
+
+The current `/memory/recall` is the donor's **fuzzy-recall rail** (the analogue of the donor's out-of-Convex
+`kiraBrain.recall` multi-perceiver advisory recall — deliberately content-bearing context), NOT the donor's
+content-minimized Convex **keyed point read**. On the donor's explicit "no content-listing query on the
+authority-bearing table" law, the door does **not** yet enforce the same narrowing: recall returns plaintext and
+supports empty-term enumeration.
+
+- **Acceptable-by-context (why it holds today):** the door is LOOPBACK-only (127.0.0.1), ORIGIN-CLOSED (no
+  `Access-Control-Allow-*` ever emitted), single-owner LOCAL dev, grants NO authority
+  (`x-aukora-grants-authority: false`), and forgetting still removes the plaintext. No off-machine reader exists,
+  so enumeration is confined to the owner's own machine.
+- **Divergence (flag):** it is NOT the donor's content-minimized read surface. A multi-reader deployment, or any
+  widening of the door beyond loopback, MUST adopt the donor keyed-point-read + owner-PoP + no-enumeration law
+  before recall is exposed — this is the same gap as Appendix C's **signed recall PoP MISSING /
+  PARKED_PENDING_OWNER**. Until then, `/memory/recall` is the single content surface and its safety rests entirely
+  on the loopback/origin-closed/single-owner perimeter, not on a recall-level authorization.
+
+**Net:** the content-free chain-commitment law holds across the whole door (13 of 14 read endpoints expose only
+counts/hashes/references); the sole content surface is the advisory recall rail, which is content-bearing and
+enumeration-capable BY DESIGN and is safe only under the loopback perimeter. Matching the donor's Convex
+content-minimization (keyed point read, no listing, PoP) is owner-gated future work, tracked with the Appendix-C
+signed-recall gap — not built here.
