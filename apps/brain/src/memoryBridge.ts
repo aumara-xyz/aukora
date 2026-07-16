@@ -54,6 +54,44 @@ export class MemoryBridgeCorruptionError extends Error {}
 
 export type RecordClassification = 'active-plaintext' | 'secret-quarantined' | 'tombstone-preserved';
 
+/**
+ * KIRA memory classes (R33):
+ *   ROOT  — green, foundational (ground truths, identity, sensor bedrock)
+ *   UNITE — blue, relational (bonds, agreements, shared context)
+ *   RISE  — purple, purpose/guidance (direction, goals, counsel)
+ *   GOLD  — amber, constitutional (protected + versioned + receipted; changeable ONLY through an explicit
+ *           owner AUMLOK ceremony — see goldRegistry.ts — never literally immutable)
+ */
+export type KiraClass = 'ROOT' | 'UNITE' | 'RISE' | 'GOLD';
+export const KIRA_CLASSES: Readonly<Record<KiraClass, { readonly color: string; readonly meaning: string }>> = {
+  ROOT: { color: 'green', meaning: 'foundational' },
+  UNITE: { color: 'blue', meaning: 'relational' },
+  RISE: { color: 'purple', meaning: 'purpose/guidance' },
+  GOLD: { color: 'amber', meaning: 'constitutional (owner-ceremony protected)' },
+};
+
+/** Classifier runs LOCALLY over the legacy record (its output must be a class, never content). Default: ROOT. */
+export type KiraClassifier = (record: LegacyMemoryRecordV1) => KiraClass;
+
+/**
+ * Selection — how Auma and Peter choose what migrates. Evaluated per ACTIVE record after classification:
+ * a record migrates iff it is not excluded by ref, and (when either include-list is present) it matches
+ * `includeRefs` or `includeClasses`. Tombstones/secrets are never importable regardless of selection.
+ */
+export interface MigrationSelection {
+  readonly includeRefs?: readonly string[];
+  readonly includeClasses?: readonly KiraClass[];
+  readonly excludeRefs?: readonly string[];
+}
+
+function isSelected(legacyRef: string, kiraClass: KiraClass, s?: MigrationSelection): boolean {
+  if (!s) return true;
+  if (s.excludeRefs?.includes(legacyRef)) return false;
+  const hasInclude = (s.includeRefs?.length ?? 0) > 0 || (s.includeClasses?.length ?? 0) > 0;
+  if (!hasInclude) return true;
+  return (s.includeRefs?.includes(legacyRef) ?? false) || (s.includeClasses?.includes(kiraClass) ?? false);
+}
+
 /** A CONTENT-FREE migration entry — safe for the public report / Git. No plaintext. */
 export interface MigrationEntry {
   readonly legacyRef: string;
@@ -61,6 +99,9 @@ export interface MigrationEntry {
   readonly contentHash: string;
   readonly consent: ConsentScope;
   readonly classification: RecordClassification;
+  readonly kiraClass: KiraClass;
+  /** The Auma/Peter selection verdict for this record — unselected actives are reported but NOT imported. */
+  readonly selected: boolean;
   readonly status: 'active' | 'tombstoned';
   readonly receiptHash: string | null;
   readonly gateArgsHash: string | null;
@@ -79,7 +120,14 @@ export interface MigrationVerification {
 export interface MigrationReport {
   readonly schema: 'aukora-memory-migration-report-v1';
   readonly dryRun: true;
-  readonly counts: { readonly exported: number; readonly activeMigrated: number; readonly secretQuarantined: number; readonly tombstonesPreserved: number };
+  readonly counts: {
+    readonly exported: number;
+    readonly activeMigrated: number;
+    readonly excludedBySelection: number;
+    readonly secretQuarantined: number;
+    readonly tombstonesPreserved: number;
+  };
+  readonly kiraCounts: Readonly<Record<KiraClass, number>>;
   readonly entries: readonly MigrationEntry[];
   readonly verified: MigrationVerification;
   /** Dry-run NEVER commits. */
@@ -139,39 +187,50 @@ export class GovernedMemoryMigration {
     return this.store;
   }
 
-  dryRun(): MigrationReport {
+  dryRun(options: { readonly classify?: KiraClassifier; readonly selection?: MigrationSelection } = {}): MigrationReport {
+    const classify = options.classify ?? (() => 'ROOT' as const);
     const legacy = this.source.exportAll(); // READ-ONLY
     const entries: MigrationEntry[] = [];
-    let active = 0, secret = 0, tomb = 0;
+    const kiraCounts: Record<KiraClass, number> = { ROOT: 0, UNITE: 0, RISE: 0, GOLD: 0 };
+    let active = 0, excluded = 0, secret = 0, tomb = 0;
 
     for (const r of legacy) {
       assertLegacyIntegrity(r); // FAIL LOUD on corruption
       const legacyRef = `${r.chainKey}#${r.seq}`;
       const consent = classifyConsent(r.visibility);
-      const base = { legacyRef, contentHash: r.contentHash, consent, status: r.status, receiptHash: r.receiptHash ?? null, gateArgsHash: r.gateArgsHash ?? null, prevHash: r.prevHash };
+      const kiraClass = classify(r); // runs locally; only the CLASS reaches the report
+      kiraCounts[kiraClass] += 1;
+      const base = { legacyRef, contentHash: r.contentHash, consent, kiraClass, status: r.status, receiptHash: r.receiptHash ?? null, gateArgsHash: r.gateArgsHash ?? null, prevHash: r.prevHash };
 
       if (r.status === 'tombstoned') {
         tomb += 1;
-        entries.push({ ...base, newRecordId: null, classification: 'tombstone-preserved' }); // NO plaintext — no resurrection
+        entries.push({ ...base, newRecordId: null, selected: false, classification: 'tombstone-preserved' }); // NO plaintext — no resurrection
         continue;
       }
       if (textHasSecret(r.content)) {
         secret += 1;
-        entries.push({ ...base, newRecordId: null, classification: 'secret-quarantined' }); // plaintext NEVER imported / public
+        entries.push({ ...base, newRecordId: null, selected: false, classification: 'secret-quarantined' }); // plaintext NEVER imported / public
+        continue;
+      }
+      // Auma/Peter selection: an unselected active is REPORTED (content-free) but never imported.
+      if (!isSelected(legacyRef, kiraClass, options.selection)) {
+        excluded += 1;
+        entries.push({ ...base, newRecordId: null, selected: false, classification: 'active-plaintext' });
         continue;
       }
       const rec = buildMemoryRecord({ content: r.content, createdAt: r.createdAt, consent, provenance: packProvenance(r) });
       const ing = this.store.ingest(rec);
       if (!ing.ok) throw new MemoryBridgeCorruptionError(`import_refused:${legacyRef}:${ing.refusal}`); // fail loud
       active += 1;
-      entries.push({ ...base, newRecordId: ing.recordId, classification: 'active-plaintext' });
+      entries.push({ ...base, newRecordId: ing.recordId, selected: true, classification: 'active-plaintext' });
     }
 
     const verified = this.verify(legacy.length, entries, active);
     return {
       schema: 'aukora-memory-migration-report-v1',
       dryRun: true,
-      counts: { exported: legacy.length, activeMigrated: active, secretQuarantined: secret, tombstonesPreserved: tomb },
+      counts: { exported: legacy.length, activeMigrated: active, excludedBySelection: excluded, secretQuarantined: secret, tombstonesPreserved: tomb },
+      kiraCounts,
       entries,
       verified,
       committed: false,

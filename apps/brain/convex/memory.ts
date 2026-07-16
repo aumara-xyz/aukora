@@ -8,20 +8,22 @@
  *   appends a content-free tombstone (audit kept, chain never rewritten); `verify` reconstructs the chain and
  *   runs the canonical verifier so tamper of any prior row is detected.
  *
- * Ingest is fail-closed: malformed / authority-shaped records refuse, and a record whose content carries a live
- * secret (canonical @aukora/evidence scanner, no clone) refuses — no plaintext credential is ever persisted.
+ * Ingest is fail-closed: malformed / authority-shaped records refuse here, and the canonical secret scan
+ * (@aukora/evidence, no clone) guards the ONLY public door — the "use node" action in ./ingest.ts — because the
+ * provenance-locked scanner needs node:crypto, which the Convex isolate does not provide. `ingestValidated` is
+ * INTERNAL, so no client path skips the scan; no plaintext credential is ever persisted.
  *
  * This is the convex-test / live-Convex persistence target; it makes no live-execution claim of its own. Owner
  * verification is passed in — Convex never holds a key or signs. Reuses @aukora/kernel receipt-chain + Merkle +
  * canonical hash and @aukora/memory commitment law — nothing is cloned.
  */
-import { mutation, query } from './_generated/server';
+import { mutation, internalMutation, query } from './_generated/server';
+import { internal } from './_generated/api';
 import { v } from 'convex/values';
 import { receiptChainHash, verifyReceiptChain } from '@aukora/kernel/evidence';
 import { merkleRoot } from '@aukora/kernel/merkle';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { validateMemoryRecord, memoryCommitment, tombstoneCommitment } from '@aukora/memory';
-import { textHasSecret } from '@aukora/evidence';
 
 async function chainRows(ctx: any) {
   return await ctx.db.query('memoryChain').withIndex('by_index').collect();
@@ -65,12 +67,15 @@ async function recompute(ctx: any) {
   return snap;
 }
 
-export const ingest = mutation({
+// INTERNAL atomic ingest reflex. NOT client-callable: the ONLY public door is the "use node" `ingest.ts` action,
+// which runs the canonical @aukora/evidence secret scan first (node:crypto is unavailable in the Convex isolate,
+// so the scan lives in the Node runtime — see convex/ingest.ts). A client cannot reach this mutation directly,
+// so the secret gate cannot be bypassed (fail-closed by structure, not by a trusted flag).
+export const ingestValidated = internalMutation({
   args: { record: v.any() },
   handler: async (ctx, { record }) => {
     const r = validateMemoryRecord(record);
     if (r === null) return { ok: false, refusal: 'refused: malformed or authority-shaped memory' };
-    if (textHasSecret(r.content)) return { ok: false, refusal: 'refused: memory content carries a secret; not persisted in plaintext' };
     const chain = await chainRows(ctx);
     if (chain.length > 0 && !chainVerdict(chain).valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     const prevHash = chain.length ? chain[chain.length - 1].chainHash : null;
@@ -147,6 +152,35 @@ export const verify = query({
     const verdict = verifyReceiptChain(reconstructEntries(chain));
     const merkleRootHex = chain.length ? bytesToHex(merkleRoot(chain.map((e: any) => hexToBytes(e.chainHash)))) : null;
     return { ...verdict, chainLength: chain.length, merkleRootHex };
+  },
+});
+
+// DELAYED IMPULSE (scheduled function, per the ReactiveBrainAdapter role map): the heartbeat recomputes the
+// reactive snapshot. It is rhythm/cadence only — it carries NO authority and writes nothing but the snapshot.
+export const heartbeat = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    await recompute(ctx);
+    return { ok: true };
+  },
+});
+
+// ATOMIC REFLEX that schedules the delayed impulse. Returns the scheduled-function id so its status can be
+// observed reactively (`scheduledStatus`) — the query→mutation→scheduled end-to-end proof path.
+export const scheduleHeartbeat = mutation({
+  args: { delayMs: v.number() },
+  handler: async (ctx, { delayMs }) => {
+    const id = await ctx.scheduler.runAfter(delayMs, internal.memory.heartbeat, {});
+    return { ok: true, scheduledId: id };
+  },
+});
+
+// SENSE over the scheduler: read a scheduled function's status from the system table. Read-only.
+export const scheduledStatus = query({
+  args: { scheduledId: v.id('_scheduled_functions') },
+  handler: async (ctx, { scheduledId }) => {
+    const doc = await ctx.db.system.get(scheduledId);
+    return doc ? { state: doc.state.kind, name: doc.name, scheduledTime: doc.scheduledTime } : null;
   },
 });
 

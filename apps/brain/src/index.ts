@@ -16,3 +16,5 @@ export * from './reactiveBrainAdapter.js';
 export * from './perceptionProvider.js';
 export * from './memoryBridge.js';
 export * from './metabolismSimulator.js';
+export * from './goldRegistry.js';
+export * from './brainRoles.js';

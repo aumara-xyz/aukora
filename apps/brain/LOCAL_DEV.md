@@ -10,6 +10,13 @@ machine. This is **LOCAL_DEV only**: not production, not managed cloud, no paid 
 npm run dev:local --workspace @aukora/brain
 ```
 
+Non-interactive / first-time notes (proven in [docs/LOCAL_DEV_EVIDENCE.md](./docs/LOCAL_DEV_EVIDENCE.md)):
+- `export CONVEX_AGENT_MODE=anonymous` uses the official anonymous LOCAL deployment (no account, no login,
+  `127.0.0.1` only). `npx convex init` once, then `dev`.
+- `"use node"` actions (the `convex/ingest.ts` secret-scan door) need Node 18/20/22/24 on `PATH`; on a Node-26
+  machine: `brew install node@22` and `export PATH="/opt/homebrew/opt/node@22/bin:$PATH"` for these commands.
+- `.env.local` (local-deployment pointers only, no credentials) is gitignored — never commit it.
+
 This runs `convex dev` against a **local** deployment of the curated functions in `apps/brain/convex`
 (`schema.ts`, `memory.ts`). It generates `_generated/` (this repo ships hand-written codegen equivalents so
 tests need no deployment) and serves the reactive query/mutation surface locally.

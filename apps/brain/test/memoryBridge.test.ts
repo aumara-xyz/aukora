@@ -46,7 +46,7 @@ describe('GovernedMemoryMigration (dry-run)', () => {
     const report = new GovernedMemoryMigration(source(CLEAN)).dryRun();
     expect(report.dryRun).toBe(true);
     expect(report.committed).toBe(false);
-    expect(report.counts).toEqual({ exported: 4, activeMigrated: 2, secretQuarantined: 1, tombstonesPreserved: 1 });
+    expect(report.counts).toEqual({ exported: 4, activeMigrated: 2, excludedBySelection: 0, secretQuarantined: 1, tombstonesPreserved: 1 });
     // every verification passes
     expect(report.verified).toEqual({ counts: true, hashes: true, recall: true, forgetting: true, tamperRefused: true, rollback: true });
     // provenance preserved (content-free) on the active entry that had refs

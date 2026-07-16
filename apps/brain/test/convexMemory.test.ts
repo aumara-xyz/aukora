@@ -14,7 +14,7 @@
  * authority-shaped / secret-bearing memory.
  */
 import { convexTest } from 'convex-test';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import schema from '../convex/schema';
 import { api } from '../convex/_generated/api';
 import { buildMemoryRecord } from '@aukora/memory';
@@ -28,7 +28,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
   it('append → reactive snapshot update → recall', async () => {
     const t = convexTest(schema, modules);
     const rec = buildMemoryRecord({ content: 'event A: the organism woke', createdAt: at(1) });
-    const A = await t.mutation(api.memory.ingest, { record: rec });
+    const A = await t.action(api.ingest.ingest, { record: rec });
     expect(A.ok).toBe(true);
 
     const snap = await t.query(api.memory.snapshot, {});
@@ -45,7 +45,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     const t = convexTest(schema, modules);
     let prevRoot: string | null = null;
     for (let i = 1; i <= 4; i++) {
-      await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: `event ${i}: grew`, createdAt: at(i) }) });
+      await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: `event ${i}: grew`, createdAt: at(i) }) });
       const snap = await t.query(api.memory.snapshot, {});
       expect(snap?.liveCount).toBe(i);                 // GROWTH proven, ingest by ingest
       expect(snap?.merkleRootHex).not.toBe(prevRoot);  // reactive Merkle root moved each time
@@ -59,7 +59,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
   it('tampering with a prior chain row (committed metadata) fails verification', async () => {
     const t = convexTest(schema, modules);
     for (let i = 1; i <= 3; i++) {
-      await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: `link ${i}`, createdAt: at(i) }) });
+      await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: `link ${i}`, createdAt: at(i) }) });
     }
     expect((await t.query(api.memory.verify, {})).valid).toBe(true);
 
@@ -76,8 +76,8 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
 
   it('tampering with a stored chainHash fails verification at that link', async () => {
     const t = convexTest(schema, modules);
-    await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: 'genesis', createdAt: at(1) }) });
-    await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: 'next', createdAt: at(2) }) });
+    await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'genesis', createdAt: at(1) }) });
+    await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'next', createdAt: at(2) }) });
 
     await t.run(async (ctx) => {
       const rows = await ctx.db.query('memoryChain').withIndex('by_index').collect();
@@ -93,8 +93,8 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
   it('governed forgetting: removes plaintext, keeps a content-free tombstone, chain still verifies', async () => {
     const t = convexTest(schema, modules);
     const secretish = buildMemoryRecord({ content: 'private diary entry to forget', createdAt: at(1) });
-    await t.mutation(api.memory.ingest, { record: secretish });
-    await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: 'kept memory', createdAt: at(2) }) });
+    await t.action(api.ingest.ingest, { record: secretish });
+    await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'kept memory', createdAt: at(2) }) });
 
     // Refuse without owner authorization — still visible.
     const denied = await t.mutation(api.memory.forget, { recordId: secretish.recordId, at: at(3), ownerAuthorized: false });
@@ -131,7 +131,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
 
   it('refuses malformed / authority-shaped memory (fail-closed; nothing chained)', async () => {
     const t = convexTest(schema, modules);
-    const bad = await t.mutation(api.memory.ingest, { record: { schema: 'aukora-memory-v1', grantsAuthority: true } });
+    const bad = await t.action(api.ingest.ingest, { record: { schema: 'aukora-memory-v1', grantsAuthority: true } });
     expect(bad.ok).toBe(false);
     const snap = await t.query(api.memory.snapshot, {});
     expect(snap?.chainLength ?? 0).toBe(0);
@@ -140,7 +140,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
   it('refuses a memory whose content carries a secret (canonical @aukora/evidence scanner reuse)', async () => {
     const t = convexTest(schema, modules);
     const withSecret = buildMemoryRecord({ content: 'my aws key AKIAIOSFODNN7EXAMPLE leaked into a note', createdAt: at(1) });
-    const res = await t.mutation(api.memory.ingest, { record: withSecret });
+    const res = await t.action(api.ingest.ingest, { record: withSecret });
     expect(res.ok).toBe(false);
     expect(res.refusal).toContain('secret');
     const snap = await t.query(api.memory.snapshot, {});
@@ -149,7 +149,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
 
   it('receipt-before-row: every stored row carries a valid receipt; health is ok', async () => {
     const t = convexTest(schema, modules);
-    for (let i = 1; i <= 3; i++) await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: `r ${i}`, createdAt: at(i) }) });
+    for (let i = 1; i <= 3; i++) await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: `r ${i}`, createdAt: at(i) }) });
     const rows = await t.run(async (ctx) => ctx.db.query('memoryChain').withIndex('by_index').collect());
     for (const row of rows as any[]) expect(row.chainHash).toMatch(/^[0-9a-f]{64}$/); // no row without a receipt
     const h = await t.query(api.memory.health, {});
@@ -157,11 +157,37 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     expect(h.chainLength).toBe(3);
   });
 
+  it('query→mutation→scheduled end-to-end: a scheduled heartbeat (delayed impulse) runs and its status is observable', async () => {
+    vi.useFakeTimers();
+    try {
+      const t = convexTest(schema, modules);
+      // mutation (atomic reflex) → data in
+      await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'pulse source', createdAt: at(1) }) });
+      // mutation schedules the delayed impulse
+      const s = await t.mutation(api.memory.scheduleHeartbeat, { delayMs: 1000 });
+      expect(s.ok).toBe(true);
+      // sense: the scheduled function is PENDING before its time arrives
+      const pending = await t.query(api.memory.scheduledStatus, { scheduledId: s.scheduledId });
+      expect(pending?.state).toBe('pending');
+      expect(pending?.name).toContain('heartbeat');
+      // advance time → the impulse fires; wait for completion
+      vi.advanceTimersByTime(1000);
+      await t.finishInProgressScheduledFunctions();
+      const done = await t.query(api.memory.scheduledStatus, { scheduledId: s.scheduledId });
+      expect(done?.state).toBe('success');
+      // reactive query (sense): the snapshot the heartbeat recomputed is intact
+      const snap = await t.query(api.memory.snapshot, {});
+      expect(snap?.liveCount).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('corrupt store fails closed: a tampered chain blocks further ingest/forget and health reports not-ok', async () => {
     const t = convexTest(schema, modules);
     const first = buildMemoryRecord({ content: 'alpha', createdAt: at(1) });
-    await t.mutation(api.memory.ingest, { record: first });
-    await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: 'beta', createdAt: at(2) }) });
+    await t.action(api.ingest.ingest, { record: first });
+    await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'beta', createdAt: at(2) }) });
 
     // Corrupt a prior row's committed metadata.
     await t.run(async (ctx) => {
@@ -170,7 +196,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     });
 
     expect((await t.query(api.memory.health, {})).ok).toBe(false);
-    const ingestBlocked = await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: 'gamma', createdAt: at(3) }) });
+    const ingestBlocked = await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'gamma', createdAt: at(3) }) });
     expect(ingestBlocked.ok).toBe(false);
     expect(ingestBlocked.refusal).toContain('corrupt store');
     const forgetBlocked = await t.mutation(api.memory.forget, { recordId: first.recordId, at: at(4), ownerAuthorized: true });

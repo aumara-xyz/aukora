@@ -41,6 +41,20 @@ earn `AVAILABLE_PRIVATE`:
 | LUM-READ probe harness | `448d0c3cec59c4c3a9dd727e8ae1c9d7d996f7a0525d7280d10c4171a137d680` |
 | LUM-READ probe preregistration note | `ae9997197c96251fcdfb68a750404e0590613eccef76d2359b97069debaa0055` |
 
+## R33: the claimed Nebius 32B — read-only verification result
+
+Peter's claimed Nebius-hosted 32B (Qwen2.5-VL-32B class) was checked **read-only** against the five-element
+gate in `apps/brain/src/brainRoles.ts` (`verify32bClaim`): license · model checksum · code digest · image
+digest · runnable manifest · eval evidence (all sanitized — infrastructure IDs are never recorded).
+
+**Result: UNVERIFIED_OR_PARKED — every element missing.** No Nebius credentials are present in this
+environment, so the deployment could not be inspected, and no checksum-bound artifact evidence is reachable on
+this host. No launch, no paid inference was performed.
+
+Role consequence (`assignBrainRoles`): the 32B may become the **remote primary voice/routing brain ONLY after
+this verification passes**; until then the role assignment fails closed to `deterministic-offline`, with an
+optional provider-neutral small local vision fallback. All outputs advisory; no role grants authority.
+
 ## To earn `AVAILABLE_PRIVATE` (a future round)
 
 Commit a sanitized manifest here binding a **model checksum** (never weights, never endpoint/job/bucket IDs,
