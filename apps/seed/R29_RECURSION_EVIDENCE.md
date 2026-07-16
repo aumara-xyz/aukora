@@ -73,7 +73,7 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **191 passed / 15 files** (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **205 passed / 16 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch (incl. `test:kernel` — portable boundary, compatibility, SBOM, runtimes, package all green; 19 kernel tests).
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
@@ -236,6 +236,62 @@ sandbox-only apply; forbidden capabilities, stale epochs, tampered challenges, a
 are receipted). The UI boundary is one-way and provably fence-clean (public fingerprint + hash prefixes only; no
 key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
 encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
+
+## R37 — live advisory runner composed into the local ceremony
+
+Branch `sam/r37-recursion` off merged main `6624109e` (R36 integrated).
+
+- **Composed owner-invoked ceremony** (`apps/seed/src/localCeremonyRunner.ts`) — one flow ties the durable machine,
+  the store, the Fu structured adapter (proposal-bound sidecar), the rehearsal ladder, and the LocalCandidateStage:
+  PROPOSE (Fu advisory via `env.review`) → OWNER VERIFY (durable `complete`; the canonical gate re-verifies in
+  process) → REHEARSAL LADDER (the applied gate IS the rehearsal; its receipt is the rung — assembled via the new
+  `assembleRehearsedCandidate`, which never re-runs the gate so it can't double-apply) → CANDIDATE STAGE (only on an
+  explicit `materialize:true` invocation AND a fresh in-process AUMLOK verification). **No auto-resume of an effect
+  after restart:** a restarted ceremony re-reads durable state and re-verifies, but never materializes on its own —
+  materialization always needs an explicit owner invocation + fresh authorization. Never signs/pushes/merges/touches
+  main (hard-false literals). AURA stays display-only.
+- **Provider transport runner** (`providerTransport.ts`) — the ACTUAL live transport behind DI: `CredentialSource`
+  (`envCredentialSource`, or a Keychain source) resolves an OPAQUE credential REFERENCE to a bearer token used ONLY
+  in the `Authorization` header — never returned, thrown, logged, receipted, or written to disk; `httpPost` is
+  injected so deterministic CI is fully offline and no default makes a live call implicitly. Robustness = non-vote
+  law: HTTP error / abort / malformed / empty / missing-served all yield benign non-vote-shaped responses (never a
+  throw, never a vote). `redactedTransportInfo` surfaces `token:[redacted]`.
+- **Opt-in live smoke** (`fuLiveSmoke.ts` + `scripts/fu-live-smoke.ts`) — doubly gated: runs ONLY with
+  `AUKORA_FU_LIVE=1` AND an out-of-band credential; otherwise SKIPPED (exit 0, zero cost, no call). When opted in it
+  runs ONE real Fu pass through the structured adapter (so $2/pass + $10/day ceilings, non-vote-on-failure, and
+  receipting all apply) and reports verdict + MEASURED cost. It is NOT part of the vitest suite — CI runs the
+  deterministic offline tests only.
+
+**LIVE-SMOKE TRUTH:** NOT executed on this node — no provider credential and no live-call authorization here. The
+harness + CLI exist and were exercised DETERMINISTICALLY with an injected fake HTTP layer (real network untouched);
+the default-skip path was run and confirmed (`liveSmoke: SKIPPED`, cost $0). **Measured live cost = $0.00 (not run).**
+Peter (or an authorized node) runs `AUKORA_FU_LIVE=1 AUKORA_FU_API_KEY=… npx tsx apps/seed/scripts/fu-live-smoke.ts`
+to obtain a real verdict + measured cost.
+
+### R37 adversarial/robustness matrix
+
+| control | result |
+| --- | --- |
+| bearer token exposure | present ONLY in the Authorization header; never in a return value; redactor emits `[redacted]` |
+| HTTP error / malformed / no credential / unconfigured seat | all → non-vote-shaped response (no throw, no vote) |
+| well-formed provider | drives a REAL council pass to quorum through the transport |
+| live smoke default | SKIPPED without `AUKORA_FU_LIVE=1` (0 calls, $0) |
+| live smoke opted-in, no credential | honest refusal, no call |
+| live smoke opted-in + injected transport | runs to a receipted advisory verdict + measured cost; token redacted |
+| ceremony happy (materialize:false) | owner-verified + rehearsed; NO effect (`awaiting-explicit-materialize`) |
+| ceremony materialize:true | isolated candidate in a disposable worktree; main/HEAD/tree untouched |
+| ceremony bad signature | `refused-at-owner`; no rehearsal, no candidate |
+| no-auto-resume after restart | a re-run over the same durable state materializes nothing without an explicit flag |
+| $2/$10 ceilings, Fugu exclusion | enforced (R36 adapter, re-verified) |
+
+**R37 CHECK (opus-self-review):** the live edge is isolated and injected — CI is offline, the token never leaves the
+Authorization header, and the smoke is opt-out by default. One real bug the tests caught pre-commit: the composed
+ceremony first RE-rehearsed via `stageBranchCandidate` after the durable apply had already consumed the nonce, so it
+tripped its own replay guard — fixed by assembling the candidate from the passed-rehearsal receipt (`assembleRehearsedCandidate`),
+which is more correct anyway (no double-apply). Two `env-secret-assign` scanner false positives on `token =`/`Tokens =`
+locals were renamed (same class as the R29 `mlSecret` lesson). Honest limit: I cannot execute a REAL paid smoke here
+(no key/authorization) — reported truthfully as NOT-RUN, $0; the deterministic injected-transport run proves the code
+path end-to-end.
 
 ## R36 — real governed local candidate + operational Fu
 

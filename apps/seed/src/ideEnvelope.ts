@@ -201,6 +201,42 @@ export class AumaIdeEnvelope {
     return runGovernedRecursion(env, proposal, auth);
   }
 
+  /**
+   * Assemble a candidate from ALREADY-rehearsed drafts — each carrying the receipt hash of its PASSED rehearsal.
+   * Unlike `stageBranchCandidate`, this does NOT re-run the governed gate (so it never double-applies or re-consumes
+   * a nonce); it is used when the rehearsal already happened durably. The passed-rehearsal receipt IS the proof, and
+   * a FRESH in-process AUMLOK verification still gates the actual materialization downstream.
+   */
+  assembleRehearsedCandidate(drafts: readonly { readonly proposal: Proposal; readonly rehearsalReceiptHash: string; readonly depth?: number }[], explanation: string): StageResult {
+    if (drafts.length === 0) return { ok: false, refusal: { reasonClass: 'ide:candidate-empty', text: 'refused: a branch candidate needs at least one rehearsed draft' } };
+    const workspace = new Map<string, string>();
+    const files: BranchCandidateFile[] = [];
+    const lineage: { intentId: string; depth: number }[] = [];
+    for (const { proposal, rehearsalReceiptHash, depth } of drafts) {
+      const v = classifyPath(proposal.targetPath);
+      if (!candidateAllowed(v)) return { ok: false, refusal: { reasonClass: v.reasonClass, text: v.text, path: proposal.targetPath } };
+      if (typeof rehearsalReceiptHash !== 'string' || !/^[0-9a-f]{64}$/.test(rehearsalReceiptHash)) {
+        return { ok: false, refusal: { reasonClass: 'ide:not-rehearsed', text: 'refused: draft lacks a valid passed-rehearsal receipt hash', path: proposal.targetPath } };
+      }
+      const intentId = deriveIntentId(proposal);
+      const draftHash = deriveDraftHash(proposal);
+      const oldText = this.repo.exists(proposal.targetPath) ? this.repo.read(proposal.targetPath) : null;
+      workspace.set(proposal.targetPath, proposal.newContent);
+      files.push({ path: proposal.targetPath, intentId, draftHash, diff: simpleDiff(proposal.targetPath, oldText, proposal.newContent), receiptHash: rehearsalReceiptHash });
+      const d = depth ?? 0;
+      if (d <= LIMITS.MAX_LINEAGE_DEPTH) lineage.push({ intentId, depth: d });
+    }
+    const candidateId = canonicalHash({ files: files.map((f) => ({ path: f.path, intentId: f.intentId, draftHash: f.draftHash })) });
+    return {
+      ok: true,
+      candidate: {
+        schema: 'aukora-branch-candidate-v1', candidateId, workspace, files,
+        explanation: explanation.slice(0, 4096), lineage,
+        staged: true, pushed: false, signed: false, merged: false, deployed: false, grantsAuthority: false,
+      },
+    };
+  }
+
   // ── R3 — stage a branch candidate (only after a PASSED rehearsal) ────────────────────────────
 
   /**
