@@ -1,0 +1,63 @@
+{
+  "schema": "aukora-lifecycle-policy-v1",
+  "note": "OWNER-RATIFIED deterministic lifecycle policy. This manifest is a CLAIM — the supervisor reconciles it against actual probed processes and receipt evidence; it never executes arbitrary manifest content (commands are pinned here, reviewed in git, covered by protected.sha256). Proposal paths cannot edit this file (protected class; see PROTECTED.md).",
+  "grantsAuthority": false,
+  "envelope": {
+    "note": "the pre-authorized envelope — every action the supervisor may EVER take; anything else is refused",
+    "actions": ["start", "probe", "stop", "isolate", "swap", "contract", "rollback", "status"],
+    "forbidden": ["sign", "promote", "widen-authority", "change-kernel-law", "release-contraction-silently", "execute-manifest-content", "route-aumlok"]
+  },
+  "gateway": {
+    "port": 7100,
+    "note": "the ONE external surface. Routes only declared interfaces; NEVER fronts AUMLOK (7094/7095) — routing must not become authority.",
+    "declaredRoutes": ["/", "/app/*", "/assets/*", "/api/spatial/projection", "/api/chat", "/api/presence/stream", "/api/lockdown", "/api/door", "/api/models", "/api/graph", "/aukora/status", "/aukora/receipts"],
+    "refusedUpstreams": [7094, 7095]
+  },
+  "services": [
+    {
+      "name": "brain-door",
+      "phase": 1,
+      "port": 7141,
+      "workspaceCmd": null,
+      "external": true,
+      "probePath": "/health",
+      "identityMarker": "door",
+      "note": "Sam 2's canonical brain door — supervised as a DEPENDENCY probe only (external:true = never started/stopped by this supervisor); its Convex backend is its own lifecycle"
+    },
+    {
+      "name": "mind-door",
+      "phase": 2,
+      "port": 7097,
+      "workspaceCmd": ["npx", "tsx", "apps/seed/scripts/mind-door-7097.ts"],
+      "probePath": "/api/door",
+      "identityMarker": "aukora-door-status-v1",
+      "dependsOn": [],
+      "gracefulStopMs": 2000
+    },
+    {
+      "name": "voice-sidecar",
+      "phase": 2,
+      "port": 7098,
+      "workspaceCmd": ["apps/spatial/voice/.venv/bin/python", "apps/spatial/voice/sidecar.py"],
+      "probePath": "/health",
+      "identityMarker": "voice-sidecar",
+      "dependsOn": [],
+      "optional": true,
+      "note": "optional: needs the one-time voice setup; absence is a labelled degraded state, not a boot failure",
+      "gracefulStopMs": 2000
+    },
+    {
+      "name": "spatial-shell",
+      "phase": 3,
+      "port": 7096,
+      "candidatePort": 7099,
+      "workspaceCmd": ["node", "apps/spatial/scripts/launch.mjs"],
+      "probePath": "/api/models",
+      "identityMarker": "model-free-memory-fallback",
+      "dependsOn": ["mind-door"],
+      "gracefulStopMs": 1500
+    }
+  ],
+  "probe": { "timeoutMs": 2500, "retries": 20, "intervalMs": 500 },
+  "swap": { "graceMs": 4000, "note": "probe-before-swap; the old process keeps serving until the candidate is verified; failed probe → candidate killed, old stays, rollback receipt" }
+}
