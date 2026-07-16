@@ -360,3 +360,58 @@ erase-authority is **SUPERSEDED_WITH_PROOF** vs the donor.
 ADAPTED_BOUNDARY (donor in-line gate → injected owner Ed25519 / signed ML-DSA attestation) and CONFIRMS that the
 authority-bearing forget path is owner-gated (resolving the Appendix-F asymmetry as deliberate); the live convex
 erase authority is SUPERSEDED_WITH_PROOF (scoped, expiring, anti-replay PQC attestation verified in-isolate).
+
+---
+
+## Appendix H (overnight atlas verification) — chain verify / tamper-detection vs donor `verifyChain`
+
+Compared the donor `verifyChain` in `memory/memory.ts@46eff426` against the current `convex/memory.ts` `verify`
+plus `convex/heads.ts` signed-head monotonicity. Read-only; no seed/key content read.
+
+### Donor tamper-detection (and its own stated ceiling)
+
+`verifyChain` is fail-closed and layered: (1) recompute `buildReceiptChainHash(payload, prevHash)` per entry —
+mismatch ⇒ broken (`brokenAt`); (2) broken-link check `prevHash === prev`; (3) CROSS-CHECK each entry against an
+INDEPENDENT receipts log (`memoryReceiptIndex`) on `hash/seq/prevHash/contentHash` — a store-only forge has no
+backing receipt; (4) entries present but receipts log missing/empty ⇒ UNVERIFIABLE, not ok. The file's own HONEST
+LIMIT: "it is NOT a signature — a raw-FS attacker who rewrites BOTH files consistently is only defeated by the
+SIGNED head (Ed25519, kernel signing layer, Step 4) + FS store protection."
+
+### EXACT_PORT — hash-chain integrity + broken-link + fail-closed
+
+Current `verify` runs the CANONICAL `verifyReceiptChain(reconstructEntries(chain))` (reuse, not clone) and returns
+`{valid, breakIndex, chainLength, merkleRootHex}` — `breakIndex` points at the first broken link, exactly the
+donor's `brokenAt`. Every mutating path (ingest/forget) refuses on `chainVerdict(chain).valid === false` before
+touching the store (Appendix F/G). Same integrity law, via the shared kernel primitive.
+
+### ADAPTED_BOUNDARY — the independent-receipts cross-check
+
+The donor cross-checked TWO files (plaintext store ↔ receipts log) to catch a store-only forge. The current chain
+is a SINGLE content-free receipt spine (`memoryChain`) — plaintext is never in the chain (it commits to
+`recordId = sha256(content)` + metadata; Appendix A/C). So the donor's "rewrite the store but not the receipts"
+attack is reduced by construction: a store-only edit of a chain row's `chainHash` fails `verifyReceiptChain`
+(recompute), and a store-only edit of the SEPARATE plaintext recall column is caught by the content-addressing
+self-check `deriveRecordId(content) === recordId` at recall (Appendix D `verify`). Same "a forge has no valid
+backing" property, achieved by content-addressing + a single canonical spine rather than a second file.
+
+### SUPERSEDED_WITH_PROOF — the signed head CLOSES the donor's flagged limit (with a stronger primitive)
+
+The exact ceiling the donor named as "Step 4 future work" — a signed head to defeat a consistent two-file rewrite —
+is already SHIPPED here, and with a STRONGER primitive than the donor's proposed Ed25519:
+- `recordSignedHead` verifies the owner's POST-QUANTUM ML-DSA signature (`verifyChainHeadV3/V4`) over
+  `{chainKey, timestamp, chainLength, chainHeadHash}` (+ V4 the RFC 6962 `receiptHistoryRootHex`, kernel reuse);
+  forged / tampered / wrong-chain ⇒ refused.
+- MONOTONICITY (donor high-water law): a head with a LOWER `chainLength` ⇒ refused (truncation/rollback); an OLDER
+  `timestamp` ⇒ refused (stale head).
+- `auditSignedHead` re-verifies the signature AND recomputes length + head hash + (v4) Merkle root against the LIVE
+  chain, reporting any mismatch (never "fixing" it). A raw-FS attacker who rewrites the whole store consistently
+  STILL fails: they cannot forge the owner's signature over the new head, and the audit compares the signed claim
+  to what the store now says. Wave-2 tests cover forged-head refusal and monotonicity truncation/rollback.
+- The head is SIGNED OUTSIDE (owner/operator seed, kernel layer); Convex only verifies-records-projects
+  (`grantsAuthority:false`) — consistent with authority-outside-Convex.
+
+**Net:** integrity + broken-link + fail-closed are EXACT_PORT (canonical verifier); the two-file cross-check is
+ADAPTED_BOUNDARY (single content-free spine + content-addressing self-check); and the one HONEST LIMIT the donor
+itself flagged in its tamper story is SUPERSEDED_WITH_PROOF — a post-quantum signed head with monotonicity and a
+live re-audit. NOT YET wired: the signed head is recorded/audited on demand, not emitted on every LIVE receipt
+WRITE (donor B1.5b2 wiring) — inventoried in Wave-2 §MISSING, owner/next-wave work, not built here.
