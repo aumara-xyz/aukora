@@ -13,9 +13,9 @@ existing code**, reduced to the required roster.
 
 | status | count | meaning |
 | --- | --- | --- |
-| VERBATIM | 42 | byte-identical to the donor blob — shell chrome, style.css, chats lane, map, voice (aumalive closure), Lingwa closure, AUMLOK ceremony UI (+mock), aura, kira/organs, ghp, App-Lab/KNVS law, operate, assets |
-| ADAPTED | 5 | `shell.js` (registry subtraction + dead-import removal), `chat.js`/`settings.js`/`aumalive.js` (NEW-organism doors :7097/:7098 — never the donor :7091/:7092), `aumalive-audio.js` (comment). Nothing else changed in any of them |
-| NEW | 6 | ours, not donor: `app/console.js` + `app/console/*` (CONSOLE center-pane organ), `scripts/launch.mjs` (live door client + statics), `scripts/verify-provenance.mjs` |
+| VERBATIM | 46 | byte-identical to the donor blob — shell chrome, style.css, chats lane, map, voice (aumalive closure), Lingwa closure, AUMLOK ceremony UI (+mock), aura, kira/organs, ghp, App-Lab/KNVS law, operate, assets |
+| ADAPTED | 10 | `shell.js` (registry subtraction + dead-import removal), `chat.js`/`settings.js`/`aumalive.js` (NEW-organism doors :7097/:7098 — never the donor :7091/:7092), `aumalive-audio.js` (comment), plus the R38 voice sidecar retargets (`voice/sidecar.py` → :7098 + NEW-shell origins; `voice/test_*` + `voice/README.md` → :7097/:7098). Nothing else changed in any of them |
+| NEW | 6 | ours, not donor: `app/console.js` + `app/console/*` (CONSOLE center-pane organ), `scripts/launch.mjs` (canonical-door client + statics), `scripts/verify-provenance.mjs`. R38 adds `voice/` — the donor voice sidecar transplanted (VERBATIM `requirements.txt`/`run.sh`/`setup.sh`/`.gitignore`; ADAPTED per above); its runtime `.venv/`+`models/` are gitignored local artefacts |
 | EXCLUDED | 45 | R37 reachability subtraction from the selected roots — unreachable product organs and dev artifacts (agora, wolf/*, arc3/*, luminara*, graticube*, media, browser, forge, morph, aukora-xyz, knvs-duplex/test, onboarding, focus, translate, shearfield, *.d.ts, unused css/json) removed from the tree; donor path/blob/sha256 retained per entry |
 
 ## Roster (registry after subtraction)
