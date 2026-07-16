@@ -8,8 +8,14 @@
   "type": "module",
   "scripts": {
     "launch": "node scripts/launch.mjs",
+    "projection": "vitest run --config vitest.gen.config.ts",
+    "launch:live": "npm run projection && node scripts/launch.mjs",
     "test": "vitest run",
     "verify:provenance": "node scripts/verify-provenance.mjs"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@aukora/brain": "0.1.0",
+    "@aukora/memory": "0.1.0",
+    "@aukora/seed": "0.1.0"
+  }
 }

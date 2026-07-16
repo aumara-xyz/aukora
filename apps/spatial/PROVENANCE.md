@@ -15,7 +15,7 @@ existing code**, reduced to the required roster.
 | --- | --- | --- |
 | VERBATIM | 91 | byte-identical to the donor blob — shell chrome, style.css, thirds state machine, chats lane, all organs (incl. removed-from-menu ones), map, voice (aumalive), Lingwa, AUMLOK ceremony UI, aura, kira, ghp, App-Lab/KNVS law, assets |
 | ADAPTED | 1 | `app/shell.js` — registry/menu subtracted to the R34 roster + one import for the CONSOLE organ. Imports, `{a,d}` thirds state machine, corners, mobile, chat wiring, boot: untouched |
-| NEW | 5 | ours, not donor: `app/console.js` + `app/console/*` (CONSOLE center-pane organ from the apps/console evidence) and `scripts/launch.mjs` |
+| NEW | 6 | ours, not donor: `app/console.js` + `app/console/*` (CONSOLE center-pane organ), `scripts/launch.mjs`, `scripts/verify-provenance.mjs`. The R36 projection generator (`tooling/`) and its regenerated payload (`projection/`) are ours and deliberately outside the manifest |
 
 ## Roster (registry after subtraction)
 ▲ `aumalive` (AUMA LIVE — donor full-duplex voice), `auma` (AUMA LINGWA — donor Lingwa app) ·

@@ -29,3 +29,5 @@ export * from './ideSession.js';
 export * from './selectionAcceptance.js';
 export * from './spatialCeremonyAdapter.js';
 export * from './durableRecursion.js';
+export * from './fuStructuredAdapter.js';
+export * from './localCandidateStage.js';

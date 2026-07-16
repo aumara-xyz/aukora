@@ -19,7 +19,7 @@ const RUNTIME_MODULES = [
   'src/pathFence.ts', 'src/ideEnvelope.ts', 'src/eventStream.ts', 'src/metabolism.ts', 'src/councilPack.ts',
   'src/memoryConstitution.ts', 'src/maternalAnchor.ts', 'src/memorySelection.ts', 'src/councilRunnerBoundary.ts',
   'src/ideSession.ts', 'src/selectionAcceptance.ts', 'src/spatialCeremonyAdapter.ts', 'src/contracts.ts',
-  'src/durableRecursion.ts',
+  'src/durableRecursion.ts', 'src/fuStructuredAdapter.ts',
 ];
 
 const FORBIDDEN_IMPORT = /\bfrom\s+['"](?:node:)?(?:fs|fs\/promises|child_process|net|tls|http|https|dns|dgram|worker_threads|cluster|vm|repl)['"]/;
@@ -43,6 +43,31 @@ describe('the runtime never self-signs', () => {
       expect(src.includes('ownerFixture')).toBe(false);
     });
   }
+});
+
+describe('the candidate stage (the ONE effectful adapter) is contained by its own law', () => {
+  const src = () => read('src/localCandidateStage.ts');
+
+  it('never pushes, merges, fetches, pulls, resets, rebases, or touches a remote', () => {
+    const s = src();
+    for (const verb of ["'push'", "'merge'", "'fetch'", "'pull'", "'remote'", "'reset'", "'rebase'", "'checkout'"]) {
+      expect(s.includes(verb)).toBe(false);
+    }
+    expect(/git\s+push|push\s*\(/.test(s)).toBe(false);
+  });
+
+  it('git surface is a runtime allowlist and the commit is --no-gpg-sign (a record, not a signature)', () => {
+    const s = src();
+    expect(s).toContain('ALLOWED_GIT_SUBCOMMANDS');
+    expect(s).toContain('--no-gpg-sign');
+    expect(s.includes('ownerFixture')).toBe(false);
+    expect(s.includes('.sign(')).toBe(false); // never signs for the owner
+  });
+
+  it('no network module — fs + child_process(git) only', () => {
+    const s = src();
+    expect(/\bfrom\s+'(?:node:)?(?:net|tls|http|https|dns|dgram)'/.test(s)).toBe(false);
+  });
 });
 
 describe('the AUMLOK gate is genuinely hybrid (not Ed25519-only)', () => {
