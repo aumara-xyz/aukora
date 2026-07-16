@@ -253,3 +253,55 @@ counts/hashes/references); the sole content surface is the advisory recall rail,
 enumeration-capable BY DESIGN and is safe only under the loopback perimeter. Matching the donor's Convex
 content-minimization (keyed point read, no listing, PoP) is owner-gated future work, tracked with the Appendix-C
 signed-recall gap — not built here.
+
+---
+
+## Appendix F (overnight atlas verification) — ingest secret-refusal / fail-closed vs donor gate law
+
+Compared the current ingest gate (`convex/ingest.ts` + pure `reactiveStore.ts` `ingest`) against the donor
+`remember` gate law in `memory/memory.ts@46eff426` ("AUTHORITY-GATED: route through `aukoraGovernAsk` — AUMLOK
+locked → PAUSE no write; apparent secret in content → DENY no write; memory never stored ungoverned"). Read-only.
+
+### EXACT_PORT — the "never store an ungoverned secret in plaintext" invariant + fail-closed
+
+- **Secret refusal (same law):** donor's `aukoraGovernAsk` runs a secret-classifier over the content (rides as the
+  `diff`) and DENIES on a hit; the current lane runs the CANONICAL `@aukora/evidence` `textHasSecret` scanner
+  (reuse, not clone) and refuses with `refused: memory content carries a secret; not persisted in plaintext`.
+  Both REFUSE the write → plaintext is never persisted. **Behaviorally EXACT_PORT.**
+- **Fail-closed on corruption (same law):** donor `remember` THROWS on a corrupt store → `effect:'pause'`; the
+  current pure store refuses when `verifyChain()` fails (`refused: corrupt store … fail-closed`). Both refuse rather
+  than silently proceed.
+- **Content-free chain + receipt-before-row (same law):** donor hash "covers contentHash, NOT plaintext" and
+  appends the RECEIPT FIRST (Codex P0 order); the current chain commits `memoryCommitment(r)` (content-free) and
+  carries the chainHash on the row in one mutation (Appendix C). Same invariant.
+- **Structural strengthening (current > donor):** the current secret scan runs in a `'use node'` ACTION (the
+  scanner needs `node:crypto`, absent in the Convex isolate) and the chain-writing reflex `internal.memory
+  .ingestValidated` is an INTERNAL mutation a client can NEVER call directly — so there is NO path into the chain
+  that skips the scan. The donor's single-file `remember` relied on callers routing through it; the current design
+  makes bypass structurally impossible.
+
+### ADAPTED_BOUNDARY — where AUTHORITY routing differs (deliberate)
+
+The donor folds TWO decisions into ONE in-line gate call: (a) secret-classification AND (b) the AUMLOK lock check,
+and binds the write to it via `gateArgsHash`. The current lane SPLITS them along the "authority outside Convex" law:
+- **secret-classification stays in the write path** — but as STORE HYGIENE (Convex/the store refuses to persist a
+  secret; it decides nothing about authority);
+- **AUMLOK authority moves entirely OUTSIDE Convex** — there is no `aukoraGovernAsk`/AUMLOK call inside ingest;
+  kernel/AUMLOK decides and Convex records/reacts only (consistent with Appendix B: every row
+  `grantsAuthority:false`; the door emits `x-aukora-grants-authority:false`). AUMLOK authority IS exercised on the
+  authority-bearing paths — governed forgetting injects a real Ed25519 `verifyOwner` check (fail-closed).
+
+### HONEST FLAG — AUMLOK-lock does NOT gate ingest today (owner-decision item)
+
+The donor PAUSES a memory write when AUMLOK is LOCKED (a memory write is a governed tool call). The current ingest
+does NOT consult AUMLOK, so under a locked-AUMLOK state a NON-secret memory would still ingest. This is a deliberate
+reclassification — memory ingest is treated as advisory OBSERVATION carrying no authority, so the AUMLOK PAUSE-on-lock
+applies to the authority-bearing paths (forget / governed recursion / real import), not to ingest. It is NOT a dropped
+secret-safety property (secret refusal is identical). BUT if the owner wants "a locked AUMLOK blocks even advisory
+memory ingest" (the donor's stricter posture), that is NOT enforced at ingest today — surfaced here as an
+**owner-decision item**, not silently assumed.
+
+**Net:** the secret-refusal + fail-closed + content-free + receipt-before-row invariants are EXACT_PORT (same
+canonical classifier, plus a structural no-bypass guarantee the donor lacked); the AUTHORITY routing is
+ADAPTED_BOUNDARY (secret = in-write store hygiene; AUMLOK = outside Convex). The one behavioral divergence —
+AUMLOK-lock not gating ingest — is flagged for the owner, not decided here.
