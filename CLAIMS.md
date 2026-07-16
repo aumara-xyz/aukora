@@ -4,29 +4,48 @@ Every capability below is labelled with exactly one truth label and is backed by
 source, tests that execute that source, and a package export. A Markdown document is never
 treated as proof that a capability exists.
 
-Labels used here: **CANONICAL_PORTABLE** — production library code in this repository now.
+Labels used here:
+- **CANONICAL_PORTABLE** — production library code (a pure/adapter package) in this repository now.
+- **DEMONSTRATED_ADAPTER** — an in-repo organism adapter exercised by tests, with an explicit
+  honesty caveat (simulated / mock / sandbox-only / parked). It is *not* a live production
+  deployment and does not claim to be.
 
-## Implemented in this repository (CANONICAL_PORTABLE)
+## Pure packages implemented in this repository (CANONICAL_PORTABLE)
 
 | Capability | Source | Tests | Export |
 | --- | --- | --- | --- |
 | Deterministic authority verification + reducer, canonical encoding, Merkle, registries, schemas, conformance vectors | `packages/kernel/src` | `packages/kernel/test` (14) + conformance vectors | `@aukora/kernel` (built `dist`) |
 | EvidencePack closed-schema validation, JCS-aligned canonical JSON, domain-separated length-framed digest | `packages/evidence/src/{canonical,digest,validate,types}.ts` | `packages/evidence/test/evidencePackV1.test.ts` | `@aukora/evidence` |
 | Confusable-resistant secret projections + catalogue (NFC/NFKC/NFD, zero-width strip, skeleton), linear JWT/URL/step-budget scanners | `packages/evidence/src/catalogue.ts` | `packages/evidence/test/evidencePackV1.test.ts` | `@aukora/evidence` |
+| KIRA memory law: consent-scoped content-addressed envelope, deterministic recall, governed forgetting (content-free tombstone), staleness, advisory containment | `packages/memory/src/envelope.ts` | `packages/memory/test/memory.test.ts` (4) | `@aukora/memory` |
 | Advisory council: served-model verification (no substitution), quorum rule, spend estimation, claim-basis freeze/verify | `packages/council/src/aukoraFuCouncil.ts` | `packages/council/test/aukoraFuCouncil.test.ts` | `@aukora/council` |
 | Glyph-packet parsing / perception channel (deterministic, offline) | `packages/council/src/aukoraFuGlyph.ts` | `packages/council/test/aukoraFuGlyph.test.ts` | `@aukora/council` |
 | Persistent daily spend ledger (filesystem JSONL) | `packages/council-node/src/aukoraFuSpendLedger.ts` | `packages/council-node/test/aukoraFuSpendLedger.test.ts` | `@aukora/council-node` |
 | Canonical-source boundary check (no fs/network/authority in pure packages) | `scripts/check-canonical-boundary.mjs` | `test/boundaryGuard.test.ts` | script |
 | Donor byte-identity provenance guard | `scripts/verify-provenance.mjs` | run in `test:all` | script |
 
-Test totals: 145 (root suite) + 14 (kernel) = **159**, none borrowed from any application suite.
+## Organism adapters demonstrated in this repository (DEMONSTRATED_ADAPTER)
+
+Each row is exercised by tests, and each carries the honesty caveat that keeps it from
+overclaiming. These are governed demonstrations, not live production systems.
+
+| Capability | Source | Tests | Honesty caveat |
+| --- | --- | --- | --- |
+| Reactive, receipt-chained, growing memory with governed forgetting (content-free chain); corrupt-store fail-closed + reproducible runtime manifest; node print, supervised generation, offline executor, health contract, Nebius preflight | `apps/brain/src`, `apps/brain/convex` | `apps/brain/test` (55) | Convex backend is the **headless simulated** `convex-test` (in-process), **not** a live cloud deploy |
+| Provider-neutral brain attachment incl. a Nebius provider path + fail-closed provider selection policy | `apps/brain/src/nebiusProvider.ts`, `apps/brain/src/providerPolicy.ts` | `apps/brain/test/{nebiusProvider,providerPolicy}.test.ts` | **Bounded and parked**: no live model calls, no weights, no endpoint/job IDs |
+| Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory review → refuse(stale/secret/authority) → hybrid AUMLOK owner-gate → sandbox-only apply → receipt/lineage; AURA trace law + receipt-before-row; governed AUMLOK–AURA ceremony contract | `apps/seed/src` | `apps/seed/test` (98) | Council review is **mock/deterministic**; apply is **sandbox-only** and never mutates a live repo |
+| Read-only operator console over authority/memory/proposal/verdict/provider-truth/budget/forgetting | `apps/console/public`, `apps/console/tooling` | `apps/console/test` (21) | Renders a deterministic `DEMO_FIXTURE`; **signs, applies, deploys, and arms nothing** |
+
+Test totals: 145 (root) + 14 (kernel) + 4 (memory) + 55 (brain) + 98 (seed) + 21 (console) =
+**337**, none borrowed from any external product suite.
 
 ## Deliberately NOT in this repository
 
 These are excluded on purpose and are **not** claimed as shipped capabilities anywhere here:
 
-- Any application: the Symbiote product organism, the Fu review application, Convex
-  backend/reference app, dashboards, servers, friend harness, Portal CLI.
+- Product applications: the Symbiote product organism, the Fu review application, a live Convex
+  product backend/deployment, dashboards, servers, friend harness, Portal CLI. (The in-repo
+  `apps/*` are governed *adapters/demonstrations* built on these packages, not those products.)
 - Product/UI surfaces: spatial UI, lander, voice, chat, board/creative surfaces.
 - Quarantined material and research corpora.
 - Private planning, handoffs, continuity notes, strategy, or patent drafts.

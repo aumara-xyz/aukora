@@ -1,0 +1,95 @@
+{
+  "schema": "aukora-capability-backlog-v0",
+  "status": "Durable backlog for 6 capability families. Sanitized: dispositions + provenance only. Sensitive research detail + owner-local paths live in the private aukora-symbiote ledger. Pending owner ratification; promote to tracked issues on ratification.",
+  "families": [
+    {
+      "id": "BL-A",
+      "family": "governed legacy-memory migration",
+      "disposition": "PORT",
+      "status": "scheduled",
+      "provenance": {
+        "symbiote_families": [
+          "kira",
+          "history",
+          "identity",
+          "memory-lab"
+        ],
+        "note": "KIRA memory law + governed forgetting IMPLEMENTED in @aukora/memory; legacy migration path scheduled"
+      },
+      "symbiote_issue_count": 12
+    },
+    {
+      "id": "BL-B",
+      "family": "Convex ReactiveBrainAdapter + durable workflows",
+      "disposition": "PORT",
+      "status": "scheduled",
+      "provenance": {
+        "symbiote_families": [
+          "convex",
+          "persistence",
+          "adapter-contract"
+        ],
+        "note": "apps/brain demonstrates reactive memory under convex-test; Aukora-owned ReactiveBrainAdapter + durable workflows scheduled. NOTE: convex/persistence/adapter-contract are the all-QUARANTINE families flagged for owner review."
+      },
+      "symbiote_issue_count": 6
+    },
+    {
+      "id": "BL-C",
+      "family": "Auma R0–R3 repo IDE / candidate staging",
+      "disposition": "RESEARCH_ONLY",
+      "status": "scheduled",
+      "provenance": {
+        "symbiote_families": [
+          "workbench"
+        ],
+        "note": "IDE/candidate-staging surface; sensitive owner-local paths kept in the private ledger only"
+      },
+      "symbiote_issue_count": 14
+    },
+    {
+      "id": "BL-D",
+      "family": "bounded voice+vision KNVS lab",
+      "disposition": "RESEARCH_ONLY",
+      "status": "scheduled",
+      "provenance": {
+        "symbiote_families": [
+          "spatial-chat",
+          "model-routing"
+        ],
+        "note": "voice/vision KNVS lab — bounded, product-adjacent; product UI stays in Symbiote"
+      },
+      "symbiote_issue_count": 33
+    },
+    {
+      "id": "BL-E",
+      "family": "checksum-bound multimodal / model truth",
+      "disposition": "PORT",
+      "status": "scheduled",
+      "provenance": {
+        "symbiote_families": [
+          "model-routing",
+          "fusion"
+        ],
+        "note": "models/MODEL_TRUTH.md + checksum-bound manifests present (sanitized, no weights/IDs); full multimodal truth scheduled"
+      },
+      "symbiote_issue_count": 9
+    },
+    {
+      "id": "BL-F",
+      "family": "digital-metabolism / resource-governor research",
+      "disposition": "RESEARCH_ONLY",
+      "status": "scheduled",
+      "provenance": {
+        "symbiote_families": [
+          "safety-rail",
+          "arc-lab"
+        ],
+        "kernel_issues": [
+          16
+        ],
+        "note": "Resource Governor v0 (kernel #16) with boring names + zero authority; research-only, not implemented capability"
+      },
+      "symbiote_issue_count": 16
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "aukora-readiness-meter-canary-v1",
+  "canary": "first local+Nebius governed-recursion canary",
+  "denominator": 11,
+  "score": "7/11",
+  "generated_from": "npm run test:all (exit 0, 337 tests) + models/nebius/deployment.manifest.json",
+  "overall": "SEED — constitutional core + governed organism demonstrated under simulation/sandbox; the local+Nebius canary is NOT yet runnable (local-dev path + live canary + spatial ACCEPT + external accept outstanding).",
+  "subscores": [
+    {
+      "name": "AUMLOK owner-gate present+tested",
+      "pass": true,
+      "evidence": "kernel 14 + seed 98 tests (hybrid AUMLOK gate + ceremony contract)"
+    },
+    {
+      "name": "AURA trace/receipt law present+tested",
+      "pass": true,
+      "evidence": "apps/seed AURA trace + receipt-before-row (in seed 98)"
+    },
+    {
+      "name": "KIRA memory + governed forgetting",
+      "pass": true,
+      "evidence": "memory 4 + brain 55 (content-free forgetting)"
+    },
+    {
+      "name": "Reactive brain (SIMULATED Convex)",
+      "pass": true,
+      "evidence": "apps/brain convex-test suite (in brain 55); NOT live cloud"
+    },
+    {
+      "name": "Governed recursion sandbox-only apply",
+      "pass": true,
+      "evidence": "apps/seed sandbox-only apply + refusals (in seed 98)"
+    },
+    {
+      "name": "Advisory council (mock, no live providers)",
+      "pass": true,
+      "evidence": "@aukora/council in root 145"
+    },
+    {
+      "name": "Nebius PREFLIGHT present (bounded, parked)",
+      "pass": true,
+      "evidence": "apps/brain Nebius preflight tested; manifest enabled=false (PARKED) — preflight ready, not live"
+    },
+    {
+      "name": "Local-dev brain path (one command)",
+      "pass": false,
+      "evidence": "PENDING Sam 2 R32 (local Convex deployment path)"
+    },
+    {
+      "name": "Live Nebius governed-recursion canary run",
+      "pass": false,
+      "evidence": "NOT RUN — no cloud mutation, no paid calls this lane"
+    },
+    {
+      "name": "Spatial parity ACCEPT",
+      "pass": false,
+      "evidence": "AMEND (Sam 4 R32 in progress)"
+    },
+    {
+      "name": "Kimi + Gemini accept final integration head",
+      "pass": false,
+      "evidence": "final head not assembled (lanes owe R32 results)"
+    }
+  ]
+}
