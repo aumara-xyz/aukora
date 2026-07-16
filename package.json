@@ -1,6 +1,6 @@
 {
   "name": "aukora",
-  "description": "Aukora canonical portable core: a deterministic authority kernel, EvidencePack validation, and an advisory multi-model council. Library packages only — no applications, no organism.",
+  "description": "Aukora: a governed recursive digital-organism seed. Its constitutional spine is the AUMLOK authority kernel (verify, never mint). Pure portable packages (kernel, evidence, council, memory) plus governed organism adapters — the reactive memory brain, sandbox-only recursion seed, and read-only operator console — built outward under strict governance.",
   "author": "Aumara",
   "license": "AGPL-3.0-or-later",
   "version": "0.1.0",
@@ -26,7 +26,12 @@
     "verify:kernel-runtimes": "node scripts/verify-kernel-runtimes.mjs",
     "verify:kernel-package": "node scripts/verify-kernel-package.mjs",
     "test:kernel": "npm run test:portable-boundary && npm run typecheck:kernel && npm test --workspace @aukora/kernel && npm run build:kernel && npm run verify:kernel-compatibility && npm run verify:kernel-sbom && npm run verify:kernel-runtimes && npm run verify:kernel-package",
-    "test:all": "npm run verify:provenance && npm run boundary && npm run test && npm run test:kernel",
+    "test:memory": "npm test --workspace @aukora/memory",
+    "test:brain": "npm test --workspace @aukora/brain",
+    "test:seed": "npm test --workspace @aukora/seed",
+    "test:console": "npm test --workspace @aukora/console",
+    "test:organism": "npm run test:memory && npm run test:brain && npm run test:seed && npm run test:console",
+    "test:all": "npm run verify:provenance && npm run boundary && npm run test && npm run test:kernel && npm run test:organism",
     "demo:organism": "npm run demo --workspace @aukora/seed"
   },
   "devDependencies": {
