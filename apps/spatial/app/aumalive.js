@@ -23,7 +23,7 @@
 
 import { makeDirectiveFilter, FIELD_HUES, FIELD_FORMS } from '/app/field-directives.js';
 
-const DOOR = 'http://127.0.0.1:7097'; // R37: the NEW organism's mind door — never the donor :7091
+const DOOR = ''; // R39: SAME-ORIGIN — the launcher proxies to the governed mind door :7097 and injects the per-boot token server-side (the browser never holds it); donor :7091 dialable nowhere
 const SIDECAR_WS = 'ws://127.0.0.1:7098/ws'; // R37: the NEW organism's voice sidecar — never the donor :7092
 const WORKLET_URL = '/app/aumalive-audio.js';
 
@@ -1000,6 +1000,12 @@ export function mountAumaLive(root) {
             // the door splits her body-language tags into typed events now;
             // the local dirs filter stays as defense in depth for older doors
             field.alien(ev.v);
+          } else if (ev.t === 'mode') {
+            // R39 honest turn-mode label — say plainly whether this is a model-free memory answer, a
+            // streamed duplex-feel reply, or true speech-to-speech (never claimed unless the door says so).
+            toast(ev.v === 'model-free-memory-fallback'
+              ? 'model-free — answering from memory (streamed for duplex feel; not speech-to-speech)'
+              : 'turn mode: ' + ev.v);
           }
           // 'done' needs no handling here — the ONE finalizer below runs when
           // the stream closes, whether or not the server managed to say done

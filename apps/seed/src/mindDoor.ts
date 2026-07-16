@@ -81,6 +81,10 @@ interface ProposeBody {
   /** Advisory Fu sidecar, bound to the proposal by proposalHash. */
   readonly fuSidecar?: { readonly proposalHash?: string; readonly outcome?: CouncilOutcome };
   readonly materialize?: boolean;
+  /** Owner's authorization over the candidate PAYLOAD hash (required to materialize; verified by the kernel monitor). */
+  readonly candidateAuth?: SignedPromotionV2;
+  /** Owner explicitly ARMED materialization (kernel humanClearance). */
+  readonly ownerArmed?: boolean;
   readonly explanation?: string;
 }
 
@@ -233,6 +237,8 @@ export class MindDoor {
       auth: body.auth as SignedPromotionV2,
       fuOutcome,
       materialize, // materialization only on the explicit /api/materialize route
+      candidateAuth: body.candidateAuth,
+      ownerArmed: body.ownerArmed === true,
       explanation: typeof body.explanation === 'string' ? body.explanation.slice(0, MAX_BODY_FIELD) : undefined,
     });
 

@@ -14,7 +14,9 @@ import { CANONICAL_SEATS, PACKET_OPEN, PACKET_CLOSE, runAukoraFuCouncil, type Tr
 import {
   makeProviderTransport, redactedTransportInfo, envCredentialSource, providerTransportGrantsAuthority,
   runLocalRecursionCeremony, ceremonyWorkflowId, localCeremonyGrantsAuthority,
+  candidatePayloadForProposals,
   runFuLiveSmoke, fuLiveSmokeGrantsAuthority,
+  fixedArm,
   InMemoryWorkflowStore, deriveIntentId, deriveDraftHash,
   type CredentialSource, type ProviderTransportConfig, type HttpPost, type HttpResponse,
   type LocalCeremonyEnv, type Proposal, type RepoReadCapability, type CeremonyRunResult,
@@ -90,7 +92,7 @@ describe('opt-in live smoke — skipped by default, deterministic with an inject
 
   it('RUNS to a receipted advisory verdict + measured cost when opted-in with an injected (fake) transport', async () => {
     const store = new ReactiveMemoryStore();
-    const res = await runFuLiveSmoke({ liveFlag: '1', config: config({ httpPost: okHttp() }), credentials: fixedCred('t'), store, now: NOW_MS, nowIso: NOW_ISO });
+    const res = await runFuLiveSmoke({ liveFlag: '1', config: config({ httpPost: okHttp() }), credentials: fixedCred('t'), store, now: NOW_MS, nowIso: NOW_ISO, arm: fixedArm(true) });
     expect(res.ran).toBe(true);
     expect(res.verdict).not.toBeNull();
     expect(res.quorumMet).toBe(true);
@@ -161,7 +163,9 @@ describe('composed owner-invoked local ceremony', () => {
     const auth = authFor(w.owner, proposal, { nonce: 'cer-2' });
     const headBefore = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 
-    const out = runLocalRecursionCeremony(env, { proposalInput: proposal, nonce: 'cer-2', auth, materialize: true, explanation: 'owner-invoked' });
+    const cp = candidatePayloadForProposals([proposal]);
+    const candidateAuth = w.owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: 'cand-2', issuedAt: NOW_ISO, expiresAt: null });
+    const out = runLocalRecursionCeremony(env, { proposalInput: proposal, nonce: 'cer-2', auth, materialize: true, candidateAuth, ownerArmed: true, explanation: 'owner-invoked' });
     expect(out.ok).toBe(true);
     expect(out.phase).toBe('candidate-materialized');
     expect(out.materialization?.commitSha).toMatch(/^[0-9a-f]{40}$/);

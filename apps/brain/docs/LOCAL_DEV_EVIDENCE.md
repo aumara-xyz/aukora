@@ -208,6 +208,45 @@ local-ctl down    → SIGTERM to the OWNED pid group only · pidfile+lockfile cl
 local-ctl status  → exits 1 when nothing is held (scriptable by Sam 1)
 ```
 
+## R39 — root organism supervisor + always-held 7141 (clean-machine transcript, sanitized)
+
+**One command** (`npm run organism:up --workspace @aukora/brain`) started and owns the whole local organism:
+
+```
+organism:up      → convex healthy on 3210/3211 · door HELD on 7141 · mind healthy on 7097 ·
+                   spatial healthy on 7096 (projections via the 7141 door) ·
+                   voice: optional, not present — DEGRADED(optional)  ← loud, never silent
+organism:status  → all four pids (verified) · all ports listening · exit 0
+Spatial /api/spatial/projection → {"source":"door","degradedSenses":[], …}   ← through the HELD 7141 door;
+                                                                                never ENGINE UNREACHABLE
+door /events     → ": connected" (SSE reactive seam wired via one shared Convex WebSocket subscription)
+```
+
+**Two concurrent checkouts do not kill or reuse each other** (checkout B = a worktree of the same commit):
+
+```
+B organism:up    → "port 3210 is held by pid … which does NOT verify as this checkout — refusing to kill
+                    or reuse it" → REFUSED, nothing else started
+B organism:down  → "spatial: pid … does NOT verify as ours — left running" · B's own files cleared only
+A organism:status→ all services (verified), exit 0                          ← A untouched throughout
+```
+
+**Crash/restart preserves everything and executes nothing automatically:**
+
+```
+before crash     → receiptEvents=72 · chainLength=5
+kill -9 backend  → door STILL HELD on 7141, answering honest 502 per request  ← the shell sees degradation,
+                                                                                 never an unreachable engine
+organism:up      → restarts ONLY convex (door keeps its original pid — idempotent ownership)
+after restart    → receiptEvents=72 · chainLength=5 (identical) · backend ok:true
+                   ← workflow/receipts preserved; NOTHING executed automatically
+organism:down    → reverse-order SIGTERM to owned pid groups · all four ports empty
+```
+
+Supervisor laws: recorded PID groups only (`.local/organism/*.pid` + lock naming this checkout, gitignored);
+per-pid ownership verification before ANY signal; no global process matching anywhere; loud Node preflight
+(side-installed Node 22 engaged on this Node-26 box).
+
 ## Architecture note surfaced by the REAL runtime
 
 The Convex isolate does not provide `node:crypto`, which the provenance-locked `@aukora/evidence` digest module

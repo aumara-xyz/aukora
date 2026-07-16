@@ -146,13 +146,19 @@ describe('new-organism door law — never the donor 7091/7092', () => {
       expect(src, f + ' must not dial :7092').not.toMatch(/127\.0\.0\.1:7092/);
     }
   });
-  it('chat, settings, shell, and AUMA LIVE speak the NEW doors (:7097 mind/chat · :7098 voice)', () => {
-    expect(readFileSync(join(base, 'app', 'chat.js'), 'utf8')).toMatch(/127\.0\.0\.1:7097/);
-    expect(readFileSync(join(base, 'app', 'settings.js'), 'utf8')).toMatch(/127\.0\.0\.1:7097/);
-    expect(readFileSync(join(base, 'app', 'shell.js'), 'utf8')).toMatch(/127\.0\.0\.1:7097/);
-    const aumalive = readFileSync(join(base, 'app', 'aumalive.js'), 'utf8');
-    expect(aumalive).toMatch(/127\.0\.0\.1:7097/);
-    expect(aumalive).toMatch(/ws:\/\/127\.0\.0\.1:7098\/ws/);
+  it('R39: the browser reaches the mind SAME-ORIGIN (never holding the :7097 token); voice ws is the sidecar :7098', () => {
+    // The launcher is the token-holding proxy, so the browser must NOT hard-code the mind-door origin —
+    // it posts same-origin and the launcher injects the per-boot token server-side.
+    for (const name of ['chat.js', 'settings.js', 'aumalive.js', 'shell.js']) {
+      const src = readFileSync(join(base, 'app', name), 'utf8');
+      expect(src, name + ' must not hard-dial the mind door from the browser').not.toMatch(/127\.0\.0\.1:7097/);
+    }
+    expect(readFileSync(join(base, 'app', 'chat.js'), 'utf8')).toMatch(/CHAT_DOOR = ''/);
+    expect(readFileSync(join(base, 'app', 'aumalive.js'), 'utf8')).toMatch(/DOOR = ''/);
+    // the voice sidecar is a direct loopback ws (audio only, no token) — that stays
+    expect(readFileSync(join(base, 'app', 'aumalive.js'), 'utf8')).toMatch(/ws:\/\/127\.0\.0\.1:7098\/ws/);
+    // the per-boot token must never be written into any browser file
+    for (const f of appJs) expect(readFileSync(f, 'utf8'), f).not.toMatch(/x-aukora-door-token/i);
   });
   it('AUMLOK keeps its local ceremony doors (custody local, unchanged)', () => {
     const aumlok = readFileSync(join(base, 'app', 'aumlok.js'), 'utf8');
@@ -210,6 +216,45 @@ describe('CONSOLE truth labels', () => {
     expect(consoleJs).toMatch(/not live/i);
     expect(consoleJs).toMatch(/workflowReasonVocabulary/);
     expect(consoleJs).toMatch(/aumlokPresence/);
+  });
+  it('R39: names the three turn modes honestly, never claims speech-to-speech, re-checks LOCKDOWN per call', () => {
+    expect(consoleJs).toMatch(/model-free memory fallback/);
+    expect(consoleJs).toMatch(/streaming duplex-feel/);
+    expect(consoleJs).toMatch(/true speech-to-speech.*NOT claimed/);
+    expect(consoleJs).toMatch(/LOCKDOWN ENGAGED/);
+    expect(consoleJs).toMatch(/setInterval/);                 // live per-call re-check, not a stale snapshot
+    expect(consoleJs).toMatch(/never sent to the mind/);      // field events ephemeral
+  });
+});
+
+// ── R39: the governed same-origin mind-door proxy in the launcher ────────────────────────────────
+describe('R39 mind-door proxy law', () => {
+  it('holds the :7097 target + token server-side; browser stays same-origin', () => {
+    expect(launcher).toMatch(/AUKORA_MIND_DOOR/);
+    expect(launcher).toMatch(/127\.0\.0\.1:7097/);
+    expect(launcher).toMatch(/AUKORA_DOOR_TOKEN/);
+    expect(launcher).toMatch(/x-aukora-door-token/);
+    // the token comes from the environment only — never hard-coded
+    expect(launcher).not.toMatch(/x-aukora-door-token"\s*:\s*"[0-9a-f]{16}/);
+  });
+  it('proxies /api/chat (shape-translated), /api/presence/stream (SSE), /api/models, /api/door, /api/graph', () => {
+    expect(launcher).toMatch(/"\/api\/chat"/);
+    expect(launcher).toMatch(/"\/api\/presence\/stream"/);
+    expect(launcher).toMatch(/"\/api\/models"/);
+    expect(launcher).toMatch(/"\/api\/door"/);
+    expect(launcher).toMatch(/"\/api\/graph"/);
+    expect(launcher).toMatch(/entries:/);                     // chat shape translation for the donor UI
+    expect(launcher).toMatch(/text\/event-stream/);           // presence SSE
+    expect(launcher).toMatch(/model-free-memory-fallback/);   // honest models descriptor
+  });
+  it('barge-in reaches upstream: client disconnect aborts the mind fetch', () => {
+    expect(launcher).toMatch(/AbortController/);
+    expect(launcher).toMatch(/res\.on\("close"/);
+    expect(launcher).toMatch(/clientSignal/);
+  });
+  it('heals ENGINE UNREACHABLE on a healthy boot (graph always answers 200)', () => {
+    expect(launcher).toMatch(/composeGraph/);
+    expect(launcher).toMatch(/aukora-spatial-graph-v1/);
   });
 });
 

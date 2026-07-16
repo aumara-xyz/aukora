@@ -11,7 +11,7 @@
 
 import { award } from '/app/aura-core.js';
 
-const CHAT_DOOR = 'http://127.0.0.1:7097'; // R37: the NEW organism's chat door — never the donor :7091
+const CHAT_DOOR = ''; // R39: SAME-ORIGIN — launcher proxies to the governed chat door :7097 with the token server-side; donor :7091 dialable nowhere
 const APP_LAB_ORGAN = 'app-lab';
 const MAX_IMAGE_BYTES = 2_500_000;   // dataURL preview cap
 const MAX_TEXT_BYTES = 256_000;      // inline-into-message cap
