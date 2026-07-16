@@ -7,7 +7,13 @@
  *
  * The door composes the durable machine + KIRA store + Fu live runner + candidate stage. The provider key (if any)
  * is read out-of-band by the Fu live runner from Keychain/env — never here, never in the repo, never in receipts.
- * The per-boot local POST token is printed ONCE to the operator's terminal (never to a browser).
+ *
+ * TOKEN LIFECYCLE (R44b handoff): the per-boot local POST token comes from the supervisor when present. If
+ * `AUKORA_DOOR_TOKEN` is set (the supervisor mints it, holds it 0600, and hands it to this child via env), the door
+ * ADOPTS it and its VALUE is never printed — a supervised boot discards this child's stdout, so printing it would
+ * be both useless and a leak surface. When it is ABSENT (a standalone interactive run), the door self-mints a fresh
+ * CSPRNG token and prints it ONCE to the operator's terminal (never to a browser). Either way the token stays out
+ * of the repo, browser state, and receipts.
  */
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { ReactiveMemoryStore } from '@aukora/brain';
@@ -20,6 +26,8 @@ import { resolve } from 'node:path';
 
 async function main(): Promise<void> {
   const port = Number(process.env.AUKORA_DOOR_PORT ?? DOOR_PORT);
+  // Supervisor-minted per-boot token when present; undefined ⇒ the door self-mints (standalone fallback preserved).
+  const injectedToken = process.env.AUKORA_DOOR_TOKEN;
   const store = new ReactiveMemoryStore();
   // NOTE: a real deployment injects Peter's local AUMLOK root; the fixture owner here is for a local dev door only.
   const owner = new HybridOwnerAdapter('local-door-dev');
@@ -30,6 +38,7 @@ async function main(): Promise<void> {
     store,
     ownerRoot: owner.root,
     nowIso: new Date().toISOString(),
+    postToken: injectedToken, // supervisor-minted when set; undefined ⇒ MindDoor self-mints (fallback preserved)
     // LAZY driver: a compile break in the composed modules fails a request, not the boot.
     loadDriver: async (): Promise<DoorDriver> => {
       const recursionEnv = {
@@ -55,7 +64,13 @@ async function main(): Promise<void> {
   });
 
   console.log(`[mind-door] listening on http://127.0.0.1:${port}`);
-  console.log(`[mind-door] local POST token (present x-aukora-door-token on POST): ${door.localPostToken}`);
+  if (injectedToken) {
+    // Supervisor-injected: NEVER print the value — the parent already holds it (0600); its stdout is discarded.
+    console.log('[mind-door] local POST token: adopted from AUKORA_DOOR_TOKEN (value not printed)');
+  } else {
+    // Standalone interactive run: self-minted token printed ONCE to the operator's terminal (never to a browser).
+    console.log(`[mind-door] local POST token (present x-aukora-door-token on POST): ${door.localPostToken}`);
+  }
   console.log('[mind-door] advisory-only; proposals/materialization require explicit owner invocation + fresh AUMLOK verification.');
 
   const server = createServer((req: IncomingMessage, res: ServerResponse) => {
