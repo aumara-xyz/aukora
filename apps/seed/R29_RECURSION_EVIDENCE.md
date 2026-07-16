@@ -625,3 +625,27 @@ fs adapter is a follow-up (keeps the law pure and the runtime fs-free).
 
 CODEX FUSION REQUEST: run PRE council over the R29+R30+R31+R32 plan-of-record above.
 CODEX FUSION REQUEST: run POST council over this evidence document (fresh digest recorded in the PR body + issue #22).
+
+---
+
+### WAVE 2 — complete AUMLOK ceremony / custody / onboarding (P0 authority membrane)
+
+Base main `4e6a7e73`. Restored the donor owner flow — approve **challenge** (`approveChallenge.ts`, EXACT_PORT: 64-word
+list, single-use, short-TTL, bound to the candidate payload hash) + **guard** (`approveGuard.ts`, EXACT_PORT CSRF
+perimeter: armed ⇒ not-lockdown ⇒ loopback host ⇒ same-origin) + **owner custody / signing-assistant boundary**
+(`ownerCustody.ts`, existence-only over BOTH hybrid halves; never reads or signs) + **bond/bind ceremony**
+(`bondCeremony.ts`, donor state machine + N_t/B_t/A_t shadow boundary; the A_t hinge adapted to the current hybrid
+verifier `verifyOwnerPromotion`) + the **local approve/bind door** (`approveDoor.ts`, pure handler composing
+guard → self-protection fence → custody → single-use challenge → nonce-binding → the ONE `candidateReferenceMonitor.decide()`).
+The door VERIFIES; the owner signs out-of-band; the door performs no tree effect (it authorizes the downstream terminal
+candidate stage). The 5 membranes are added to the frozen self-protecting `pathFence` list. Every terminal receipts
+content-free; every refusal is proven to consume no authority (ZERO effect before authorization); consume-once is
+durable across a simulated restart. See `apps/seed/WAVE2_AUMLOK_CEREMONY.md` for the byte-change ledger + full matrix.
+
+**Suites:** seed 255/255 (+23) · kernel 19/19 · portable-boundary PASS · public-tree scan PASS · typecheck 0.
+
+**WAVE 2 CHECK (opus-self-review):** the authority surface did not widen — the door only adds refuse-only membranes
+IN FRONT of the single existing effect authorization; none can grant. The one load-bearing change from the donor is
+correct-by-law: no in-door signer, no live-tree write. One real test failure was caught and fixed before commit — a
+forged ML-DSA half of a wrong LENGTH surfaced as `monitor_malformed` (a shape error) rather than `authority_invalid`;
+the vector now corrupts one nibble of a correct-length signature so the refusal exercises the verifier, not the parser.
