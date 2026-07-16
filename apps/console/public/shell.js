@@ -73,9 +73,12 @@
   // ── roster: three geometric families → one canonical portal (.row) per app ──────
   const ORGANS = {
     auma: { title: "AUMA LIVE", sub: "the live advisory presence — untrusted, guides proposals", mount: A.auma },
+    lingwa: { title: "Auma · Lingwa", sub: "her language — the council's glyph grammar, offline", mount: A.lingwa },
     aumlok: { title: "AUMLOK", sub: "the gate — where your signature lands (outside the browser)", mount: A.aumlok },
     aura: { title: "AURA", sub: "a living coherence pattern — evidence, never authority", mount: A.aura },
+    kira: { title: "Kira", sub: "the memory figure — root · unite · rise · gold", mount: A.kira },
     map: { title: "Spatial Map", sub: "the organism as a physics grid — live data", mount: A.map },
+    ghp: { title: "Golden Horizon", sub: "first principles — how the organism forms", mount: A.ghp },
     console: { title: "Console", sub: "the ten tested operator panels", mount: A.console },
     settings: { title: "Settings", sub: "provider · persistence · hard limits · read-only health", mount: A.settings },
     knvs: { title: "KNVS", sub: "the app lab — pixels only, drafts to the gate", mount: A.knvs },
@@ -83,13 +86,16 @@
   const TABS = {
     triangle: { micro: "Live", rows: [
       { organ: "auma", label: "AUMA LIVE", gist: "the live advisory presence — untrusted context" },
+      { organ: "lingwa", label: "AUMA LINGWA", gist: "her language — learn the glyph grammar" },
     ] },
     square: { micro: "System", rows: [
       { organ: "aumlok", label: "AUMLOK", gist: "the gate — where your signature lands" },
       { organ: "aura", label: "AURA", gist: "your coherence, taking shape — evidence, never authority" },
-      { organ: "map", label: "Spatial Map", gist: "the organism as a physics grid" },
-      { organ: "console", label: "Console", gist: "the ten tested operator panels" },
-      { organ: "settings", label: "Settings", gist: "provider · persistence · hard limits · health" },
+      { organ: "kira", label: "KIRA", gist: "memory in four depths — root, unite, rise, gold" },
+      { organ: "map", label: "SPATIAL MAP", gist: "the organism as a physics grid" },
+      { organ: "ghp", label: "GHP", gist: "first principles — evidence to candidate recursion" },
+      { organ: "console", label: "CONSOLE", gist: "the ten tested operator panels" },
+      { organ: "settings", label: "SETTINGS", gist: "provider · persistence · hard limits · health" },
     ] },
     circle: { micro: "Frontier", rows: [
       { organ: "knvs", label: "KNVS", gist: "the app lab — grow a screen, draft it to the gate" },

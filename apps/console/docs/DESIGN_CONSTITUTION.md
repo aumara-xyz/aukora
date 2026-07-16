@@ -71,9 +71,16 @@ Two contracts are consumed read-only via `contracts.js`: Sam 2 `BrainHealthSnaps
 **no network call** (a tested safety property). Fixtures are an explicit, labelled fallback only.
 
 ## 6e. Local launcher
-`scripts/launch.mjs` (npm `launch`) serves the shell read-only on `127.0.0.1:7093`, alongside — never
-touching — the donor `:7090`, the governed door `:7091`, and the voice sidecar `:7092`. Port-configurable
-(`PORT=`), reproducible from a fresh clone.
+`scripts/launch.mjs` (npm `launch`) serves the shell read-only on the CANONICAL port `127.0.0.1:7094`
+(R33 §8 — `:7093` belongs to the ARC3 lane on Sam's box). Ports `7090–7093` (donor spatial · governed door ·
+voice sidecar · arc3) are RESERVED and never bound; if 7094 is busy the launcher scans up to 7099 and says
+which port it chose. `PORT=` overrides explicitly. Reproducible from a fresh clone.
+
+## 6f. KIRA depth hues
+The four Kira memory depths map to fixed hues on the canonical portal (`.row` + `--row-hue`):
+**ROOT** green (`--hue-l`) · **UNITE** blue (`--hue-c`) · **RISE** purple (`--hue-r`) · **GOLD** warm amber
+(`226,176,74`). Root/Unite/Rise expose governed edit proposals (draft → gate); GOLD requires the full
+higher-friction AUMLOK change ceremony — protected, never claimed absolutely immutable.
 
 ## 7. Advisory law
 The whole surface is **read-only**: it mounts apps and renders state, and it **cannot sign, authorize,

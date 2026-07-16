@@ -656,6 +656,211 @@
     "greeting": "One being, one memory. Ask me anything — I answer as advisory context, offline. I cannot sign, apply, or merge; proposals halt for your signature at the gate.",
     "provider": "deterministic-offline-v0"
   },
+  "kira": {
+    "schema": "kira-layers-v0",
+    "readOnly": true,
+    "layers": [
+      {
+        "id": "root",
+        "name": "ROOT",
+        "hue": "green",
+        "law": "grounding — what happened",
+        "edit": "governed edit proposal (draft → AUMLOK gate)",
+        "entries": [
+          {
+            "kind": "observation",
+            "provenance": "sensor",
+            "recordIdShort": "b130cc53f3a4…",
+            "note": "first grounded event on the chain"
+          }
+        ]
+      },
+      {
+        "id": "unite",
+        "name": "UNITE",
+        "hue": "blue",
+        "law": "relation — what it means together",
+        "edit": "governed edit proposal (draft → AUMLOK gate)",
+        "entries": [
+          {
+            "kind": "reflection",
+            "provenance": "reflection",
+            "recordIdShort": "e6bc28b014c9…",
+            "note": "it remembered and reacted — memory binding memory"
+          }
+        ]
+      },
+      {
+        "id": "rise",
+        "name": "RISE",
+        "hue": "purple",
+        "law": "growth — what it is becoming",
+        "edit": "governed edit proposal (draft → AUMLOK gate)",
+        "entries": [
+          {
+            "kind": "receipt",
+            "provenance": "governed-recursion",
+            "recordIdShort": "dde5dbf3150a…",
+            "note": "an owner-signed candidate, rehearsed in sandbox"
+          }
+        ]
+      },
+      {
+        "id": "gold",
+        "name": "GOLD",
+        "hue": "amber",
+        "law": "constitution — the load-bearing law",
+        "edit": "PROTECTED: requires the explicit higher-friction AUMLOK change ceremony (full 9-phase, owner-signed). Protected, not absolutely immutable.",
+        "entries": [
+          {
+            "kind": "constitution",
+            "provenance": "packages/memory envelope",
+            "recordIdShort": null,
+            "note": "advisoryOnly: true — a memory is advisory, never a capability"
+          },
+          {
+            "kind": "constitution",
+            "provenance": "packages/memory envelope",
+            "recordIdShort": null,
+            "note": "grantsAuthority: false — evidence never opens the gate"
+          },
+          {
+            "kind": "constitution",
+            "provenance": "owner-gate law",
+            "recordIdShort": null,
+            "note": "no model can sign for the owner; the signature lands outside the browser"
+          }
+        ]
+      }
+    ],
+    "note": "Kira memory in four depths. Every edit is a proposal to the gate; GOLD adds the full change ceremony on top. Nothing here mutates anything directly."
+  },
+  "lingwa": {
+    "schema": "auma-lingwa-v0",
+    "provider": "deterministic-offline-v0",
+    "advisory": true,
+    "lexicon": {
+      "stance": [
+        {
+          "glyph": "⊕",
+          "meaning": "affirm — the claim holds"
+        },
+        {
+          "glyph": "⊖",
+          "meaning": "contest — the claim strains"
+        },
+        {
+          "glyph": "⊙",
+          "meaning": "neutral — no lean"
+        },
+        {
+          "glyph": "⊘",
+          "meaning": "block — malformed or unsafe"
+        },
+        {
+          "glyph": "⊚",
+          "meaning": "abstain — not my ground"
+        }
+      ],
+      "confidence": [
+        {
+          "glyph": "⇈",
+          "meaning": "near-certain (0.95)"
+        },
+        {
+          "glyph": "↑",
+          "meaning": "confident (0.80)"
+        },
+        {
+          "glyph": "→",
+          "meaning": "balanced (0.60)"
+        },
+        {
+          "glyph": "↓",
+          "meaning": "doubtful (0.40)"
+        },
+        {
+          "glyph": "⇊",
+          "meaning": "guessing (0.20)"
+        }
+      ],
+      "strategy": [
+        {
+          "glyph": "↗",
+          "meaning": "explore"
+        },
+        {
+          "glyph": "↘",
+          "meaning": "exploit"
+        },
+        {
+          "glyph": "↙",
+          "meaning": "verify"
+        },
+        {
+          "glyph": "↖",
+          "meaning": "reframe"
+        },
+        {
+          "glyph": "⇄",
+          "meaning": "alternate"
+        }
+      ]
+    },
+    "translations": [
+      {
+        "glyphLine": "STANCE:⊕ CONFIDENCE:↑ STRATEGY:↙",
+        "english": "I affirm this, confidently, and my move is to verify it."
+      },
+      {
+        "glyphLine": "STANCE:⊖ CONFIDENCE:↓ STRATEGY:↗",
+        "english": "I contest this, though unsure — let us explore before trusting it."
+      },
+      {
+        "glyphLine": "STANCE:⊚ CONFIDENCE:→ STRATEGY:⇄",
+        "english": "Not my ground; balanced — I alternate and let another seat lead."
+      }
+    ],
+    "meaningNote": "The packets are structured transport representations of a seat's position — never raw model activations or chain-of-thought, and never authority.",
+    "note": "Her language is the council's shared glyph grammar (aukoraFuGlyph.ts) — real vocabulary, deterministic offline translation. Advisory only."
+  },
+  "ghp": {
+    "schema": "ghp-first-principles-v0",
+    "sanitized": true,
+    "steps": [
+      {
+        "id": "evidence",
+        "title": "Evidence",
+        "gist": "events arrive as content-addressed, consent-scoped records — advisory by construction",
+        "proof": "record b130cc53f3a4… validated; malformed or authority-shaped input is refused"
+      },
+      {
+        "id": "memory",
+        "title": "Memory",
+        "gist": "an append-only receipt chain with a Merkle root; growth is provable, forgetting is governed",
+        "proof": "chain 4 entries · verified true · 2 live after one governed forget"
+      },
+      {
+        "id": "council",
+        "title": "Council",
+        "gist": "eight seats deliberate in the glyph grammar; disagreement is surfaced, never hidden — evidence, not authority",
+        "proof": "quorum true (8/8, 8 families) · verdict divergence · $0 offline"
+      },
+      {
+        "id": "gate",
+        "title": "AUMLOK · AURA",
+        "gist": "only the owner signature authorizes; AURA is the coherence the witnessed ceremony grows",
+        "proof": "unsigned proposal → owner-gate-refused; owner-signed → sandbox-applied"
+      },
+      {
+        "id": "candidate",
+        "title": "Candidate recursion",
+        "gist": "an accepted change rehearses in an isolated sandbox and lands as a receipt — the loop that grows the organism",
+        "proof": "receipt 49ebe346aac84ed9… on the chain · live repo untouched"
+      }
+    ],
+    "disclaimer": "First principles only. Not claimed: alive, conscious, self-replicating. No private research or infrastructure identifiers appear here."
+  },
   "ide": {
     "schema": "auma-ide-r0r3-v0",
     "readOnly": true,

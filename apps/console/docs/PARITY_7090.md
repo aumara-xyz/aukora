@@ -71,7 +71,7 @@ INTENTIONAL DIFF (the only sanctioned difference: fewer apps + no chat + no sign
 ## Intentional differences (the only sanctioned ones)
 | area | donor 7090 | this build | why |
 | --- | --- | --- | --- |
-| app roster | ~19 apps across families | **fewer apps** per directive: ▲ AUMA LIVE · ■ AUMLOK/AURA/SPATIAL MAP/CONSOLE/SETTINGS · ○ KNVS | R31 §1/§5, R32 §4 |
+| app roster | ~19 apps across families | R33 roster: ▲ AUMA LIVE, AUMA LINGWA · ■ AUMLOK, AURA, KIRA, SPATIAL MAP, GHP, CONSOLE, SETTINGS · ○ KNVS | R33 §3 |
 | model calls | live provider via the chat door | **offline only** — advisory chat + KNVS session are deterministic offline demos; no paid/live call until a checksum/licensed provider is approved | R32 §5/§8 |
 | writes | AUMLOK signing ceremony writes | **none** — fully read-only; signature lands outside the browser; KNVS submit = proposal intent only | R32 §5/§8 |
 

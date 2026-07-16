@@ -57,17 +57,60 @@ describe('R31 shell structure & parity mechanics', () => {
   });
 });
 
-describe('R31 exact app roster', () => {
-  it('Triangle = AUMA LIVE · Square = AUMLOK/AURA/SPATIAL MAP/CONSOLE/SETTINGS · Circle = KNVS', () => {
-    // triangle
-    expect(shellJs).toMatch(/triangle:\s*\{[^}]*organ:\s*"auma"/s);
-    // square carries exactly the five system apps
+describe('R33 exact app roster', () => {
+  it('Triangle = AUMA LIVE + AUMA LINGWA · Square = AUMLOK/AURA/KIRA/SPATIAL MAP/GHP/CONSOLE/SETTINGS · Circle = KNVS', () => {
+    const triangle = /triangle:\s*\{[\s\S]*?rows:\s*\[([\s\S]*?)\]\s*\}/.exec(shellJs)?.[1] ?? '';
+    for (const organ of ['auma', 'lingwa']) expect(triangle, 'triangle must include ' + organ).toContain('organ: "' + organ + '"');
     const square = /square:\s*\{[\s\S]*?rows:\s*\[([\s\S]*?)\]\s*\}/.exec(shellJs)?.[1] ?? '';
-    for (const organ of ['aumlok', 'aura', 'map', 'console', 'settings']) {
+    for (const organ of ['aumlok', 'aura', 'kira', 'map', 'ghp', 'console', 'settings']) {
       expect(square, 'square must include ' + organ).toContain('organ: "' + organ + '"');
     }
-    // circle
+    expect((square.match(/organ:\s*"/g) ?? []).length).toBe(7); // exactly the seven system apps
     expect(shellJs).toMatch(/circle:\s*\{[^}]*organ:\s*"knvs"/s);
+  });
+});
+
+describe('R33 KIRA layers (telescoping portals)', () => {
+  it('carries ROOT green · UNITE blue · RISE purple · GOLD amber with the right edit law', () => {
+    const ids = fixture.kira.layers.map((l: any) => l.id + '/' + l.hue);
+    expect(ids).toEqual(['root/green', 'unite/blue', 'rise/purple', 'gold/amber']);
+    for (const l of fixture.kira.layers.slice(0, 3)) {
+      expect(l.edit).toMatch(/governed edit proposal/i);
+    }
+    const gold = fixture.kira.layers[3];
+    expect(gold.edit).toMatch(/higher-friction AUMLOK change ceremony/i);
+    // never imply absolute immutability
+    expect(gold.edit).toMatch(/not absolutely immutable/i);
+    expect(gold.entries.length).toBeGreaterThan(0);
+  });
+  it('the organ renders the four portals via the canonical .row species', () => {
+    expect(appsJs).toMatch(/function mountKira/);
+    expect(appsJs).toMatch(/row kira-portal/);
+    expect(appsJs).toMatch(/--row-hue/);
+  });
+});
+
+describe('R33 AUMA LINGWA (offline language organ)', () => {
+  it('teaches the real Fu glyph grammar with deterministic translations', () => {
+    expect(fixture.lingwa.lexicon.stance.length).toBe(5);
+    expect(fixture.lingwa.lexicon.confidence.length).toBe(5);
+    expect(fixture.lingwa.lexicon.strategy.length).toBe(5);
+    expect(fixture.lingwa.translations.length).toBeGreaterThanOrEqual(3);
+    expect(fixture.lingwa.advisory).toBe(true);
+    // the advisory provider boundary holds — same offline provider id
+    expect(fixture.lingwa.provider).toBe(fixture.providers.offlineProvider.id);
+  });
+});
+
+describe('R33 GHP (sanitized first-principles explainer)', () => {
+  it('walks evidence→memory→council→gate→candidate with real local proofs', () => {
+    expect(fixture.ghp.sanitized).toBe(true);
+    expect(fixture.ghp.steps.map((s: any) => s.id)).toEqual(['evidence', 'memory', 'council', 'gate', 'candidate']);
+    for (const s of fixture.ghp.steps) expect(String(s.proof).length).toBeGreaterThan(0);
+    expect(String(fixture.ghp.disclaimer)).toMatch(/not claimed/i);
+    // sanitation: no private-infra markers anywhere in the GHP block
+    const blob = JSON.stringify(fixture.ghp);
+    for (const bad of [/job[-_ ]?id/i, /bucket/i, /patent/i, /endpoint/i]) expect(blob).not.toMatch(bad);
   });
 });
 
@@ -145,6 +188,15 @@ describe('R31 reuse (no duplicated panels / adapters)', () => {
     expect(panelsJs).toContain('Model manifest (truth-labeled)');
     expect(appsJs).not.toContain('Model manifest');
     expect(spatialMapJs).toMatch(/window\.AukoraSpatialMap/);
+  });
+});
+
+describe('R33 launcher port contract', () => {
+  it('canonical port is 7094 and the donor stack ports are reserved (never bound)', () => {
+    const launcher = readFileSync(join(base, '..', 'scripts', 'launch.mjs'), 'utf-8');
+    expect(launcher).toMatch(/CANONICAL\s*=\s*7094/);
+    expect(launcher).toMatch(/RESERVED\s*=\s*new Set\(\[7090,\s*7091,\s*7092,\s*7093\]\)/);
+    expect(launcher).toMatch(/EADDRINUSE/); // scans instead of clobbering
   });
 });
 

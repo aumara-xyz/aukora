@@ -479,6 +479,88 @@ const fixture = {
     provider: advisoryProvider.id,
   },
 
+  // KIRA — the four memory layers as telescoping portals (R33 §4). ROOT/UNITE/RISE expose governed EDIT
+  // PROPOSALS (draft → gate; never direct mutation). GOLD holds protected constitutional memories behind the
+  // explicit higher-friction AUMLOK change ceremony — protected, NOT absolutely immutable: the owner can
+  // still change them through the full ceremony. Entries derive from the REAL organism state.
+  kira: {
+    schema: 'kira-layers-v0',
+    readOnly: true,
+    layers: [
+      {
+        id: 'root', name: 'ROOT', hue: 'green', law: 'grounding — what happened',
+        edit: 'governed edit proposal (draft → AUMLOK gate)',
+        entries: [{ kind: 'observation', provenance: 'sensor', recordIdShort: lineage[0]?.recordIdShort ?? null, note: 'first grounded event on the chain' }],
+      },
+      {
+        id: 'unite', name: 'UNITE', hue: 'blue', law: 'relation — what it means together',
+        edit: 'governed edit proposal (draft → AUMLOK gate)',
+        entries: [{ kind: 'reflection', provenance: 'reflection', recordIdShort: lineage[1]?.recordIdShort ?? null, note: 'it remembered and reacted — memory binding memory' }],
+      },
+      {
+        id: 'rise', name: 'RISE', hue: 'purple', law: 'growth — what it is becoming',
+        edit: 'governed edit proposal (draft → AUMLOK gate)',
+        entries: [{ kind: 'receipt', provenance: 'governed-recursion', recordIdShort: lineage[2]?.recordIdShort ?? null, note: 'an owner-signed candidate, rehearsed in sandbox' }],
+      },
+      {
+        id: 'gold', name: 'GOLD', hue: 'amber', law: 'constitution — the load-bearing law',
+        edit: 'PROTECTED: requires the explicit higher-friction AUMLOK change ceremony (full 9-phase, owner-signed). Protected, not absolutely immutable.',
+        entries: [
+          { kind: 'constitution', provenance: 'packages/memory envelope', recordIdShort: null, note: 'advisoryOnly: true — a memory is advisory, never a capability' },
+          { kind: 'constitution', provenance: 'packages/memory envelope', recordIdShort: null, note: 'grantsAuthority: false — evidence never opens the gate' },
+          { kind: 'constitution', provenance: 'owner-gate law', recordIdShort: null, note: 'no model can sign for the owner; the signature lands outside the browser' },
+        ],
+      },
+    ],
+    note: 'Kira memory in four depths. Every edit is a proposal to the gate; GOLD adds the full change ceremony on top. Nothing here mutates anything directly.',
+  },
+
+  // AUMA LINGWA — her language: the REAL Fu glyph vocabulary from @aukora/council (aukoraFuGlyph.ts),
+  // taught as a translation/meaning organ. Deterministic and offline; the advisory provider boundary holds.
+  lingwa: {
+    schema: 'auma-lingwa-v0',
+    provider: advisoryProvider.id,
+    advisory: true,
+    lexicon: {
+      stance: [
+        { glyph: '⊕', meaning: 'affirm — the claim holds' }, { glyph: '⊖', meaning: 'contest — the claim strains' },
+        { glyph: '⊙', meaning: 'neutral — no lean' }, { glyph: '⊘', meaning: 'block — malformed or unsafe' },
+        { glyph: '⊚', meaning: 'abstain — not my ground' },
+      ],
+      confidence: [
+        { glyph: '⇈', meaning: 'near-certain (0.95)' }, { glyph: '↑', meaning: 'confident (0.80)' },
+        { glyph: '→', meaning: 'balanced (0.60)' }, { glyph: '↓', meaning: 'doubtful (0.40)' }, { glyph: '⇊', meaning: 'guessing (0.20)' },
+      ],
+      strategy: [
+        { glyph: '↗', meaning: 'explore' }, { glyph: '↘', meaning: 'exploit' }, { glyph: '↙', meaning: 'verify' },
+        { glyph: '↖', meaning: 'reframe' }, { glyph: '⇄', meaning: 'alternate' },
+      ],
+    },
+    translations: [
+      { glyphLine: 'STANCE:⊕ CONFIDENCE:↑ STRATEGY:↙', english: 'I affirm this, confidently, and my move is to verify it.' },
+      { glyphLine: 'STANCE:⊖ CONFIDENCE:↓ STRATEGY:↗', english: 'I contest this, though unsure — let us explore before trusting it.' },
+      { glyphLine: 'STANCE:⊚ CONFIDENCE:→ STRATEGY:⇄', english: 'Not my ground; balanced — I alternate and let another seat lead.' },
+    ],
+    meaningNote: 'The packets are structured transport representations of a seat\'s position — never raw model activations or chain-of-thought, and never authority.',
+    note: 'Her language is the council\'s shared glyph grammar (aukoraFuGlyph.ts) — real vocabulary, deterministic offline translation. Advisory only.',
+  },
+
+  // GHP — a sanitized first-principles explainer of how the organism forms: evidence → memory → council →
+  // AUMLOK/AURA → candidate recursion. Each step cites the REAL local proof from this fixture. No private
+  // research, no patent text, no job IDs, no buckets, no unsupported claims.
+  ghp: {
+    schema: 'ghp-first-principles-v0',
+    sanitized: true,
+    steps: [
+      { id: 'evidence', title: 'Evidence', gist: 'events arrive as content-addressed, consent-scoped records — advisory by construction', proof: `record ${lineage[0]?.recordIdShort ?? '—'} validated; malformed or authority-shaped input is refused` },
+      { id: 'memory', title: 'Memory', gist: 'an append-only receipt chain with a Merkle root; growth is provable, forgetting is governed', proof: `chain ${snap.chainLength} entries · verified ${chainVerified && chainStillVerifies} · ${snap.liveCount} live after one governed forget` },
+      { id: 'council', title: 'Council', gist: 'eight seats deliberate in the glyph grammar; disagreement is surfaced, never hidden — evidence, not authority', proof: `quorum ${council.quorumMet} (8/8, 8 families) · verdict ${council.verdict} · $0 offline` },
+      { id: 'gate', title: 'AUMLOK · AURA', gist: 'only the owner signature authorizes; AURA is the coherence the witnessed ceremony grows', proof: `unsigned proposal → ${refused.stage}; owner-signed → ${accepted.stage}` },
+      { id: 'candidate', title: 'Candidate recursion', gist: 'an accepted change rehearses in an isolated sandbox and lands as a receipt — the loop that grows the organism', proof: `receipt ${short(accepted.receiptHash ?? null)} on the chain · live repo untouched` },
+    ],
+    disclaimer: 'First principles only. Not claimed: alive, conscious, self-replicating. No private research or infrastructure identifiers appear here.',
+  },
+
   // Auma center IDE — the R0–R3 read-only workbench surface (repo tree/search, cited recall, draft diff,
   // rehearsal, receipts, staged candidate). The UI invokes capabilities; it invents no authority.
   ide: {

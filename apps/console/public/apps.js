@@ -142,6 +142,164 @@ window.AukoraApps = (function () {
     host.appendChild(grid([P.render.memory(F), P.render.lineage(F), P.render.forgetting(F)]));
   }
 
+  // ── KIRA — four memory depths as telescoping portals (R33 §4) ────────────────────
+  // ROOT green · UNITE blue · RISE purple · GOLD warm amber. Selecting a portal telescopes inward (Z):
+  // the four-portal view yields to the layer's entries; a back portal returns. ROOT/UNITE/RISE expose
+  // governed EDIT PROPOSALS (draft → gate). GOLD is protected behind the full higher-friction AUMLOK
+  // change ceremony — protected, never claimed absolutely immutable.
+  const KIRA_HUES = { green: "var(--hue-l)", blue: "var(--hue-c)", purple: "var(--hue-r)", amber: "226, 176, 74" };
+  function mountKira(host, F) {
+    const k = F.kira;
+    const home = el("div", "kira-home");
+    const detail = el("div", "kira-detail"); detail.hidden = true;
+
+    const intro = card("Kira · the memory figure", "READ-ONLY");
+    intro.appendChild(el("p", "app-note", k.note));
+    home.appendChild(intro);
+
+    k.layers.forEach((layer) => {
+      const row = el("button", "row kira-portal"); row.type = "button";
+      row.style.setProperty("--row-hue", KIRA_HUES[layer.hue]);
+      const inner = el("span", "row-inner");
+      inner.appendChild(el("span", "row-label", layer.name));
+      inner.appendChild(el("span", "row-gist", layer.law));
+      row.appendChild(inner);
+      if (layer.id === "gold") row.appendChild(el("span", "pill pill-amber", "ceremony"));
+      row.addEventListener("click", () => openLayer(layer));
+      home.appendChild(row);
+    });
+
+    function openLayer(layer) {
+      detail.replaceChildren();
+      const back = el("button", "row kira-portal kira-back"); back.type = "button";
+      back.style.setProperty("--row-hue", KIRA_HUES[layer.hue]);
+      const bi = el("span", "row-inner");
+      bi.appendChild(el("span", "row-label", "← " + layer.name));
+      bi.appendChild(el("span", "row-gist", layer.law));
+      back.appendChild(bi);
+      back.addEventListener("click", () => { detail.hidden = true; home.hidden = false; });
+      detail.appendChild(back);
+
+      const box = card(layer.name + " · entries", null);
+      layer.entries.forEach((e) => {
+        const row = el("div", "ceremony-step");
+        const dot = el("span", "kira-dot");
+        dot.style.background = "rgba(" + KIRA_HUES[layer.hue] + ", 0.95)";
+        row.appendChild(dot);
+        const t = el("div");
+        t.appendChild(el("div", null, e.note));
+        t.appendChild(el("div", "app-note mono", e.kind + " · " + e.provenance + (e.recordIdShort ? " · " + e.recordIdShort : "")));
+        row.appendChild(t);
+        box.appendChild(row);
+      });
+      detail.appendChild(box);
+
+      const law = card(layer.id === "gold" ? "Change ceremony (higher friction)" : "Governed edit", null);
+      law.appendChild(el("p", "app-note", layer.edit));
+      if (layer.id === "gold") law.appendChild(el("p", "app-note", "Every phase of the 9-phase AUMLOK ceremony applies, owner-signed, before a constitutional memory changes. Protected — not absolutely immutable."));
+      const draftBtn = el("button", "knvs-btn", layer.id === "gold" ? "Begin change ceremony (drafts intent)" : "Propose an edit (drafts intent)");
+      draftBtn.type = "button";
+      const status = el("p", "knvs-status", "");
+      draftBtn.addEventListener("click", () => {
+        status.textContent = layer.id === "gold"
+          ? "Change-ceremony INTENT drafted (this browser only). The full 9-phase AUMLOK ceremony with the owner signature is required — nothing changed."
+          : "Edit proposal INTENT drafted (this browser only). It halts for the owner signature at the AUMLOK gate — nothing changed.";
+      });
+      law.append(draftBtn, status);
+      detail.appendChild(law);
+
+      home.hidden = true; detail.hidden = false;
+    }
+
+    host.append(home, detail);
+  }
+
+  // ── AUMA LINGWA — her language: the real Fu glyph grammar, offline (R33 §5) ───────
+  function mountLingwa(host, F) {
+    const L = F.lingwa;
+    const intro = card("Auma · Lingwa", "OFFLINE");
+    intro.appendChild(el("p", "app-note", L.note));
+    host.appendChild(intro);
+
+    // Composer: pick one glyph per row → deterministic English rendering from the lexicon.
+    const composer = card("Compose a packet line", null);
+    const picked = { stance: null, confidence: null, strategy: null };
+    const output = el("p", "lingwa-output", "Pick a stance, a confidence, and a strategy.");
+    ["stance", "confidence", "strategy"].forEach((dim) => {
+      const rowEl = el("div", "lingwa-row");
+      rowEl.appendChild(el("span", "stale-label", dim));
+      L.lexicon[dim].forEach((g) => {
+        const b = el("button", "lingwa-glyph", g.glyph); b.type = "button";
+        b.title = g.meaning; b.setAttribute("aria-label", dim + " " + g.meaning);
+        b.addEventListener("click", () => {
+          picked[dim] = g;
+          rowEl.querySelectorAll(".lingwa-glyph").forEach((x) => x.classList.toggle("selected", x === b));
+          if (picked.stance && picked.confidence && picked.strategy) {
+            output.textContent = "STANCE:" + picked.stance.glyph + " CONFIDENCE:" + picked.confidence.glyph + " STRATEGY:" + picked.strategy.glyph
+              + "  →  “" + picked.stance.meaning.split(" — ")[0] + ", " + picked.confidence.meaning.split(" (")[0] + "; move: " + picked.strategy.meaning + ".”";
+          }
+        });
+        rowEl.appendChild(b);
+      });
+      composer.appendChild(rowEl);
+    });
+    composer.appendChild(output);
+    host.appendChild(composer);
+
+    const tr = card("Readings", null);
+    L.translations.forEach((t) => {
+      const d = el("div", "lingwa-reading");
+      d.appendChild(el("div", "mono", t.glyphLine));
+      d.appendChild(el("div", "app-note", t.english));
+      tr.appendChild(d);
+    });
+    tr.appendChild(el("p", "app-note", L.meaningNote));
+    host.appendChild(tr);
+  }
+
+  // ── GHP — sanitized first-principles explainer (R33 §6) ──────────────────────────
+  function mountGhp(host, F) {
+    const g = F.ghp;
+    const NS = "http://www.w3.org/2000/svg";
+    const sv = (tag, attrs) => { const n = document.createElementNS(NS, tag); for (const a in attrs) n.setAttribute(a, attrs[a]); return n; };
+    const HUES = ["var(--hue-l)", "var(--hue-c)", "var(--hue-r)", "226, 176, 74", "var(--hue-l)"];
+
+    const fig = el("figure", "glass-card ghp-fig");
+    const W = 860, H = 150;
+    const s = sv("svg", { viewBox: "0 0 " + W + " " + H, role: "img", "aria-label": "The governed loop: evidence to memory to council to the AUMLOK gate and AURA, to candidate recursion, and back." });
+    s.style.width = "100%"; s.style.height = "auto";
+    const n = g.steps.length, dx = W / n;
+    g.steps.forEach((st, i) => {
+      const cx = dx * i + dx / 2, cy = 62;
+      if (i > 0) s.appendChild(sv("line", { x1: cx - dx + 26, y1: cy, x2: cx - 26, y2: cy, class: "ghp-edge", "marker-end": "url(#ghp-arrow)" }));
+      const dot = sv("circle", { cx, cy, r: 22, "stroke-width": 1.4 });
+      // var() does not resolve in SVG presentation attributes — set the hues via style.
+      dot.style.fill = "rgba(" + HUES[i] + ", 0.18)";
+      dot.style.stroke = "rgb(" + HUES[i] + ")";
+      s.appendChild(dot);
+      const tx = sv("text", { x: cx, y: cy + 44, "text-anchor": "middle", class: "ghp-label" }); tx.textContent = st.title; s.appendChild(tx);
+      const num = sv("text", { x: cx, y: cy + 5, "text-anchor": "middle", class: "ghp-num" }); num.textContent = String(i + 1); s.appendChild(num);
+    });
+    // the recursion return arc: candidate → evidence
+    s.appendChild(sv("path", { d: "M " + (W - dx / 2) + " 92 C " + (W - 60) + " 138, 60 138, " + (dx / 2) + " 92", class: "ghp-edge ghp-return", "marker-end": "url(#ghp-arrow)", fill: "none" }));
+    const defs = sv("defs", {});
+    const m = sv("marker", { id: "ghp-arrow", viewBox: "0 0 8 8", refX: 7, refY: 4, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" });
+    m.appendChild(sv("path", { d: "M 0 0 L 8 4 L 0 8 z", class: "ghp-arrowhead" }));
+    defs.appendChild(m); s.appendChild(defs);
+    fig.appendChild(s);
+    const cap = el("figcaption", "app-note", "One loop: every step is advisory except the gate — and the gate is the owner's alone.");
+    fig.appendChild(cap);
+    host.appendChild(fig);
+
+    g.steps.forEach((st, i) => {
+      const c = card((i + 1) + " · " + st.title, null);
+      c.appendChild(el("p", null, st.gist));
+      c.appendChild(el("p", "app-note mono", "local proof: " + st.proof));
+      host.appendChild(c);
+    });
+    host.appendChild(el("p", "app-note", g.disclaimer));
+  }
+
   // ── SETTINGS — provider / persistence mode, hard limits, read-only health ────────
   function mountSettings(host, F) {
     const modes = el("div", "glass-card");
@@ -274,5 +432,6 @@ window.AukoraApps = (function () {
   return {
     console: mountConsole, map: mountMap, auma: mountAuma, aumlok: mountAumlok,
     aura: mountAura, settings: mountSettings, knvs: mountKnvs,
+    kira: mountKira, lingwa: mountLingwa, ghp: mountGhp,
   };
 })();
