@@ -21,6 +21,8 @@ governance (verify authority, don't mint it) baked into the shape rather than bo
     council/      Fu: advisory council + glyph geometry; no signer/apply/authority
     council-node/ the one Node fs adapter (spend ledger)
     memory/       KIRA: pure consent-scoped memory envelope + governed forgetting
+    mind/         the pure observe→hypothesize→act→verify reasoning loop
+                  (advisory; authors proposals, grants nothing)
         │  depends only on ▼
   Node built-ins + @noble/*
 ```
@@ -37,9 +39,9 @@ glyph packets, computes quorum, and *estimates* spend — all pure, offline comp
 never touch the filesystem, the network, or ambient authority. The one piece that genuinely
 needs I/O — a persistent daily spend **ledger** — is isolated in `@aukora/council-node`.
 `scripts/check-canonical-boundary.mjs` fails if any file under `packages/evidence/src`,
-`packages/council/src`, or `packages/council-node/src` imports a forbidden module (network,
-`child_process`, `vm`, authority/organism modules), and forbids `fs` everywhere except the
-sanctioned ledger file.
+`packages/council/src`, `packages/council-node/src`, or `packages/mind/src` imports a forbidden
+module (network, `child_process`, `vm`, authority/organism modules), and forbids `fs` everywhere
+except the sanctioned ledger file.
 
 ## Governance shape (what the adapters may and may not do)
 
@@ -52,6 +54,11 @@ sanctioned ledger file.
   audit trail. `apps/brain` demonstrates this over a **simulated** Convex backend, not live cloud.
 - **Fu — advice only.** The council produces a verdict with quorum geometry; it never signs,
   applies, or authorizes. In `apps/seed` the review is **mock/deterministic** — no live providers.
+- **Mind — advisory reasoning, never authority.** `@aukora/mind` is the pure
+  observe→hypothesize→act→verify loop; its only outlet is the caller-supplied `Env.act` port and
+  every trace payload stays `advisoryOnly` / `grantsAuthority:false`. `@aukora/mind` (the pure
+  reasoning-loop package) is distinct from the seed's mind DOOR — the governed HTTP surface in
+  `apps/seed`.
 - **Recursion — sandbox-only.** Change is proposed, grounded against real files, rehearsed in a
   sandbox, advisorily reviewed, refused on stale/secret/authority, owner-gated via AUMLOK, and
   applied only into an isolated sandbox with receipt + lineage. **No live-repo mutation.**
@@ -71,6 +78,7 @@ pinned by donor git-blob object hash (see [docs/PROVENANCE.md](docs/PROVENANCE.m
 - `@aukora/evidence`, `@aukora/council`, `@aukora/council-node` and the repo-level boundary/export
   smoke tests run under the root `vitest.config.ts` (`npm test`).
 - The organism suites run per-workspace under `npm run test:organism`: `@aukora/memory`,
-  `@aukora/brain` (including the `convex-test` simulated backend), `@aukora/seed`, `@aukora/console`.
+  `@aukora/mind`, `@aukora/brain` (including the `convex-test` simulated backend), `@aukora/seed`,
+  `@aukora/console`.
 - `npm run test:all` runs provenance + boundary + root + kernel + organism. No test count is
   borrowed from any external product suite.

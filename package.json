@@ -15,7 +15,7 @@
     "apps/*"
   ],
   "scripts": {
-    "boundary": "node scripts/check-canonical-boundary.mjs --src packages/evidence/src && node scripts/check-canonical-boundary.mjs --src packages/council/src && node scripts/check-canonical-boundary.mjs --src packages/council-node/src",
+    "boundary": "node scripts/check-canonical-boundary.mjs --src packages/evidence/src && node scripts/check-canonical-boundary.mjs --src packages/council/src && node scripts/check-canonical-boundary.mjs --src packages/council-node/src && node scripts/check-canonical-boundary.mjs --src packages/mind/src",
     "verify:provenance": "node scripts/verify-provenance.mjs",
     "test": "vitest run",
     "test:portable-boundary": "node scripts/verify-portable-boundary.mjs",
@@ -27,11 +27,12 @@
     "verify:kernel-package": "node scripts/verify-kernel-package.mjs",
     "test:kernel": "npm run test:portable-boundary && npm run typecheck:kernel && npm test --workspace @aukora/kernel && npm run build:kernel && npm run verify:kernel-compatibility && npm run verify:kernel-sbom && npm run verify:kernel-runtimes && npm run verify:kernel-package",
     "test:memory": "npm test --workspace @aukora/memory",
+    "test:mind": "npm test --workspace @aukora/mind",
     "test:brain": "npm test --workspace @aukora/brain",
     "test:seed": "npm test --workspace @aukora/seed",
     "test:console": "npm test --workspace @aukora/console",
     "fixture:console": "npm run build:kernel && npm run fixture --workspace @aukora/console && git diff --exit-code -- apps/console/public/fixture.json apps/console/public/fixture.js apps/console/docs/spatial-map.svg",
-    "test:organism": "npm run test:memory && npm run test:brain && npm run test:seed && npm run test:console && npm run test:spatial",
+    "test:organism": "npm run test:memory && npm run test:mind && npm run test:brain && npm run test:seed && npm run test:console && npm run test:spatial",
     "test:all": "npm run verify:provenance && npm run boundary && npm run test && npm run test:kernel && npm run test:organism && npm run fixture:console",
     "demo:organism": "npm run demo --workspace @aukora/seed",
     "test:spatial": "npm test --workspace @aukora/spatial"

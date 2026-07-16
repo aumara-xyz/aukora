@@ -34,6 +34,11 @@ absent. Only an exact, tested, independently reviewed integration head is promot
 | [`@aukora/council`](packages/council) | Fu: advisory multi-model council — seat verification, glyph parsing, quorum, spend estimation. **Grants no authority.** | pure, offline |
 | [`@aukora/council-node`](packages/council-node) | The one Node fs adapter: a persistent daily spend ledger, kept out of the pure council. | Node fs adapter |
 | [`@aukora/memory`](packages/memory) | KIRA: consent-scoped content-addressed memory envelope, deterministic recall, governed forgetting, staleness, advisory containment. | pure |
+| [`@aukora/mind`](packages/mind) | The pure observe→hypothesize→act→verify reasoning loop (advisory; authors proposals, grants nothing): governor rules, frame rendering, reply parsing, plan verification, parity-safe turn window, rollout over an injected simulator. | pure, offline |
+
+`@aukora/mind` (the pure reasoning-loop package) is distinct from the seed's mind DOOR — the
+governed HTTP surface in [`apps/seed`](apps/seed): the door owns I/O and composes governance,
+while the package is the portable reasoning law.
 
 ## Organism adapters (in-repo, demonstrated with honesty labels)
 
@@ -58,10 +63,10 @@ Individual gates:
 
 ```bash
 npm run verify:provenance   # canonical sources byte-identical to the reviewed donor
-npm run boundary            # evidence/council/council-node import no fs/network/authority
+npm run boundary            # evidence/council/council-node/mind import no fs/network/authority
 npm test                    # evidence + council + council-node + export/boundary smoke
 npm run test:kernel         # kernel: boundary, typecheck, tests, build, compat, SBOM, runtimes, package
-npm run test:organism       # memory + brain + seed + console + spatial
+npm run test:organism       # memory + mind + brain + seed + console + spatial
 ```
 
 ## Provenance and honesty
