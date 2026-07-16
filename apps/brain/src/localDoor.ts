@@ -19,18 +19,34 @@
  * ConvexHttpClient-backed IO (composeLive.ts).
  */
 import { createServer, type Server, type IncomingMessage, type ServerResponse } from 'node:http';
+import { CANONICAL_SEATS } from '@aukora/council';
 import { providerTruthTable } from './brainProvider.js';
 import { AUKORA_PORTS } from './ports.js';
+
+export type WorkflowPhaseFilter = 'awaiting-owner' | 'applied' | 'refused' | 'cancelled';
 
 export interface DoorBackend {
   health(): Promise<unknown>;
   snapshot(): Promise<unknown>;
   workflow(workflowId: string): Promise<unknown>;
+  /** Current workflow projections, most recent first, optionally filtered by phase. */
+  listWorkflows(phase?: WorkflowPhaseFilter): Promise<unknown>;
+  /** Live memory recall projection (read-only). */
+  recall(text: string): Promise<unknown>;
   receiptStream(rehearsalKey?: string): Promise<unknown>;
   cancelRehearsal(key: string): Promise<unknown>;
   cancelImpulse(impulseId: string): Promise<unknown>;
+  /**
+   * REACTIVE seam (optional): subscribe to snapshot changes; the callback fires on every change until the
+   * returned unsubscribe runs. Injected by the live wiring (a Convex WebSocket client) or a test fake — the
+   * door itself stays vendor-free. Absent ⇒ /events responds 501.
+   */
+  subscribeSnapshot?(onChange: (snapshot: unknown) => void): () => void;
 }
 
+// ORIGIN-CLOSED by construction: no Access-Control-Allow-* header is ever emitted, so a browser page on any
+// origin cannot read this door. Consumers (Spatial shell, chat door) call it from their own LOCAL server-side
+// processes over loopback — never from browser JS.
 const JSON_HEADERS = { 'content-type': 'application/json', 'x-aukora-source': 'live', 'x-aukora-grants-authority': 'false' } as const;
 
 function send(res: ServerResponse, status: number, body: unknown): void {
@@ -63,6 +79,30 @@ export async function handleDoorRequest(backend: DoorBackend, req: IncomingMessa
         return state === null ? send(res, 404, { error: 'unknown workflow' }) : send(res, 200, state);
       }
       if (path === '/receipts') return send(res, 200, await backend.receiptStream(url.searchParams.get('rehearsalKey') ?? undefined));
+      if (path === '/workflows') {
+        const phase = url.searchParams.get('phase');
+        const valid = phase === null || ['awaiting-owner', 'applied', 'refused', 'cancelled'].includes(phase);
+        if (!valid) return send(res, 400, { error: 'invalid phase' });
+        return send(res, 200, await backend.listWorkflows((phase ?? undefined) as WorkflowPhaseFilter | undefined));
+      }
+      if (path === '/memory/recall') return send(res, 200, await backend.recall(url.searchParams.get('text') ?? ''));
+      // Fu projection: the canonical council roster + the resolved provider truth (advisory display only).
+      if (path === '/fu') return send(res, 200, { seats: CANONICAL_SEATS, providerTruth: providerTruthTable(), grantsAuthority: false });
+      // AUMLOK projection: what is WAITING on the owner. Authority itself lives outside — this is a view.
+      if (path === '/aumlok') return send(res, 200, { awaitingOwner: await backend.listWorkflows('awaiting-owner'), authorityLocation: 'kernel/AUMLOK (outside and above Convex)', grantsAuthority: false });
+      // Candidate projection: applied governed-recursion workflows — the PR-candidate outputs.
+      if (path === '/candidates') return send(res, 200, { applied: await backend.listWorkflows('applied'), egress: 'pr-candidate-only', grantsAuthority: false });
+      // REACTIVE stream: Server-Sent Events over the injected subscription seam.
+      if (path === '/events') {
+        if (!backend.subscribeSnapshot) return send(res, 501, { error: 'reactive seam not wired (no subscribeSnapshot injected)' });
+        res.writeHead(200, { 'content-type': 'text/event-stream', 'cache-control': 'no-cache', 'x-aukora-source': 'live', 'x-aukora-grants-authority': 'false' });
+        res.write(': connected\n\n'); // flush headers immediately so clients resolve before the first event
+        const unsubscribe = backend.subscribeSnapshot((snapshot) => {
+          res.write(`event: snapshot\ndata: ${JSON.stringify(snapshot)}\n\n`);
+        });
+        req.on('close', unsubscribe);
+        return;
+      }
     }
     if (req.method === 'POST') {
       if (path === '/control/cancel-rehearsal') {
