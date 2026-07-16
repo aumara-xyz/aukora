@@ -23,6 +23,11 @@
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --config vitest.config.ts",
     "verify": "tsc -p tsconfig.json && vitest run --config vitest.config.ts",
-    "dev:local": "convex dev"
+    "dev:local": "convex dev",
+    "local:up": "convex dev --once --codegen disable --typecheck disable",
+    "local:hold": "convex dev --tail-logs disable --codegen disable --typecheck disable",
+    "local:health": "convex run memory:health",
+    "local:down": "pkill -f convex-local-backend || true",
+    "compose:live": "AUKORA_LIVE_COMPOSE=1 vitest run --config vitest.config.ts test/live.compose.test.ts"
   }
 }
