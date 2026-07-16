@@ -13,7 +13,7 @@
  *    binding door :7095) is reserved and never bound.
  */
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -85,5 +85,92 @@ describe('launcher port law', () => {
     expect(launcher).toMatch(/CANONICAL = 7096/);
     expect(launcher).toMatch(/RESERVED = new Set\(\[7090, 7091, 7092, 7093, 7094, 7095\]\)/);
     expect(launcher).toMatch(/EADDRINUSE/);
+  });
+});
+
+// ── R35 §8: exact import graph — every static /app/* module import resolves to a file ──────────
+function walkJs(dir, out = []) {
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name);
+    if (e.isDirectory()) walkJs(p, out);
+    else if (e.name.endsWith('.js')) out.push(p);
+  }
+  return out;
+}
+
+describe('R35 exact import graph', () => {
+  const appDir = join(base, 'app');
+  const files = walkJs(appDir);
+  it('every static import specifier in the app resolves to an existing file', () => {
+    const missing = [];
+    for (const f of files) {
+      const src = readFileSync(f, 'utf8');
+      for (const m of src.matchAll(/(?:^|\n)\s*(?:import[\s\S]*?from\s*|import\s*\(\s*|export[\s\S]*?from\s*)['"]([^'"]+)['"]/g)) {
+        const spec = m[1];
+        let target = null;
+        if (spec.startsWith('/app/')) target = join(base, spec.slice(1));
+        else if (spec.startsWith('./') || spec.startsWith('../')) target = join(dirname(f), spec);
+        else continue; // bare specifiers (none expected in a browser app)
+        if (!existsSync(target)) missing.push(f.replace(base + '/', '') + ' → ' + spec);
+      }
+    }
+    expect(missing, 'dangling imports after subtraction:\n' + missing.join('\n')).toEqual([]);
+  });
+  it('the CONSOLE organ script/style loads resolve', () => {
+    const consoleJs = readFileSync(join(base, 'app', 'console.js'), 'utf8');
+    for (const m of consoleJs.matchAll(/['"]\/app\/console\/([a-z.]+)['"]/g)) {
+      expect(existsSync(join(base, 'app', 'console', m[1])), m[1]).toBe(true);
+    }
+  });
+  it('index.html boots the donor shell module', () => {
+    const html = readFileSync(join(base, 'app', 'index.html'), 'utf8');
+    expect(html).toMatch(/<script type="module" src="\/app\/shell.js"><\/script>/);
+    expect(existsSync(join(base, 'app', 'shell.js'))).toBe(true);
+  });
+});
+
+// ── R35 §8: loopback-only AUMA LIVE (and the whole selected closure) ────────────────────────────
+describe('R35 loopback law — no external network in the selected closure', () => {
+  const appDir = join(base, 'app');
+  const files = walkJs(appDir);
+  it('every WebSocket/EventSource endpoint literal in the app is loopback', () => {
+    const bad = [];
+    for (const f of files) {
+      const src = readFileSync(f, 'utf8');
+      for (const m of src.matchAll(/wss?:\/\/([^'"`\s/]+)/g)) {
+        if (!m[1].startsWith('127.0.0.1') && !m[1].startsWith('localhost')) bad.push(f + ' → ' + m[0]);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+  it('AUMA LIVE (duplex voice) and the chat door speak loopback only', () => {
+    for (const name of ['aumalive.js', 'aumalive-audio.js', 'knvs-duplex.js', 'chat.js']) {
+      const src = readFileSync(join(appDir, name), 'utf8');
+      for (const m of src.matchAll(/(https?|wss?):\/\/([^'"`\s/]+)/g)) {
+        expect(m[2].startsWith('127.0.0.1') || m[2].startsWith('www.w3.org'), name + ' → ' + m[0]).toBe(true);
+      }
+    }
+  });
+  it('non-loopback fetch targets exist only in the UNSELECTED wolf organ (unreachable from the registry)', () => {
+    const offenders = [];
+    for (const f of files) {
+      if (f.includes('/wolf/')) continue; // unselected organ, removed from the registry; files retained per subtraction law
+      const src = readFileSync(f, 'utf8');
+      for (const m of src.matchAll(/fetch\(\s*[`'"](https?:\/\/[^'"`]+)/g)) {
+        const host = m[1].replace(/^https?:\/\//, '').split('/')[0];
+        if (!host.startsWith('127.0.0.1') && !host.startsWith('localhost')) offenders.push(f + ' → ' + m[1]);
+      }
+    }
+    expect(offenders).toEqual([]);
+    // and wolf itself stays out of the registry (asserted above) — belt and braces on the data hosts:
+    const wolfLive = readFileSync(join(appDir, 'wolf', 'wolf-live.js'), 'utf8');
+    expect(wolfLive).toMatch(/api\.kraken\.com/); // documented retained donor file
+  });
+  it('no key-shaped material ships in the app', () => {
+    for (const f of files) {
+      const src = readFileSync(f, 'utf8');
+      expect(src).not.toMatch(/sk-or-v1-[A-Za-z0-9]{20}/);
+      expect(src).not.toMatch(/BEGIN [A-Z ]*PRIVATE KEY/);
+    }
   });
 });
