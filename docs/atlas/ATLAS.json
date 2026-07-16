@@ -50,9 +50,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote recursiveWorkbench.ts, workbenchCommandLoop.ts, sandbox{TestRunner,Apply,ApplyPermit,EngineBridge}.ts, openCodeSandbox*.ts, sandboxPreviewPlan.ts",
+      "current_paths": "apps/seed {recursion,durableRecursion}.ts + ideEnvelope + localCandidateStage (disposable git worktree; kernel decide() authorizes; PROVEN_SUPERSESSION per Sam 3 comparative isolation tests)",
+      "dependencies": "proposal → rehearsal → Fu advisory → AUMLOK decide() → isolated worktree → receipts; no push/merge surface exists",
       "disagreement": null
     },
     {
@@ -67,9 +67,9 @@
       "disposition": "CORE_NOW",
       "implementation_evidence": "SHA+TESTS: protected deterministic supervisor + one gateway (PR #61)",
       "evidence_grade": "SHA+TESTS",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": "merged main b17a3f8",
-      "dependencies": "see family",
+      "donor_paths": "symbiote docs/CONVEX_CANONICAL_BRAIN_SPEC.md (blob a3af164bef32…, 16690B) + donor issues #71/#26",
+      "current_paths": "Wave 2 protected deterministic supervisor + one gateway (PR #61); apps/brain scripts/local-ctl.mjs (PID-scoped up/hold/health/status/down)",
+      "dependencies": "supervisor owns lifecycle; adaptive organs cannot command it; gateway preserves tiny reference monitor",
       "disagreement": null
     },
     {
@@ -84,9 +84,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote memory/memory.ts (blob 46eff426…), convex/aumlokMemory.ts (5fc75be6…), memory categories episodeMemory/hypothesisMemory/mdlProcessMemory/structuralMemory (f32bcede…), womb-memory chain",
+      "current_paths": "packages/memory (KIRA envelope + one-law staleness re-export); apps/brain content-free chain + governed forgetting + Wave 2 signed continuity/attestation (PR #61); KIRA classes ROOT/UNITE/RISE/GOLD",
+      "dependencies": "KIRA classifier → Convex store (persists only) → signed heads/attestation → migration bridge for legacy rows; P1 gap: donor memory categories as runtimes",
       "disagreement": null
     },
     {
@@ -101,9 +101,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote memory/memory.ts (blob 46eff426…), convex/aumlokMemory.ts (5fc75be6…), memory categories episodeMemory/hypothesisMemory/mdlProcessMemory/structuralMemory (f32bcede…), womb-memory chain",
+      "current_paths": "packages/memory (KIRA envelope + one-law staleness re-export); apps/brain content-free chain + governed forgetting + Wave 2 signed continuity/attestation (PR #61); KIRA classes ROOT/UNITE/RISE/GOLD",
+      "dependencies": "KIRA classifier → Convex store (persists only) → signed heads/attestation → migration bridge for legacy rows; P1 gap: donor memory categories as runtimes",
       "disagreement": null
     },
     {
@@ -118,9 +118,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote memory/memory.ts (blob 46eff426…), convex/aumlokMemory.ts (5fc75be6…), memory categories episodeMemory/hypothesisMemory/mdlProcessMemory/structuralMemory (f32bcede…), womb-memory chain",
+      "current_paths": "packages/memory (KIRA envelope + one-law staleness re-export); apps/brain content-free chain + governed forgetting + Wave 2 signed continuity/attestation (PR #61); KIRA classes ROOT/UNITE/RISE/GOLD",
+      "dependencies": "KIRA classifier → Convex store (persists only) → signed heads/attestation → migration bridge for legacy rows; P1 gap: donor memory categories as runtimes",
       "disagreement": null
     },
     {
@@ -135,9 +135,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote docs/CONVEX_CANONICAL_BRAIN_SPEC.md (blob a3af164bef32…, 16690B) + donor issues #71/#26",
+      "current_paths": "Wave 2 protected deterministic supervisor + one gateway (PR #61); apps/brain scripts/local-ctl.mjs (PID-scoped up/hold/health/status/down)",
+      "dependencies": "supervisor owns lifecycle; adaptive organs cannot command it; gateway preserves tiny reference monitor",
       "disagreement": null
     },
     {
@@ -152,9 +152,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "aukora-kernel authority.ts/reducer.ts (verifyAumlokPromotionV2, decide()); symbiote aumlokApprove{Ceremony,Challenge,Guard}.ts, aumlokBondCeremony.ts, aumlokSigningAssistant.ts, approval/authority roots",
+      "current_paths": "packages/kernel/src/{authority,reducer}.ts (EXACT_PORT); apps/seed aumlokGate + candidateReferenceMonitor; Wave 2 ceremony/custody membrane (PR #61)",
+      "dependencies": "kernel hybrid verify → ceremony membrane → reference monitor; custody out-of-tree (hash-verified)",
       "disagreement": null
     },
     {
@@ -169,9 +169,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "aukora-kernel authority.ts/reducer.ts (verifyAumlokPromotionV2, decide()); symbiote aumlokApprove{Ceremony,Challenge,Guard}.ts, aumlokBondCeremony.ts, aumlokSigningAssistant.ts, approval/authority roots",
+      "current_paths": "packages/kernel/src/{authority,reducer}.ts (EXACT_PORT); apps/seed aumlokGate + candidateReferenceMonitor; Wave 2 ceremony/custody membrane (PR #61)",
+      "dependencies": "kernel hybrid verify → ceremony membrane → reference monitor; custody out-of-tree (hash-verified)",
       "disagreement": null
     },
     {
@@ -186,9 +186,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "aukora-kernel authority.ts/reducer.ts (verifyAumlokPromotionV2, decide()); symbiote aumlokApprove{Ceremony,Challenge,Guard}.ts, aumlokBondCeremony.ts, aumlokSigningAssistant.ts, approval/authority roots",
+      "current_paths": "packages/kernel/src/{authority,reducer}.ts (EXACT_PORT); apps/seed aumlokGate + candidateReferenceMonitor; Wave 2 ceremony/custody membrane (PR #61)",
+      "dependencies": "kernel hybrid verify → ceremony membrane → reference monitor; custody out-of-tree (hash-verified)",
       "disagreement": null
     },
     {
@@ -1614,9 +1614,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote recursiveWorkbench.ts, workbenchCommandLoop.ts, sandbox{TestRunner,Apply,ApplyPermit,EngineBridge}.ts, openCodeSandbox*.ts, sandboxPreviewPlan.ts",
+      "current_paths": "apps/seed {recursion,durableRecursion}.ts + ideEnvelope + localCandidateStage (disposable git worktree; kernel decide() authorizes; PROVEN_SUPERSESSION per Sam 3 comparative isolation tests)",
+      "dependencies": "proposal → rehearsal → Fu advisory → AUMLOK decide() → isolated worktree → receipts; no push/merge surface exists",
       "disagreement": null
     },
     {
@@ -1631,9 +1631,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote memory/memory.ts (blob 46eff426…), convex/aumlokMemory.ts (5fc75be6…), memory categories episodeMemory/hypothesisMemory/mdlProcessMemory/structuralMemory (f32bcede…), womb-memory chain",
+      "current_paths": "packages/memory (KIRA envelope + one-law staleness re-export); apps/brain content-free chain + governed forgetting + Wave 2 signed continuity/attestation (PR #61); KIRA classes ROOT/UNITE/RISE/GOLD",
+      "dependencies": "KIRA classifier → Convex store (persists only) → signed heads/attestation → migration bridge for legacy rows; P1 gap: donor memory categories as runtimes",
       "disagreement": null
     },
     {
@@ -1648,9 +1648,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote memory/memory.ts (blob 46eff426…), convex/aumlokMemory.ts (5fc75be6…), memory categories episodeMemory/hypothesisMemory/mdlProcessMemory/structuralMemory (f32bcede…), womb-memory chain",
+      "current_paths": "packages/memory (KIRA envelope + one-law staleness re-export); apps/brain content-free chain + governed forgetting + Wave 2 signed continuity/attestation (PR #61); KIRA classes ROOT/UNITE/RISE/GOLD",
+      "dependencies": "KIRA classifier → Convex store (persists only) → signed heads/attestation → migration bridge for legacy rows; P1 gap: donor memory categories as runtimes",
       "disagreement": null
     },
     {
@@ -1665,9 +1665,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote recursiveWorkbench.ts, workbenchCommandLoop.ts, sandbox{TestRunner,Apply,ApplyPermit,EngineBridge}.ts, openCodeSandbox*.ts, sandboxPreviewPlan.ts",
+      "current_paths": "apps/seed {recursion,durableRecursion}.ts + ideEnvelope + localCandidateStage (disposable git worktree; kernel decide() authorizes; PROVEN_SUPERSESSION per Sam 3 comparative isolation tests)",
+      "dependencies": "proposal → rehearsal → Fu advisory → AUMLOK decide() → isolated worktree → receipts; no push/merge surface exists",
       "disagreement": null
     },
     {
@@ -1682,9 +1682,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote recursiveWorkbench.ts, workbenchCommandLoop.ts, sandbox{TestRunner,Apply,ApplyPermit,EngineBridge}.ts, openCodeSandbox*.ts, sandboxPreviewPlan.ts",
+      "current_paths": "apps/seed {recursion,durableRecursion}.ts + ideEnvelope + localCandidateStage (disposable git worktree; kernel decide() authorizes; PROVEN_SUPERSESSION per Sam 3 comparative isolation tests)",
+      "dependencies": "proposal → rehearsal → Fu advisory → AUMLOK decide() → isolated worktree → receipts; no push/merge surface exists",
       "disagreement": null
     },
     {
@@ -1699,9 +1699,9 @@
       "disposition": "RESTORE_DONOR",
       "implementation_evidence": "directive-named core family; donor capability, no landed counterpart proof",
       "evidence_grade": "PROSE",
-      "donor_paths": "see private forensics + sensitive ledger",
-      "current_paths": null,
-      "dependencies": "see family",
+      "donor_paths": "symbiote memory/memory.ts (blob 46eff426…), convex/aumlokMemory.ts (5fc75be6…), memory categories episodeMemory/hypothesisMemory/mdlProcessMemory/structuralMemory (f32bcede…), womb-memory chain",
+      "current_paths": "packages/memory (KIRA envelope + one-law staleness re-export); apps/brain content-free chain + governed forgetting + Wave 2 signed continuity/attestation (PR #61); KIRA classes ROOT/UNITE/RISE/GOLD",
+      "dependencies": "KIRA classifier → Convex store (persists only) → signed heads/attestation → migration bridge for legacy rows; P1 gap: donor memory categories as runtimes",
       "disagreement": null
     },
     {
@@ -4328,6 +4328,11 @@
       "checkpoint": 1,
       "action": "verified 10 DONE_UNVERIFIED closures via donor issue timelines",
       "result": "9 → DONE_VERIFIED (SHA refs recorded), 1 → RESTORE_DONOR (no trace)"
+    },
+    {
+      "checkpoint": 2,
+      "action": "enriched directive-named families with donor/current paths + dependencies from public Wave 1 forensics",
+      "rows_enriched": 15
     }
   ]
 }
