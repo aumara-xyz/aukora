@@ -78,6 +78,18 @@ export const ingestValidated = internalMutation({
     if (r === null) return { ok: false, refusal: 'refused: malformed or authority-shaped memory' };
     const chain = await chainRows(ctx);
     if (chain.length > 0 && !chainVerdict(chain).valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
+    // IDEMPOTENT IMPULSE (R34): the same content-addressed record ingested twice is ONE memory. A live
+    // (non-forgotten) row with this recordId already carries the identical content commitment, so re-ingest
+    // returns the existing receipt instead of appending a duplicate — safe under retries.
+    const existingRows = await ctx.db.query('memoryChain').withIndex('by_record', (q: any) => q.eq('recordId', r.recordId)).collect();
+    const liveExisting = existingRows.find((row: any) => row.kind === 'memory' && row.content !== undefined);
+    if (liveExisting) {
+      const forgotten = await ctx.db.query('forgotten').withIndex('by_record', (q: any) => q.eq('recordId', r.recordId)).first();
+      if (!forgotten) {
+        const snapshot = await recompute(ctx);
+        return { ok: true, recordId: r.recordId, chainHash: liveExisting.chainHash, snapshot, idempotent: true };
+      }
+    }
     const prevHash = chain.length ? chain[chain.length - 1].chainHash : null;
     // receipt-before-row: the receipt (chainHash) is computed BEFORE the row is written and stored ON it, so a
     // memoryChain row can never exist without its receipt.
@@ -181,6 +193,99 @@ export const scheduledStatus = query({
   handler: async (ctx, { scheduledId }) => {
     const doc = await ctx.db.system.get(scheduledId);
     return doc ? { state: doc.state.kind, name: doc.name, scheduledTime: doc.scheduledTime } : null;
+  },
+});
+
+// ── DURABLE IMPULSES (R34) ─────────────────────────────────────────────────────────────────────────────────
+// Scheduled work with explicit retry state, cancellation, a fail-closed spend ceiling, and receipt linkage.
+// All rows are advisory; nothing here grants authority.
+
+const DEFAULT_IMPULSE_BUDGET = 64;
+
+async function budgetRow(ctx: any) {
+  const existing = await ctx.db.query('impulseBudget').first();
+  if (existing) return existing;
+  const id = await ctx.db.insert('impulseBudget', { remaining: DEFAULT_IMPULSE_BUDGET });
+  return await ctx.db.get(id);
+}
+
+// ATOMIC REFLEX: schedule a durable impulse. Fail-closed on an exhausted spend ceiling; every scheduled RUN
+// (including retries) decrements the budget at run time, so retries cannot bypass the ceiling.
+export const scheduleImpulse = mutation({
+  args: { name: v.string(), delayMs: v.number(), maxAttempts: v.number(), failFirstAttempts: v.optional(v.number()) },
+  handler: async (ctx, { name, delayMs, maxAttempts, failFirstAttempts }) => {
+    if (!Number.isInteger(maxAttempts) || maxAttempts < 1 || maxAttempts > 16) return { ok: false, refusal: 'refused: maxAttempts must be 1..16' };
+    const budget = await budgetRow(ctx);
+    if (budget.remaining <= 0) return { ok: false, refusal: 'refused: impulse spend ceiling exhausted (fail-closed)' };
+    const impulseId = await ctx.db.insert('impulses', {
+      name, status: 'pending', attempts: 0, maxAttempts, scheduledId: null, lastError: null,
+      chainHeadAtCompletion: null, advisoryOnly: true, grantsAuthority: false,
+    });
+    const scheduledId = await ctx.scheduler.runAfter(delayMs, internal.memory.runImpulse, { impulseId, failFirstAttempts: failFirstAttempts ?? 0 });
+    await ctx.db.patch(impulseId, { scheduledId });
+    return { ok: true, impulseId };
+  },
+});
+
+// DELAYED IMPULSE runner (internal): decrements the budget, records retry state, retries itself with backoff
+// until maxAttempts, and on success links the observed chain head (receipt linkage, content-free).
+// `failFirstAttempts` exists so tests can exercise REAL retry behaviour deterministically.
+export const runImpulse = internalMutation({
+  args: { impulseId: v.id('impulses'), failFirstAttempts: v.number() },
+  handler: async (ctx, { impulseId, failFirstAttempts }) => {
+    const impulse = await ctx.db.get(impulseId);
+    if (!impulse || impulse.status === 'cancelled') return { ok: false, refusal: 'impulse missing or cancelled' };
+    const budget = await budgetRow(ctx);
+    if (budget.remaining <= 0) {
+      await ctx.db.patch(impulseId, { status: 'failed', lastError: 'spend ceiling exhausted' });
+      return { ok: false, refusal: 'refused: impulse spend ceiling exhausted (fail-closed)' };
+    }
+    await ctx.db.patch(budget._id, { remaining: budget.remaining - 1 });
+    const attempt = impulse.attempts + 1;
+    if (attempt <= failFirstAttempts) {
+      // deterministic simulated failure → real retry path
+      if (attempt >= impulse.maxAttempts) {
+        await ctx.db.patch(impulseId, { status: 'failed', attempts: attempt, lastError: `attempt ${attempt} failed; maxAttempts reached` });
+        return { ok: false, refusal: 'failed: maxAttempts reached' };
+      }
+      const scheduledId = await ctx.scheduler.runAfter(2 ** attempt * 100, internal.memory.runImpulse, { impulseId, failFirstAttempts });
+      await ctx.db.patch(impulseId, { status: 'pending', attempts: attempt, scheduledId, lastError: `attempt ${attempt} failed; retrying` });
+      return { ok: false, retrying: true, attempt };
+    }
+    // the impulse's work: recompute the reactive snapshot (heartbeat semantics), then link the chain head.
+    const snap = await recompute(ctx);
+    await ctx.db.patch(impulseId, { status: 'success', attempts: attempt, chainHeadAtCompletion: snap.headHash, lastError: null });
+    return { ok: true, attempt };
+  },
+});
+
+// ATOMIC REFLEX: cancel a pending impulse — cancels the underlying scheduled function too.
+export const cancelImpulse = mutation({
+  args: { impulseId: v.id('impulses') },
+  handler: async (ctx, { impulseId }) => {
+    const impulse = await ctx.db.get(impulseId);
+    if (!impulse) return { ok: false, refusal: 'refused: unknown impulse' };
+    if (impulse.status === 'success' || impulse.status === 'failed') return { ok: false, refusal: `refused: impulse already ${impulse.status}` };
+    if (impulse.scheduledId) await ctx.scheduler.cancel(impulse.scheduledId as any);
+    await ctx.db.patch(impulseId, { status: 'cancelled' });
+    return { ok: true };
+  },
+});
+
+// SENSES over impulses + budget. Read-only.
+export const impulseStatus = query({
+  args: { impulseId: v.id('impulses') },
+  handler: async (ctx, { impulseId }) => {
+    const i = await ctx.db.get(impulseId);
+    return i ? { name: i.name, status: i.status, attempts: i.attempts, maxAttempts: i.maxAttempts, lastError: i.lastError, chainHeadAtCompletion: i.chainHeadAtCompletion } : null;
+  },
+});
+
+export const impulseBudgetRemaining = query({
+  args: {},
+  handler: async (ctx) => {
+    const b = await ctx.db.query('impulseBudget').first();
+    return { remaining: b ? b.remaining : DEFAULT_IMPULSE_BUDGET };
   },
 });
 

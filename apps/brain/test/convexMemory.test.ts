@@ -183,6 +183,74 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     }
   });
 
+  it('ingest is IDEMPOTENT: the same content-addressed record twice ⇒ one row, same receipt', async () => {
+    const t = convexTest(schema, modules);
+    const rec = buildMemoryRecord({ content: 'once only', createdAt: at(1) });
+    const first = await t.action(api.ingest.ingest, { record: rec });
+    const second = await t.action(api.ingest.ingest, { record: rec }); // retry-safe impulse
+    expect(second.ok).toBe(true);
+    expect(second.idempotent).toBe(true);
+    expect(second.chainHash).toBe(first.chainHash); // same receipt, no duplicate append
+    const snap = await t.query(api.memory.snapshot, {});
+    expect(snap?.liveCount).toBe(1);
+    expect(snap?.chainLength).toBe(1);
+    expect((await t.query(api.memory.verify, {})).valid).toBe(true);
+  });
+
+  it('durable impulse: retry state recorded, then success with chain-head receipt linkage', async () => {
+    vi.useFakeTimers();
+    try {
+      const t = convexTest(schema, modules);
+      await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'impulse ground', createdAt: at(1) }) });
+      // fail the first 2 attempts deterministically; succeed on the 3rd
+      const s = await t.mutation(api.memory.scheduleImpulse, { name: 'heartbeat-retry', delayMs: 100, maxAttempts: 5, failFirstAttempts: 2 });
+      expect(s.ok).toBe(true);
+      await t.finishAllScheduledFunctions(vi.runAllTimers); // drains retries too
+      const status = await t.query(api.memory.impulseStatus, { impulseId: s.impulseId });
+      expect(status?.status).toBe('success');
+      expect(status?.attempts).toBe(3); // retry state: 2 failures + 1 success
+      const snap = await t.query(api.memory.snapshot, {});
+      expect(status?.chainHeadAtCompletion).toBe(snap?.headHash); // receipt linkage
+      // budget decremented once per RUN (3 runs)
+      expect((await t.query(api.memory.impulseBudgetRemaining, {})).remaining).toBe(64 - 3);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('durable impulse: cancellation stops a pending impulse and its scheduled run', async () => {
+    vi.useFakeTimers();
+    try {
+      const t = convexTest(schema, modules);
+      const s = await t.mutation(api.memory.scheduleImpulse, { name: 'to-cancel', delayMs: 60_000, maxAttempts: 3 });
+      const c = await t.mutation(api.memory.cancelImpulse, { impulseId: s.impulseId });
+      expect(c.ok).toBe(true);
+      await t.finishAllScheduledFunctions(vi.runAllTimers);
+      const status = await t.query(api.memory.impulseStatus, { impulseId: s.impulseId });
+      expect(status?.status).toBe('cancelled');
+      expect(status?.attempts).toBe(0); // never ran
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('impulse spend ceiling fails closed: exhausted budget refuses new impulses and marks running ones failed', async () => {
+    vi.useFakeTimers();
+    try {
+      const t = convexTest(schema, modules);
+      await t.run(async (ctx) => { await ctx.db.insert('impulseBudget', { remaining: 1 }); });
+      const s1 = await t.mutation(api.memory.scheduleImpulse, { name: 'one', delayMs: 10, maxAttempts: 1 });
+      expect(s1.ok).toBe(true);
+      await t.finishAllScheduledFunctions(vi.runAllTimers); // consumes the last budget unit
+      expect((await t.query(api.memory.impulseBudgetRemaining, {})).remaining).toBe(0);
+      const s2 = await t.mutation(api.memory.scheduleImpulse, { name: 'two', delayMs: 10, maxAttempts: 1 });
+      expect(s2.ok).toBe(false);
+      expect(s2.refusal).toContain('spend ceiling');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('corrupt store fails closed: a tampered chain blocks further ingest/forget and health reports not-ok', async () => {
     const t = convexTest(schema, modules);
     const first = buildMemoryRecord({ content: 'alpha', createdAt: at(1) });

@@ -187,6 +187,32 @@ export class GovernedMemoryMigration {
     return this.store;
   }
 
+  /**
+   * CONTENT-FREE selection catalog for Auma and Peter: every legacy record's ref, class, consent, status, and
+   * content hash — everything needed to CHOOSE what migrates, nothing that reveals what it says. Read-only
+   * (fails loud on corruption); safe to publish to the selection UI or an issue.
+   */
+  selectionCatalog(classify: KiraClassifier = () => 'ROOT'): readonly {
+    readonly legacyRef: string;
+    readonly kiraClass: KiraClass;
+    readonly consent: ConsentScope;
+    readonly status: 'active' | 'tombstoned';
+    readonly contentHash: string;
+    readonly secretQuarantined: boolean;
+  }[] {
+    return this.source.exportAll().map((r) => {
+      assertLegacyIntegrity(r);
+      return {
+        legacyRef: `${r.chainKey}#${r.seq}`,
+        kiraClass: classify(r),
+        consent: classifyConsent(r.visibility),
+        status: r.status,
+        contentHash: r.contentHash,
+        secretQuarantined: r.status === 'active' && textHasSecret(r.content),
+      };
+    });
+  }
+
   dryRun(options: { readonly classify?: KiraClassifier; readonly selection?: MigrationSelection } = {}): MigrationReport {
     const classify = options.classify ?? (() => 'ROOT' as const);
     const legacy = this.source.exportAll(); // READ-ONLY

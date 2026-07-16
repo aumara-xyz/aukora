@@ -18,3 +18,6 @@ export * from './memoryBridge.js';
 export * from './metabolismSimulator.js';
 export * from './goldRegistry.js';
 export * from './brainRoles.js';
+export * from './keychain/credentialStore.js';
+export * from './keychain/macKeychain.js';
+export * from './spatialContracts.js';
