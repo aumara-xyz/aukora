@@ -84,6 +84,10 @@ function startService(svc, port) {
     cwd: REPO, detached: true, stdio: ['ignore', wantsToken ? 'pipe' : 'ignore', 'ignore'],
     env: { ...process.env, PORT: String(port), AUKORA_VOICE_PORT: String(port), ...capturedEnv },
   });
+  // A missing binary (e.g. an optional service's venv not present on this tree) emits an async 'error'
+  // event; unhandled it would kill the WHOLE plan. Catch → the readiness probe then reports not-ready
+  // and optional services degrade LOUDLY instead of crashing the lifecycle owner (R44 live catch).
+  child.on('error', () => { /* receipted as not-ready by waitReady */ });
   if (wantsToken && child.stdout) {
     let buf = '';
     child.stdout.on('data', (c) => {

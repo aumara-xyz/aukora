@@ -130,6 +130,10 @@ describe('manifest is a claim + protected class', () => {
     expect(gw).toMatch(/aumlok\|ceremony\|bind\|approve/);
     expect(gw).not.toMatch(/Access-Control-Allow-Origin/);
   });
+  it('spawn failure of an optional service cannot kill the plan (R44 live catch)', () => {
+    const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
+    expect(sup).toMatch(/child\.on\('error'/);
+  });
   it('the supervisor has no network control surface and no signing/promotion verbs anywhere', () => {
     const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
     expect(sup).not.toMatch(/createServer|listen\(/);
