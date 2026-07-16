@@ -58,3 +58,11 @@ donor at :7090.
 | shell intact after subtraction | all 10 roster organs mounted live with zero runtime errors (▲ Auma·Live, Auma·Lingwa · ■ AUMLOK, AURA, Kira, Map, GHP, Console, Settings · ● App Lab); thirds/corners law re-verified |
 | port map | :7090 donor · :7091 donor chat · :7092 donor voice · :7093 arc3 · :7094 gate · :7095 bind · **:7096 this organism** (fallback :7099) · **:7097 new chat door** · **:7098 new voice** · **:3210/:3211 brain door** |
 | blocker (live door evidence) | the local Convex backend refuses the function push on Node v26 (supports 18/20/22/24): `DeploymentNotConfiguredForNodeActions`. The reactive-read seam + loud offline are fully proven; end-to-end live door needs a supported Node (nvm 22) or Sam 2 guidance |
+
+## R38 — new duplex voice sidecar :7098 + canonical brain door :7141
+| proof | result |
+| --- | --- |
+| voice sidecar | donor `spatial/voice` transplanted to `apps/spatial/voice` — Silero VAD, one-decode Whisper (MLX, faster-whisper fallback), streaming Kokoro TTS, barge-in cancel; **:7098**, loopback-only, Origin-checked to the NEW shell (7096/7099) only; zero egress at runtime; no keys (tested) |
+| mind boundary | the sidecar is pure audio — mind work flows browser → NEW governed door **:7097** (aumalive.js, R37); donor `:7091`/`:7092` dialable nowhere (tested) |
+| projections | launcher now reads the CANONICAL brain door **:7141** (`localDoor.ts` GET /health /snapshot /truth /receipts) reactively per request — raw Convex is behind the door; full outage → loud 503, partial → `door-degraded` with missing senses named (tested) |
+| display law | full workflow reason vocabulary displayed; Fu = proposal-bound advisory; AUMLOK = presence BOOLEANS only; receipts/candidates as door links; display never authorizes (fence tested client+server) |

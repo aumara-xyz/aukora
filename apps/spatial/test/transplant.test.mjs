@@ -29,11 +29,13 @@ const consoleJs = readFileSync(join(base, 'app', 'console.js'), 'utf8');
 const shipped = manifest.files.filter((f) => f.status !== 'EXCLUDED');
 const excluded = manifest.files.filter((f) => f.status === 'EXCLUDED');
 
+const WALK_IGNORE = new Set(['.venv', 'models', '__pycache__', 'node_modules']); // gitignored voice runtime artefacts
 function walkFiles(dir, out = []) {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
+    if (WALK_IGNORE.has(e.name)) continue;
     const p = join(dir, e.name);
     if (e.isDirectory()) walkFiles(p, out);
-    else out.push(p);
+    else if (!e.name.endsWith('.pyc')) out.push(p);
   }
   return out;
 }
@@ -66,7 +68,7 @@ describe('provenance integrity (v2 — with exclusions)', () => {
       expect(excluded.some((f) => f.path.endsWith(gone)), gone + ' should be excluded').toBe(true);
     }
   });
-  it('the ADAPTED set is exactly the registry + new-door files', () => {
+  it('the ADAPTED set is exactly the registry + new-door + voice-retarget files', () => {
     const adapted = manifest.files.filter((f) => f.status === 'ADAPTED').map((f) => f.path).sort();
     expect(adapted).toEqual([
       'apps/spatial/app/aumalive-audio.js',
@@ -74,13 +76,18 @@ describe('provenance integrity (v2 — with exclusions)', () => {
       'apps/spatial/app/chat.js',
       'apps/spatial/app/settings.js',
       'apps/spatial/app/shell.js',
+      'apps/spatial/voice/README.md',
+      'apps/spatial/voice/sidecar.py',
+      'apps/spatial/voice/test_e2e.py',
+      'apps/spatial/voice/test_fixes.py',
+      'apps/spatial/voice/test_loop.py',
     ]);
   });
 });
 
 describe('closure exactness — no hidden files or routes', () => {
   it('the runtime tree is EXACTLY the manifest shipped set', () => {
-    const onDisk = ['app', 'assets', 'scripts']
+    const onDisk = ['app', 'assets', 'scripts', 'voice']
       .flatMap((d) => walkFiles(join(base, d)))
       .map((p) => 'apps/spatial/' + p.slice(base.length + 1).replace(/\\/g, '/'))
       .sort();
@@ -169,14 +176,17 @@ describe('new-organism door law — never the donor 7091/7092', () => {
 });
 
 describe('launcher — live door path + port law', () => {
-  it('projection is a reactive read of the Convex brain door with a loud offline 503', () => {
+  it('projection is a reactive read of the canonical brain door :7141 with loud offline/degraded truth', () => {
     expect(launcher).toMatch(/\/api\/spatial\/projection/);
     expect(launcher).toMatch(/AUKORA_BRAIN_DOOR/);
-    expect(launcher).toMatch(/127\.0\.0\.1:3210/);
+    expect(launcher).toMatch(/127\.0\.0\.1:7141/);          // R38 canonical door
+    expect(launcher).not.toMatch(/127\.0\.0\.1:3210/);       // raw Convex is behind the door, not dialled here
     expect(launcher).toMatch(/composeProjection/);
+    expect(launcher).toMatch(/door-degraded/);                 // partial-outage truth
     expect(launcher).toMatch(/brain door unreachable/);
-    // no generated file served as live
-    expect(launcher).not.toMatch(/projection\.json/);
+    expect(launcher).toMatch(/workflowReasonVocabulary/);      // full reason vocabulary displayed
+    expect(launcher).toMatch(/aumlokPresence/);                // presence BOOLEANS only
+    expect(launcher).not.toMatch(/projection\.json/);          // no generated file served as live
   });
   it('port law: canonical 7096; donor 7090–7095 and new services 7097/7098 reserved; scan only 7096/7099', () => {
     expect(launcher).toMatch(/CANONICAL = 7096/);
@@ -192,10 +202,47 @@ describe('launcher — live door path + port law', () => {
 });
 
 describe('CONSOLE truth labels', () => {
-  it('labels the live door distinctly, re-checks the fence, and never presents the fixture as live', () => {
+  it('labels live/degraded/offline distinctly, re-checks the fence, and never presents the fixture as live', () => {
     expect(consoleJs).toMatch(/LIVE DOOR/);
+    expect(consoleJs).toMatch(/DEGRADED/);
     expect(consoleJs).toMatch(/OFFLINE — brain door unreachable/);
     expect(consoleJs).toMatch(/display-only fence/);
     expect(consoleJs).toMatch(/not live/i);
+    expect(consoleJs).toMatch(/workflowReasonVocabulary/);
+    expect(consoleJs).toMatch(/aumlokPresence/);
+  });
+});
+
+// ── R38: the NEW duplex voice sidecar (:7098) ───────────────────────────────────────────────────
+describe('R38 voice sidecar laws', () => {
+  const voiceDir = join(base, 'voice');
+  const sidecar = readFileSync(join(voiceDir, 'sidecar.py'), 'utf8');
+  it('binds loopback :7098 by default and only accepts the NEW shell origins', () => {
+    expect(sidecar).toMatch(/AUKORA_VOICE_PORT", "7098"/);
+    expect(sidecar).toMatch(/HOST = "127\.0\.0\.1"/);
+    expect(sidecar).toMatch(/127\.0\.0\.1:7096/);
+    expect(sidecar).toMatch(/127\.0\.0\.1:7099/);
+    expect(sidecar).not.toMatch(/127\.0\.0\.1:7090/);   // donor shell origin gone
+    expect(sidecar).not.toMatch(/127\.0\.0\.1:7095/);   // AUMLOK bind door origin gone
+  });
+  it('never dials the donor doors and holds no keys', () => {
+    for (const f of walkFiles(voiceDir).filter((x) => /\.(py|sh|md)$/.test(x))) {
+      const src = readFileSync(f, 'utf8');
+      expect(src, f + ' must not dial donor :7091').not.toMatch(/127\.0\.0\.1:7091/);
+      expect(src, f + ' must not dial donor :7092').not.toMatch(/127\.0\.0\.1:7092/);
+      expect(src).not.toMatch(/sk-or-v1-[A-Za-z0-9]{20}/);
+      expect(src).not.toMatch(/BEGIN [A-Z ]*PRIVATE KEY/);
+      expect(src).not.toMatch(/OPENROUTER_API_KEY\s*=/);
+    }
+  });
+  it('preserves the donor duplex laws: VAD, streaming TTS, barge-in abort, degradation', () => {
+    expect(sidecar).toMatch(/silero/i);
+    expect(sidecar).toMatch(/tts_begin/);
+    expect(sidecar).toMatch(/tts_cancelled|cancel/i);
+    expect(sidecar).toMatch(/fallback/i); // donor degradation law: MLX→faster-whisper fallback, kokoro fallback
+  });
+  it('the browser voice organ dials the NEW sidecar', () => {
+    const aumalive = readFileSync(join(base, 'app', 'aumalive.js'), 'utf8');
+    expect(aumalive).toMatch(/ws:\/\/127\.0\.0\.1:7098\/ws/);
   });
 });

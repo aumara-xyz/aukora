@@ -46,7 +46,7 @@
       "donorBlob": "301f3dc67dab24e5b7c982f8af1950201da8e1b0",
       "sha256": "def482ea04946883755884d988152c17171e08a3284351ea5502e1962bf62c6e",
       "status": "ADAPTED",
-      "note": "R37: comment updated to the :7098 sidecar; code unchanged"
+      "note": "R37: comment updated to the :7098 sidecar"
     },
     {
       "path": "apps/spatial/app/aumalive.js",
@@ -54,7 +54,7 @@
       "donorBlob": "432923274b9ab5f79bd673b56367a5d49db45442",
       "sha256": "74bfa212998df2408f2b1e280f616de2d349432ef17b61ca401b9626e4d25e1b",
       "status": "ADAPTED",
-      "note": "R37: mind door :7097 + voice sidecar :7098 (donor :7091/:7092 untouched); no other change"
+      "note": "R37: mind door :7097 + voice sidecar :7098"
     },
     {
       "path": "apps/spatial/app/aumlok.js",
@@ -90,7 +90,7 @@
       "donorBlob": "6cb252fe6b090c2052caf6e82681aa95b6b300fe",
       "sha256": "b10b88921ad5dfe05442a9b92129008c0816096ef709f96e83ab2de01fd6e8c2",
       "status": "ADAPTED",
-      "note": "R37: CHAT_DOOR retargeted to the NEW organism door :7097 (donor :7091 untouched); no other change"
+      "note": "R37: CHAT_DOOR → the NEW organism door :7097"
     },
     {
       "path": "apps/spatial/app/coherence-glyph.js",
@@ -102,7 +102,7 @@
     {
       "path": "apps/spatial/app/console.js",
       "source": "apps/console evidence (ours)",
-      "sha256": "6619fc948ae9ec66f4dba0313b69613fb552f59cc1a141c6c0d12d377a923219",
+      "sha256": "7eeee8505ed3249e8439f6892d5fd66f3a8edd1a04ddca1d140cfcbdc0a22725",
       "status": "NEW"
     },
     {
@@ -199,7 +199,7 @@
       "donorBlob": "e724e01d04ff12e167779575a91ad08c25a329dc",
       "sha256": "b9c6be685da3989ee06099a76fadade0976fd3e446f3a8fce5b9d54fb036dbd0",
       "status": "ADAPTED",
-      "note": "R37: DOOR retargeted to :7097 + user-facing message; no other change"
+      "note": "R37: DOOR → :7097 + user-facing message"
     },
     {
       "path": "apps/spatial/app/shell-registry.js",
@@ -214,7 +214,7 @@
       "donorBlob": "4599340d34b1f8346660c29640d8ce049c84ab70",
       "sha256": "3960d2c8375a6898c94c543c98699dd5b4666126f06fbf16e08165abd68628d6",
       "status": "ADAPTED",
-      "note": "registry/menu subtracted to the roster + CONSOLE import + dead imports of excluded organs removed (R37); state machine/corners/mobile/boot untouched"
+      "note": "registry/menu subtracted to the roster + CONSOLE import + dead imports of excluded organs removed (R37)"
     },
     {
       "path": "apps/spatial/app/style.css",
@@ -366,7 +366,7 @@
     {
       "path": "apps/spatial/scripts/launch.mjs",
       "source": "ours (launcher/tooling)",
-      "sha256": "f0067d0f34127405ddba04a91357804c5234217929b44822a1b6922a2e3d968a",
+      "sha256": "7d27ffa09cd50345becc2632da558d1e1cf1af4d8569b280d763d1e021c516cf",
       "status": "NEW"
     },
     {
@@ -374,6 +374,74 @@
       "source": "ours (launcher/tooling)",
       "sha256": "7a63f8ad47c178dfb776966e6a790cdf192c0652bb74c2715bb3234f5e44dd4b",
       "status": "NEW"
+    },
+    {
+      "path": "apps/spatial/voice/.gitignore",
+      "donorPath": "spatial/voice/.gitignore",
+      "donorBlob": "5c9ef2fb1376886fb7023a7b68eac86e513de235",
+      "sha256": "4d276e8683705963fb80e74f3980be0a8500271558279c6a4fa89d5d358f232f",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/voice/README.md",
+      "donorPath": "spatial/voice/README.md",
+      "donorBlob": "0cd3156441f8c6aa297eadf3a5415c4b5baa4d77",
+      "sha256": "62b05eadac3feb8317f78cdacb7a6cb8e5564c131f04e4f44981ad79e52c552e",
+      "status": "ADAPTED",
+      "note": "R38: ports/doors retargeted to the NEW organism (7096–7098); pipeline law text unchanged"
+    },
+    {
+      "path": "apps/spatial/voice/requirements.txt",
+      "donorPath": "spatial/voice/requirements.txt",
+      "donorBlob": "298c5de56b957e37810301475b4568c1fa538d9e",
+      "sha256": "2529e63300ded489a67ce5d54b780eaa1bcb685bcdb1824da79bd35017ffbd4b",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/voice/run.sh",
+      "donorPath": "spatial/voice/run.sh",
+      "donorBlob": "949ad22aaa43e92ced8b89e207d0556c784b994b",
+      "sha256": "63100f4e4e2a1fbe7675b4a9eec66f483b209aed7ddd088c15a7ce9498a64f36",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/voice/setup.sh",
+      "donorPath": "spatial/voice/setup.sh",
+      "donorBlob": "b2844584e06083209b6baee1d2cd86a9dacd149c",
+      "sha256": "381adda583b73fca9fbd1f009ad3fc129d01c9302699564cb313daf737f397e3",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/voice/sidecar.py",
+      "donorPath": "spatial/voice/sidecar.py",
+      "donorBlob": "41ce589a4c688aa50602b51bafbe9028c544f2bf",
+      "sha256": "1c9d09e9a299fadefe62974da26a5ae3a496a53668db0eebfad4c00b86300e15",
+      "status": "ADAPTED",
+      "note": "R38: default port :7098 (donor :7092 untouched) + ALLOWED_ORIGINS → the NEW shell (7096/7099) + mind-door comments → :7097; VAD/streaming/abort/fallback laws untouched"
+    },
+    {
+      "path": "apps/spatial/voice/test_e2e.py",
+      "donorPath": "spatial/voice/test_e2e.py",
+      "donorBlob": "0df1c149f1664a500d72d7f39594f273c680d33b",
+      "sha256": "425e28341005a0665174a100db1ebc8233be8b6c7e0cacb73cdfc6bd814b6e45",
+      "status": "ADAPTED",
+      "note": "R38: harness retargeted to :7098/:7097"
+    },
+    {
+      "path": "apps/spatial/voice/test_fixes.py",
+      "donorPath": "spatial/voice/test_fixes.py",
+      "donorBlob": "aa42123ac818be50f0439fd5f6567aea8892a2c1",
+      "sha256": "1a18fbf6625cd91f73b9106e6b21af728223af4bcd2ba9307f63f5a31ee8af8f",
+      "status": "ADAPTED",
+      "note": "R38: harness retargeted to :7098"
+    },
+    {
+      "path": "apps/spatial/voice/test_loop.py",
+      "donorPath": "spatial/voice/test_loop.py",
+      "donorBlob": "bd0a19f32caaba4ae1f689a9570b1e0edfb0e938",
+      "sha256": "113be46b3ad91c2298196ef463a8dd6b1c13e9646193b2ef3e26d583de613390",
+      "status": "ADAPTED",
+      "note": "R38: harness retargeted to ws://127.0.0.1:7098/ws"
     },
     {
       "path": "apps/spatial/app/agora.js",
