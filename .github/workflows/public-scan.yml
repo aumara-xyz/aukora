@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Public-repo secret + PII scanner gate (R39, Sam 3). Fails closed on any finding without echoing content.
+name: public-scan
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  secret-pii-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+      - run: npm ci
+      - name: Canonical secret + PII scan of the tracked tree (fail-closed, no content echo)
+        run: npx tsx apps/seed/scripts/scan-public-tree.ts

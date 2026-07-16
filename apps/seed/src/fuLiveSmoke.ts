@@ -17,6 +17,7 @@ import type { ReactiveMemoryStore } from '@aukora/brain';
 import { CANONICAL_SEATS, type CouncilInput } from '@aukora/council';
 import { envCredentialSource, makeProviderTransport, redactedTransportInfo, type CredentialSource, type ProviderTransportConfig } from './providerTransport.js';
 import { runFuAdvisory } from './fuStructuredAdapter.js';
+import { armedEgressTransport, envProviderArm, DurableSpendAccount, type ProviderArm } from './providerEgress.js';
 
 export interface LiveSmokeResult {
   readonly ran: boolean;
@@ -40,6 +41,10 @@ export interface LiveSmokeOptions {
   readonly input?: CouncilInput;
   readonly now?: number;
   readonly nowIso?: string;
+  /** Owner arming for egress (default env `AUKORA_FU_ARMED`); disarmed ⇒ every call is a non-vote. */
+  readonly arm?: ProviderArm;
+  /** Durable spend account persisting the day-to-date total across runs (ceilings enforced pre-call). */
+  readonly spend?: DurableSpendAccount;
 }
 
 /**
@@ -56,7 +61,12 @@ export async function runFuLiveSmoke(opts: LiveSmokeOptions): Promise<LiveSmokeR
   if (flag !== '1') return skip('opt-out: set AUKORA_FU_LIVE=1 to run the live smoke (default is skipped)');
   if (cred.get(opts.config.credentialRef) === null) return skip(`no credential at ${opts.config.credentialRef} — supply it out-of-band (env/Keychain), never in repo`);
 
-  const transport = makeProviderTransport(opts.config, cred);
+  // OWNER-ARMED egress + content-free egress receipts + durable spend accounting wrap the live transport.
+  const spend = opts.spend ?? new DurableSpendAccount(0);
+  spend.beginPass();
+  const transport = armedEgressTransport(makeProviderTransport(opts.config, cred), {
+    arm: opts.arm ?? envProviderArm, store: opts.store, spend, perCallEstimateUsd: 0.25, nowIso: opts.nowIso,
+  });
   const input: CouncilInput = opts.input ?? { problem: 'Is the governed recursion gate safe against forged and replayed signatures?', claims: ['refuses forged signatures', 'blocks replayed nonces'] };
   const res = await runFuAdvisory(input, transport, opts.store, { seats: CANONICAL_SEATS, now: opts.now, nowIso: opts.nowIso });
 

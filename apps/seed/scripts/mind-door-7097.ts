@@ -14,6 +14,7 @@ import { ReactiveMemoryStore } from '@aukora/brain';
 import { MindDoor, DOOR_PORT, type DoorRequest, type DoorDriver } from '../src/mindDoor.js';
 import { InMemoryWorkflowStore } from '../src/durableRecursion.js';
 import { HybridOwnerAdapter } from '../src/ownerFixture.js';
+import { CandidateReferenceMonitor } from '../src/candidateReferenceMonitor.js';
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -22,6 +23,7 @@ async function main(): Promise<void> {
   const store = new ReactiveMemoryStore();
   // NOTE: a real deployment injects Peter's local AUMLOK root; the fixture owner here is for a local dev door only.
   const owner = new HybridOwnerAdapter('local-door-dev');
+  const monitor = new CandidateReferenceMonitor(owner.root); // one canonical reference monitor per boot
   const repoRoot = resolve(process.cwd());
 
   const door = new MindDoor({
@@ -43,6 +45,7 @@ async function main(): Promise<void> {
           repo: { list: () => [], read: (p) => (existsSync(p) ? readFileSync(p, 'utf8') : ''), exists: (p) => existsSync(p) },
           ownerRoot: owner.root,
           store,
+          monitor,
           gitRepoRoot: repoRoot,
           worktreeBase: resolve(repoRoot, '..', 'aukora-door-candidates'),
           nowMs: Date.now(), nowIso: new Date().toISOString(),

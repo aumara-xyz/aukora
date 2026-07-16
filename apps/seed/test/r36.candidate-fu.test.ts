@@ -13,6 +13,7 @@ import { join } from 'node:path';
 import { CANONICAL_SEATS, PACKET_OPEN, PACKET_CLOSE, type Transport, type SeatResponse } from '@aukora/council';
 import {
   AumaIdeEnvelope, materializeCandidate, disposeCandidateWorktree, candidateBranchName, candidateStageGrantsAuthority,
+  CandidateReferenceMonitor, candidatePayloadHash,
   runFuAdvisory, verdictFromCouncilOutcome, reviewerFor, fuAdapterGrantsAuthority, councilOutcomeDigest,
   DurableRecursion, InMemoryWorkflowStore, deriveWorkflowId,
   deriveIntentId, deriveDraftHash, FUGU_REVIEWER,
@@ -59,10 +60,16 @@ function stagedCandidate(nonceTag: string, content = `// candidate ${nonceTag}`)
   return { w, candidate: staged.candidate, proposal, auth };
 }
 
+const candAuth = (x: ReturnType<typeof stagedCandidate>, over: { nonce?: string; issuedAt?: string; expiresAt?: string | null } = {}) => {
+  const ph = candidatePayloadHash(x.candidate);
+  return x.w.owner.authorize({ proposalHash: ph, draftHash: ph, nonce: over.nonce ?? `cand-${x.candidate.candidateId.slice(0, 8)}`, issuedAt: over.issuedAt ?? NOW_ISO, expiresAt: over.expiresAt ?? null });
+};
 const matInput = (x: ReturnType<typeof stagedCandidate>, over: Partial<MaterializeInput> = {}): MaterializeInput => ({
   repoRoot, worktreeBase: wtBase, candidate: x.candidate,
-  drafts: [{ proposal: x.proposal, auth: x.auth }],
-  ownerRoot: x.w.owner.root, store: x.w.env.store, nowMs: NOW_MS, nowIso: NOW_ISO, ...over,
+  candidateAuth: candAuth(x),
+  monitor: new CandidateReferenceMonitor(x.w.owner.root),
+  ownerArmed: true,
+  store: x.w.env.store, nowMs: NOW_MS, nowIso: NOW_ISO, ...over,
 });
 
 describe('local candidate stage — real git, fresh verification, total isolation', () => {
@@ -119,17 +126,23 @@ describe('local candidate stage — real git, fresh verification, total isolatio
     expect(candidateStageGrantsAuthority()).toBe(false);
   });
 
-  it('refuses without fresh authorization, with a forged signature, and with a stale approval', () => {
+  it('the kernel reference monitor refuses: unarmed, no auth, forged signature, and stale approval', () => {
     const x = stagedCandidate('fresh');
-    expect(materializeCandidate(matInput(x, { drafts: [] })).reasonClass).toBe('candidate:fresh-verification-failed');
+    // owner did not ARM (humanClearance) → self_modify_requires_clearance
+    const unarmed = materializeCandidate(matInput(x, { ownerArmed: false }));
+    expect(unarmed.reasonClass).toBe('candidate:reference-monitor-refused');
+    expect(unarmed.text).toContain('self_modify_requires_clearance');
 
-    const forged = { ...x.auth, signatures: { ...x.auth.signatures, ed25519: 'ab'.repeat(64) } };
-    expect(materializeCandidate(matInput(x, { drafts: [{ proposal: x.proposal, auth: forged }] })).reasonClass).toBe('candidate:fresh-verification-failed');
+    expect(materializeCandidate(matInput(x, { candidateAuth: undefined })).reasonClass).toBe('candidate:reference-monitor-refused');
 
-    const stale = x.w.owner.authorize({ proposalHash: deriveIntentId(x.proposal), draftHash: deriveDraftHash(x.proposal), nonce: 'stale', issuedAt: '2026-07-16T06:00:00.000Z', expiresAt: '2026-07-16T07:00:00.000Z' });
-    const out = materializeCandidate(matInput(x, { drafts: [{ proposal: x.proposal, auth: stale }] }));
-    expect(out.reasonClass).toBe('candidate:fresh-verification-failed');
-    expect(out.text).toContain('expired');
+    const auth = candAuth(x);
+    const forged = { ...auth, signatures: { ...auth.signatures, ed25519: 'ab'.repeat(64) } };
+    expect(materializeCandidate(matInput(x, { candidateAuth: forged })).reasonClass).toBe('candidate:reference-monitor-refused');
+
+    const ph = candidatePayloadHash(x.candidate);
+    const stale = x.w.owner.authorize({ proposalHash: ph, draftHash: ph, nonce: 'stale', issuedAt: '2026-07-16T06:00:00.000Z', expiresAt: '2026-07-16T07:00:00.000Z' });
+    const out = materializeCandidate(matInput(x, { candidateAuth: stale }));
+    expect(out.reasonClass).toBe('candidate:reference-monitor-refused');
     expect(g(repoRoot, ['status', '--porcelain'])).toBe(''); // nothing happened
   });
 

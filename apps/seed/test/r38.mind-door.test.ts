@@ -15,7 +15,7 @@ import { buildMemoryRecord } from '@aukora/memory';
 import { CANONICAL_SEATS, PACKET_OPEN, PACKET_CLOSE, runAukoraFuCouncil, type Transport } from '@aukora/council';
 import {
   MindDoor, DOOR_PORT, mindDoorGrantsAuthority, checkDoorGuard, headerReader, loopbackOrigins, newDoorToken, doorGuardsGrantAuthority,
-  InMemoryWorkflowStore, HybridOwnerAdapter, RecursionLedger,
+  InMemoryWorkflowStore, HybridOwnerAdapter, RecursionLedger, CandidateReferenceMonitor, candidatePayloadForProposals,
   deriveIntentId, deriveDraftHash, LIMITS,
   type DoorRequest, type DoorDriver, type LocalCeremonyEnv, type Proposal, type RepoReadCapability,
 } from '../src/index.js';
@@ -45,9 +45,10 @@ function makeDoor(opts: { loadDriver?: () => Promise<DoorDriver>; workflowStore?
   const store = opts.store ?? new ReactiveMemoryStore();
   const owner = new HybridOwnerAdapter('door-test');
   const workflowStore = opts.workflowStore ?? new InMemoryWorkflowStore();
+  const monitor = new CandidateReferenceMonitor(owner.root);
   const loadDriver = opts.loadDriver ?? (async (): Promise<DoorDriver> => {
     const recursionEnv = { store, knownFiles: new Set([TARGET]), ownerRoot: owner.root, ledger: new RecursionLedger(), nowMs: NOW_MS, nowIso: NOW_ISO, deadlineMs: NOW_MS + LIMITS.DEFAULT_WALL_TIME_BUDGET_MS };
-    const ceremonyEnv: LocalCeremonyEnv = { recursionEnv, workflowStore, repo: repoCap(), ownerRoot: owner.root, store, gitRepoRoot: repoRoot, worktreeBase: wtBase, nowMs: NOW_MS, nowIso: NOW_ISO };
+    const ceremonyEnv: LocalCeremonyEnv = { recursionEnv, workflowStore, repo: repoCap(), ownerRoot: owner.root, store, monitor, gitRepoRoot: repoRoot, worktreeBase: wtBase, nowMs: NOW_MS, nowIso: NOW_ISO };
     return { ceremonyEnv };
   });
   const door = new MindDoor({ store, ownerRoot: owner.root, loadDriver, postToken: TOKEN, nowIso: NOW_ISO });
@@ -173,7 +174,9 @@ describe('propose / materialize — explicit owner, fresh AUMLOK, plan-only on r
     const p = makeProposal({ newContent: '// door materialize' });
     const headBefore = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 
-    const mat = await h.door.handle(post('/api/materialize', { proposalInput: p, nonce: 'd-2', auth: authFor(h.owner, p, { nonce: 'd-2' }), explanation: 'owner asked' }));
+    const cp = candidatePayloadForProposals([p]);
+    const candidateAuth = h.owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: 'd-2-cand', issuedAt: NOW_ISO, expiresAt: null });
+    const mat = await h.door.handle(post('/api/materialize', { proposalInput: p, nonce: 'd-2', auth: authFor(h.owner, p, { nonce: 'd-2' }), candidateAuth, ownerArmed: true, explanation: 'owner asked' }));
     expect(mat.status).toBe(200);
     expect(mat.json.phase).toBe('candidate-materialized');
     expect(String(mat.json.candidateBranch)).toMatch(/^candidate\//);

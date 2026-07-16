@@ -32,6 +32,7 @@ import { AumaIdeEnvelope, type RepoReadCapability, type BranchCandidate } from '
 import { deriveIntentId, deriveDraftHash, type Proposal } from './proposal.js';
 import { reviewerFor } from './fuStructuredAdapter.js';
 import { materializeCandidate, type CandidateMaterialization } from './localCandidateStage.js';
+import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
 import type { CouncilReviewer } from './mockCouncil.js';
 
 export type CeremonyRunPhase =
@@ -66,6 +67,8 @@ export interface LocalCeremonyEnv {
   readonly repo: RepoReadCapability;
   readonly ownerRoot: AumlokAuthorityRootV2;
   readonly store: ReactiveMemoryStore;
+  /** The canonical kernel reference monitor for the candidate effect (durable consumed-id state). Constructed if absent. */
+  readonly monitor?: CandidateReferenceMonitor;
   /** For candidate materialization (effectful). Omit to keep the ceremony non-materializing. */
   readonly gitRepoRoot?: string;
   readonly worktreeBase?: string;
@@ -81,6 +84,10 @@ export interface LocalCeremonyInvocation {
   readonly fuOutcome?: CouncilOutcome;
   /** Explicit owner intent to materialize a candidate this invocation. Never inferred from durable state. */
   readonly materialize?: boolean;
+  /** The owner's authorization over the candidate PAYLOAD hash (required to materialize; verified by the monitor). */
+  readonly candidateAuth?: SignedPromotionV2;
+  /** The owner has explicitly ARMED materialization (maps to the kernel's humanClearance). */
+  readonly ownerArmed?: boolean;
   readonly explanation?: string;
 }
 
@@ -140,12 +147,14 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   if (!staged.ok) {
     return result({ ok: false, phase: 'refused-at-candidate', reasonClass: staged.refusal.reasonClass, text: staged.refusal.text, workflowId, workflowState: state, rehearsalReceiptHash });
   }
+  const monitor = env.monitor ?? new CandidateReferenceMonitor(env.ownerRoot);
   const materialization = materializeCandidate({
     repoRoot: env.gitRepoRoot,
     worktreeBase: env.worktreeBase,
     candidate: staged.candidate,
-    drafts: [{ proposal, auth: invocation.auth }], // FRESH verification happens inside materializeCandidate
-    ownerRoot: env.ownerRoot,
+    candidateAuth: invocation.candidateAuth, // owner's signature over the candidate payload hash
+    monitor,                                  // the ONE canonical kernel reference monitor
+    ownerArmed: invocation.ownerArmed === true,
     store: env.store,
     nowMs: env.nowMs,
     nowIso: env.nowIso,
