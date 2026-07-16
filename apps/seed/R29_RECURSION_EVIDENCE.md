@@ -73,7 +73,7 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **74 passed / 7 files** (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **98 passed / 9 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch.
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
@@ -140,6 +140,44 @@ the nonce extraction were made TOTAL so a hostile `auth` object with a throwing 
 Honest limitation: "wall time" is modelled as an injected absolute deadline (no ambient clock), not measured elapsed
 CPU/wall time; combined with max-attempts it bounds runaway, and it is deterministic and testable.
 
+## R31 — the governed AUMLOK–AURA ceremony contract
+
+Formalized ONE governed ceremony and its display boundary, capability law, and geometry.
+
+- **`apps/seed/src/ceremony.ts`** — the contract: `issueChallenge` produces the UNSIGNED challenge
+  (`intentId`, `draftHash`, `gateArgsHash` linkage, `epoch`, `nonce`, `capability`) that the local custody adapter
+  must sign; `completeCeremony` runs the ceremony gates (challenge↔proposal match, gateArgsHash self-consistency,
+  allowed capability, current epoch) and then delegates to the governed recursion (hybrid verify → AURA witness →
+  receipt/Merkle → sandbox-only apply). `verifyCeremony` re-derives completion from real evidence so a fabricated
+  "completed" outcome is caught. Every terminal (including ceremony pre-check refusals) is receipted.
+  Flow: `unsigned challenge → custody adapter → hybrid Ed25519+ML-DSA-65 verify → AURA witnessed event/geometry →
+  receipt/Merkle commitment → sandbox-only effect`.
+- **`apps/seed/src/capabilities.ts`** — Auma's inward capabilities are explicit: **allowed** = inspect, recall,
+  draft, propose, rehearse, requestCouncilReview, explain; **forbidden** = sign, authorize, expandCapabilities,
+  merge, deploy, bypassConsent (disjoint sets; fail-closed on unknown). A ceremony can never exercise a forbidden act.
+- **`apps/seed/src/geometry.ts`** — `AuraGeometry` (GEOMETRY_ONLY, bounded coherence [0,1], witnessMode, epoch,
+  depth, attempts, ≤12-hex intent prefix), `deriveGeometry` (encodes the ALREADY-decided verdict so the Spatial
+  shell renders without recomputing governance), `sanitizeGeometry` (fence + allowlist + clamp; rejects field
+  smuggling), and `GeometryLog` (bounded evolving frames for the shell).
+- **`apps/seed/src/ceremonyView.ts`** — the ONE-WAY UI projection (DISPLAY_ONLY): ceremony state, challenges, a
+  16-hex PUBLIC key **fingerprint** (never the keys), ≤12-hex hash prefixes (never full 64-hex), verdict, council
+  verdict, geometry, and receipt/Merkle references. Never seeds, private keys, unlock minting, or authority. The
+  whole view passes the AURA fence (`assertViewSafe`) and `grantsAuthority:false` is a typed literal.
+
+### R31 adversarial matrix
+
+| control | result |
+| --- | --- |
+| displayed-state → authority leakage | view is fence-clean, no full key / private material, `grantsAuthority:false`; a spiked view fails `assertViewSafe` |
+| fake ceremony completion | completion without an owner signature is refused; a forged `completed:true` outcome fails `verifyCeremony` |
+| replayed challenge | second completion of the same challenge → `refused-replay` |
+| stale epoch | a challenge from a past epoch → `refused-stale-epoch` |
+| tampered challenge / challenge↔proposal mismatch | `refused-tampered-challenge` / `refused-challenge-mismatch` |
+| geometry-field smuggling | forbidden key, nested secret, or 64-hex value → rejected |
+| forbidden capability | `sign`/`authorize`/`merge`/`deploy`/… refused at issue and at complete |
+| self-signing | no runtime module (incl. ceremony/geometry/view) contains `.sign(` or imports the owner fixture |
+| every terminal receipt | applied + every refusal class is receipt-chained |
+
 **R30 CHECK (opus-self-review):** the AURA trace law is a faithful port of the donor (recursive forbidden
 key/value scan, positive allowlist, frozen limits, TRACE_ONLY, grantsAuthority:false) with an added honest-erasure
 verifier. The one behavioural change to the reducer — receipt-before-row — is a strict tightening: it can only turn
@@ -149,5 +187,13 @@ so it is retryable. The trace fence is a separate module with no read path into 
 fence a safe stage category plus a ≤12-hex prefix. Honest limitation carried forward: "wall time" remains an
 injected deadline, not measured elapsed time.
 
-CODEX FUSION REQUEST: run PRE council over the R29+R30 plan-of-record above.
+**R31 CHECK (opus-self-review):** the ceremony is a thin formalization over the already-hardened gate — the owner
+signature (over intentId+draftHash+nonce) remains the sole authority boundary; the ceremony's epoch/capability/
+gateArgs gates are additive constraints and cannot escalate (every allowed capability leads to the same
+sandbox-only apply; forbidden capabilities, stale epochs, tampered challenges, and mismatches all fail closed and
+are receipted). The UI boundary is one-way and provably fence-clean (public fingerprint + hash prefixes only; no
+key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
+encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
+
+CODEX FUSION REQUEST: run PRE council over the R29+R30+R31 plan-of-record above.
 CODEX FUSION REQUEST: run POST council over this evidence document (fresh digest recorded in the PR body + issue #22).

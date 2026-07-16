@@ -11,8 +11,12 @@ import { readFileSync } from 'node:fs';
 
 const read = (rel: string): string => readFileSync(rel, 'utf8'); // vitest cwd = apps/seed
 
-// The modules on the runtime import graph of runGovernedRecursion (NOT the barrel, NOT the demo/test fixture).
-const RUNTIME_MODULES = ['src/recursion.ts', 'src/aumlokGate.ts', 'src/proposal.ts', 'src/ledger.ts', 'src/mockCouncil.ts'];
+// The modules on the runtime import graph of the governed recursion + ceremony (NOT the barrel, NOT the fixture).
+const RUNTIME_MODULES = [
+  'src/recursion.ts', 'src/aumlokGate.ts', 'src/proposal.ts', 'src/ledger.ts', 'src/mockCouncil.ts',
+  'src/forbiddenContent.ts', 'src/auraTrace.ts', 'src/capabilities.ts', 'src/geometry.ts',
+  'src/ceremony.ts', 'src/ceremonyView.ts',
+];
 
 const FORBIDDEN_IMPORT = /\bfrom\s+['"](?:node:)?(?:fs|fs\/promises|child_process|net|tls|http|https|dns|dgram|worker_threads|cluster|vm|repl)['"]/;
 const FORBIDDEN_REQUIRE = /\brequire\(\s*['"](?:node:)?(?:fs|child_process|net|tls|http|https|dns|dgram|worker_threads|cluster|vm|repl)['"]/;
