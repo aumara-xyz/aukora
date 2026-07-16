@@ -24,6 +24,8 @@ import { receiptChainHash, verifyReceiptChain } from '@aukora/kernel/evidence';
 import { merkleRoot } from '@aukora/kernel/merkle';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { validateMemoryRecord, memoryCommitment, tombstoneCommitment } from '@aukora/memory';
+import { verifyEraseAttestation } from '../src/continuity/eraseAttestation.js';
+import { appendReceiptEvent } from './rehearsal.js';
 
 async function chainRows(ctx: any) {
   return await ctx.db.query('memoryChain').withIndex('by_index').collect();
@@ -113,17 +115,32 @@ export const ingestValidated = internalMutation({
   },
 });
 
+/**
+ * WAVE 2 governed forgetting: requires a SIGNED ERASE ATTESTATION (donor M2b law, ML-DSA-65, minted OUTSIDE by
+ * the owner). The mutation is SCOPED (attestation.key must equal recordId), EXPIRING (donor 60s freshness),
+ * ANTI-REPLAY (attestation digest consumed once), ATOMIC (nonce consume + plaintext removal + tombstone +
+ * erasure receipt + evidence row commit in ONE transaction), and CONTENT-MINIMIZING (no plaintext in any of it).
+ * Convex verifies-and-refuses forgeries as store integrity and RECORDS evidence — the decision was signed above.
+ * The freshness window uses wall time as an expiry GUARD only (donor-style); it never enters chain material.
+ */
 export const forget = mutation({
-  args: { recordId: v.string(), at: v.string(), ownerAuthorized: v.boolean() },
-  handler: async (ctx, { recordId, at, ownerAuthorized }) => {
-    if (!ownerAuthorized) return { ok: false, refusal: 'refused: forgetting requires owner authorization' };
+  args: { recordId: v.string(), at: v.string(), attestation: v.any() },
+  handler: async (ctx, { recordId, at, attestation }) => {
+    const verdict = await verifyEraseAttestation(attestation, Date.now());
+    if (!verdict.ok) return { ok: false, refusal: `refused: erase attestation ${verdict.reason}` };
+    if ((attestation as { key: string }).key !== recordId) return { ok: false, refusal: 'refused: attestation scope mismatch (key != recordId)' };
     const chain = await chainRows(ctx);
     if (chain.length > 0 && !chainVerdict(chain).valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     const rows = await ctx.db.query('memoryChain').withIndex('by_record', (q: any) => q.eq('recordId', recordId)).collect();
     const memoryRows = rows.filter((row: any) => row.kind === 'memory');
     if (memoryRows.length === 0) return { ok: false, refusal: 'refused: unknown record' };
+    // ANTI-REPLAY: consume the attestation digest exactly once, atomically with the erase itself.
+    const consumed = await ctx.db.query('attestationNonces').withIndex('by_nonce', (q: any) => q.eq('nonce', verdict.digest)).first();
+    if (consumed) return { ok: false, refusal: 'refused: attestation already consumed (replay)' };
+    await ctx.db.insert('attestationNonces', { nonce: verdict.digest, consumedAtMs: Date.now() });
     // REMOVE the plaintext: replace each memory row with a copy that OMITS the content column entirely (content
     // is optional in the schema), so no plaintext remains for this content-addressed id. The chain is untouched.
+    const originalReceiptHash = memoryRows[0].chainHash;
     for (const row of memoryRows) {
       const { _id, _creationTime, content, ...withoutContent } = row;
       void content;
@@ -136,8 +153,26 @@ export const forget = mutation({
       index: chain.length, kind: 'tombstone', recordId, createdAt: at, prevHash, chainHash,
       advisoryOnly: true, grantsAuthority: false,
     });
+    // ERASURE RECEIPT on the one governed event spine: binds the attestation digest (authorityRef) and, via the
+    // evidence row, the ORIGINAL receipt hash + the content hash (recordId) — donor's erasure-receipt binding.
+    await appendReceiptEvent(ctx, { rehearsalKey: `erase:${recordId}`, event: 'erasure', step: null, authorityRef: verdict.digest });
+    const a = attestation as { ownerRootId: string; eraseReason: string; timestamp: number; signatureHex: string; publicKeyHex: string };
+    await ctx.db.insert('eraseAttestations', {
+      recordId, digest: verdict.digest, ownerRootId: a.ownerRootId, eraseReason: a.eraseReason, timestamp: a.timestamp,
+      signatureHex: a.signatureHex, publicKeyHex: a.publicKeyHex, originalReceiptHash,
+      advisoryOnly: true, grantsAuthority: false,
+    });
     const snapshot = await recompute(ctx);
-    return { ok: true, recordId, snapshot };
+    return { ok: true, recordId, digest: verdict.digest, snapshot };
+  },
+});
+
+// SENSE: erase-attestation evidence projection (public material only).
+export const eraseEvidence = query({
+  args: { recordId: v.string() },
+  handler: async (ctx, { recordId }) => {
+    const rows = await ctx.db.query('eraseAttestations').withIndex('by_record', (q: any) => q.eq('recordId', recordId)).collect();
+    return rows.map((r: any) => ({ recordId: r.recordId, digest: r.digest, ownerRootId: r.ownerRootId, eraseReason: r.eraseReason, timestamp: r.timestamp, originalReceiptHash: r.originalReceiptHash }));
   },
 });
 
