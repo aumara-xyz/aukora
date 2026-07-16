@@ -8,7 +8,7 @@
 //
 // Talks to the NEW organism's chat door (:7097; donor :7091 untouched). GET reports presence only (no key bytes ever reach the browser).
 
-const DOOR = 'http://127.0.0.1:7097'; // R37: the NEW organism's door — never the donor :7091
+const DOOR = ''; // R39: SAME-ORIGIN — launcher proxies to the governed door :7097; donor :7091 dialable nowhere
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 
 const CONTRIBUTION_STEPS = `# contribute from this node
