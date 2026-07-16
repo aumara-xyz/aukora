@@ -4,6 +4,17 @@
 
 Post-quantum identity. Consumed-authority reference monitor. Multi-model consensus. Hardened immune gate. Owner-consented self-modification.
 
+## Live development
+
+`main` is the protected release line. Active organism work is published continuously through reviewed draft pull requests and the four durable round feeds:
+
+- [Control / integration](https://github.com/aumara-xyz/aukora/issues/20)
+- [Brain / Convex / Nebius](https://github.com/aumara-xyz/aukora/issues/21)
+- [Recursion / AUMLOK–AURA](https://github.com/aumara-xyz/aukora/issues/22)
+- [Spatial shell / Auma](https://github.com/aumara-xyz/aukora/issues/23)
+
+Feature branches may update ahead of `main`; that means the work is under verification, not absent. Only an exact, tested, independently reviewed integration head is promoted to `main`.
+
 ## Packages
 
 | Package | Contents | Tests |
@@ -30,7 +41,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full capability table.
 
 ## License
 
-AGPL-3.0-or-later. See [LICENSE](./LICENSE).
+Copyright (c) 2026 Aumara LLC. Licensed under **GNU AGPL-3.0-or-later**. See the complete, unmodified [LICENSE](./LICENSE) text.
 
 ## Security
 
