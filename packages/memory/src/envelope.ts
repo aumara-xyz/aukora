@@ -12,7 +12,7 @@
  * PROVENANCE: distilled from donor apps/symbiote/core/src/coreMemoryEnvelope.ts (aukora-kernel b441edc4),
  * node:crypto replaced by the kernel canonical hash; consent/provenance/validation laws preserved.
  */
-import { canonicalHash } from '@aukora/kernel/canonical';
+import { canonicalHash, type CanonicalValue } from '@aukora/kernel/canonical';
 
 export const MEMORY_SCHEMA = 'aukora-memory-v1';
 
@@ -106,3 +106,75 @@ export function validateMemoryRecord(x: unknown): MemoryRecordV1 | null {
 export function memoryGrantsAuthority(): false {
   return false;
 }
+
+/**
+ * The CONTENT-FREE commitment a memory contributes to the receipt chain.
+ *
+ * A receipt chain that embedded plaintext could never honour governed forgetting: removing the plaintext would
+ * change a chained payload and break every downstream hash. So the chain commits to the content by its
+ * content-ADDRESSED id (`recordId = deriveRecordId(content)`) plus metadata — NEVER the plaintext itself. The
+ * content is therefore cryptographically bound (the id is `sha256({content})`), yet the separately-stored
+ * plaintext can be forgotten later without rewriting or invalidating a single chain link.
+ *
+ * Defined as a `type` (not an interface) so it carries an implicit index signature and is directly usable as a
+ * `receiptChainHash` payload with no cast. Pure and deterministic: same fields ⇒ same commitment, forever.
+ */
+export type MemoryCommitmentV1 = {
+  readonly schema: typeof MEMORY_SCHEMA;
+  readonly recordId: string;
+  readonly createdAt: string;
+  readonly kind: ProvenanceKind;
+  readonly consent: ConsentScope;
+  readonly provenance: string;
+  readonly advisoryOnly: true;
+  readonly grantsAuthority: false;
+};
+
+/** The CONTENT-FREE tombstone a governed forget contributes to the chain — an audit that a memory existed and
+ * was forgotten, carrying no plaintext. */
+export type TombstoneCommitmentV1 = {
+  readonly kind: 'tombstone';
+  readonly recordId: string;
+  readonly at: string;
+};
+
+export type MemoryCommitmentInput = {
+  readonly recordId: string;
+  readonly createdAt: string;
+  readonly kind: ProvenanceKind;
+  readonly consent: ConsentScope;
+  readonly provenance: string;
+};
+
+/**
+ * Build the canonical content-free memory commitment. Accepts either a full {@link MemoryRecordV1} (the ingest
+ * path) or the reconstructed metadata read back from a persisted row (the verify path) — both adapters and the
+ * chain verifier derive the SAME commitment from the SAME fields, so there is exactly one chaining law and no
+ * clone. `CanonicalValue`-typed, so it hashes with `@aukora/kernel`'s canonical hash unchanged.
+ */
+export function memoryCommitment(input: MemoryCommitmentInput): MemoryCommitmentV1 {
+  return {
+    schema: MEMORY_SCHEMA,
+    recordId: input.recordId,
+    createdAt: input.createdAt,
+    kind: input.kind,
+    consent: input.consent,
+    provenance: input.provenance,
+    advisoryOnly: true,
+    grantsAuthority: false,
+  };
+}
+
+/** Build the canonical content-free tombstone commitment. */
+export function tombstoneCommitment(input: { readonly recordId: string; readonly at: string }): TombstoneCommitmentV1 {
+  return { kind: 'tombstone', recordId: input.recordId, at: input.at };
+}
+
+// Compile-time proof that both commitments are valid `receiptChainHash` payloads (CanonicalValue records) — if
+// a future field breaks canonicality, this fails to type-check rather than at runtime.
+const _memoryCommitmentIsCanonical: { readonly [key: string]: CanonicalValue } = memoryCommitment({
+  recordId: '', createdAt: '', kind: 'observation', consent: 'private', provenance: '',
+});
+const _tombstoneCommitmentIsCanonical: { readonly [key: string]: CanonicalValue } = tombstoneCommitment({ recordId: '', at: '' });
+void _memoryCommitmentIsCanonical;
+void _tombstoneCommitmentIsCanonical;
