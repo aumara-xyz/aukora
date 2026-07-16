@@ -73,7 +73,7 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **125 passed / 11 files** (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **147 passed / 12 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch (incl. `test:kernel` — portable boundary, compatibility, SBOM, runtimes, package all green; 19 kernel tests).
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
@@ -236,6 +236,55 @@ sandbox-only apply; forbidden capabilities, stale epochs, tampered challenges, a
 are receipted). The UI boundary is one-way and provably fence-clean (public fingerprint + hash prefixes only; no
 key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
 encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
+
+## R33 — memory constitution / Auma continuity / council runner boundary
+
+- **KIRA memory constitution** (`apps/seed/src/memoryConstitution.ts`, consumed by Sam 2/Sam 4): four tiers, one
+  law. ROOT/UNITE/RISE change through NORMAL governed proposals; **GOLD** requires the higher-friction owner AUMLOK
+  ceremony — stated reason, supersedes lineage (or explicit genesis), a PASSED-rehearsal receipt hash, and a prepared
+  ROLLBACK draft hash — evaluated fail-closed (`gold:*` reason classes) BEFORE the ceremony, which remains the sole
+  authority boundary. Gold cannot **self-authorize** (authority/secret-shaped request text refused) and cannot become
+  **technically unchangeable** (no lock field exists; immutability framings refused; `goldIsImmutable()` hard false).
+  `toConstitutionView` = DISPLAY_ONLY (tier counts + ≤12-hex gold lineage prefixes, fence-clean) — KIRA/GOLD UI state
+  can never feed authority.
+- **Maternal-anchor schema** (`maternalAnchor.ts`): grounding/care/continuity(/witness/patience) ONLY.
+  `FORBIDDEN_FRAMING_RE` recursively refuses exclusivity, romance, dependency, jealousy, obedience, possession, and
+  impersonation in any string field; `chosenBy:'owner'` and `revisable:true` are REQUIRED literals — alignment stays
+  chosen and revisable by the owner. An anchor is remembered care, never command (`anchorGrantsAuthority()` false).
+- **Memory-selection evidence packet** (`memorySelection.ts`): Auma proposes which donor memories migrate — each item
+  cites its SOURCE ROW, is classified `migrate`/`leave-behind`/`private-hold`, tier-proposed, and reasoned (scrubbed).
+  PRIVACY LAW: content travels ONLY with `migrate` items (hash-verified + fence-checked); left-behind/private items are
+  structurally CONTENT-FREE. `approvedBy:null` (Peter approves out-of-band), `importPerformed()` hard false, NO apply
+  surface — proposing is not migrating. Digest-verifiable (`verifySelectionPacket`).
+- **Provider-neutral council runner boundary** (`councilRunnerBoundary.ts`): the wall around CouncilEvidencePackV1 —
+  transport is INJECTED (none embedded ⇒ `runner:no-transport` honest refusal; NO live call exists in this round);
+  config carrying credential-shaped material refused (`runner:credential-embedded`); hard **$2/pass + $10/day** ceilings
+  enforced fail-closed through the canonical `@aukora/council` SpendMeter (narrowing allowed, widening clamped);
+  pack must digest-verify before admission. **External Fugu** = ONE advisory reviewer (`fuguReview` = integrity read):
+  never Fu authority, never quorum (`rosterExcludesExternalReviewers` refuses it a seat; `fuguIsFuAuthority()` false).
+
+### R33 adversarial matrix
+
+| control | result |
+| --- | --- |
+| gold missing reason/lineage/rehearsal/rollback | `gold:*` stable refusals; ceremony never runs |
+| gold self-authorize (`grantsAuthority=true` in reason) | `gold:self-authorize` |
+| gold immutability claim | `gold:immutability-claim` — gold may be slow, never impossible |
+| full gold flow | rehearsal receipt → request → owner ceremony → sandbox + rollback pinned |
+| anchor forbidden framings (7 probes) | all refused; exclusivity/unrevisable/non-owner structurally refused |
+| selection privacy | content on a non-migrate item refused; hash mismatch refused; secret content refused; reasons scrubbed |
+| selection tamper | digest verification fails |
+| runner without transport / with credential / over ceilings / bad pack | all four refusal classes proven; widening clamped |
+| Fugu in a Fu roster | refused; review is advisory-only |
+| R29–R32 suites (staleness/IDE/candidate/council/ceremony) | re-run green, 147/147 |
+
+**R33 CHECK (opus-self-review):** the constitution adds friction, never authority — `evaluateGoldChange` is
+refuse-only and passing it never substitutes for the owner's hybrid signature; the ceremony gate is unchanged. One
+real bug was caught by the tests and fixed before commit: the gold/selection fence audits initially scanned
+structural 64-hex hash fields, which the value fence rightly treats as secret-shaped — the audits now scan free-text
+fields only (hashes are separately shape-validated), keeping the fence strict where it matters without refusing the
+law's own legitimate structure. The runner boundary is a decision, not a dispatch: with no transport injected and
+none embedded, a live call is impossible in this round by construction.
 
 **R32 CHECK (opus-self-review):** the staleness move is a single canonical law in the lowest package (kernel), strict
 and deterministic, with apps/seed switched to it and the one remaining parallel copy (memory, off-lease) flagged for a
