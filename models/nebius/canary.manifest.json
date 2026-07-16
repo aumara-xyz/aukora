@@ -1,0 +1,23 @@
+{
+  "schema": "aukora-nebius-runtime-v1",
+  "description": "Smallest one-node Nebius CANARY runtime manifest. PREPARED, not launched: no provisioning, no generation, no live credentials this round. Minimal ceilings (one call). Consumed by prepareNebiusCanary().",
+  "imageSha256": "",
+  "codeSha256": "",
+  "modelChecksumSha256": "",
+  "ceilings": {
+    "maxOutputTokens": 64,
+    "maxWallClockMs": 15000,
+    "maxCostUsd": 0.05,
+    "maxCallsPerSession": 1
+  },
+  "credentials": "env",
+  "outputContract": "pr-only",
+  "runtime": {
+    "entrypoint": "aukora-brain-nebius-canary",
+    "reproducible": true,
+    "networkPolicy": "pinned-only"
+  },
+  "enabled": false,
+  "autonomousMerge": false,
+  "grantsAuthority": false
+}
