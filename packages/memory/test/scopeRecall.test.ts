@@ -9,7 +9,7 @@
  * identity:0`. `classifyScope` mirrors that heuristic; `scopeCensus`/`hasScope` restore the diagnostic.
  */
 import { describe, it, expect } from 'vitest';
-import { buildMemoryRecord, classifyScope, scopeCensus, hasScope, recall } from '../index.js';
+import { buildMemoryRecord, classifyScope, scopeCensus, hasScope, recall, recallScoped } from '../index.js';
 
 const AT = (s: number) => `2026-07-16T00:00:${String(s).padStart(2, '0')}.000Z`;
 const mk = (content: string, provenance: string, s: number) => buildMemoryRecord({ content, createdAt: AT(s), provenance });
@@ -56,18 +56,18 @@ describe('scope census + hasScope — the honest "is the shelf empty?" signal (#
 describe('scope-aware recall — the fix, with the corpus-absent NEGATIVE FALSIFIER', () => {
   it('plain recall floods with test scope; scope-aware recall surfaces identity #1', () => {
     const recs = testHeavy(true);
-    const plain = recall(recs, { text: 'anchor' });
+    const plain = recallScoped(recs, { text: 'anchor' });
     expect(plain[0].scope).toBe('test');                       // #62 flood reproduced: test outranks identity
-    const scoped = recall(recs, { text: 'anchor', preferScopes: ['identity'] });
+    const scoped = recallScoped(recs, { text: 'anchor', preferScopes: ['identity'] });
     expect(scoped[0].scope).toBe('identity');                  // FIX: identity floats to #1
-    const excluded = recall(recs, { text: 'anchor', excludeScopes: ['test', 'code'] });
+    const excluded = recallScoped(recs, { text: 'anchor', excludeScopes: ['test', 'code'] });
     expect(excluded.every((h) => h.scope !== 'test')).toBe(true); // flood suppressed entirely
     expect(excluded[0].scope).toBe('identity');
   });
 
   it('NEGATIVE FALSIFIER: an absent identity shelf returns [] — the fix never fabricates identity', () => {
     const recs = testHeavy(false); // NO identity atom
-    const scoped = recall(recs, { text: 'anchor', scopes: ['identity'] });
+    const scoped = recallScoped(recs, { text: 'anchor', scopes: ['identity'] });
     expect(scoped).toEqual([]);                                 // corpus absent, not "least-bad noise"
     // and the consumer can tell absent (this) from a query miss on a present shelf
     expect(hasScope(recs, 'identity')).toBe(false);
@@ -78,7 +78,7 @@ describe('scope-aware recall — the fix, with the corpus-absent NEGATIVE FALSIF
     const recs = testHeavy(true);
     const identityId = recs[recs.length - 1].recordId;
     const forgotten = new Set([identityId]);
-    expect(recall(recs, { text: 'anchor', scopes: ['identity'] }, forgotten)).toEqual([]); // gone
+    expect(recallScoped(recs, { text: 'anchor', scopes: ['identity'] }, forgotten)).toEqual([]); // gone
     expect(hasScope(recs, 'identity', forgotten)).toBe(false);  // census excludes the forgotten atom
     expect(scopeCensus(recs, forgotten).identity).toBe(0);
   });
@@ -86,5 +86,40 @@ describe('scope-aware recall — the fix, with the corpus-absent NEGATIVE FALSIF
   it('default recall (no scope options) is unchanged — byte-for-byte pre-#62 ordering', () => {
     const recs = [mk('alpha about memory', 'x', 1), mk('beta about memory', 'y', 2)];
     expect(recall(recs, { text: 'memory' }).map((h) => h.content)).toEqual(['alpha about memory', 'beta about memory']);
+  });
+});
+
+describe('WAVE 3 — default recall serialization is byte-for-byte unchanged (opt-in scope, no shape drift)', () => {
+  // A fixed record so the serialized hit is fully determined (no clock/randomness). Default kind = 'observation'.
+  const fixed = buildMemoryRecord({ content: 'the anchor holds', createdAt: AT(1), provenance: 'x' });
+
+  it('default RecallHit has EXACTLY the pre-#62 keys, order and JSON — no scope field', () => {
+    const hit = recall([fixed], { text: 'anchor' })[0];
+    // exact key set AND order — a receipt/hash over the serialized hit is therefore unchanged
+    expect(Object.keys(hit)).toEqual(['recordId', 'createdAt', 'kind', 'content', 'score']);
+    expect(Object.prototype.hasOwnProperty.call(hit, 'scope')).toBe(false);
+    // frozen serialization: exact bytes old callers/receipts see
+    expect(JSON.stringify(hit)).toBe(
+      `{"recordId":${JSON.stringify(fixed.recordId)},"createdAt":"${AT(1)}","kind":"observation","content":"the anchor holds","score":1}`,
+    );
+    expect(JSON.stringify(hit)).not.toContain('scope');
+  });
+
+  it('opt-in recallScoped ADDS scope as the last key — additive, never mutating the base five', () => {
+    const hit = recallScoped([fixed], { text: 'anchor' })[0];
+    expect(Object.keys(hit)).toEqual(['recordId', 'createdAt', 'kind', 'content', 'score', 'scope']);
+    // the first five keys + their values are identical to the default hit (scope is purely additive)
+    const base = recall([fixed], { text: 'anchor' })[0];
+    const { scope, ...withoutScope } = hit;
+    void scope;
+    expect(withoutScope).toEqual(base);
+    expect(JSON.stringify(withoutScope)).toBe(JSON.stringify(base));
+  });
+
+  it('scope options passed to the DEFAULT recall are ignored and never leak scope into the shape', () => {
+    // even if a caller mistakenly spreads scope selectors onto a default recall call, the shape is unchanged.
+    const hit = recall([fixed], { text: 'anchor', ...( { scopes: ['identity'], preferScopes: ['identity'] } as object) })[0];
+    expect(Object.keys(hit)).toEqual(['recordId', 'createdAt', 'kind', 'content', 'score']);
+    expect(Object.prototype.hasOwnProperty.call(hit, 'scope')).toBe(false);
   });
 });
