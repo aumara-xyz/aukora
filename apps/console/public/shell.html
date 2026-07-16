@@ -18,16 +18,11 @@
 
   <main id="shell">
 
-    <!-- LEFT · Node inspector (green / hue-l) -->
-    <section id="lane-l" class="lane" aria-label="Node inspector">
-      <button class="corner corner-tr hue-l" id="corner-node" title="Push node out a third ([)" aria-label="Push the node lane out a third"></button>
-      <div class="lane-inner">
-        <header class="lane-head">
-          <span class="lane-title hue-l-text">Node</span>
-          <span class="head-meta" id="node-mode">DEMO_FIXTURE</span>
-        </header>
-        <div class="lane-body" id="node-body"></div>
-      </div>
+    <!-- LEFT · Chats / Auma conversation (green / hue-l) — one being, one memory -->
+    <section id="lane-l" class="lane lane-l" aria-label="Chats lane">
+      <button class="corner corner-tl hue-l" id="corner-chat-back" title="Back to chats" aria-label="Back to chats" hidden></button>
+      <button class="corner corner-tr hue-l" id="corner-node" title="Push chats out a third ([)" aria-label="Push the chats lane out a third"></button>
+      <div class="lane-inner" id="chat-mount"></div>
     </section>
 
     <!-- CENTER · canvas / organ mount (blue / hue-c) -->
@@ -81,6 +76,8 @@
   <script src="fixture.js"></script>
   <script src="panels.js"></script>
   <script src="spatial-map.js"></script>
+  <script src="contracts.js"></script>
+  <script src="chat.js"></script>
   <script src="apps.js"></script>
   <script src="shell.js"></script>
 </body>

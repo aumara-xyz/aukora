@@ -58,17 +58,34 @@ INTENTIONAL DIFF (the only sanctioned difference: fewer apps + no chat + no sign
 | theme | dark-only (`theme-color #111520`) | dark-only | ✅ MATCH |
 | motion / reduced-motion | breathing corners; transitions | same + `prefers-reduced-motion` guard | ✅ MATCH |
 
+## Left lane — Chats/Auma (R32 AMEND fix)
+| attribute | donor 7090 | this build | status |
+| --- | --- | --- | --- |
+| lane role | Chats (ALWAYS) — one being, one memory | Chats (ALWAYS) — Aukora pinned/live + soon rows | ✅ MATCH |
+| button species | tool-btn (+/filters), aukora-pill, thread rows, composer | tool-btn, thread rows (pin + unread dot + soon pill), composer | ✅ MATCH (fewer tools) |
+| conversation | live engine session via chat door :7091 | AUMA LIVE directly conversational — **deterministic OFFLINE advisory** (no paid/live call) | ✅ MATCH·adapted (offline by design) |
+| composer | textarea + send + voice/attach | textarea + send (Enter to send); voice lives in KNVS session | ✅ MATCH (fewer controls) |
+| chat-back corner | corner-chat-back on the left lane | corner-chat-back present | ✅ MATCH |
+| node/health | (not in the chats lane) | moved to CONSOLE (BrainHealthSnapshotV1) | ✅ MATCH (correct home) |
+
 ## Intentional differences (the only sanctioned ones)
 | area | donor 7090 | this build | why |
 | --- | --- | --- | --- |
-| app roster | ~19 apps across families | **fewer apps** per directive: ▲ AUMA LIVE · ■ AUMLOK/AURA/SPATIAL MAP/CONSOLE/SETTINGS · ○ KNVS | ROUND_DIRECTIVE R31 §1, §5 |
-| left lane | Chats (live threads) | **Node** read-only inspector (status + now-showing) | no chat data in this lane; keeps 3-pane framing + hue-l inspector role |
-| writes | AUMLOK signing ceremony writes | **none** — fully read-only; signature lands outside the browser | R31 §7, §10 |
-| KNVS | App-Lab canvas (`canvas.js`) | same safe law, hardened: opaque `allow-scripts` sandbox + strict in-document CSP + draft-only + continuity keys `aukora-canvas-last`/`app-lab` | R31 §9 |
+| app roster | ~19 apps across families | **fewer apps** per directive: ▲ AUMA LIVE · ■ AUMLOK/AURA/SPATIAL MAP/CONSOLE/SETTINGS · ○ KNVS | R31 §1/§5, R32 §4 |
+| model calls | live provider via the chat door | **offline only** — advisory chat + KNVS session are deterministic offline demos; no paid/live call until a checksum/licensed provider is approved | R32 §5/§8 |
+| writes | AUMLOK signing ceremony writes | **none** — fully read-only; signature lands outside the browser; KNVS submit = proposal intent only | R32 §5/§8 |
+
+## Screens
+- `docs/screens/shell-console.jpg` — a committed screenshot of this build (Console view: Chats lane · brain-health · panels · ▲■○ menu), captured at 1440×900. The donor `:7090` cannot be captured to a committed file in this environment (no headless browser; its `/assets` images taint an in-page canvas). Both servers run locally for a direct live side-by-side (`npm run launch` → :7093/:7099 alongside the donor :7090).
 
 ## Not yet at exact parity (honest gaps)
-- Per-organ **internal** chrome (e.g., the donor Settings/Auma pages) is not reproduced pixel-for-pixel; the
-  center apps here mount the tested operator panels re-scoped to glass. The **shell** primitives match; some
-  app-body layouts are MATCH·adapted, not pixel-identical.
-- The donor's mobile pane-navigation is reproduced in contract (one pane at a time, corners navigate) but
-  not exhaustively state-tested.
+- **Per-organ internal chrome** (the donor Settings/Auma/etc. page bodies) is not reproduced pixel-for-pixel;
+  the center apps mount the tested operator panels re-scoped to glass. Shell primitives match; several
+  app-body layouts are MATCH·adapted, **not** Peter-approved-exact.
+- **Contracts**: Sam 2 `BrainHealthSnapshotV1` and Sam 3 `aumlok-ceremony-design-v0` are wired via a
+  host-injected global with the committed fixture as the labelled fallback (no browser network). Live
+  end-to-end wiring awaits those services exposing an injectable global.
+- **KNVS voice/vision**: bounded session UI + limits + sidecar interface + proposal-intent-only are shipped
+  as a deterministic OFFLINE demo; no live audio/vision provider is wired this round (by directive).
+- **Committed side-by-side PNG**: only this build's screenshot is committed; a true donor-vs-mine PNG needs a
+  headless browser (not installed) or an authorized hosting path.

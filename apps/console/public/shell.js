@@ -103,6 +103,11 @@
   const menuMicro = document.getElementById("menu-micro");
   const mounted = new Map();
 
+  // Left lane is ALWAYS the Chats/Auma conversation (one being, one memory).
+  const chat = window.AukoraChat ? window.AukoraChat.mount(document.getElementById("chat-mount"), F) : null;
+  const chatBack = document.getElementById("corner-chat-back");
+  if (chatBack && chat) chatBack.addEventListener("click", () => { chat.closeThread(); chatBack.hidden = true; });
+
   function renderMenu() {
     menuList.replaceChildren();
     for (const item of TABS[activeTab].rows) {
@@ -118,30 +123,6 @@
     }
   }
 
-  function renderNode(F) {
-    const body = document.getElementById("node-body");
-    body.replaceChildren();
-    const now = P.el("div", "glass-card node-card");
-    now.appendChild(P.el("h3", null, "Now showing"));
-    now.appendChild(P.el("div", "row-label", ORGANS[activeOrgan].title));
-    now.appendChild(P.el("div", "row-gist", ORGANS[activeOrgan].sub));
-    body.appendChild(now);
-
-    const st = P.el("div", "glass-card node-card");
-    st.appendChild(P.el("h3", null, "Node status · read-only"));
-    const dl = P.el("dl", "kv-line");
-    [
-      ["Data mode", F.dataMode],
-      ["Authority", F.authority.lockState + " · grants " + P.yn(F.authority.grantsAuthority)],
-      ["Memory", F.memory.liveCount + " live · chain " + F.memory.chainLength],
-      ["Council", (F.council.quorumMet ? "quorum met" : "no quorum") + " · " + F.council.verdict],
-      ["Spend", "$" + F.budget.actualUsd.toFixed(2) + " / $" + F.budget.perPassUsd.toFixed(2)],
-      ["G1", F.g1.state],
-    ].forEach(([k, v]) => { dl.appendChild(P.el("dt", null, k)); dl.appendChild(P.el("dd", null, v)); });
-    st.appendChild(dl);
-    body.appendChild(st);
-  }
-
   function setOrgan(key, options = {}) {
     activeOrgan = key;
     document.getElementById("organ-title").textContent = ORGANS[key].title;
@@ -155,8 +136,9 @@
       ORGANS[key].mount(root, F);
     }
     renderMenu();
-    renderNode(F);
-    // Selecting an app returns to the node-plus-app composition (menu yields), like the donor.
+    // AUMA LIVE is directly conversational: opening it opens the Aukora thread in the chats lane.
+    if (key === "auma" && chat) { chat.openThread(); document.getElementById("corner-chat-back").hidden = false; }
+    // Selecting an app returns to the chats-plus-app composition (menu yields), like the donor.
     if (options.collapseMenu && !mobileQuery.matches && state.d < 3) { state.a = 2; state.d = 3; applyLanes(); }
   }
 
@@ -183,7 +165,6 @@
   });
 
   // Boot: default to the CONSOLE app on the Square family.
-  document.getElementById("node-mode").textContent = F.dataMode;
   document.querySelectorAll(".tab-btn").forEach((b) => {
     const on = b.dataset.tab === activeTab;
     b.classList.toggle("active", on);

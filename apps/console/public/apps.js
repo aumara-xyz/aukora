@@ -24,8 +24,23 @@ window.AukoraApps = (function () {
     return dl;
   }
 
-  // ── CONSOLE — mounts all ten tested operator panels in the center pane ──────────
+  // ── Local brain health card (Sam 2 · BrainHealthSnapshotV1 via contracts.js) ─────
+  function healthCard(F) {
+    const h = window.AukoraContracts.brainHealth(F);
+    const box = card("Local brain · " + h.schema, window.AukoraContracts.sourceLabel(h));
+    box.appendChild(kvLine([
+      ["Mode", h.mode + " · convex " + h.convexMode],
+      ["Memory", h.liveCount + " live · chain " + h.chainLength + " · forgotten " + h.forgottenCount],
+      ["Chain head", h.headHashShort, true],
+      ["Merkle root", h.merkleRootShort, true],
+      ["Verified / grants authority", P.yn(h.verified) + " / " + P.yn(h.grantsAuthority)],
+    ]));
+    return box;
+  }
+
+  // ── CONSOLE — brain health + the ten tested operator panels ─────────────────────
   function mountConsole(host, F) {
+    host.appendChild(healthCard(F));
     const ORDER = ["authority", "memory", "lineage", "recursion", "council", "providers", "budget", "convex", "g1", "forgetting"];
     host.appendChild(grid(ORDER.map((id) => P.render[id](F))));
   }
@@ -33,59 +48,96 @@ window.AukoraApps = (function () {
   // ── SPATIAL MAP — data-driven graph ─────────────────────────────────────────────
   function mountMap(host, F) { window.AukoraSpatialMap.mount(host, F); }
 
-  // ── AUMA LIVE — untrusted advisory presence ─────────────────────────────────────
+  // ── AUMA LIVE — the R0–R3 read-only workbench (conversation lives in the left lane) ─
   function mountAuma(host, F) {
-    const a = F.auma;
-    const strip = el("div", "glass-card");
-    const head = el("div", "advisory-head"); head.style.display = "flex"; head.style.gap = "10px"; head.style.flexWrap = "wrap";
-    head.appendChild(P.pill("UNTRUSTED ADVISORY", "warn"));
-    head.appendChild(el("span", "app-note", "cannot: " + a.cannot.join(" · ")));
-    strip.appendChild(head);
-    strip.appendChild(kvLine([
-      ["Provider", a.providerId, true],
-      ["Prompt", a.advisoryPrompt],
-      ["Advisory output", a.advisoryOutput, true],
-      ["Council verdict", a.councilVerdict],
-    ]));
-    strip.appendChild(el("p", "app-note", a.note));
-    host.appendChild(strip);
-    host.appendChild(grid([P.render.council(F)]));
+    const ide = F.ide;
+    const intro = card("Auma · workbench", ide.schema);
+    intro.appendChild(el("p", "app-note", "AUMA LIVE is conversational in the left chats lane. This workbench is READ-ONLY — it invokes capabilities and invents no authority; any change is a draft to the gate."));
+    host.appendChild(intro);
+
+    const tree = card("Repo tree · search", null);
+    const q = el("div", "kv-line");
+    q.appendChild(el("dt", null, "search")); q.appendChild(el("dd", "mono", ide.search.query));
+    tree.appendChild(q);
+    const ul = el("ul", "ide-tree"); ide.repoTree.forEach((p) => ul.appendChild(el("li", "mono", p))); tree.appendChild(ul);
+    ide.search.hits.forEach((hit) => tree.appendChild(el("div", "app-note mono", hit.path + ":" + hit.line + "  " + hit.snippet)));
+    host.appendChild(tree);
+
+    const recall = card("Cited recall", null);
+    ide.citedRecall.forEach((r) => { const d = el("div"); d.appendChild(el("div", null, r.claim)); d.appendChild(el("div", "app-note mono", "cite: " + r.cite)); recall.appendChild(d); });
+    host.appendChild(recall);
+
+    const diff = card("Draft diff", null);
+    diff.appendChild(el("div", "app-note mono", ide.draftDiff.path + "  (+" + ide.draftDiff.added + " / -" + ide.draftDiff.removed + ")"));
+    diff.appendChild(el("pre", "ide-diff", ide.draftDiff.preview));
+    host.appendChild(diff);
+
+    const reh = card("Rehearsal logs", null);
+    ide.rehearsal.forEach((s) => { const row = el("div", "ceremony-step"); row.appendChild(el("span", "ceremony-dot ceremony-dot--done")); const t = el("div"); t.appendChild(el("div", null, s.step)); t.appendChild(el("div", "app-note", s.result)); row.appendChild(t); reh.appendChild(row); });
+    host.appendChild(reh);
+
+    const rec = card("Receipts · staged candidate", null);
+    ide.receipts.forEach((r) => rec.appendChild(el("div", "app-note mono", r.kind + " " + r.hashShort)));
+    rec.appendChild(el("div", "app-note", "Candidate: " + ide.candidate.status + " · grants authority " + P.yn(ide.candidate.grantsAuthority)));
+    host.appendChild(rec);
   }
 
-  // ── AUMLOK + AURA — one connected witnessed ceremony (read-only) ─────────────────
-  // AUMLOK is the gate face; AURA is the coherence/witness face. Both consume the SAME read-only ceremony
-  // events. No private key, no signing, no custody in the browser — the signature lands outside this surface.
+  // ── AUMLOK + AURA — ONE connected witnessed ceremony (read-only design contract, Sam 3) ──────────
+  // Both faces consume the SAME contract via contracts.js (live-injected global → labelled fixture fallback).
+  // No private key, no signing, no custody in the browser — the signature lands outside this surface.
   function ceremonyCard(F) {
-    const c = F.ceremony;
+    const c = window.AukoraContracts.ceremony(F);
     const box = el("div", "glass-card");
-    const h = el("h3", null, "Witnessed ceremony");
-    h.appendChild(el("span", "pill pill-faint", "READ-ONLY"));
+    const h = el("h3", null, "Witnessed ceremony · " + c.schema);
+    h.appendChild(el("span", "pill pill-faint", "READ-ONLY · " + window.AukoraContracts.sourceLabel(c)));
     box.appendChild(h);
-    box.appendChild(el("p", "app-note", c.source));
-    c.events.forEach((ev) => {
+    box.appendChild(el("p", "app-note", "Signer: " + c.signerLabel + " · grants authority: no."));
+    c.phases.forEach((ph) => {
       const row = el("div", "ceremony-step");
-      row.appendChild(el("span", "ceremony-dot ceremony-dot--" + ev.state));
-      const t = el("div"); t.appendChild(el("div", null, ev.step));
-      t.appendChild(el("div", "app-note", ev.detail));
+      row.appendChild(el("span", "ceremony-dot ceremony-dot--" + ph.state));
+      const t = el("div"); t.appendChild(el("div", null, ph.title)); t.appendChild(el("div", "app-note", ph.detail));
       row.appendChild(t);
       box.appendChild(row);
     });
-    box.appendChild(el("p", "app-note", c.note));
     return box;
   }
+  function exclusionsCard(F) {
+    const c = window.AukoraContracts.ceremony(F);
+    const box = card("Authority exclusions", null);
+    const ul = el("ul", "app-note"); ul.style.margin = "0"; ul.style.paddingLeft = "18px";
+    c.authorityExclusions.forEach((x) => ul.appendChild(el("li", null, x)));
+    box.appendChild(ul);
+    return box;
+  }
+  function continuityCard(F) {
+    const c = window.AukoraContracts.ceremony(F);
+    const box = card("Continuity layers · L0–L4", null);
+    c.continuityLayers.forEach((L) => {
+      const row = el("div", "ceremony-step");
+      row.appendChild(el("span", "pill pill-faint", L.layer));
+      const t = el("div"); t.appendChild(el("div", null, L.name + " · " + L.status)); t.appendChild(el("div", "app-note", L.note));
+      row.appendChild(t);
+      box.appendChild(row);
+    });
+    return box;
+  }
+  function lockBanner() {
+    const b = el("p", "zone-banner");
+    b.textContent = "Private-key custody and signing remain OUTSIDE browser state. The signature lands at the gate, not here.";
+    b.style.cssText = "margin:0 0 12px;padding:10px 14px;border-radius:10px;border-left:4px solid #e2b04a;background:rgba(226,176,74,0.12);color:#e2b04a;font-size:13px";
+    return b;
+  }
   function mountAumlok(host, F) {
-    const banner = el("p", "zone-banner zone-banner--lock");
-    banner.textContent = "Private-key custody and signing remain OUTSIDE browser state. The signature lands at the gate, not here.";
-    banner.style.cssText = "margin:0 0 12px;padding:10px 14px;border-radius:10px;border-left:4px solid #e2b04a;background:rgba(226,176,74,0.12);color:#e2b04a;font-size:13px";
-    host.appendChild(banner);
+    host.appendChild(lockBanner());
     host.appendChild(ceremonyCard(F));
+    host.appendChild(exclusionsCard(F));
     host.appendChild(grid([P.render.authority(F)]));
   }
   function mountAura(host, F) {
-    const intro = el("div", "glass-card");
-    intro.appendChild(el("h3", null, "Coherence · the witness"));
-    intro.appendChild(el("p", "app-note", "AURA is the living pattern the same ceremony grows — evidence, never authority. It visualizes trace epochs, receipt/Merkle lineage, and erasure state."));
+    const intro = card("Coherence · the witness", null);
+    intro.appendChild(el("p", "app-note", "AURA is the living pattern the same ceremony grows — evidence, never authority. Trace epochs, receipt/Merkle lineage, erasure state, and truth labels."));
     host.appendChild(intro);
+    host.appendChild(continuityCard(F));
     host.appendChild(ceremonyCard(F));
     host.appendChild(grid([P.render.memory(F), P.render.lineage(F), P.render.forgetting(F)]));
   }
@@ -105,6 +157,7 @@ window.AukoraApps = (function () {
     modes.appendChild(el("p", "app-note", "Active source: " + F.dataMode + ". Convex mode: " + F.convex.current + "."));
     host.appendChild(modes);
 
+    host.appendChild(healthCard(F));
     const health = el("div", "glass-card");
     health.appendChild(el("h3", null, "Read-only health · no raw secrets"));
     health.appendChild(kvLine([
@@ -144,6 +197,37 @@ window.AukoraApps = (function () {
     const intro = card("KNVS · the app lab", k.truth);
     intro.appendChild(el("p", "app-note", k.note));
     lab.appendChild(intro);
+
+    // Bounded voice/vision session — provider-neutral OFFLINE demo (no paid/live call this round).
+    const s = k.session;
+    const sess = card("Bounded session · " + s.provider.split(" ")[0], "OFFLINE");
+    let mode = s.defaultMode, running = false;
+    const modeRow = el("div", "knvs-controls");
+    const modeTag = el("span", "mode-tag mode-tag--demo", "mode: " + mode);
+    const timer = el("span", "knvs-status", "");
+    const modeBtn = el("button", "knvs-btn", "Mode: " + mode); modeBtn.type = "button";
+    const startBtn = el("button", "knvs-btn", "Start session"); startBtn.type = "button";
+    const pttBtn = el("button", "knvs-btn", "Push-to-talk"); pttBtn.type = "button"; pttBtn.disabled = true;
+    modeRow.append(modeBtn, startBtn, pttBtn, modeTag);
+    sess.appendChild(modeRow);
+    sess.appendChild(kvLine([
+      ["Limits", s.limits.timeS + "s · " + s.limits.tokens + " tok · " + s.limits.frames + " frames · $" + s.limits.costUsd.toFixed(2)],
+      ["Sidecar", s.sidecar],
+    ]));
+    sess.appendChild(timer);
+    modeBtn.addEventListener("click", () => { const i = s.modes.indexOf(mode); mode = s.modes[(i + 1) % s.modes.length]; modeBtn.textContent = "Mode: " + mode; modeTag.textContent = "mode: " + mode; });
+    let secs = 0, tick = null;
+    startBtn.addEventListener("click", () => {
+      running = !running;
+      startBtn.textContent = running ? "Stop session" : "Start session";
+      pttBtn.disabled = !running;
+      if (running) { secs = 0; tick = setInterval(() => { secs++; timer.textContent = "session " + secs + "s / " + s.limits.timeS + "s · frames 0/" + s.limits.frames + " · $0.00 (offline; auto-stops at limit)"; if (secs >= s.limits.timeS) { running = false; startBtn.textContent = "Start session"; pttBtn.disabled = true; clearInterval(tick); timer.textContent = "session ended at time limit."; } }, 1000); }
+      else { clearInterval(tick); timer.textContent = "session stopped."; }
+    });
+    // A voice/field directive is sanitized before it can drive the preview; submit is a proposal INTENT only.
+    pttBtn.addEventListener("click", () => { timer.textContent = "captured a bounded utterance (offline) → sanitized → preview intent. Submit drafts a proposal; it never applies."; });
+    sess.appendChild(el("p", "app-note", s.note));
+    lab.appendChild(sess);
 
     const editor = document.createElement("textarea");
     editor.className = "knvs-editor";

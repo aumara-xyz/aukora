@@ -21,6 +21,8 @@ const shellJs = read('shell.js');
 const appsJs = read('apps.js');
 const panelsJs = read('panels.js');
 const spatialMapJs = read('spatial-map.js');
+const chatJs = read('chat.js');
+const contractsJs = read('contracts.js');
 const mapSvg = readFileSync(join(base, '..', 'docs', 'spatial-map.svg'), 'utf-8');
 
 describe('R31 design tokens (versioned, trinity/glass — no dark boxes)', () => {
@@ -41,7 +43,7 @@ describe('R31 shell structure & parity mechanics', () => {
     for (const id of ['lane-l', 'lane-canvas', 'lane-r', 'organ-host', 'menu-list']) {
       expect(shellHtml).toContain('id="' + id + '"');
     }
-    expect((shellHtml.match(/class="corner/g) ?? []).length).toBe(4); // node, canvas-l, canvas-r, menu
+    expect((shellHtml.match(/class="corner/g) ?? []).length).toBe(5); // chat-back, chats-push, canvas-l, canvas-r, menu
     expect((shellHtml.match(/role="tab"/g) ?? []).length).toBe(3);
     for (const t of ['data-tab="triangle"', 'data-tab="square"', 'data-tab="circle"']) expect(shellHtml).toContain(t);
     expect(shellHtml).toMatch(/tokens\.css/); // the tokens load first
@@ -69,16 +71,58 @@ describe('R31 exact app roster', () => {
   });
 });
 
-describe('R31 read-only ceremony (AUMLOK + AURA share it)', () => {
-  it('carries read-only witnessed ceremony events with the gate step', () => {
-    expect(fixture.ceremony.readOnly).toBe(true);
-    expect(fixture.ceremony.events.some((e: any) => e.state === 'gate')).toBe(true);
-    expect(String(fixture.ceremony.note)).toMatch(/no custody, no signing/i);
+describe('R32 ceremony contract (Sam 3 · aumlok-ceremony-design-v0)', () => {
+  it('mirrors the design contract: 9 phases, L0–L4 layers, grants nothing', () => {
+    expect(fixture.ceremony.schema).toBe('aumlok-ceremony-design-v0');
+    expect(fixture.ceremony.grantsAuthority).toBe(false);
+    expect(fixture.ceremony.phases.length).toBe(9);
+    expect(fixture.ceremony.phases.some((p: any) => p.state === 'gate')).toBe(true);
+    expect(fixture.ceremony.continuityLayers.map((l: any) => l.layer)).toEqual(['L0', 'L1', 'L2', 'L3', 'L4']);
+    expect(fixture.ceremony.signerLabel).toBe('production_not_built');
   });
-  it('both AUMLOK and AURA render the same ceremony card', () => {
+  it('both AUMLOK and AURA render the same ceremony via the contract resolver', () => {
     expect(appsJs).toMatch(/function mountAumlok/);
     expect(appsJs).toMatch(/function mountAura/);
-    expect(appsJs).toMatch(/ceremonyCard\(F\)/);
+    expect(appsJs).toMatch(/AukoraContracts\.ceremony\(F\)/);
+  });
+});
+
+describe('R32 AMEND fix — left lane is Chats/Auma conversation', () => {
+  it('the shell mounts the chats lane (not a node inspector)', () => {
+    expect(shellHtml).toContain('id="chat-mount"');
+    expect(shellHtml).toMatch(/Chats lane/);
+    expect(shellHtml).not.toMatch(/Node inspector/);
+    expect(shellJs).toMatch(/window\.AukoraChat\.mount/);
+  });
+  it('AUMA LIVE is directly conversational, offline, and cannot sign/apply/merge', () => {
+    expect(fixture.chat.threads.some((t: any) => t.id === 'aukora-main' && t.live)).toBe(true);
+    expect(String(fixture.chat.greeting)).toMatch(/one being, one memory/i);
+    expect(chatJs).toMatch(/offline advisory/i);
+    expect(shellJs).toMatch(/key === "auma".*openThread/s);
+  });
+});
+
+describe('R32 contracts wired with fixture fallback', () => {
+  it('Sam 2 BrainHealthSnapshotV1 resolves via contracts.js (host-injected → fixture)', () => {
+    expect(fixture.brainHealth.schema).toBe('BrainHealthSnapshotV1');
+    expect(fixture.brainHealth.grantsAuthority).toBe(false);
+    expect(contractsJs).toMatch(/function brainHealth/);
+    expect(appsJs).toMatch(/AukoraContracts\.brainHealth\(F\)/);
+  });
+});
+
+describe('R32 Auma IDE (R0–R3) + KNVS bounded session', () => {
+  it('the IDE surface carries the R0–R3 read-only contract', () => {
+    expect(fixture.ide.schema).toBe('auma-ide-r0r3-v0');
+    for (const k of ['repoTree', 'search', 'citedRecall', 'draftDiff', 'rehearsal', 'receipts', 'candidate']) {
+      expect(fixture.ide).toHaveProperty(k);
+    }
+    expect(fixture.ide.candidate.grantsAuthority).toBe(false);
+  });
+  it('the KNVS session is a bounded OFFLINE demo (submit = proposal intent only)', () => {
+    expect(fixture.knvs.session.modes).toEqual(['text', 'voice', 'vision']);
+    expect(fixture.knvs.session.submitIsProposalIntent).toBe(true);
+    expect(fixture.knvs.session.limits.costUsd).toBe(0);
   });
 });
 

@@ -51,6 +51,30 @@ The family selector is the three primitives: **▲ Triangle = Live**, **■ Squa
 Frontier**. Tabs use `.tab-shape` (15px, 1.4px stroke; active = hue-r fill+stroke). Hues map to lane role
 (green=left, blue=center, purple=right) everywhere.
 
+## 6b. Button species (keep them distinct — never flatten)
+The shell has several CANONICAL, visually-distinct interactive species; do not collapse them into one look:
+- **Hot corners** (`.corner`) — invisible 74px pane-push affordances with a breathing hue bloom (X/Z motion).
+- **Portal cards** (`.row` + `--row-hue`) — the telescoping app/menu buttons (§2).
+- **Tool buttons** (`.tool-btn`) — small glyph-only actions in the chats toolbar / conversation header.
+- **Pills** (`.pill`, `.aukora-pill`, `.mode-tag`) — status/label chips, never primary navigation.
+
+## 6c. Left lane — Chats/Auma (always)
+The left lane is ALWAYS the Chats/Auma conversation ("one being, one memory"). AUMA LIVE is directly
+conversational there; replies are **deterministic offline advisory** (no paid/live call, no network). It
+signs/applies nothing — a proposal halts for the AUMLOK signature at the gate. Node/health/provenance belong
+in a center organ (CONSOLE), never the chats lane.
+
+## 6d. Upstream contracts (read-only, host-injected → fixture fallback)
+Two contracts are consumed read-only via `contracts.js`: Sam 2 `BrainHealthSnapshotV1` and Sam 3
+`aumlok-ceremony-design-v0`. A host may INJECT a live value as a plain global (same mechanism as `fixture.js`)
+— it is then labelled `LIVE`; otherwise the committed fixture is used and labelled `FIXTURE`. The shell makes
+**no network call** (a tested safety property). Fixtures are an explicit, labelled fallback only.
+
+## 6e. Local launcher
+`scripts/launch.mjs` (npm `launch`) serves the shell read-only on `127.0.0.1:7093`, alongside — never
+touching — the donor `:7090`, the governed door `:7091`, and the voice sidecar `:7092`. Port-configurable
+(`PORT=`), reproducible from a fresh clone.
+
 ## 7. Advisory law
 The whole surface is **read-only**: it mounts apps and renders state, and it **cannot sign, authorize,
 apply, merge, deploy, or arm** anything. No private key, token, or secret-shaped data lives in browser

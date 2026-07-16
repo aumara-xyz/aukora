@@ -515,39 +515,205 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     ],
     "note": "Driven from actual council / memory / proposal / receipt data — node and edge counts equal the real organism state, not a decorative static diagram."
   },
+  "brainHealth": {
+    "schema": "BrainHealthSnapshotV1",
+    "source": "fixture-fallback",
+    "mode": "in-memory",
+    "convexMode": "in-memory",
+    "liveCount": 2,
+    "chainLength": 4,
+    "forgottenCount": 1,
+    "headHashShort": "fba0737ed9c49dbb…",
+    "merkleRootShort": "683dbde0ea5a02a4…",
+    "verified": true,
+    "lastEventAt": "2026-07-16T08:00:05.000Z",
+    "grantsAuthority": false
+  },
   "ceremony": {
-    "title": "Witnessed ceremony",
+    "schema": "aumlok-ceremony-design-v0",
+    "source": "fixture-fallback",
+    "designOnly": true,
     "readOnly": true,
-    "source": "Read-only ceremony events — the AUMLOK owner-gate lifecycle (Sam 3 lane). Consumed read-only.",
-    "events": [
+    "signerLabel": "production_not_built",
+    "grantsAuthority": false,
+    "phases": [
       {
-        "step": "Proposal grounded",
+        "phase": "preflight_truth",
         "state": "done",
-        "detail": "p1 → apps/seed/src/recursion.ts"
+        "title": "Preflight truth",
+        "detail": "Show the structured-truth banner before any consent."
       },
       {
-        "step": "Advisory council review",
+        "phase": "scope_declaration",
         "state": "done",
-        "detail": "advisory-pass — authorizes nothing"
+        "title": "Scope declaration",
+        "detail": "Declare the exact fixed scope — from a template, not free prose."
       },
       {
-        "step": "AUMLOK owner-gate",
+        "phase": "authority_exclusions",
+        "state": "done",
+        "title": "Authority exclusions",
+        "detail": "No Ring-0, no live apply, no production AUMLOK, no autonomous authority."
+      },
+      {
+        "phase": "consent_phrase",
         "state": "gate",
-        "detail": "the owner signature lands here (Ed25519; hybrid ML-DSA-65 in kernel) — outside browser state"
+        "title": "Human consent",
+        "detail": "The human enters a consent phrase — records intent, not power. Lands outside the browser."
       },
       {
-        "step": "Owner-signed apply (sandbox)",
+        "phase": "key_custody_declaration",
         "state": "done",
-        "detail": "accepted → sandbox-applied; live repo untouched"
+        "title": "Key custody",
+        "detail": "The human alone holds the authority key. The AI never holds it."
       },
       {
-        "step": "Receipt witnessed",
+        "phase": "signer_label",
         "state": "done",
-        "detail": "receipt 49ebe346aac84ed9… on the chain"
+        "title": "Signer label",
+        "detail": "Labelled honestly: production-not-built this round."
+      },
+      {
+        "phase": "signature_receipt",
+        "state": "done",
+        "title": "Signature receipt (shape only)",
+        "detail": "The receipt SHAPE a real ceremony would emit — no real signature this round."
+      },
+      {
+        "phase": "revocation_expiry",
+        "state": "done",
+        "title": "Revocation & expiry",
+        "detail": "Every binding is revocable and must expire."
+      },
+      {
+        "phase": "post_ceremony_truth",
+        "state": "done",
+        "title": "Post-ceremony truth",
+        "detail": "Re-show the truth banner: identity legibility changed; NO capability changed."
       }
     ],
-    "gateState": "signature lands outside the browser",
+    "authorityExclusions": [
+      "does NOT grant Ring-0",
+      "does NOT grant live apply",
+      "does NOT grant production AUMLOK",
+      "does NOT grant autonomous authority",
+      "does NOT hand any key to the AI"
+    ],
+    "continuityLayers": [
+      {
+        "layer": "L0",
+        "name": "audited execution harness",
+        "status": "present",
+        "note": "lab signer + receipts + structured truth"
+      },
+      {
+        "layer": "L1",
+        "name": "episodic memory",
+        "status": "seeded",
+        "note": "receipt-labeled episode memory (fixture-only)"
+      },
+      {
+        "layer": "L2",
+        "name": "consolidation / dream cycle",
+        "status": "future",
+        "note": "candidate"
+      },
+      {
+        "layer": "L3",
+        "name": "identity anchors",
+        "status": "future",
+        "note": "linked to the AUMLOK ceremony"
+      },
+      {
+        "layer": "L4",
+        "name": "latent / VK communication",
+        "status": "experimental_gated",
+        "note": "baseline first; never authority"
+      }
+    ],
     "note": "AUMLOK is the gate; AURA is the coherence the same ceremony grows. No custody, no signing, no authority in this surface."
+  },
+  "chat": {
+    "threads": [
+      {
+        "id": "aukora-main",
+        "name": "Aukora",
+        "gist": "the seed — governed loop",
+        "pinned": true,
+        "live": true
+      },
+      {
+        "id": "council",
+        "name": "Fusion Council",
+        "gist": "review threads",
+        "soon": true
+      },
+      {
+        "id": "kira",
+        "name": "Kira",
+        "gist": "memory recall",
+        "soon": true
+      }
+    ],
+    "greeting": "One being, one memory. Ask me anything — I answer as advisory context, offline. I cannot sign, apply, or merge; proposals halt for your signature at the gate.",
+    "provider": "deterministic-offline-v0"
+  },
+  "ide": {
+    "schema": "auma-ide-r0r3-v0",
+    "readOnly": true,
+    "repoTree": [
+      "apps/console/",
+      "apps/console/public/shell.html",
+      "apps/console/public/apps.js",
+      "packages/kernel/",
+      "packages/memory/"
+    ],
+    "search": {
+      "query": "grantsAuthority",
+      "hits": [
+        {
+          "path": "packages/memory/src/envelope.ts",
+          "line": 39,
+          "snippet": "readonly grantsAuthority: false;"
+        }
+      ]
+    },
+    "citedRecall": [
+      {
+        "claim": "A memory grants no authority",
+        "cite": "packages/memory/src/envelope.ts#deriveRecordId"
+      }
+    ],
+    "draftDiff": {
+      "path": "apps/seed/src/recursion.ts",
+      "added": 1,
+      "removed": 0,
+      "preview": "+ // governed refinement to the recursion note"
+    },
+    "rehearsal": [
+      {
+        "step": "ground",
+        "result": "ok"
+      },
+      {
+        "step": "advisory review",
+        "result": "advisory-pass"
+      },
+      {
+        "step": "owner-gate",
+        "result": "refused (no signature)"
+      }
+    ],
+    "receipts": [
+      {
+        "kind": "receipt",
+        "hashShort": "49ebe346aac84ed9…"
+      }
+    ],
+    "candidate": {
+      "status": "staged · awaiting owner signature",
+      "grantsAuthority": false
+    }
   },
   "knvs": {
     "title": "KNVS",
@@ -561,6 +727,24 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     ],
     "draftOnly": true,
     "starter": "<h2 style=\"font-weight:300;color:#c4aaff\">KNVS · app lab ✦</h2>\n<p style=\"opacity:.7\">Type HTML on the left, Preview to render pixels, Propose to draft. Nothing lands without the owner signature.</p>",
-    "note": "Ported from the donor App-Lab law: an opaque allow-scripts-only sandbox with a strict in-document CSP renders pixels only — never files, never authority. A proposal only DRAFTS (continuity key app-lab); the governed self-mod path is the AUMLOK gate. The last preview persists on this browser only (aukora-canvas-last); sandbox navigation is contained with a disclosed residual."
+    "note": "Ported from the donor App-Lab law: an opaque allow-scripts-only sandbox with a strict in-document CSP renders pixels only — never files, never authority. A proposal only DRAFTS (continuity key app-lab); the governed self-mod path is the AUMLOK gate. The last preview persists on this browser only (aukora-canvas-last); sandbox navigation is contained with a disclosed residual.",
+    "session": {
+      "modes": [
+        "text",
+        "voice",
+        "vision"
+      ],
+      "defaultMode": "text",
+      "provider": "offline-demo (provider-neutral; no key in the browser; audio/images route through a sidecar)",
+      "limits": {
+        "timeS": 120,
+        "tokens": 4000,
+        "frames": 30,
+        "costUsd": 0
+      },
+      "sidecar": "audio/images go through a sidecar; keys never enter the browser; no auto-store of private media",
+      "submitIsProposalIntent": true,
+      "note": "Model output only animates/previews INSIDE the sandbox; submit creates a proposal INTENT (draft), never applies. No paid/live call until a checksum/licensed provider is approved."
+    }
   }
 };

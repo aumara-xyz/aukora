@@ -19,14 +19,16 @@ const appJs = read('app.js');
 const panelsJs = read('panels.js');
 const appsJs = read('apps.js');
 const spatialMapJs = read('spatial-map.js');
+const contractsJs = read('contracts.js');
+const chatJs = read('chat.js');
 const shellHtml = read('shell.html');
 const shellJs = read('shell.js');
 const tokensCss = read('tokens.css');
 const shellCss = read('shell.css');
 const fixtureJs = read('fixture.js');
 const fixtureJson = read('fixture.json');
-// Every shipped browser script (both pages + shared renderers + shell apps).
-const allScripts = [appJs, panelsJs, appsJs, spatialMapJs, shellJs];
+// Every shipped browser script (both pages + shared renderers + shell apps + chat + contracts).
+const allScripts = [appJs, panelsJs, appsJs, spatialMapJs, contractsJs, chatJs, shellJs];
 // Everything that actually ships to the browser (scripts + markup + styles + fixture).
 const allShipped = [html, shellHtml, tokensCss, shellCss, fixtureJs, fixtureJson, ...allScripts].join('\n');
 
@@ -64,6 +66,18 @@ describe('read-only: no control surface in the browser bundle', () => {
     expect(appsJs).toMatch(/default-src 'none'/);
     // A KNVS proposal only DRAFTS — it must never apply/sign/commit.
     expect(appsJs).toMatch(/Draft queued/);
+    // The bounded voice/vision session is an OFFLINE demo — no paid/live call, keys never in the browser.
+    expect(appsJs).not.toMatch(/api[._-]?key/i);
+    expect(JSON.parse(fixtureJson).knvs.session.limits.costUsd).toBe(0);
+  });
+  it('AUMA chat is offline advisory and the contracts make no network call', () => {
+    // The chat replies deterministically offline — it never fetches a model and never signs/applies.
+    expect(chatJs).toMatch(/offline advisory/i);
+    expect(chatJs).not.toMatch(/\bfetch\s*\(/);
+    // Contracts prefer a host-injected global and fall back to the fixture — no fetch in the browser.
+    expect(contractsJs).toMatch(/globalThis\.AUKORA_BRAIN_HEALTH/);
+    expect(contractsJs).toMatch(/fixture-fallback/);
+    expect(contractsJs).not.toMatch(/\bfetch\s*\(/);
   });
   it('makes no forbidden alive / conscious / self-replicating claim', () => {
     // No POSITIVE claim anywhere in the shipped files.
