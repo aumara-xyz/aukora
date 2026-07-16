@@ -20,6 +20,7 @@ const RUNTIME_MODULES = [
   'src/memoryConstitution.ts', 'src/maternalAnchor.ts', 'src/memorySelection.ts', 'src/councilRunnerBoundary.ts',
   'src/ideSession.ts', 'src/selectionAcceptance.ts', 'src/spatialCeremonyAdapter.ts', 'src/contracts.ts',
   'src/durableRecursion.ts', 'src/fuStructuredAdapter.ts', 'src/localCeremonyRunner.ts',
+  'src/doorGuards.ts', 'src/mindDoor.ts',
 ];
 
 const FORBIDDEN_IMPORT = /\bfrom\s+['"](?:node:)?(?:fs|fs\/promises|child_process|net|tls|http|https|dns|dgram|worker_threads|cluster|vm|repl)['"]/;

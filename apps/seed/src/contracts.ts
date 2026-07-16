@@ -50,6 +50,10 @@ export type { CredentialSource, ProviderTransportConfig, HttpPost, HttpResponse 
 export type { CeremonyRunResult, CeremonyRunPhase, LocalCeremonyEnv, LocalCeremonyInvocation } from './localCeremonyRunner.js';
 export type { LiveSmokeResult, LiveSmokeOptions } from './fuLiveSmoke.js';
 
+// ── R38 governed chat/mind door (request/response + event shapes; no key/authority) ──
+export type { DoorRequest, DoorResponse, DoorEvent, MindDoorConfig, DoorDriver, DoorDriverLoader } from './mindDoor.js';
+export type { DoorGuardResult, DoorGuardReason, DoorGuardOptions } from './doorGuards.js';
+
 // ── schema names (local literals; import nothing) ──────────────────────────
 export const CONTRACT_SCHEMAS = Object.freeze({
   ceremonyView: 'aukora-ceremony-view-v1',
