@@ -415,3 +415,54 @@ ADAPTED_BOUNDARY (single content-free spine + content-addressing self-check); an
 itself flagged in its tamper story is SUPERSEDED_WITH_PROOF — a post-quantum signed head with monotonicity and a
 live re-audit. NOT YET wired: the signed head is recorded/audited on demand, not emitted on every LIVE receipt
 WRITE (donor B1.5b2 wiring) — inventoried in Wave-2 §MISSING, owner/next-wave work, not built here.
+
+---
+
+## Appendix I (CAPSTONE) — verdict matrix + open-items constellation
+
+Consolidates the overnight read-only verification (Appendices A–H). Content-free; no plaintext, no key content.
+Every comparison is against the donor `aukora-symbiote@ed1824a` (read-only), reusing canonical primitives, never cloning.
+
+### Verdict matrix
+
+| # | Memory law | Donor source | Verdict | One-line evidence |
+| --- | --- | --- | --- | --- |
+| A | Five donor memory-category runtimes (episode / hypothesis / mdlProcess / structural / ide) | donor category modules | **MISSING** | Not restored; not required by the P0 proofs; each carries the same evidence-only, source-labelled law. |
+| B | Authority-boundary of the current Convex | donor in-Convex authority | **HOLDS (none restored)** | Every row `grantsAuthority:false`; no handler returns a grant/token; authority stays in kernel/AUMLOK. |
+| C | Receipt-before-row + read-time forgetting + signed recall | `memoryAppend.ts` / `memoryRecall.ts` | **ADAPTED + SUPERSEDED + MISSING** | Receipt-before-row holds (+crash reconciliation); forgetting superseded (plaintext removal); signed recall PoP MISSING. |
+| D | Migration-bridge provenance vs #62 | `aukora_memory` row / `memory.ts` | **ADAPTED_BOUNDARY** | Governance skeleton carried content-free (incl. `gateArgsHash` audit-only); retrievable identity NOT carried — the #62 falsifier, by design. |
+| E | Door read-surface content-minimization | `memoryRecall.ts` no-listing law | **ADAPTED_BOUNDARY** | 13/14 read endpoints content-free; `/memory/recall` content-bearing + enumerable BY DESIGN, safe under the loopback/origin-closed perimeter. |
+| F | Ingest secret-refusal / fail-closed | `memory.ts` `remember` gate | **EXACT_PORT (+structural)** | Same canonical `textHasSecret`; refuse→never persist plaintext; fail-closed; content-free; PLUS a no-bypass structural guarantee the donor lacked. Authority routing ADAPTED. |
+| G | Governed forgetting (RTBF) | `memory.ts` `forget` | **EXACT_PORT + SUPERSEDED** | RTBF-clean + fail-closed + no-resurrection EXACT across 3 paths; erase authority SUPERSEDED_WITH_PROOF (scoped/expiring/anti-replay ML-DSA attestation). |
+| H | Chain verify / tamper-detection | `memory.ts` `verifyChain` | **EXACT_PORT + SUPERSEDED** | Integrity/broken-link/fail-closed EXACT (canonical verifier); the donor's own flagged "NOT a signature" limit CLOSED by a PQC signed head with monotonicity + live re-audit. |
+
+**Reading:** where the current lane diverges from the donor it is either STRONGER (F/G/H structural + PQC), a deliberate
+content-free reshaping that still holds the invariant (C/D/E), or an inventoried absence that is authority/custody-gated
+(A + the constellation below). No divergence is an unaccounted regression.
+
+### Open-items constellation (nothing here is buildable within the brain-lane fence)
+
+**MISSING — capability absent, restore is custody-gated:**
+- *Signed recall proof-of-possession* (donor `aumlokMemRecall`: owner-seed-signed reader head). Refs: C, E.
+  Fence: needs the out-of-tree owner ROOT seed (0600 custody, PRIVATE_HOLD) — an owner key action, never read/copied here.
+- *Donor memory-category runtimes* (A). Fence: SCOPE — not a brain-lane rebuild; CONSOLE is fed via read-only contracts,
+  not by resurrecting the donor category modules. Inventoried, not required by the P0 proofs.
+
+**PARKED_PENDING_OWNER — design ready, owner ruling/cadence required:**
+- *Recall content-minimization* — replace the loopback-only advisory recall with the donor keyed-point-read + owner PoP +
+  no-enumeration for ANY multi-reader or widened door. Refs: C, E. Fence: owner key custody + a posture decision
+  (advisory-fuzzy-recall vs minimized-keyed-recall). Safe today only because the door is loopback / origin-closed / single-owner.
+- *Every-write signed-head emission* (donor B1.5b2) — heads are recorded/audited ON DEMAND today, not emitted on every live
+  receipt WRITE. Refs: H, Wave-2 §MISSING. Fence: touches the live write path + owner signing cadence.
+
+**OWNER-DECISION — a posture choice only the owner makes:**
+- *Should a LOCKED AUMLOK gate advisory ingest?* The donor PAUSES a memory write when AUMLOK is locked; the current ingest
+  treats a memory write as no-authority OBSERVATION and does not consult AUMLOK (secret refusal is identical either way).
+  Ref: F. Fence: this reclassifies "memory write" from governed-tool (donor) to advisory-observation (current) — the owner's call.
+
+### Atlas status
+
+The systematic donor⇄current memory/identity comparison is **COMPLETE** (A–H matrix + this capstone). The atlas remains a
+READ-ONLY forensic record on PR #65; it changes no code and grants no authority. Every remaining gap is authority-gated
+(owner key custody) or posture-gated (owner ruling) — by construction, not omission. Further overnight ticks lighten to
+directive-watch on #21 plus integrity/leak maintenance rather than manufacturing shallower comparisons.
