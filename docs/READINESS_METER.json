@@ -1,0 +1,63 @@
+{
+  "schema": "aukora-readiness-meter-v0",
+  "generated_from": "npm run test:all (GATE_EXIT=0) + models/nebius/deployment.manifest.json",
+  "gate_exit": "0",
+  "overall": "SEED — constitutional core implemented; organism adapters demonstrated under simulation/sandbox; NOT launch-ready (no live cloud/compute).",
+  "totals": {
+    "tests_passing": 297,
+    "suites": 6,
+    "provenance_verified": true
+  },
+  "dimensions": [
+    {
+      "name": "AUMLOK authority kernel",
+      "status": "IMPLEMENTED",
+      "evidence": "kernel 14 tests; kernel package empty-project install PASS; runtimes PASS",
+      "launch_ready": false
+    },
+    {
+      "name": "AURA evidence + Fu council (root pkgs)",
+      "status": "IMPLEMENTED",
+      "evidence": "root suite 145 tests (evidence/council/council-node + boundary/export)",
+      "launch_ready": false
+    },
+    {
+      "name": "KIRA memory (pure)",
+      "status": "IMPLEMENTED_PURE",
+      "evidence": "memory 4 tests",
+      "launch_ready": false
+    },
+    {
+      "name": "Brain — reactive growing memory",
+      "status": "DEMONSTRATED_SIMULATED",
+      "evidence": "brain 39 tests incl. convex-test headless backend — NOT a live Convex cloud deploy",
+      "launch_ready": false
+    },
+    {
+      "name": "Recursion — governed self-change",
+      "status": "DEMONSTRATED_SANDBOX",
+      "evidence": "seed 74 tests; mock council; sandbox-only apply; no live-repo mutation",
+      "launch_ready": false
+    },
+    {
+      "name": "Console — operator visibility",
+      "status": "DEMONSTRATED_READONLY",
+      "evidence": "console 21 tests; renders DEMO_FIXTURE; arms nothing. Spatial-parity shell PENDING Sam 4 R31 exact-parity head",
+      "launch_ready": false
+    },
+    {
+      "name": "Nebius runtime",
+      "status": "PARKED",
+      "evidence": "deployment.manifest.json enabled=false, checksums empty=true, credentials=env, ceilings={\"maxOutputTokens\":512,\"maxWallClockMs\":60000,\"maxCostUsd\":0.5,\"maxCallsPerSession\":8} — bounded, no live calls",
+      "launch_ready": false
+    }
+  ],
+  "not_launch_ready_until": [
+    "live Convex deployment (currently simulated via convex-test)",
+    "live Nebius compute (manifest enabled=false, checksums empty)",
+    "live provider council (currently mock/deterministic)",
+    "Spatial parity gate passes (Sam 4 exact-7090 head)",
+    "Kimi + Gemini accept the exact integration head",
+    "merge to main (protected; owner-gated)"
+  ]
+}
