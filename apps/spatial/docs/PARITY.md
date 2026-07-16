@@ -66,3 +66,16 @@ donor at :7090.
 | mind boundary | the sidecar is pure audio — mind work flows browser → NEW governed door **:7097** (aumalive.js, R37); donor `:7091`/`:7092` dialable nowhere (tested) |
 | projections | launcher now reads the CANONICAL brain door **:7141** (`localDoor.ts` GET /health /snapshot /truth /receipts) reactively per request — raw Convex is behind the door; full outage → loud 503, partial → `door-degraded` with missing senses named (tested) |
 | display law | full workflow reason vocabulary displayed; Fu = proposal-bound advisory; AUMLOK = presence BOOLEANS only; receipts/candidates as door links; display never authorizes (fence tested client+server) |
+
+## R39 — the complete speak → mind → speak turn
+| proof | result |
+| --- | --- |
+| full turn (headless, two real services) | `voice/test_full_turn.py` **PASS**: TTS speaks a prompt → fed back as mic → **VAD + real Whisper STT** ("Auma…" heard as "Orma…", honest STT) → transcript POSTed to the governed **mind door :7097** `/api/chat` with the token → **model-free memory-fallback** answer (advisoryOnly, grantsAuthority:false) → field tags stripped (`sanitizeForVoice`; asserted none went UP to the mind) → **TTS speaks it back as decodable audio** (peak 21708). Transcript in the issue report |
+| browser turn, same-origin | typed "are you there?" in the Chats lane → Auma's model-free reply rendered — through the launcher proxy; **the browser never holds the :7097 token** (env-injected server-side; tested no `x-aukora-door-token` in any browser file) |
+| governed proxy | launcher holds :7097 + token; proxies `/api/chat` (shape-translated to the donor `entries[]`), `/api/presence/stream` (SSE `mode`+`tok` frames), `/api/models` (honest model-free descriptor), `/api/door`, `/api/graph`. Server-to-server = no Origin header → passes the door allowlist |
+| barge-in reaches upstream | sidecar `tts_cancel` honored (no leaked `tts_end`); **mind fetch abort mid-flight → ABORTED** (client disconnect → `res.on('close')` → `AbortController` cancels the upstream door fetch = work/billing stops) |
+| truth labels | three turn modes named plainly — **model-free memory fallback** / **streaming duplex-feel** / **true speech-to-speech (NOT claimed** — no audio model configured); voice organ toasts the honest label; CONSOLE strip is authoritative |
+| lockdown + per-call re-check | owner-text intercept engaged via `/api/lockdown` → CONSOLE strip flips to **LOCKDOWN ENGAGED within ~2s** (live `setInterval` re-read of `/api/door`, never a stale mount snapshot) — [`screens/r39-console-lockdown.jpg`](screens/r39-console-lockdown.jpg) |
+| healthy boot | Spatial Map shows `1 files · 0 imports · advisory` — **no ENGINE UNREACHABLE** (launcher serves `/api/graph`); all organs mount, zero runtime errors — [`screens/r39-console-mind-door-live.jpg`](screens/r39-console-mind-door-live.jpg) |
+| field events ephemeral | body-language/field tags are display-only — stripped before speech, never sent to the mind, never in receipts (door receipts are content-free) — tested |
+| port/process proof | :7090/:7091/:7093 donor (bun) · :7096 shell (node) · :7097 mind door (node) · :7098 sidecar (python) all up simultaneously; donor :7090 200 + new :7096 200 (coexistence) |

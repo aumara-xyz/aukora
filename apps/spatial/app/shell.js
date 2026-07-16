@@ -228,7 +228,7 @@ async function routeInitialOrgan() {
     return;
   }
   try {
-    const response = await fetch('http://127.0.0.1:7097/api/settings/openrouter', { headers: { accept: 'application/json' } });
+    const response = await fetch('/api/settings/openrouter', { headers: { accept: 'application/json' } }); // R39: same-origin via the launcher proxy
     const status = response.ok ? await response.json() : null;
     setOrgan(status && status.present ? 'map' : 'settings');
   } catch {

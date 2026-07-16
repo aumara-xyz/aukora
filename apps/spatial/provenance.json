@@ -52,9 +52,9 @@
       "path": "apps/spatial/app/aumalive.js",
       "donorPath": "spatial/app/aumalive.js",
       "donorBlob": "432923274b9ab5f79bd673b56367a5d49db45442",
-      "sha256": "74bfa212998df2408f2b1e280f616de2d349432ef17b61ca401b9626e4d25e1b",
+      "sha256": "806c713c0fe0c464f6af82d28c27c18e1fcdab93475faa5f6301be6e64430543",
       "status": "ADAPTED",
-      "note": "R37: mind door :7097 + voice sidecar :7098"
+      "note": "R39: DOOR same-origin via the launcher proxy; voice sidecar ws :7098; honest turn-mode toast (model-free/duplex-feel/never speech-to-speech)"
     },
     {
       "path": "apps/spatial/app/aumlok.js",
@@ -88,9 +88,9 @@
       "path": "apps/spatial/app/chat.js",
       "donorPath": "spatial/app/chat.js",
       "donorBlob": "6cb252fe6b090c2052caf6e82681aa95b6b300fe",
-      "sha256": "b10b88921ad5dfe05442a9b92129008c0816096ef709f96e83ab2de01fd6e8c2",
+      "sha256": "d51a760a375f156b1c8bd97a13af3dc3b20902d3fdabe5cc9339e059a0a0e81e",
       "status": "ADAPTED",
-      "note": "R37: CHAT_DOOR → the NEW organism door :7097"
+      "note": "R39: CHAT_DOOR same-origin — the launcher proxies to the governed mind door :7097 with the token server-side (donor :7091 dialable nowhere)"
     },
     {
       "path": "apps/spatial/app/coherence-glyph.js",
@@ -102,7 +102,7 @@
     {
       "path": "apps/spatial/app/console.js",
       "source": "apps/console evidence (ours)",
-      "sha256": "7eeee8505ed3249e8439f6892d5fd66f3a8edd1a04ddca1d140cfcbdc0a22725",
+      "sha256": "7c7fe99bd0262c97ebd5a365a084ea73a894ebfe910bee99185a9a764bf534e6",
       "status": "NEW"
     },
     {
@@ -197,9 +197,9 @@
       "path": "apps/spatial/app/settings.js",
       "donorPath": "spatial/app/settings.js",
       "donorBlob": "e724e01d04ff12e167779575a91ad08c25a329dc",
-      "sha256": "b9c6be685da3989ee06099a76fadade0976fd3e446f3a8fce5b9d54fb036dbd0",
+      "sha256": "30ec5607bc6e9858e8c72b576cae877082fa8f13fd24ff3da63016288b3b1216",
       "status": "ADAPTED",
-      "note": "R37: DOOR → :7097 + user-facing message"
+      "note": "R39: DOOR same-origin via the launcher proxy"
     },
     {
       "path": "apps/spatial/app/shell-registry.js",
@@ -212,9 +212,9 @@
       "path": "apps/spatial/app/shell.js",
       "donorPath": "spatial/app/shell.js",
       "donorBlob": "4599340d34b1f8346660c29640d8ce049c84ab70",
-      "sha256": "3960d2c8375a6898c94c543c98699dd5b4666126f06fbf16e08165abd68628d6",
+      "sha256": "be1a0f169670d571020701133cbff762672f234ebd57ea02418bb4f9d1ad1bb2",
       "status": "ADAPTED",
-      "note": "registry/menu subtracted to the roster + CONSOLE import + dead imports of excluded organs removed (R37)"
+      "note": "registry/menu subtracted to the roster + CONSOLE import + dead imports removed (R37); openrouter read same-origin (R39)"
     },
     {
       "path": "apps/spatial/app/style.css",
@@ -366,7 +366,7 @@
     {
       "path": "apps/spatial/scripts/launch.mjs",
       "source": "ours (launcher/tooling)",
-      "sha256": "7d27ffa09cd50345becc2632da558d1e1cf1af4d8569b280d763d1e021c516cf",
+      "sha256": "2c6d82933d9dc00ed8ee2f85d0a1a30194c98bc58f31fed54fb5fec5da901924",
       "status": "NEW"
     },
     {
@@ -388,7 +388,7 @@
       "donorBlob": "0cd3156441f8c6aa297eadf3a5415c4b5baa4d77",
       "sha256": "62b05eadac3feb8317f78cdacb7a6cb8e5564c131f04e4f44981ad79e52c552e",
       "status": "ADAPTED",
-      "note": "R38: ports/doors retargeted to the NEW organism (7096–7098); pipeline law text unchanged"
+      "note": "R38: ports/doors retargeted to the NEW organism (7096–7098)"
     },
     {
       "path": "apps/spatial/voice/requirements.txt",
@@ -417,7 +417,7 @@
       "donorBlob": "41ce589a4c688aa50602b51bafbe9028c544f2bf",
       "sha256": "1c9d09e9a299fadefe62974da26a5ae3a496a53668db0eebfad4c00b86300e15",
       "status": "ADAPTED",
-      "note": "R38: default port :7098 (donor :7092 untouched) + ALLOWED_ORIGINS → the NEW shell (7096/7099) + mind-door comments → :7097; VAD/streaming/abort/fallback laws untouched"
+      "note": "R38: default port :7098 + NEW-shell origins + mind-door comments :7097; VAD/streaming/abort/fallback laws untouched"
     },
     {
       "path": "apps/spatial/voice/test_e2e.py",
@@ -434,6 +434,12 @@
       "sha256": "1a18fbf6625cd91f73b9106e6b21af728223af4bcd2ba9307f63f5a31ee8af8f",
       "status": "ADAPTED",
       "note": "R38: harness retargeted to :7098"
+    },
+    {
+      "path": "apps/spatial/voice/test_full_turn.py",
+      "source": "ours (full-turn harness)",
+      "sha256": "d30b9d851baa7bb87bd289ed80ab1569f522f1b2dd816944a90553d410381779",
+      "status": "NEW"
     },
     {
       "path": "apps/spatial/voice/test_loop.py",

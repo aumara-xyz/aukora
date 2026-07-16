@@ -112,6 +112,43 @@ export async function mountConsole(root) {
       liveBody.append(hint);
     }
 
+    // R39 — the governed MIND door (:7097 via the same-origin proxy). Per-call capability re-check: this
+    // reads /api/door on every mount, so LOCKDOWN and the honest turn-mode label update immediately. The
+    // three turn modes are named plainly; "true speech-to-speech" is shown ONLY if the door claims it.
+    try {
+      const [dr, mr] = await Promise.all([
+        fetch('/api/door', { headers: { accept: 'application/json' } }).then((x) => x.json()).catch(() => ({ offline: true })),
+        fetch('/api/models', { headers: { accept: 'application/json' } }).then((x) => x.json()).catch(() => ({})),
+      ]);
+      const mode = mr.mode || (dr.offline ? 'offline' : 'unknown');
+      const strip = document.createElement('div');
+      strip.style.cssText = 'margin:8px 0 4px;padding:8px 10px;border-radius:8px;border:1px solid var(--line,rgba(255,255,255,.12))';
+      const t = document.createElement('div');
+      t.style.cssText = 'font-weight:600;margin-bottom:4px';
+      // Per-call capability RE-CHECK: re-read /api/door so LOCKDOWN (an owner-text intercept engaged from
+      // anywhere) reflects in the UI within a tick, never trusting a stale mount-time snapshot.
+      const paintDoor = (d) => {
+        const locked = d && d.lockedDown === true;
+        t.textContent = (d && d.offline) ? 'MIND DOOR :7097 — offline (voice/chat answer locally or wait)'
+          : ('MIND DOOR :7097 — ' + (locked ? 'LOCKDOWN ENGAGED (advisory-only; writes refused)' : 'live · advisory-only'));
+        t.style.color = (d && d.offline) ? '#e2b04a' : (locked ? '#e2b04a' : 'var(--ok,#57d08c)');
+      };
+      paintDoor(dr);
+      const recheck = setInterval(async () => {
+        if (!strip.isConnected) return clearInterval(recheck);
+        try { paintDoor(await fetch('/api/door', { headers: { accept: 'application/json' } }).then((x) => x.json())); } catch { /* transient */ }
+      }, 2000);
+      const modes = document.createElement('div');
+      modes.style.cssText = 'font-size:12.5px;color:var(--ink-faint)';
+      modes.textContent = 'turn mode: ' + mode
+        + '  ·  [model-free memory fallback] = answers from KIRA recall, no model'
+        + '  ·  [streaming duplex-feel] = tokens streamed for interruptible voice'
+        + '  ·  [true speech-to-speech] = NOT claimed (no audio model configured)'
+        + '  ·  display never authorizes; field/body-language tags stay ephemeral (never sent to the mind, never in receipts)';
+      strip.append(t, modes);
+      liveBody.append(strip);
+    } catch { /* proxy absent → nothing claimed */ }
+
     // The evidence files define plain globals (AUKORA_CONSOLE_FIXTURE, AukoraPanels) — load once.
     if (!window.AukoraPanels || !window.AUKORA_CONSOLE_FIXTURE) {
       await loadScript('/app/console/fixture.js');
