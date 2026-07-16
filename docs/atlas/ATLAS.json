@@ -4343,6 +4343,11 @@
         "OVERLAP RECORDED (Sam 2 PR #65 memory/identity atlas): feeds rows into this atlas at morning merge — subordinate view, not a competing taxonomy",
         "MORNING-GATE PRE-CHECK: lane PRs #63/#64/#65 ALL GREEN on clean-root(20.19.0+22.x)+secret-pii-scan+CodeRabbit as of this checkpoint — eligible for Codex morning review; fresh-clone re-verification still required before merge"
       ]
+    },
+    {
+      "checkpoint": "wave3",
+      "action": "reconciled memory/identity appendices (Sam 2 A–I) + continuity-witness registers (Sam 4) into the canonical atlas as evidence refs; #65 amend verified (default recall shape preserved, recallScoped opt-in); Sam 3 candidate-write integrity CONSUMED (6/6 adversarial suite green)",
+      "live_proof": "docs/wave3/SAM1_LIVE_PROOF_TRANSCRIPT.log — one-command boot (organism:up, all PIDs verified), receipt-chain state carried byte-identical across SIGKILL crash/restart (headHash f70e5b41…, chainLength 1→1, no dup), bounded shutdown, donor :7090 HTTP 200 after"
     }
   ]
 }
