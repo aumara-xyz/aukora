@@ -6,12 +6,16 @@
  * Runs headlessly with no cloud, no network, no paid call, no filesystem write, no live-repo mutation. Every
  * step is asserted; the transcript is printed. This is proof-of-growth on the deterministic in-memory reactive
  * adapter — NOT a claim of live Convex cloud execution (the curated Convex backend under apps/brain/convex
- * mirrors the same contracts and is the convex-test / live target).
+ * mirrors the same contracts and is the convex-test / live target). The self-change is held at a REAL hybrid
+ * AUMLOK owner-gate (Ed25519 + ML-DSA-65 via the kernel authority API) — no Ed25519-only downgrade.
  */
 import { describe, it, expect } from 'vitest';
 import { ReactiveMemoryStore, providerGrantsAuthority } from '@aukora/brain';
 import { buildMemoryRecord } from '@aukora/memory';
-import { LocalOwnerAdapter, proposalDigest, runGovernedRecursion, type Proposal } from '../src/index.js';
+import {
+  HybridOwnerAdapter, RecursionLedger, LIMITS, deriveIntentId, deriveDraftHash,
+  runGovernedRecursion, type Proposal, type RecursionEnv,
+} from '../src/index.js';
 
 const NOW_ISO = '2026-07-16T08:00:00.000Z';
 const NOW_MS = Date.parse(NOW_ISO);
@@ -51,33 +55,47 @@ describe('demo:organism — a governed, growing, remembering organism', () => {
 
     // 8. generate a self-change proposal grounded on a real file
     const targetPath = 'apps/seed/src/recursion.ts';
-    const proposal: Proposal = { id: 'p1', targetPath, newContent: '// governed refinement to the recursion note', createdAt: at(3) };
-    const knownFiles = new Set([targetPath, 'apps/brain/src/reactiveStore.ts']);
-    const env = { store, knownFiles, ownerPublicKeyHex: '', nowMs: NOW_MS, nowIso: NOW_ISO };
-    log(`8.   generated self-change proposal ${proposal.id} → ${targetPath}`);
+    const proposal: Proposal = { id: 'p1', targetPath, newContent: '// governed refinement to the recursion note', createdAt: NOW_ISO, supersedes: null };
+    const owner = new HybridOwnerAdapter('demo');
+    const env: RecursionEnv = {
+      store,
+      knownFiles: new Set([targetPath, 'apps/brain/src/reactiveStore.ts']),
+      ownerRoot: owner.root,
+      ledger: new RecursionLedger(),
+      nowMs: NOW_MS,
+      nowIso: NOW_ISO,
+      deadlineMs: NOW_MS + LIMITS.DEFAULT_WALL_TIME_BUDGET_MS,
+    };
+    log(`8.   generated self-change proposal ${proposal.id} → ${targetPath}; owner root ${owner.root.rootId.slice(0, 16)}… (hybrid)`);
 
-    // 9 + 10. WITHOUT owner authorization: advisory review runs, but owner-gate REFUSES
-    const owner = new LocalOwnerAdapter('demo');
-    const envO = { ...env, ownerPublicKeyHex: owner.publicKeyHex };
-    const refused = runGovernedRecursion(envO, proposal /* no auth */);
+    // canonical 64-hex intent id + draft hash — what the owner signs over
+    const intentId = deriveIntentId(proposal);
+    const draftHash = deriveDraftHash(proposal);
+    expect(intentId).toMatch(/^[0-9a-f]{64}$/);
+    expect(draftHash).toMatch(/^[0-9a-f]{64}$/);
+
+    // 9 + 10. WITHOUT owner authorization: advisory review runs, but owner-gate REFUSES (and is receipted)
+    const refused = runGovernedRecursion(env, proposal /* no auth */);
     expect(refused.accepted).toBe(false);
-    expect(refused.stage).toBe('owner-gate-refused');
+    expect(refused.stage).toBe('refused-owner-gate');
     expect(refused.councilVerdict).toBe('advisory-pass'); // review happened; it did NOT authorize
     expect(refused.sandboxApplied).toBe(false);
-    log(`9-10. advisory review=advisory-pass BUT owner-gate REFUSED (no owner signature) — review never authorizes`);
+    expect(refused.receiptHash).toBeTruthy();              // even a refusal is receipted
+    expect(refused.authorityMinted).toBe(false);
+    log(`9-10. advisory review=advisory-pass BUT owner-gate REFUSED (no owner signature) — review never authorizes; refusal receipted`);
 
-    // 11 + 12. WITH a fixture owner signature: accepted into an ISOLATED sandbox + receipt recorded
-    const digest = proposalDigest(proposal.id, proposal.targetPath, proposal.newContent);
-    const auth = { signatureHex: owner.sign(digest), publicKeyHex: owner.publicKeyHex };
+    // 11 + 12. WITH a real hybrid owner signature: accepted into an ISOLATED sandbox + receipt recorded
+    const auth = owner.authorize({ proposalHash: intentId, draftHash, nonce: 'demo-nonce-1', issuedAt: NOW_ISO, expiresAt: null });
     const grew = store.snapshot().liveCount;
-    const accepted = runGovernedRecursion(envO, proposal, auth);
+    const accepted = runGovernedRecursion(env, proposal, auth);
     expect(accepted.accepted).toBe(true);
     expect(accepted.stage).toBe('sandbox-applied');
+    expect(accepted.aumlokMode).toBe('software_hybrid');
     expect(accepted.sandboxApplied).toBe(true);
     expect(accepted.sandbox?.get(targetPath)).toBe(proposal.newContent);
     expect(accepted.receiptHash).toBeTruthy();
-    expect(store.snapshot().liveCount).toBe(grew + 1); // receipt memory added
-    log(`11-12. owner-signed → applied to ISOLATED sandbox; receipt ${accepted.receiptHash!.slice(0, 16)}… recorded`);
+    expect(store.snapshot().liveCount).toBe(grew + 1); // exactly one receipt memory added
+    log(`11-12. owner-signed (hybrid) → applied to ISOLATED sandbox; receipt ${accepted.receiptHash!.slice(0, 16)}… recorded`);
 
     // 13. never touched the live repository — the "apply" is a Map, not the disk. (No fs is imported on this path.)
     log(`13.  live repository NOT touched (sandbox is in-memory; no fs write)`);
@@ -96,6 +114,7 @@ describe('demo:organism — a governed, growing, remembering organism', () => {
 
     // authority containment holds everywhere
     expect(providerGrantsAuthority()).toBe(false);
+    expect(accepted.authorityMinted).toBe(false);
     log('DONE. governed · growing · remembering — advisoryOnly, grantsAuthority:false held throughout');
   });
 });
