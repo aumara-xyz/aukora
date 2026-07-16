@@ -19,6 +19,24 @@ Aukora is the distilled canonical core. Contributions should keep it small, pure
 - **Claims must be earned.** Anything added to `CLAIMS.md` needs source, tests that exercise it,
   and a package export. Designs and hypotheses stay in issues, not in the claims table.
 
+## Outside contributions and licensing
+
+Aukora is licensed **AGPL-3.0-or-later** (see [LICENSE](LICENSE)), and the copyright holder also
+offers separate commercial terms (see [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md)). Because
+those two tracks depend on the project holding clear rights to every line it ships, **outside code
+contributions cannot be accepted until a counsel-reviewed Contributor License Agreement (CLA) or
+an equivalent written relicensing/inbound grant is in place.**
+
+Until that agreement exists:
+
+- Please do not open pull requests that add or modify source code from outside the maintainers.
+- Bug reports, reproductions, security disclosures ([SECURITY.md](SECURITY.md)), documentation
+  fixes, and design discussion in issues are welcome and unaffected.
+- Do not paste third-party or AI-generated code whose license or provenance you cannot vouch for.
+
+This policy is about keeping provenance honest, not about discouraging interest. It will be
+updated here once a CLA/grant reviewed by counsel is available.
+
 ## Running the gate
 
 ```bash

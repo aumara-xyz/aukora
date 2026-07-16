@@ -56,4 +56,6 @@ and [docs/ISSUE_MIGRATION_INDEX.md](docs/ISSUE_MIGRATION_INDEX.md).
 
 ## License
 
-AGPL-3.0-or-later. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+AGPL-3.0-or-later. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Separate commercial terms may be
+available under [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) (which itself grants no license).
+Contribution and CLA policy: [CONTRIBUTING.md](CONTRIBUTING.md).
