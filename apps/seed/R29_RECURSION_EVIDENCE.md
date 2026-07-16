@@ -73,7 +73,7 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **165 passed / 13 files** (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **180 passed / 14 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch (incl. `test:kernel` — portable boundary, compatibility, SBOM, runtimes, package all green; 19 kernel tests).
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
@@ -236,6 +236,64 @@ sandbox-only apply; forbidden capabilities, stale epochs, tampered challenges, a
 are receipted). The UI boundary is one-way and provably fence-clean (public fingerprint + hash prefixes only; no
 key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
 encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
+
+## R35 — durable governed recursion
+
+Branch `sam/r35-recursion` off the exact R34 head `ebfb41d` (PR #32 merged to main by Sam 1; apps/seed identical).
+
+**The authority split (`apps/seed/src/durableRecursion.ts`):** the KERNEL/AUMLOK gate decides in process, outside
+any store — `complete` always re-runs the full canonical `runGovernedRecursion` (shape, lineage, staleness, secret,
+council evidence, hybrid owner verify, replay, receipt-before-row). The injected `WorkflowStore` (Sam 2's local
+Convex adapter implements it; `InMemoryWorkflowStore` is the executable specification) persists PROJECTIONS only:
+exact-shape `WorkflowStateV1` (validated + free-text fence-audited on every save; no signature/key/content field
+exists in the shape), workflow phase, council evidence digest, receipt references. A persisted state can never
+authorize: flipping `ownerVerified` changes nothing because the gate re-verifies from scratch (tested).
+
+**State machine:** `propose` (validate + deterministic advisory review → `awaiting-owner`; idempotent by
+`workflowId` = hash(intentId, draftHash, nonce); council-hold terminalizes + receipts) → `complete` (gate re-runs
+everything; RETRYABLE stages {owner-gate, metabolic-contraction, receipt-unrecordable} keep `awaiting-owner` as
+deferral; everything else terminalizes `applied`/`refused` with the gate's receipt) → `cancel` (terminal + receipt).
+Optimistic concurrency: saves carry an expected version; a losing writer defers to the stored terminal.
+
+**At-most-once effects:** ledger consume-once nonce + terminal no-op. The crash-between-apply-and-save window is
+reconciled HONESTLY: a replay refusal AND this workflow's consumed nonce AND this workflow's intent recorded as
+applied ⇒ terminalize `applied-reconciled-after-restart` with a fresh reconciliation receipt — a different proposal
+merely reusing a consumed nonce fails BOTH halves of the (intent, nonce) pair and stays a genuine replay refusal.
+
+**Salted PII tag (`memorySelection.ts`):** `saltedContentTag(saltHex, content)` — domain-separated, ≥128-bit salt
+required — so left-behind/private rows never publish unsalted hashes of low-entropy PII (a bare content hash of a
+birthday is enumerable); migrate rows keep verifiable unsalted hashes because their content travels anyway.
+
+**Contracts:** `WorkflowStateV1`/`WorkflowStore`/`WorkflowPhase`/`DurableOutcome` added to the type-only
+`@aukora/seed/contracts` surface for Sam 2/Sam 4.
+
+### R35 adversarial matrix (directive item 7)
+
+| control | result |
+| --- | --- |
+| crash during advisory review | re-propose resumes same workflow, same evidence digest, version unchanged |
+| crash during owner wait + restart | terminal no-op; gate never re-runs; zero duplicate receipts |
+| crash between apply and save | reconciled applied-exactly-once (receipted); never double-applies |
+| different proposal + consumed nonce | genuine `refused-replay` terminal — reconciliation requires the (intent, nonce) pair |
+| cancellation | terminal + receipt; complete-after-cancel no-ops |
+| stale/expired authority | deferral (stays awaiting, attempt receipted); fresh signature completes |
+| refusal (secret patch) | terminal `refused-secret` + receipt |
+| malformed persisted state | `workflow:malformed-state`, gate never runs, no attempt burned |
+| budget exhaustion | metabolic contraction defers; attempts exhaustion terminalizes |
+| nonce replay | consume-once law holds through the workflow layer |
+| forgetting | governed tombstone alongside workflow receipts; chain still verifies |
+| UI-state non-authorization | tampered `ownerVerified:true` projection cannot cause an apply |
+| salted PII tag | same content + different salt → different tag; weak/non-hex salt refused |
+
+**R35 CHECK (opus-self-review):** the durable layer adds persistence and idempotency, never a second decision path —
+every effect still flows through the one canonical gate, and the store's contents are inert projections. Two bugs
+were caught by review/tests before commit: (1) the reconciliation condition initially keyed on the consumed nonce
+alone, which would have wrongly reconciled a different proposal reusing that nonce — it now requires the full
+(intent, nonce) pair; (2) a test initially ran the raw value fence over the whole state, tripping on legitimate
+structural 64-hex ids (the R33 lesson) — the module was already correct (free-text-only audit), the assertion was
+fixed to match. Honest limits: the reconciliation receipt is a NEW receipt (the original apply's chain hash is not
+recoverable after the crash — recorded as such, never faked); Convex adapter conformance is Sam 2's side of the
+contract, specified here by `InMemoryWorkflowStore` + `validateWorkflowState`.
 
 ## R34 — safe inward IDE / selection acceptance / Spatial adapter / contracts
 

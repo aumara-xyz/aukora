@@ -153,3 +153,18 @@ export function verifySelectionPacket(packet: MemorySelectionPacketV1): { valid:
 export function importPerformed(): false {
   return false;
 }
+
+/**
+ * SALTED content tag for left-behind / private-hold rows (R35 PII law).
+ *
+ * A plain `canonicalHash({content})` of LOW-ENTROPY PII (a birthday, a name, a phone number) is guessable by
+ * enumeration — publishing it would leak the very thing the row was held back to protect. Rows whose content stays
+ * behind MUST therefore publish a salted tag instead: the salt (≥128-bit hex, owner-held, never published) makes the
+ * tag useless for dictionary/rainbow enumeration while still letting the owner re-derive and audit it. Migrate rows
+ * keep the unsalted hash — their content travels anyway, so the hash hides nothing and must stay verifiable.
+ */
+export function saltedContentTag(saltHex: string, content: string): string {
+  if (typeof saltHex !== 'string' || !/^[0-9a-f]{32,64}$/.test(saltHex)) throw new Error('salted_tag_salt_invalid: need 32-64 lowercase hex chars (>=128-bit salt)');
+  if (typeof content !== 'string') throw new Error('salted_tag_content_invalid');
+  return canonicalHash({ domain: 'AUKORA-SALTED-ROW/1', salt: saltHex, content });
+}

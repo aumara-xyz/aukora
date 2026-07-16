@@ -38,6 +38,9 @@ export type { PathVerdict, PathClass, FenceReasonClass } from './pathFence.js';
 export type { CouncilEvidencePackV1, CouncilTestSummary } from './councilPack.js';
 export type { RunnerDecision, RunnerAdmission, RunnerRefusal, RunnerReasonClass, BrokerRefV1, FuguReview } from './councilRunnerBoundary.js';
 
+// ── durable workflow (Sam 2's Convex adapter implements WorkflowStore; states are projections only) ──
+export type { WorkflowStateV1, WorkflowStore, WorkflowPhase, SaveResult, DurableOutcome, DurableReasonClass } from './durableRecursion.js';
+
 // ── schema names (local literals; import nothing) ──────────────────────────
 export const CONTRACT_SCHEMAS = Object.freeze({
   ceremonyView: 'aukora-ceremony-view-v1',
@@ -52,6 +55,7 @@ export const CONTRACT_SCHEMAS = Object.freeze({
   receiptView: 'aukora-receipt-view-v1',
   councilPack: 'aukora-council-evidence-pack-v1',
   brokerRef: 'aukora-broker-ref-v1',
+  workflow: 'aukora-recursion-workflow-v1',
 } as const);
 
 /** The contract surface is display/consumption only — it can never mint authority. Constant, by construction. */
