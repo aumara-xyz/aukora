@@ -1,0 +1,24 @@
+{
+  "name": "@aukora/console",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Read-only operator console for the Aukora governed organism. A curated, public-facing view of authority/lock state, growing receipt-chained memory, proposal governance, the advisory Fu council, provider truth-labels, budget hard-stops, and governed forgetting. Renders a deterministic DEMO_FIXTURE derived from the real organism; it signs, applies, deploys, and arms nothing.",
+  "author": "Aumara",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "fixture": "vitest run --config vitest.gen.config.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json",
+    "serve": "node scripts/serve.mjs",
+    "preview": "node scripts/serve.mjs",
+    "launch": "node scripts/launch.mjs"
+  },
+  "devDependencies": {
+    "@aukora/brain": "0.1.0",
+    "@aukora/council": "0.1.0",
+    "@aukora/kernel": "0.1.0",
+    "@aukora/memory": "0.1.0",
+    "@aukora/seed": "0.1.0"
+  }
+}
