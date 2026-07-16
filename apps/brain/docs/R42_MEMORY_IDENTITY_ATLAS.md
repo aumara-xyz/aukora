@@ -118,3 +118,45 @@ Directive item: "Convex remains persistence/projection only and can never author
 **Verdict: HOLDS.** Kernel/AUMLOK decides; Convex persists and reacts only. This is the WAVE-1 "authority
 outside Convex" law re-verified against the Wave-2 additions (erase attestation + signed heads did not open an
 in-store authority path — they added *evidence* the store records and a shell can independently verify).
+
+---
+
+## Appendix C (overnight atlas verification) — recall + receipt-before-row vs donor
+
+Compared the current recall/receipt laws against donor `core/src/memoryRecall.ts@a8a4861bf83c` and
+`core/src/memoryAppend.ts@a4f17ee813ac` (read-only; no seed/key content read).
+
+### 1. Receipt-before-row — CONTINUITY HOLDS (with a deliberate granularity difference)
+
+- **Donor** (`memoryAppend.ts` header): the write is ONE serializable Convex mutation ordered
+  *consume-manifest-authority → V4-signed receipt on the `mem:{owner}:{key}` chain → row insert* — receipt
+  before row, atomic in a single transaction.
+- **Current**: memory INGEST computes the content-free `chainHash` and writes it ON the row in one mutation
+  (receipt-before-row, same-txn); the rehearsal STEP effect is deliberately **two** transactions
+  (receipt txn A commits before effect txn B — "asymmetry NOT flattened", the crash-reconciliation property).
+- **Verdict: ADAPTED_BOUNDARY, equivalent-or-stronger.** Same "no row without its receipt" invariant; the
+  current lane additionally proves the two-transaction crash-reconciliation the donor's single-txn write never
+  needed to. The donor's V4-signed head over the write is the Wave-2 `signedHeads` substrate (recorded/audited).
+
+### 2. Governed forgetting read-time rail — SUPERSEDED_WITH_PROOF (already in Wave-1 §1b)
+
+Donor recall filters by status; current recall enforces forgetting as a read-time rail (`forgotten` set) AND
+removes the plaintext column, with a signed erase attestation (Wave-2). Stronger on plaintext removal.
+
+### 3. Signed recall PoP — MISSING (concrete donor evidence; confirms the Wave-1 gap)
+
+- **Donor** (`memoryRecall.ts`): recall REQUIRES a reader proof-of-possession — a custody-checked OWNER ROOT
+  seed signs the recall head under the dedicated `aumlokMemRecall` domain (injected `RecallSigner`, built from
+  the kernel's `recallHead` + `signChainHeadV3`). The seed lives OUT OF TREE at path class
+  `$HOME/.aukora-symbiote/convex/memory-root.seed` (0600 custody — **PRIVATE_HOLD**, content never read here).
+- **Current**: the 7141 door `/memory/recall` is an UNAUTHENTICATED loopback read-only projection — no reader
+  PoP, no owner seed. Deliberate for the local single-owner dev boot (origin-closed loopback is the perimeter),
+  but it is **not** the donor's signed-recall capability.
+- **Verdict: MISSING** (donor `aumlokMemRecall` reader-PoP), consistent with Wave-1's flag. A future restore
+  would build the real `RecallSigner` from the Wave-2 vendored `signChainHeadV3` + an out-of-tree owner seed;
+  it needs owner key custody, so it is **PARKED_PENDING_OWNER**, not built here.
+
+**Net:** two of three donor recall/receipt laws carry (one adapted-stronger, one superseded-with-proof); the
+third (signed recall PoP) is a real, custody-gated MISSING — the door trades donor per-request reader
+authentication for an origin-closed loopback perimeter. Both are honest positions; only the owner can decide
+whether the local brain should also require a signed recall.
