@@ -76,6 +76,21 @@ describe('ConvexWorkflowStore — spec parity with InMemoryWorkflowStore (real v
     expect(convexWorkflowStoreGrantsAuthority()).toBe(false);
   });
 
+  it('listWorkflows serves current projections (most recent first, phase-filterable, bounded)', async () => {
+    const t = convexTest(schema, modules);
+    const store = new ConvexWorkflowStore(ioFor(t), validateWorkflowState);
+    store.save(validState() as never, 0);
+    store.save(validState({ workflowId: hex('wf2'), nonce: 'wf-2', phase: 'applied', receiptHash: hex('r2') }) as never, 0);
+    await store.settle();
+    const all = (await t.query(api.workflows.listWorkflows, {})) as { workflowId: string }[];
+    expect(all.length).toBe(2);
+    const applied = (await t.query(api.workflows.listWorkflows, { phase: 'applied' })) as { phase: string }[];
+    expect(applied.length).toBe(1);
+    expect(applied[0].phase).toBe('applied');
+    const bounded = (await t.query(api.workflows.listWorkflows, { limit: 1 })) as unknown[];
+    expect(bounded.length).toBe(1);
+  });
+
   it('server-side OCC is authoritative: a stale writer diverges on settle and defers to the winner', async () => {
     const t = convexTest(schema, modules);
     const winner = new ConvexWorkflowStore(ioFor(t), validateWorkflowState);

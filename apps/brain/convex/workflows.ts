@@ -32,6 +32,25 @@ export const loadWorkflow = query({
   },
 });
 
+// SENSE: current workflow projections (most recent first, bounded), optionally filtered by phase.
+// Read-only; projections only — powers the door's /workflows, /aumlok (awaiting-owner) and /candidates
+// (applied) views for Spatial and the chat door.
+export const listWorkflows = query({
+  args: { phase: v.optional(v.union(v.literal('awaiting-owner'), v.literal('applied'), v.literal('refused'), v.literal('cancelled'))), limit: v.optional(v.number()) },
+  handler: async (ctx, { phase, limit }) => {
+    const bounded = Number.isInteger(limit) && (limit as number) > 0 && (limit as number) <= 100 ? (limit as number) : 20;
+    const rows = await ctx.db.query('workflows').order('desc').take(200);
+    return rows
+      .filter((r: any) => phase === undefined || r.phase === phase)
+      .slice(0, bounded)
+      .map((r: any) => {
+        const { _id, _creationTime, ...state } = r;
+        void _id; void _creationTime;
+        return state;
+      });
+  },
+});
+
 export const saveWorkflow = mutation({
   args: { state: v.any(), expectedVersion: v.number() },
   handler: async (ctx, { state, expectedVersion }) => {
