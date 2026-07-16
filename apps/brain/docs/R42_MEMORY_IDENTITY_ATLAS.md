@@ -305,3 +305,58 @@ memory ingest" (the donor's stricter posture), that is NOT enforced at ingest to
 canonical classifier, plus a structural no-bypass guarantee the donor lacked); the AUTHORITY routing is
 ADAPTED_BOUNDARY (secret = in-write store hygiene; AUMLOK = outside Convex). The one behavioral divergence —
 AUMLOK-lock not gating ingest — is flagged for the owner, not decided here.
+
+---
+
+## Appendix G (overnight atlas verification) — governed forgetting authority path vs donor `forget`
+
+Compared the two current forget paths (pure `reactiveStore.ts` `forget`; live `convex/memory.ts` `forget`) against
+the donor `forget` in `memory/memory.ts@46eff426` (routes through `aukoraGovernAsk` AUMLOK-gate → forget receipt →
+erase plaintext + keep hash link + tombstone). Read-only; no seed/key content read.
+
+### EXACT_PORT — the RTBF-clean invariant + fail-closed
+
+- **RTBF-clean (same law, all three):** each ERASES the plaintext while KEEPING the hash-chain link and appending a
+  content-free forget/tombstone audit — so the chain stays provable and the erasure is audited.
+  - Donor: `target.content = null` + `status='tombstoned'` + KEEP `hash/seq/prevHash` + a forget-receipt entry.
+  - Current pure: splice every record for the recordId out of the recall store + `forgotten.add` (read-time
+    invisibility) + append `tombstoneCommitment` (chain NOT rewritten).
+  - Current convex: `ctx.db.replace(_id, withoutContent)` (omit the content column) + insert `forgotten` +
+    content-free `tombstone` chain entry + an erasure receipt.
+  All honor NO RESURRECTION — a forgotten record is invisible to recall and its plaintext is gone, while the row/entry
+  survives as a COUNTABLE audit stub (the Appendix-D / donor M2b "never an invisible hole" law).
+- **Fail-closed on corruption (same law):** donor THROWS → `pause` ("never erase atop a corrupt store"); both current
+  paths refuse when `verifyChain()` fails. Erasure never proceeds on an unverifiable store.
+
+### ADAPTED_BOUNDARY — authority routing (and it ANSWERS the Appendix-F flag)
+
+Unlike ingest (Appendix F: no authority, not AUMLOK-gated by design), forgetting IS the authority-bearing path — and
+it is owner-authority-gated in EVERY variant:
+- **Donor:** in-line `aukoraGovernAsk({permission:'memory', command:'forget …'})`; `decision.effect !== 'allow'` →
+  refused; `gateArgsHash` binds the erase to that gate decision.
+- **Current pure store:** an INJECTED `verifyOwner()` — a real Ed25519 owner-authorization check; no valid owner auth
+  ⇒ refused (fail-closed). Authority is EXERCISED but supplied from OUTSIDE (the owner seed), consistent with
+  "authority outside Convex; the store reacts, it does not decide."
+
+This is the direct answer to the Appendix-F owner-decision flag from the authority side: the architecture gates the
+AUTHORITY-BEARING effect (forget), not the advisory observation (ingest). The asymmetry is deliberate and consistent —
+AUMLOK/owner authority guards erasure, recursion, and real import; not passive ingest.
+
+### SUPERSEDED_WITH_PROOF — the live convex erase is STRONGER than the donor gate
+
+The `convex/memory.ts` forget requires a SIGNED ML-DSA erase ATTESTATION (Wave-2 `continuity/eraseAttestation.ts`),
+not merely a local gate verdict:
+- `verifyEraseAttestation` re-verifies the owner's post-quantum signature IN THE REAL CONVEX ISOLATE;
+- **scoped:** `attestation.key === recordId` (an attestation for one record can't erase another);
+- **expiring:** donor-exact 60 s freshness;
+- **anti-replay:** the attestation digest is consumed exactly ONCE, atomically with the erase;
+- the erasure receipt binds the attestation digest as the `authorityRef`.
+Wave-2 tests refuse forged / tampered / expired / wrong-key / replayed / scope-mismatched attestations. Where the
+donor's `gateArgsHash` bound to a LOCAL gate decision (the donor's own Ed25519 signing was its "Step 4" next step),
+the current lane already has the cryptographic owner signature over a scoped, expiring, single-use preimage. So the
+erase-authority is **SUPERSEDED_WITH_PROOF** vs the donor.
+
+**Net:** RTBF-clean + fail-closed + no-resurrection are EXACT_PORT across all three; the authority routing is
+ADAPTED_BOUNDARY (donor in-line gate → injected owner Ed25519 / signed ML-DSA attestation) and CONFIRMS that the
+authority-bearing forget path is owner-gated (resolving the Appendix-F asymmetry as deliberate); the live convex
+erase authority is SUPERSEDED_WITH_PROOF (scoped, expiring, anti-replay PQC attestation verified in-isolate).
