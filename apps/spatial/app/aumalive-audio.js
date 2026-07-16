@@ -2,7 +2,7 @@
 //
 // Two tiny processors that make the duplex loop real:
 //   alv-capture : mic (context rate) → mono 16 kHz int16 chunks → main thread
-//                 (which relays them to the LOCAL voice sidecar on 7092)
+//                 (which relays them to the LOCAL voice sidecar on 7098)
 //   alv-player  : queued PCM (context rate float32) → speakers, with a fast
 //                 fade-cut for barge-in and rms reports so the field can
 //                 ripple with HER voice exactly as it leaves the speakers.

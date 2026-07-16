@@ -48,3 +48,13 @@ donor at :7090.
 | display never authorizes | tested: `displayOnly:true`, `feedsApply:false`, zero `grantsAuthority:true` anywhere in the payload; the client re-checks the fence and refuses a projection that claims authority |
 | offline truth | verified live: with the projection removed the strip flips to `OFFLINE — live-local projection unavailable` + the `launch:live` hint (fixture stays labelled) |
 | port map | :7090 donor spatial · :7091 chat door · :7092 voice · :7093 arc3 · :7094 AUMLOK gate · :7095 AUMLOK bind (all reserved, untouched) · **:7096 this organism** (scan 7096–7099) |
+
+## R37 — real door + true subtractive tree
+| proof | result |
+| --- | --- |
+| live path | `/api/spatial/projection` is now a REACTIVE per-request read of Sam 2's local Convex brain door (`AUKORA_BRAIN_DOOR`, default `127.0.0.1:3210`; senses `memory:health/snapshot/verify`; contracts advertised for `workflows:loadWorkflow` + `rehearsal:receiptStream`). No generated JSON is served as live (tested); door down → **loud 503** and the CONSOLE strip flips to `OFFLINE — brain door unreachable` (verified live; [`screens/r37-console-offline-door.jpg`](screens/r37-console-offline-door.jpg)) |
+| new AUMA doors | chat/mind door **:7097** and voice sidecar **:7098** — the donor `:7091`/`:7092` are dialable NOWHERE in the runtime tree (tested); AUMLOK keeps its local `:7094`/`:7095` ceremony doors |
+| true subtraction | reachability closure from the selected roots: **53 shipped** (42 VERBATIM · 5 ADAPTED · 6 NEW) / **45 EXCLUDED** incl. agora (dispositions retained in provenance v2). Tree == manifest exactly (tested); zero dangling references (tested) |
+| shell intact after subtraction | all 10 roster organs mounted live with zero runtime errors (▲ Auma·Live, Auma·Lingwa · ■ AUMLOK, AURA, Kira, Map, GHP, Console, Settings · ● App Lab); thirds/corners law re-verified |
+| port map | :7090 donor · :7091 donor chat · :7092 donor voice · :7093 arc3 · :7094 gate · :7095 bind · **:7096 this organism** (fallback :7099) · **:7097 new chat door** · **:7098 new voice** · **:3210/:3211 brain door** |
+| blocker (live door evidence) | the local Convex backend refuses the function push on Node v26 (supports 18/20/22/24): `DeploymentNotConfiguredForNodeActions`. The reactive-read seam + loud offline are fully proven; end-to-end live door needs a supported Node (nvm 22) or Sam 2 guidance |

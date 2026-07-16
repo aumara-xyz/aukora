@@ -6,9 +6,9 @@
 // this page. This is only the model API key the runtime spends; it is NOT an AUMLOK signing key and grants
 // no authority.
 //
-// Talks to the chat door (:7091). GET reports presence only (no key bytes ever reach the browser).
+// Talks to the NEW organism's chat door (:7097; donor :7091 untouched). GET reports presence only (no key bytes ever reach the browser).
 
-const DOOR = 'http://127.0.0.1:7091';
+const DOOR = 'http://127.0.0.1:7097'; // R37: the NEW organism's door — never the donor :7091
 const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
 
 const CONTRIBUTION_STEPS = `# contribute from this node
@@ -158,7 +158,7 @@ export async function mountSettings(root) {
 
   const render = (s) => {
     statusRow.className = 'set-status ' + (s.present ? 'ok' : 'off');
-    if (s.error) { statusRow.textContent = 'could not reach the local door on :7091 — is the chat server running?'; }
+    if (s.error) { statusRow.textContent = 'could not reach the local door on :7097 — is the chat server running?'; }
     else if (s.present) { statusRow.textContent = 'Connected — a key is active' + (s.source ? ' (from ' + s.source + ')' : '') + '.'; }
     else { statusRow.textContent = 'No key set yet — add one below to talk to Auma.'; }
     clearBtn.style.display = s.savedInApp ? '' : 'none';

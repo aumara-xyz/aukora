@@ -11,9 +11,9 @@
 //   orb dim        = channel closed  ·  orb bright = she is listening
 //   orb amber ring = fallback mode (local sidecar down, browser voice)
 //
-// PIPELINE (see spatial/voice/README.md): mic → local sidecar 7092 (Silero VAD
+// PIPELINE (see spatial/voice/README.md): mic → local sidecar 7098 (Silero VAD
 // → whisper on the Apple GPU, live partials) → the governed presence lane on
-// 7091 (the mind — unchanged) → sentence/clause-streamed Kokoro TTS → a fading
+// 7097 (the new organism's mind door) → sentence/clause-streamed Kokoro TTS → a fading
 // player worklet. Talking over her cuts her voice in ~90 ms.
 //
 // NON-MAC NODES (no sidecar): the browser fallback is a first-class citizen —
@@ -23,8 +23,8 @@
 
 import { makeDirectiveFilter, FIELD_HUES, FIELD_FORMS } from '/app/field-directives.js';
 
-const DOOR = 'http://127.0.0.1:7091';
-const SIDECAR_WS = 'ws://127.0.0.1:7092/ws';
+const DOOR = 'http://127.0.0.1:7097'; // R37: the NEW organism's mind door — never the donor :7091
+const SIDECAR_WS = 'ws://127.0.0.1:7098/ws'; // R37: the NEW organism's voice sidecar — never the donor :7092
 const WORKLET_URL = '/app/aumalive-audio.js';
 
 const el = (tag, cls) => { const n = document.createElement(tag); if (cls) n.className = cls; return n; };
@@ -842,7 +842,7 @@ export function mountAumaLive(root) {
   }
   function stopBrowserVoice() { try { window.speechSynthesis.cancel(); } catch { /* */ } clearInterval(fbKeep); ttsQueueFb = 0; }
 
-  // fallback STT — the path every non-Mac node lives on (no sidecar on 7092).
+  // fallback STT — the path every non-Mac node lives on (no sidecar on 7098).
   // REWORKED: turns now fire from the recognizer's OWN final results (debounced),
   // not from a 950ms mic-RMS silence timer. The old race — the timer grabbing
   // `heard` before the recognizer had delivered the final — was exactly why the
