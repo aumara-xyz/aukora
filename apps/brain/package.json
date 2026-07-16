@@ -30,6 +30,9 @@
     "local:health": "node scripts/local-ctl.mjs health",
     "local:down": "node scripts/local-ctl.mjs down",
     "compose:live": "AUKORA_LIVE_COMPOSE=1 vitest run --config vitest.config.ts test/live.compose.test.ts",
-    "local:status": "node scripts/local-ctl.mjs status"
+    "local:status": "node scripts/local-ctl.mjs status",
+    "organism:up": "node scripts/organism-ctl.mjs up",
+    "organism:status": "node scripts/organism-ctl.mjs status",
+    "organism:down": "node scripts/organism-ctl.mjs down"
   }
 }

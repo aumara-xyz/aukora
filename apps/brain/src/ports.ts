@@ -16,6 +16,9 @@
 export const AUKORA_PORTS = {
   brainDoor: 7141,
   keychainBroker: 7142,
+  spatialShell: 7096,   // the new organism's Spatial shell (apps/spatial; reads the 7141 door)
+  mindDoor: 7097,       // the governed mind/chat door (apps/seed)
+  voiceSidecar: 7098,   // optional voice sidecar (no standalone server on this tree yet)
   convexLocalDeployment: 3210, // upstream default, dev-only, loopback
   convexLocalSite: 3211,       // upstream default, dev-only, loopback
   donorReserved: [7090, 7091, 7092, 7093], // Symbiote spatial/door/voice/arc3 — never reuse as new services
