@@ -73,7 +73,7 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **147 passed / 12 files** (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **165 passed / 13 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch (incl. `test:kernel` — portable boundary, compatibility, SBOM, runtimes, package all green; 19 kernel tests).
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
@@ -236,6 +236,57 @@ sandbox-only apply; forbidden capabilities, stale epochs, tampered challenges, a
 are receipted). The UI boundary is one-way and provably fence-clean (public fingerprint + hash prefixes only; no
 key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
 encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
+
+## R34 — safe inward IDE / selection acceptance / Spatial adapter / contracts
+
+Branch `sam/r34-recursion` off canonical main `b883eb98` (R29–R33 already integrated by Sam 1). Lane discipline held:
+NO Spatial shell code was written or transplanted here — the donor shell transplant belongs to its own lane; this lane
+supplies the governed-pipeline contracts the transplanted shell's organs consume (donor organs are read-only JSON views).
+
+- **IDE session increment** (`apps/seed/src/ideSession.ts`): one `AumaIdeSession` ties the R0–R3 loop into a usable
+  surface — inspect/cite/draft/rehearse/stage — and ADDS only bookkeeping: a bounded refusal log (stable quotable
+  reason classes: `fence:*`, `ide:*`, gate stages) and a DISPLAY-ONLY `receiptView()` (prefixes + kinds, chain
+  verified, fence-audited, no content echo). No push/merge/deploy/sign/widen surface exists.
+- **Selection acceptance** (`selectionAcceptance.ts`): a verified MemorySelectionPacketV1 becomes a ROUTING PLAN —
+  root/unite/rise migrate items → `governed-proposal`; gold items AND maternal-anchor items → `gold-ceremony` with the
+  explicit unmet-requirements checklist (reason / lineage-or-genesis / rehearsal-receipt / rollback-draft); anchor
+  items must validate against the anchor schema (forbidden framings refuse the ITEM: `accept:anchor-framing`);
+  leave-behind/private-hold → `stays-behind`, content-free. `importPerformed` stays a hard false — still no import.
+- **Read-only Spatial ceremony/event adapter** (`spatialCeremonyAdapter.ts`): the pipeline PUSHES display-projected
+  `CeremonyView`s (fence-checked at the door — a leaking view is refused); the shell reads bounded snapshots +
+  incremental `eventsSince(seq)` + a read-only geometry stream. AUMLOK verdicts and AURA geometry are SEPARATE keys;
+  no apply predicate exists; `feedsApply` is a hard false; every snapshot is fence-audited before it is served.
+- **Broker reference (issue #30)** (`councilRunnerBoundary.ts`): `BrokerRefV1` = opaque `transportHandle` +
+  `custodyHandle` (short identifiers; credential-shaped material refused, `runner:broker-ref-invalid`). Holding a
+  ref does NOT create a transport — the runner still refuses `runner:no-transport` until the real broker injects one.
+  No embedded key; no live paid call exists this round.
+- **Sam-4 contracts surface** (`contracts.ts`, exported as `@aukora/seed/contracts`): STRICTLY type-only re-exports
+  (+ locally-declared frozen schema-name literals) — its runtime import closure is EMPTY, so a consumer can render
+  every governed surface with zero possibility of touching authority code. Structurally tested (every from-import is
+  `export type`).
+
+### R34 adversarial matrix
+
+| control | result |
+| --- | --- |
+| refusal log stability | fence/sacred/owner-gate refusals logged with stable classes; later valid work unaffected |
+| receipt view leakage | prefixes only, fence-clean, no content echo, chain verified |
+| routing correctness | rise→proposal, gold→ceremony (evidence checklist explicit), anchor→ceremony, private stays |
+| forbidden-framing anchor item | `accept:anchor-framing`; tampered packet → `accept:packet-invalid` |
+| adapter fence at the door | authority-noted or `grantsAuthority:true` view refused at push; snapshot fence-audited |
+| shell face containment | no push/apply/authorize/complete/sign surface; incremental events correct |
+| broker ref | valid ref ≠ transport (still `runner:no-transport`); credential/malformed → `runner:broker-ref-invalid` |
+| contracts closure | type-only proven structurally; `./contracts` export resolves; schema names match live |
+| hostile re-runs | staleness, replay, lineage, secret, gold, view-safety, candidate-containment all green (165/165) |
+
+**R34 CHECK (opus-self-review):** every addition is read-only or refuse-only: the session logs and projects, the
+acceptance routes (the checklist can only ADD requirements), the adapter serves display projections behind two fence
+audits (push + snapshot), the broker ref is a name for a future injection, and the contracts entry is erased at
+runtime. The owner correction's Spatial-transplant constraints bind the shell lane; this lane touched only
+`apps/seed/**` and stayed off the donor code entirely. Remaining gaps, honestly: the thin fs-backed
+`RepoReadCapability` adapter is still a follow-up (the law is proven against fake repos); the serve/HTTP wrapper for
+`shellFace` belongs to the shell lane; import execution for approved selection routes remains a future owner-directed
+round; the issue-#30 broker itself does not exist yet.
 
 ## R33 — memory constitution / Auma continuity / council runner boundary
 

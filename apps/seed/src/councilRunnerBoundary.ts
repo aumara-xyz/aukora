@@ -28,6 +28,7 @@ export type RunnerReasonClass =
   | 'runner:pack-invalid'
   | 'runner:no-transport'
   | 'runner:credential-embedded'
+  | 'runner:broker-ref-invalid'
   | 'runner:ceiling-per-pass'
   | 'runner:ceiling-per-day';
 
@@ -47,9 +48,40 @@ export interface RunnerAdmission {
 
 export type RunnerDecision = RunnerAdmission | RunnerRefusal;
 
+/**
+ * Broker reference (issue #30) — an OPAQUE pointer to where the future broker will inject the transport and the
+ * secret custody. Handles are short identifiers, never material: a credential-shaped handle is refused, and holding
+ * a broker reference does NOT create a transport — until the broker actually injects one at runtime, every run
+ * still refuses honestly with `runner:no-transport`.
+ */
+export interface BrokerRefV1 {
+  readonly schema: 'aukora-broker-ref-v1';
+  readonly issue: '#30';
+  /** Opaque handle the broker resolves to a Transport at runtime. */
+  readonly transportHandle: string;
+  /** Opaque handle the broker resolves to custody OUT-OF-BAND — the secret itself never enters this process. */
+  readonly custodyHandle: string;
+}
+
+const HANDLE_RE = /^[a-z0-9:._-]{1,64}$/;
+
+/** Validate a broker reference: opaque short handles only, never credential-shaped material. Total. */
+export function validateBrokerRef(ref: unknown): { valid: boolean; reason: string } {
+  if (ref === null || typeof ref !== 'object' || Array.isArray(ref)) return { valid: false, reason: 'broker-ref: not a plain object' };
+  const r = ref as Record<string, unknown>;
+  if (r.schema !== 'aukora-broker-ref-v1' || r.issue !== '#30') return { valid: false, reason: 'broker-ref: wrong schema/issue' };
+  if (typeof r.transportHandle !== 'string' || !HANDLE_RE.test(r.transportHandle)) return { valid: false, reason: 'broker-ref: transportHandle must be an opaque short handle' };
+  if (typeof r.custodyHandle !== 'string' || !HANDLE_RE.test(r.custodyHandle)) return { valid: false, reason: 'broker-ref: custodyHandle must be an opaque short handle' };
+  const leaks = [...scanForbiddenKeys(r), ...scanForbiddenValues(r)];
+  if (leaks.length) return { valid: false, reason: 'broker-ref: credential-shaped material in a handle' };
+  return { valid: true, reason: 'ok' };
+}
+
 export interface CouncilRunnerConfig {
   /** The injected provider transport. Absent ⇒ every run refuses honestly (no live call is even possible). */
   readonly transport?: Transport;
+  /** Where the future issue-#30 broker will inject transport + custody. A reference, never a credential. */
+  readonly brokerRef?: BrokerRefV1;
   /** Spend already booked today (persisted by the caller); counts against the $10 day ceiling. */
   readonly dayToDateUsd?: number;
   /** Optional NARROWER limits; anything wider than RUNNER_CEILINGS is clamped down to them. */
@@ -68,12 +100,14 @@ export function effectiveLimits(limits?: Partial<SpendLimits>): SpendLimits {
 
 export class CouncilRunnerBoundary {
   private readonly transport: Transport | undefined;
+  private readonly brokerRef: BrokerRefV1 | undefined;
   private readonly limits: SpendLimits;
   private readonly dayToDateUsd: number;
   private readonly configLeaks: string[];
 
   constructor(config: CouncilRunnerConfig = {}) {
     this.transport = config.transport;
+    this.brokerRef = config.brokerRef;
     this.limits = effectiveLimits(config.limits);
     this.dayToDateUsd = Number.isFinite(config.dayToDateUsd) && (config.dayToDateUsd as number) > 0 ? (config.dayToDateUsd as number) : 0;
     // NO EMBEDDED CREDENTIAL: a config smuggling a credential-shaped key/value anywhere is remembered and refused.
@@ -91,6 +125,10 @@ export class CouncilRunnerBoundary {
   admit(pack: CouncilEvidencePackV1, estimatedUsd: number): RunnerDecision {
     if (this.configLeaks.length) {
       return refuse('runner:credential-embedded', `refused: runner config carries credential-shaped material (${this.configLeaks.length} finding(s)) — credentials are supplied out-of-band, never embedded`);
+    }
+    if (this.brokerRef !== undefined) {
+      const b = validateBrokerRef(this.brokerRef);
+      if (!b.valid) return refuse('runner:broker-ref-invalid', `refused: ${b.reason}`);
     }
     const packVerdict = verifyCouncilPack(pack);
     if (!packVerdict.valid) return refuse('runner:pack-invalid', `refused: evidence pack failed verification (${packVerdict.reason})`);
