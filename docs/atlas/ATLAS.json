@@ -28,8 +28,8 @@
     "by_disposition": {
       "RESTORE_DONOR": 36,
       "CORE_NOW": 35,
-      "DONE_VERIFIED": 51,
-      "PRODUCT_PARKED": 75,
+      "DONE_VERIFIED": 52,
+      "PRODUCT_PARKED": 74,
       "RESEARCH_PARKED": 18,
       "NEBIUS_LATER": 20,
       "SUPERSEDED": 3,
@@ -3652,7 +3652,7 @@
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
       "disposition": "RESTORE_DONOR",
-      "implementation_evidence": "open donor capability, default-conservative (nothing disappears)",
+      "implementation_evidence": "open donor capability, default-conservative (nothing disappears) | R42: BOTH-SIDES PARTIAL — outcomes not written back to recallable memory (shared gap, donor+current)",
       "evidence_grade": "PROSE",
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
@@ -3668,9 +3668,9 @@
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
-      "disposition": "PRODUCT_PARKED",
-      "implementation_evidence": "product organ; PARKED_PENDING_OWNER per Wave 2 ruling",
-      "evidence_grade": "PROSE",
+      "disposition": "DONE_VERIFIED",
+      "implementation_evidence": "REVERSE FALSE-GREEN: landed in donor code while issue open (Sam 4 witness, R42 ckpt4)",
+      "evidence_grade": "SHA",
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
@@ -4333,6 +4333,16 @@
       "checkpoint": 2,
       "action": "enriched directive-named families with donor/current paths + dependencies from public Wave 1 forensics",
       "rows_enriched": 15
+    },
+    {
+      "checkpoint": 3,
+      "action": "lane overnight reconciliation",
+      "findings": [
+        "NEW CONFLICT CLASS (Sam 4, reverse false-green): donor issue #265 capability LANDED in donor code while the issue stays OPEN — issue-state audits UNDER-claim as well as over-claim; atlas evidence-grade law already covers this direction (SHA beats state), row updated",
+        "BOTH-SIDES GAP (Sam 4): donor #244 — disposition machinery exists in donor AND current, but neither writes outcomes back into recallable memory; recorded as a shared gap, not a regression",
+        "OVERLAP RECORDED (Sam 2 PR #65 memory/identity atlas): feeds rows into this atlas at morning merge — subordinate view, not a competing taxonomy",
+        "MORNING-GATE PRE-CHECK: lane PRs #63/#64/#65 ALL GREEN on clean-root(20.19.0+22.x)+secret-pii-scan+CodeRabbit as of this checkpoint — eligible for Codex morning review; fresh-clone re-verification still required before merge"
+      ]
     }
   ]
 }
