@@ -91,10 +91,15 @@ describe('read-only: no control surface in the browser bundle', () => {
 
 describe('no secret-shaped data ships to the browser', () => {
   it('does not contain the fixture owner PRIVATE seed', () => {
-    // Recompute the LocalOwnerAdapter('demo') secret exactly as the seed derives it, and prove it is absent.
-    const ownerSecretHex = createHash('sha256').update('aukora-owner-fixture:demo').digest('hex');
-    expect(ownerSecretHex).toMatch(/^[0-9a-f]{64}$/);
-    expect(allShipped.includes(ownerSecretHex)).toBe(false);
+    // Recompute both HybridOwnerAdapter('demo') private seed inputs and prove neither ships.
+    const privateSeeds = [
+      createHash('sha256').update('aukora-owner-ed25519:demo').digest('hex'),
+      createHash('sha256').update('aukora-owner-ml-dsa-65:demo').digest('hex'),
+    ];
+    for (const seed of privateSeeds) {
+      expect(seed).toMatch(/^[0-9a-f]{64}$/);
+      expect(allShipped.includes(seed)).toBe(false);
+    }
   });
   it('surfaces the owner PUBLIC key (the safe, intended value)', () => {
     expect(fixtureJson).toMatch(/"ownerPublicKeyHex":\s*"[0-9a-f]{64}"/);

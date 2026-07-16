@@ -53,6 +53,7 @@ packages. Regeneration is deterministic (a fixed seed instant), so it produces b
 ```bash
 # from the repo root, once:  npm install  &&  npm run build:kernel
 
+npm run build:kernel                          # build kernel subpath exports first
 npm run fixture --workspace @aukora/console   # regenerate the fixture from the real organism
 npm run test    --workspace @aukora/console   # validate the fixture + the read-only/no-secrets safety contract
 npm run serve   --workspace @aukora/console   # preview at http://127.0.0.1:4173/ (zero-dependency static server)
