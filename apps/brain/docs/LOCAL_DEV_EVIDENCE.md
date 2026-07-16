@@ -116,6 +116,31 @@ Two-phase receipt-before-effect, idempotent start, exactly-once effects, bounded
 logical-time receipt chaining are proven under convex-test (`test/rehearsal.test.ts`). Clean stop verified
 (port empty).
 
+## R36 — WorkflowStore persistence evidence (same anonymous LOCAL deployment, sanitized)
+
+The `workflows` table + `loadWorkflow`/`saveWorkflow` (OCC) implement Sam 3's `WorkflowStore` contract
+(projections only — no authorization/signature/key/content ever crosses the seam).
+
+```
+saveWorkflow (create, expectedVersion 0)      → { ok: true }
+kill -9 backend                               → nothing listening on 3210
+restart (fresh CLI command)                   → loadWorkflow: phase=awaiting-owner, version=1,
+                                                 ownerVerified=false          ← workflow PERSISTED through crash
+memory:snapshot after the same crash          → liveCount=3, chainLength=3; verify → valid: true
+                                                 ← memory ALSO persisted (R34 data still intact)
+stale saveWorkflow (expectedVersion 0 again)  → { ok: false, reason: "conflict" }   ← OCC authoritative LIVE
+```
+
+Zero-outbound: this round the backend ran per-command only (no long-lived process at observation time); the
+R35 observation of the SAME binary stands — only local listeners (`*:3210`, `*:3211`), zero outbound
+connections — and the deployed function set gained no network call sites (`workflows.ts` is pure db logic;
+external nerves remain stubbed). Clean stop verified (port empty).
+
+Adapter-level laws (spec parity with `InMemoryWorkflowStore` using the REAL seed validator, the REAL
+`DurableRecursion` machine end-to-end, at-most-once apply, cancellation persistence, tampered-projection
+harmlessness with durable correction, and two-writer divergence deferring to the winner) are proven under
+convex-test in `test/convexWorkflowStore.test.ts`.
+
 ## Architecture note surfaced by the REAL runtime
 
 The Convex isolate does not provide `node:crypto`, which the provenance-locked `@aukora/evidence` digest module

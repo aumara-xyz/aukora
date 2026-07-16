@@ -107,4 +107,28 @@ export default defineSchema({
   // BOUNDED ATTENTION (R35): a single pool row; at most maxConcurrent rehearsals may be running at once — a
   // start beyond capacity refuses (fail-closed). Concurrency is attention, and attention is bounded.
   attentionPool: defineTable({ maxConcurrent: v.number() }),
+
+  // DURABLE RECURSION WORKFLOW PROJECTIONS (R36): the persistence rows behind Sam 3's `WorkflowStore` contract
+  // (apps/seed/src/durableRecursion.ts). PROJECTIONS ONLY — never an authorization, signature, key, or proposal
+  // content; the kernel/AUMLOK gate re-verifies from scratch outside Convex, so a tampered row decides nothing.
+  // Mutable BY DESIGN under optimistic concurrency (version); receipts stay in the append-only chains.
+  workflows: defineTable({
+    schema: v.literal('aukora-recursion-workflow-v1'),
+    workflowId: v.string(),
+    version: v.number(),
+    phase: v.union(v.literal('awaiting-owner'), v.literal('applied'), v.literal('refused'), v.literal('cancelled')),
+    intentId: v.string(),
+    draftHash: v.string(),
+    nonce: v.string(),
+    councilVerdict: v.union(v.literal('advisory-pass'), v.literal('advisory-hold'), v.null()),
+    councilEvidenceDigest: v.union(v.string(), v.null()),
+    stage: v.string(),
+    refusals: v.array(v.string()),
+    receiptHash: v.union(v.string(), v.null()),
+    ownerVerified: v.boolean(),
+    createdAtIso: v.string(),
+    updatedAtIso: v.string(),
+    advisoryOnly: v.literal(true),
+    grantsAuthority: v.literal(false),
+  }).index('by_workflowId', ['workflowId']),
 });
