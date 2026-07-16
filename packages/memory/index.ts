@@ -10,5 +10,6 @@
  */
 export * from './src/envelope.js';
 export * from './src/recall.js';
+export * from './src/scope.js';
 export * from './src/staleness.js';
 export * from './src/containment.js';
