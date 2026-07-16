@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2026 Aukora
+//
+// Local launcher for the transplanted Aukora Spatial shell (apps/spatial). Serves the donor URL layout
+// (/ → /app/index.html, plus /app/* and /assets/* statics) so every donor-relative path works unchanged.
+//
+// CANONICAL PORT: 127.0.0.1:7096. Grounded correction to R34 §8 ("may scan 7094–7099"): the donor's OWN
+// AUMLOK doors live on 7094 (approval gate) and 7095 (binding door) — see donor aumlok.js GATE_URL/BIND_URL
+// and knvs-test.js. Binding those would shadow Peter's ceremony. RESERVED (never bound): 7090 donor spatial ·
+// 7091 chat door · 7092 voice sidecar · 7093 arc3 · 7094 AUMLOK gate · 7095 AUMLOK bind. Busy → scan 7096–7099.
+//
+// The app's live features keep talking to the donor governed doors on 127.0.0.1 (loopback adapters); this
+// server is static-only (GET/HEAD, no traversal, writes nothing). Same-origin /api/* calls answer 503 with a
+// plain refusal so donor organs show their loud offline states instead of hanging.
+import { createServer } from "node:http";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { dirname, join, normalize, extname } from "node:path";
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const HOST = process.env.HOST || "127.0.0.1";
+const CANONICAL = 7096;
+const SCAN_MAX = 7099;
+const RESERVED = new Set([7090, 7091, 7092, 7093, 7094, 7095]);
+const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".ico": "image/x-icon", ".woff2": "font/woff2", ".d.ts": "text/plain; charset=utf-8" };
+
+function makeServer() {
+  return createServer(async (req, res) => {
+    if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405, { Allow: "GET, HEAD" }); return res.end("method not allowed"); }
+    let pathname = decodeURIComponent(new URL(req.url, `http://${req.headers.host}`).pathname);
+    if (pathname === "/" || pathname === "/index.html") pathname = "/app/index.html";
+    if (pathname.startsWith("/api/")) {
+      // Static launcher: engine APIs are not served here. 503 keeps donor organs in their offline states.
+      res.writeHead(503, { "Content-Type": "application/json; charset=utf-8" });
+      return res.end(JSON.stringify({ offline: true, note: "static launcher — engine doors are separate local services" }));
+    }
+    if (!pathname.startsWith("/app/") && !pathname.startsWith("/assets/")) { res.writeHead(404); return res.end("not found"); }
+    const filePath = normalize(join(ROOT, pathname));
+    if (!filePath.startsWith(ROOT)) { res.writeHead(403); return res.end("forbidden"); }
+    try {
+      const data = await readFile(filePath);
+      res.writeHead(200, { "Content-Type": TYPES[extname(filePath)] || "application/octet-stream", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" });
+      res.end(req.method === "HEAD" ? undefined : data);
+    } catch { res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }); res.end("not found"); }
+  });
+}
+
+function listenOn(port) {
+  return new Promise((resolve, reject) => {
+    const server = makeServer();
+    server.once("error", (e) => (e.code === "EADDRINUSE" ? resolve(null) : reject(e)));
+    server.listen(port, HOST, () => resolve(server));
+  });
+}
+
+const explicit = process.env.PORT ? Number(process.env.PORT) : null;
+if (explicit && RESERVED.has(explicit)) {
+  console.error(`Port ${explicit} is reserved for the donor stack (7090 spatial · 7091 door · 7092 voice · 7093 arc3 · 7094 AUMLOK gate · 7095 AUMLOK bind). Pick another.`);
+  process.exit(1);
+}
+const candidates = explicit ? [explicit] : [];
+if (!explicit) for (let p = CANONICAL; p <= SCAN_MAX; p++) if (!RESERVED.has(p)) candidates.push(p);
+
+let bound = null;
+for (const port of candidates) {
+  // eslint-disable-next-line no-await-in-loop
+  bound = await listenOn(port);
+  if (bound) {
+    const addr = bound.address();
+    if (addr.port !== CANONICAL && !explicit) console.log(`(canonical ${CANONICAL} busy — using next free port)`);
+    console.log(`Aukora Spatial (transplant) → http://${HOST}:${addr.port}/`);
+    console.log(`Donor stack untouched: :7090 spatial · :7091 door · :7092 voice · :7093 arc3 · :7094 gate · :7095 bind.`);
+    break;
+  }
+}
+if (!bound) {
+  console.error(`No free port in ${CANONICAL}–${SCAN_MAX}. Run with PORT=<port> to choose one explicitly.`);
+  process.exit(1);
+}

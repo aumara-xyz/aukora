@@ -1,0 +1,15 @@
+{
+  "name": "@aukora/spatial",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The Aukora Spatial shell — a subtractive transplant of the donor Symbiote Spatial app (aukora-symbiote/spatial, byte-identical files per provenance.json) reduced to the R34 roster. The shell, thirds geometry, chats lane, organs, tokens, and safe-lab law are the donor's exact code; only the registry/menu was subtracted and a CONSOLE center-pane organ (ours) added.",
+  "author": "Aumara",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "launch": "node scripts/launch.mjs",
+    "test": "vitest run",
+    "verify:provenance": "node scripts/verify-provenance.mjs"
+  },
+  "devDependencies": {}
+}
