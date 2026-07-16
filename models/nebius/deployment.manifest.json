@@ -1,0 +1,17 @@
+{
+  "schema": "aukora-nebius-deployment-v1",
+  "description": "Bounded, PARKED Nebius brain deployment manifest. Prepared this round, not launched. Consumed by apps/brain/src/nebiusProvider.ts (validateNebiusManifest / NebiusBrainProvider).",
+  "imageSha256": "",
+  "codeSha256": "",
+  "modelChecksumSha256": "",
+  "ceilings": {
+    "maxOutputTokens": 512,
+    "maxWallClockMs": 60000,
+    "maxCostUsd": 0.5,
+    "maxCallsPerSession": 8
+  },
+  "credentials": "env",
+  "enabled": false,
+  "autonomousMerge": false,
+  "grantsAuthority": false
+}
