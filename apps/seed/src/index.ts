@@ -34,3 +34,5 @@ export * from './localCandidateStage.js';
 export * from './providerTransport.js';
 export * from './localCeremonyRunner.js';
 export * from './fuLiveSmoke.js';
+export * from './doorGuards.js';
+export * from './mindDoor.js';
