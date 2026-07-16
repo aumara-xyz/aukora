@@ -1,0 +1,78 @@
+=== LINK 1+2: one-command boot ===
+
+> @aukora/brain@0.1.0 organism:up
+> node scripts/organism-ctl.mjs up
+
+[organism] deploying functions to the anonymous LOCAL deployment…
+[organism] convex: started (pid 8607)
+[organism] convex: healthy on 3210/3211
+[organism] door: started (pid 8789)
+[organism] door: HELD on 7141 (canonical brain projection/control door)
+[organism] mind: started (pid 8871)
+[organism] mind: healthy on 7097
+[organism] !! voice: optional, not present — DEGRADED(optional)
+[organism] spatial: started (pid 8923)
+[organism] spatial: healthy on 7096 (projections via the 7141 door)
+[organism] UP with 1 degradation(s):
+[organism] !!   DEGRADED — voice: optional; no standalone voice sidecar on this tree (client-side audio lives in the Spatial app)
+ORGANISM_UP_EXIT=0
+
+> @aukora/brain@0.1.0 organism:status
+> node scripts/organism-ctl.mjs status
+
+[organism] checkout: /Users/asd/AUKORA/wave3-integration
+[organism] convex: pid=8607 (verified) · port 3210 listening=true
+[organism] door: pid=8789 (verified) · port 7141 listening=true
+[organism] mind: pid=8871 (verified) · port 7097 listening=true
+[organism] spatial: pid=8923 (verified) · port 7096 listening=true
+STATUS_EXIT=0
+mind pid 8871 stopped (supervisor-recorded pid, not global)
+mind door restarted with captured token (len=48)
+=== LINK: door state before ===
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":false,"events":0,"grantsAuthority":false}
+=== LINK 6/7 prep: write durable state via the REAL live composition ===
+COMPOSE1_EXIT=1
+=== snapshot A (door 7141, backed by the real store) ===
+{"door":"ok","backend":{"breakIndex":null,"chainLength":1,"headHash":"f70e5b41fc519c2eb796fcf8daedf53f8ac5053baf479f11a5899e670ef9664b","ok":true}}
+=== LINK 7: CRASH — kill the supervisor's convex pid (recorded, not global) ===
+convex pid 8607 killed (SIGKILL = crash)
+door health during outage:
+{"door":"ok","backend":{"breakIndex":null,"chainLength":1,"headHash":"f70e5b41fc519c2eb796fcf8daedf53f8ac5053baf479f11a5899e670ef9664b","ok":true}}
+=== RESTART: one command again ===
+
+> @aukora/brain@0.1.0 organism:up
+> node scripts/organism-ctl.mjs up
+
+[organism] convex: port 3210 already held by this checkout (pid 8708)
+[organism] convex: healthy on 3210/3211
+[organism] door: port 7141 already held by this checkout (pid 8789)
+[organism] door: HELD on 7141 (canonical brain projection/control door)
+[organism] mind: port 7097 already held by this checkout (pid 9579)
+[organism] !! voice: optional, not present — DEGRADED(optional)
+[organism] spatial: port 7096 already held by this checkout (pid 8923)
+[organism] UP with 1 degradation(s):
+[organism] !!   DEGRADED — voice: optional; no standalone voice sidecar on this tree (client-side audio lives in the Spatial app)
+REUP_EXIT=0
+=== snapshot B ===
+{"door":"ok","backend":{"breakIndex":null,"chainLength":1,"headHash":"f70e5b41fc519c2eb796fcf8daedf53f8ac5053baf479f11a5899e670ef9664b","ok":true}}
+=== IDENTICAL? ===
+headHash identical: true
+chainLength: 1 → 1
+ok/breakIndex: true null
+=== LINK 9: bounded shutdown ===
+my mind-door pid stopped
+
+> @aukora/brain@0.1.0 organism:down
+> node scripts/organism-ctl.mjs down
+
+[organism] spatial: SIGTERM sent to owned pid group 8923
+[organism] mind: recorded pid 8871 already gone
+[organism] door: SIGTERM sent to owned pid group 8789
+[organism] convex: recorded pid 8607 already gone
+[organism] convex: stopped verified straggler pid 8708
+[organism] organism down; pidfiles + lock cleared
+DOWN_EXIT=0
+ports after shutdown:
+donor :7090 untouched:
+HTTP 200
+=== transcript sha256 ===

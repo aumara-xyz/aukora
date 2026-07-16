@@ -31,12 +31,15 @@ import { textHasSecret } from '@aukora/evidence';
 import {
   validateMemoryRecord,
   recall,
+  recallScoped,
   liveMemoryCount,
   memoryCommitment,
   tombstoneCommitment,
   type MemoryRecordV1,
   type RecallQuery,
   type RecallHit,
+  type ScopedRecallQuery,
+  type ScopedRecallHit,
 } from '@aukora/memory';
 
 export interface BrainSnapshot {
@@ -96,9 +99,14 @@ export class ReactiveMemoryStore {
     return { ok: true, recordId: r.recordId, chainHash, snapshot: this.snap };
   }
 
-  /** Deterministic recall; forgotten records are invisible and their content is never surfaced. */
+  /** Deterministic recall (contract v1); forgotten records are invisible and their content is never surfaced. */
   recall(query: RecallQuery): RecallHit[] {
     return recall(this.records, query, this.forgotten);
+  }
+
+  /** OPT-IN scope-aware recall (#62). The default `recall` above stays byte-exact; scope lives ONLY on this path. */
+  recallScoped(query: ScopedRecallQuery): ScopedRecallHit[] {
+    return recallScoped(this.records, query, this.forgotten);
   }
 
   /**
