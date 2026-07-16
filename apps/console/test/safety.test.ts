@@ -17,13 +17,18 @@ const read = (f: string) => readFileSync(join(pub, f), 'utf-8');
 const html = read('index.html');
 const appJs = read('app.js');
 const panelsJs = read('panels.js');
+const appsJs = read('apps.js');
+const spatialMapJs = read('spatial-map.js');
 const shellHtml = read('shell.html');
 const shellJs = read('shell.js');
+const tokensCss = read('tokens.css');
+const shellCss = read('shell.css');
 const fixtureJs = read('fixture.js');
 const fixtureJson = read('fixture.json');
-// Everything that actually ships to the browser (both pages + the shared renderers + the fixture).
-const allShipped = [html, appJs, panelsJs, shellHtml, shellJs, fixtureJs, fixtureJson].join('\n');
-const allScripts = [appJs, panelsJs, shellJs];
+// Every shipped browser script (both pages + shared renderers + shell apps).
+const allScripts = [appJs, panelsJs, appsJs, spatialMapJs, shellJs];
+// Everything that actually ships to the browser (scripts + markup + styles + fixture).
+const allShipped = [html, shellHtml, tokensCss, shellCss, fixtureJs, fixtureJson, ...allScripts].join('\n');
 
 describe('read-only: no control surface in the browser bundle', () => {
   it('has no form or input elements', () => {
@@ -43,12 +48,22 @@ describe('read-only: no control surface in the browser bundle', () => {
       }
     }
   });
-  it('the spatial shell exposes only tab buttons and no form/input', () => {
+  it('the spatial shell has no form/input and no submit control (nav-only chrome)', () => {
     expect(shellHtml).not.toMatch(/<form\b/i);
     expect(shellHtml).not.toMatch(/<input\b/i);
-    const buttons = shellHtml.match(/<button\b[^>]*>/gi) ?? [];
-    expect(buttons.length).toBe(6); // exactly the six zone tabs
-    for (const b of buttons) expect(b, `button must be a tab: ${b}`).toMatch(/role="tab"/);
+    expect(shellHtml).not.toMatch(/type=["']submit["']/i);
+    // exactly the three geometry tabs (▲ ■ ○); the rest are corner/hint chrome, none writes anything.
+    expect((shellHtml.match(/role="tab"/g) ?? []).length).toBe(3);
+  });
+  it('the KNVS lab sandbox is opaque (allow-scripts only) with a strict in-document CSP', () => {
+    // The safe donor law: scripts run in the sandbox but cannot reach this origin, and the CSP starves it.
+    expect(appsJs).toMatch(/setAttribute\(\s*["']sandbox["']\s*,\s*["']allow-scripts["']\s*\)/);
+    expect(appsJs).not.toMatch(/allow-same-origin/);
+    expect(appsJs).not.toMatch(/allow-top-navigation/);
+    expect(appsJs).toMatch(/Content-Security-Policy/);
+    expect(appsJs).toMatch(/default-src 'none'/);
+    // A KNVS proposal only DRAFTS — it must never apply/sign/commit.
+    expect(appsJs).toMatch(/Draft queued/);
   });
   it('makes no forbidden alive / conscious / self-replicating claim', () => {
     // No POSITIVE claim anywhere in the shipped files.

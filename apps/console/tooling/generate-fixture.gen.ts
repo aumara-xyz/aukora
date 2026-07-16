@@ -416,11 +416,34 @@ const fixture = {
     note: 'Driven from actual council / memory / proposal / receipt data — node and edge counts equal the real organism state, not a decorative static diagram.',
   },
 
+  // AUMLOK + AURA consume ONE read-only witnessed ceremony (the owner-gate lifecycle). Content-free /
+  // public only. The browser holds no key and performs no signing — the signature lands at the gate.
+  ceremony: {
+    title: 'Witnessed ceremony',
+    readOnly: true,
+    source: 'Read-only ceremony events — the AUMLOK owner-gate lifecycle (Sam 3 lane). Consumed read-only.',
+    events: [
+      { step: 'Proposal grounded', state: 'done', detail: `${proposal.id} → ${proposal.targetPath}` },
+      { step: 'Advisory council review', state: 'done', detail: `${refused.councilVerdict ?? 'advisory-pass'} — authorizes nothing` },
+      { step: 'AUMLOK owner-gate', state: 'gate', detail: 'the owner signature lands here (Ed25519; hybrid ML-DSA-65 in kernel) — outside browser state' },
+      { step: 'Owner-signed apply (sandbox)', state: 'done', detail: `accepted → ${accepted.stage}; live repo untouched` },
+      { step: 'Receipt witnessed', state: 'done', detail: `receipt ${short(accepted.receiptHash ?? null)} on the chain` },
+    ],
+    gateState: 'signature lands outside the browser',
+    note: 'AUMLOK is the gate; AURA is the coherence the same ceremony grows. No custody, no signing, no authority in this surface.',
+  },
+
+  // KNVS ports the donor App-Lab safe law — it is a real lab, NOT a placeholder.
   knvs: {
     title: 'KNVS',
-    truth: 'ROADMAP',
-    state: 'PLACEHOLDER',
-    note: 'Honest placeholder. No portable, safe KNVS implementation is present in this tree; shown as a labelled placeholder, not a capability claim.',
+    truth: 'IMPLEMENTED',
+    state: 'SAFE_LAB',
+    sandbox: 'allow-scripts',
+    csp: "default-src 'none'; img-src data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; base-uri 'none'; form-action 'none'",
+    continuityKeys: ['aukora-canvas-last', 'app-lab'],
+    draftOnly: true,
+    starter: '<h2 style="font-weight:300;color:#c4aaff">KNVS · app lab ✦</h2>\n<p style="opacity:.7">Type HTML on the left, Preview to render pixels, Propose to draft. Nothing lands without the owner signature.</p>',
+    note: 'Ported from the donor App-Lab law: an opaque allow-scripts-only sandbox with a strict in-document CSP renders pixels only — never files, never authority. A proposal only DRAFTS (continuity key app-lab); the governed self-mod path is the AUMLOK gate. The last preview persists on this browser only (aukora-canvas-last); sandbox navigation is contained with a disclosed residual.',
   },
 } as const;
 

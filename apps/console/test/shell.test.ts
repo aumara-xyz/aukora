@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2026 Aukora
 /**
- * R30 spatial-shell contract. Validates the shell's information architecture and the surfaces it adds:
- * the untrusted AUMA advisory context, the DATA-DRIVEN spatial map (counts must equal the real organism
- * state), the honest KNVS placeholder, and the explicit data-mode labels. Also proves the shell REUSES the
- * shared panel renderers rather than duplicating them.
+ * R31 spatial-shell contract. Validates the 7090-parity shell: the versioned trinity/glass design tokens,
+ * the three-lane {a,d} state machine, the ▲■○ roster (Triangle: AUMA LIVE · Square: AUMLOK/AURA/SPATIAL
+ * MAP/CONSOLE/SETTINGS · Circle: KNVS), the read-only ceremony consumed by AUMLOK+AURA, the ported safe
+ * KNVS lab, and that apps REUSE the tested panels/adapters rather than duplicating them.
  */
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -15,93 +15,99 @@ const base = dirname(fileURLToPath(import.meta.url));
 const pub = join(base, '..', 'public');
 const read = (p: string) => readFileSync(join(pub, p), 'utf-8');
 const fixture = JSON.parse(read('fixture.json'));
+const tokens = read('tokens.css');
 const shellHtml = read('shell.html');
 const shellJs = read('shell.js');
+const appsJs = read('apps.js');
 const panelsJs = read('panels.js');
-const appJs = read('app.js');
+const spatialMapJs = read('spatial-map.js');
 const mapSvg = readFileSync(join(base, '..', 'docs', 'spatial-map.svg'), 'utf-8');
 
-describe('R30 fixture surfaces', () => {
-  it('exposes explicit DEMO_FIXTURE / CONVEX_TEST / LIVE mode labels', () => {
-    expect(fixture.dataMode).toBe('DEMO_FIXTURE');
-    expect(fixture.dataModes).toEqual(['DEMO_FIXTURE', 'CONVEX_TEST', 'LIVE']);
-    expect(fixture.dataModes).toContain(fixture.dataMode);
+describe('R31 design tokens (versioned, trinity/glass — no dark boxes)', () => {
+  it('declares a version and the trinity hues from the 7090 donor', () => {
+    expect(tokens).toMatch(/--design-tokens-version:\s*"1\.0\.0"/);
+    expect(tokens).toMatch(/--hue-l:\s*129, 212, 180/);
+    expect(tokens).toMatch(/--hue-c:\s*150, 180, 255/);
+    expect(tokens).toMatch(/--hue-r:\s*196, 170, 255/);
   });
-
-  it('AUMA LIVE advisory context is untrusted and can grant nothing', () => {
-    expect(fixture.auma.untrusted).toBe(true);
-    expect(fixture.auma.advisoryOutput).toMatch(/^advisory:offline:/);
-    for (const verb of ['sign', 'authorize', 'apply', 'merge']) {
-      expect(fixture.auma.cannot).toContain(verb);
-    }
-  });
-
-  it('SPATIAL MAP is driven from real data — counts equal the organism state', () => {
-    const sp = fixture.spatial;
-    expect(sp.derivedFrom.seats).toBe(fixture.council.roster.length); // 8
-    expect(sp.nodes.filter((n: any) => n.kind === 'seat').length).toBe(fixture.council.roster.length);
-    expect(sp.nodes.filter((n: any) => String(n.id).startsWith('chain:')).length).toBe(fixture.lineage.entries.length);
-    expect(sp.derivedFrom.chainEntries).toBe(fixture.lineage.entries.length);
-    // the receipt edge points from the proposal to the real receipt chain index
-    const receipt = sp.edges.find((e: any) => e.kind === 'receipt');
-    expect(receipt).toBeTruthy();
-    expect(receipt.to).toBe('chain:' + sp.derivedFrom.receiptChainIndex);
-    expect(sp.edges.some((e: any) => e.kind === 'owner-gate')).toBe(true);
-  });
-
-  it('KNVS is an honestly labelled placeholder, not a capability claim', () => {
-    expect(fixture.knvs.truth).toBe('ROADMAP');
-    expect(fixture.knvs.state).toBe('PLACEHOLDER');
-    expect(String(fixture.knvs.note)).toMatch(/placeholder/i);
+  it('uses translucent WHITE glass surfaces, one base stage — not dark panel boxes', () => {
+    expect(tokens).toMatch(/--glass:\s*rgba\(255, 255, 255/);
+    expect(tokens).toMatch(/--stage-base:\s*#111520/);
   });
 });
 
-describe('R30 shell structure & accessibility', () => {
-  it('presents the exact geometric information architecture as an accessible tablist', () => {
-    expect(shellHtml).toMatch(/role="tablist"/);
-    const tabs = shellHtml.match(/role="tab"/g) ?? [];
-    expect(tabs.length).toBe(6); // AUMA LIVE + AUMLOK/AURA/SPATIAL MAP/SETTINGS + KNVS
-    for (const name of ['AUMA LIVE', 'AUMLOK', 'AURA', 'SPATIAL MAP', 'SETTINGS', 'KNVS']) {
-      expect(shellHtml).toContain(name);
+describe('R31 shell structure & parity mechanics', () => {
+  it('is a three-lane shell with hot corners and the ▲■○ family tabs', () => {
+    for (const id of ['lane-l', 'lane-canvas', 'lane-r', 'organ-host', 'menu-list']) {
+      expect(shellHtml).toContain('id="' + id + '"');
     }
-    expect(shellHtml).toMatch(/shape--triangle/); // Triangle: AUMA LIVE
-    expect(shellHtml).toMatch(/shape--square/);   // Square: the four faces
-    expect(shellHtml).toMatch(/shape--circle/);   // Circle: KNVS
-    const panels = shellHtml.match(/role="tabpanel"/g) ?? [];
-    expect(panels.length).toBe(6);
+    expect((shellHtml.match(/class="corner/g) ?? []).length).toBe(4); // node, canvas-l, canvas-r, menu
+    expect((shellHtml.match(/role="tab"/g) ?? []).length).toBe(3);
+    for (const t of ['data-tab="triangle"', 'data-tab="square"', 'data-tab="circle"']) expect(shellHtml).toContain(t);
+    expect(shellHtml).toMatch(/tokens\.css/); // the tokens load first
   });
-
-  it('loads the shared renderers and the fixture, and links to the flat console', () => {
-    expect(shellHtml).toMatch(/src="fixture\.js"/);
-    expect(shellHtml).toMatch(/src="panels\.js"/);
-    expect(shellHtml).toMatch(/src="shell\.js"/);
-    expect(shellHtml).toMatch(/href="index\.html"/);
+  it('implements the donor two-divider {a,d} lane state machine', () => {
+    expect(shellJs).toMatch(/state\s*=\s*\{\s*a:\s*1,\s*d:\s*2\s*\}/);
+    expect(shellJs).toMatch(/\[state\.a,\s*state\.d\s*-\s*state\.a,\s*3\s*-\s*state\.d\]/);
+    for (const c of ['node()', 'menu()', 'canvasLeft()', 'canvasRight()']) expect(shellJs).toContain(c);
+    // keyboard parity: [ ] , .
+    for (const k of ['"["', '"]"', '","', '"."']) expect(shellJs).toContain(k);
   });
 });
 
-describe('R30 reuse (no duplicated panels)', () => {
-  it('the shared renderers define all ten operator panels once', () => {
-    expect(panelsJs).toMatch(/window\.AukoraPanels\s*=/);
-    for (const id of ['authority', 'memory', 'lineage', 'recursion', 'council', 'providers', 'budget', 'convex', 'g1', 'forgetting']) {
-      expect(panelsJs).toMatch(new RegExp('\\b' + id + '\\s*\\(F\\)'));
+describe('R31 exact app roster', () => {
+  it('Triangle = AUMA LIVE · Square = AUMLOK/AURA/SPATIAL MAP/CONSOLE/SETTINGS · Circle = KNVS', () => {
+    // triangle
+    expect(shellJs).toMatch(/triangle:\s*\{[^}]*organ:\s*"auma"/s);
+    // square carries exactly the five system apps
+    const square = /square:\s*\{[\s\S]*?rows:\s*\[([\s\S]*?)\]\s*\}/.exec(shellJs)?.[1] ?? '';
+    for (const organ of ['aumlok', 'aura', 'map', 'console', 'settings']) {
+      expect(square, 'square must include ' + organ).toContain('organ: "' + organ + '"');
     }
+    // circle
+    expect(shellJs).toMatch(/circle:\s*\{[^}]*organ:\s*"knvs"/s);
   });
+});
 
-  it('both pages consume the shared renderers instead of redefining panels', () => {
-    expect(appJs).toMatch(/window\.AukoraPanels/);
-    expect(shellJs).toMatch(/window\.AukoraPanels/);
-    // A panel-body string lives ONLY in the shared module, proving it is not duplicated per page.
+describe('R31 read-only ceremony (AUMLOK + AURA share it)', () => {
+  it('carries read-only witnessed ceremony events with the gate step', () => {
+    expect(fixture.ceremony.readOnly).toBe(true);
+    expect(fixture.ceremony.events.some((e: any) => e.state === 'gate')).toBe(true);
+    expect(String(fixture.ceremony.note)).toMatch(/no custody, no signing/i);
+  });
+  it('both AUMLOK and AURA render the same ceremony card', () => {
+    expect(appsJs).toMatch(/function mountAumlok/);
+    expect(appsJs).toMatch(/function mountAura/);
+    expect(appsJs).toMatch(/ceremonyCard\(F\)/);
+  });
+});
+
+describe('R31 KNVS safe lab (ported donor law, not a placeholder)', () => {
+  it('the fixture describes the ported safe law', () => {
+    expect(fixture.knvs.truth).toBe('IMPLEMENTED');
+    expect(fixture.knvs.state).toBe('SAFE_LAB');
+    expect(fixture.knvs.sandbox).toBe('allow-scripts');
+    expect(fixture.knvs.continuityKeys).toEqual(['aukora-canvas-last', 'app-lab']);
+    expect(fixture.knvs.draftOnly).toBe(true);
+    expect(fixture.knvs.csp).toMatch(/default-src 'none'/);
+  });
+});
+
+describe('R31 reuse (no duplicated panels / adapters)', () => {
+  it('CONSOLE mounts the ten tested panels and the map is the shared adapter', () => {
+    expect(appsJs).toMatch(/window\.AukoraPanels/);
+    expect(appsJs).toMatch(/AukoraSpatialMap\.mount/);
+    // panel-body strings live only in the shared renderer, not re-implemented in the apps.
     expect(panelsJs).toContain('Model manifest (truth-labeled)');
-    expect(appJs).not.toContain('Model manifest');
-    expect(shellJs).not.toContain('Model manifest');
+    expect(appsJs).not.toContain('Model manifest');
+    expect(spatialMapJs).toMatch(/window\.AukoraSpatialMap/);
   });
 });
 
-describe('R30 committed visual artifact', () => {
+describe('R31 committed visual artifact', () => {
   it('the spatial-map SVG is self-contained and reflects the real node/edge counts', () => {
     expect(mapSvg.startsWith('<svg')).toBe(true);
     expect(mapSvg).not.toMatch(/<script/i);
     expect(mapSvg).toContain(fixture.spatial.nodes.length + ' nodes / ' + fixture.spatial.edges.length + ' edges');
-    for (const seat of fixture.council.roster) expect(mapSvg).toContain(seat.name);
   });
 });

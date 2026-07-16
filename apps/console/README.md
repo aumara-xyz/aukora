@@ -8,7 +8,17 @@ is governed, what the advisory council decided, what it costs, and what is delib
 It is **read-only**. It renders a committed, deterministic `DEMO_FIXTURE` and **cannot sign, authorize, apply,
 deploy, or arm anything**. It carries no private keys, tokens, prompts, private paths, or secret-shaped data.
 
-## What it shows
+## Two surfaces
+
+- **`shell.html` — the Spatial shell** (primary): an inside-out trinity shell at visual parity with the donor
+  Symbiote Spatial app. Three glass lanes on one navy stage, telescoping hot-corners (`[` `]` `,` `.`), and the
+  ▲■○ family menu: **Triangle** AUMA LIVE · **Square** AUMLOK, AURA, SPATIAL MAP, CONSOLE, SETTINGS · **Circle**
+  KNVS. CONSOLE mounts the tested panels; AUMLOK+AURA share one read-only witnessed ceremony; KNVS is a safe
+  `allow-scripts`-only sandbox lab (strict CSP, draft-only). Design law: [`docs/DESIGN_CONSTITUTION.md`](docs/DESIGN_CONSTITUTION.md);
+  parity: [`docs/PARITY_7090.md`](docs/PARITY_7090.md).
+- **`index.html` — the flat operator console**: the same ten panels in a single scroll.
+
+## What the panels show
 
 | Panel | Surface |
 | --- | --- |
