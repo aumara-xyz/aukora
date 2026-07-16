@@ -87,17 +87,22 @@ export async function mountConsole(root) {
       if (!r.ok) throw new Error('door ' + r.status);
       const pj = await r.json();
       if (pj.grantsAuthority !== false || pj.displayOnly !== true) throw new Error('projection failed the display-only fence');
-      liveTitle.textContent = 'LIVE DOOR · ' + (pj.door || pj.source) + ' · queried ' + pj.queriedAt + ' · display-only, authorizes nothing';
-      liveTitle.style.color = 'var(--ok, #57d08c)';
-      const h = pj.brainHealth || {};
+      const degraded = pj.source === 'door-degraded';
+      liveTitle.textContent = (degraded ? 'LIVE DOOR (DEGRADED — missing: ' + (pj.degradedSenses || []).join(', ') + ')' : 'LIVE DOOR')
+        + ' · ' + (pj.door || pj.source) + ' · queried ' + pj.queriedAt + ' · display-only, authorizes nothing';
+      liveTitle.style.color = degraded ? '#e2b04a' : 'var(--ok, #57d08c)';
+      const h = (pj.brainHealth && pj.brainHealth.backend) || pj.brainHealth || {};
       const s = pj.snapshot || {};
+      const receiptsN = Array.isArray(pj.receipts) ? pj.receipts.length : (pj.receipts && Array.isArray(pj.receipts.receipts) ? pj.receipts.receipts.length : '—');
       liveBody.append(
         cell('brain health', (h.ok !== undefined ? 'ok ' + h.ok + ' · ' : '') + 'chain ' + (h.chainLength ?? s.chainLength ?? '—') + ' · head ' + String(h.headHash ?? s.headHash ?? '—').slice(0, 12) + '…'),
         cell('memory', (s.liveCount ?? '—') + ' live · forgotten ' + (s.forgottenCount ?? '—')),
-        cell('chain verify', String((pj.verify && (pj.verify.valid ?? pj.verify.ok)) ?? '—')),
-        cell('workflow', 'durable state via ' + (pj.contracts ? pj.contracts.workflowState : 'workflows:loadWorkflow')),
-        cell('receipts', 'stream via ' + (pj.contracts ? pj.contracts.receiptStream : 'rehearsal:receiptStream')),
-        cell('AUMLOK', 'custody local — displayed state never authorizes'),
+        cell('provider truth', pj.providerTruth ? 'truth-labelled manifest served' : '—'),
+        cell('workflow reasons', (pj.workflowReasonVocabulary || []).join(' · ') || '—'),
+        cell('Fu', 'proposal-bound advisory — evidence digest pinned per workflow; never a quorum substitute'),
+        cell('AUMLOK presence', pj.aumlokPresence ? 'gate known ' + pj.aumlokPresence.gateDoorKnown + ' · custody local ' + pj.aumlokPresence.custodyLocal + ' · displayed state authorizes ' + pj.aumlokPresence.displayedStateAuthorizes : '—'),
+        cell('receipts', receiptsN + ' via ' + (pj.contracts ? pj.contracts.receipts : '/receipts')),
+        cell('candidates', 'per-workflow via ' + (pj.contracts ? pj.contracts.workflow : '/workflow/:id')),
       );
     } catch (e) {
       liveTitle.textContent = 'OFFLINE — brain door unreachable (' + (e && e.message ? e.message : e) + ')';

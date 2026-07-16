@@ -73,7 +73,7 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **205 passed / 16 files** (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **221 passed / 17 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch (incl. `test:kernel` — portable boundary, compatibility, SBOM, runtimes, package all green; 19 kernel tests).
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
@@ -236,6 +236,61 @@ sandbox-only apply; forbidden capabilities, stale epochs, tampered challenges, a
 are receipted). The UI boundary is one-way and provably fence-clean (public fingerprint + hash prefixes only; no
 key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
 encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
+
+## R38 — governed chat/mind door (loopback 7097)
+
+Branch `sam/r38-recursion` off merged main `c56cc45e` (R37 integrated).
+
+- **`apps/seed/src/mindDoor.ts`** — the governed door composing the durable machine, KIRA store, Fu live runner,
+  durable ceremony, and local candidate stage behind ONE HTTP surface (`handle(DoorRequest)→DoorResponse`,
+  transport-agnostic so it's unit-tested with no socket). Donor LAW ported (not secret/custody): **serialized driver
+  chain** (one promise chain — concurrent requests can't interleave shared state); **lazy honest boot** (an injected
+  `loadDriver` that throws models a compile break → the request 500s, the door stays up); strict **origin allowlist**
+  + per-boot **local POST token**; **lockdown** short-circuit (proposals/materialization → advisory-only, decided
+  with no model); model-free **memory fallback** (chat answers from KIRA recall with citations); **bounded receipts**
+  for every refusal and door event. Governance: no request signs/merges/pushes/mutates main/treats Fu as authority/
+  auto-resumes an effect. `/api/propose` emits a PLAN only; `/api/materialize` is an EXPLICIT owner route requiring a
+  FRESH in-process AUMLOK verification; a restart re-reads durable state and emits the plan only. The Fu sidecar binds
+  by proposalHash. AURA stays display-only.
+- **`apps/seed/src/doorGuards.ts`** — the ported `checkDoorGuard` (origin/referer allowlist + required local POST
+  token; stable reason classes `guard:origin-not-allowed`/`bad-referer`/`referer-not-allowed`/`missing-or-bad-token`);
+  `newDoorToken` mints a per-boot CSPRNG token (memory-only, never repo/receipts).
+- **`apps/seed/scripts/mind-door-7097.ts`** — the Node http adapter binding `127.0.0.1:7097` (NOT in CI); the
+  provider key is read out-of-band by the Fu live runner from Keychain/env, never here; the token is printed once to
+  the operator's terminal, never to a browser.
+
+### R38 proofs (directive item-by-item; all green)
+
+| requirement | proof |
+| --- | --- |
+| concurrent requests serialize | a slow driver forces requests to complete one-at-a-time; boot runs once, no two boots interleave |
+| compile failure does not kill server | a throwing `loadDriver` → request 500 `door:driver-load-failed`; `GET /api/door` still answers |
+| restart emits plan only | a fresh door over the same durable store re-proposing yields a plan + NO new candidate branch |
+| origin / token / lockdown refuse visibly | `guard:origin-not-allowed` (403), `guard:missing-or-bad-token` (403), `door:locked-down` (423) — all receipted |
+| memory fallback works | `/api/chat` → `model-free-memory-fallback` answer with recall citations, `advisoryOnly:true` |
+| proposal sidecar binds by proposalHash | a sidecar for a different proposal → `door:fu-sidecar-mismatch`; a bound one is consumed as advisory only |
+| candidate isolation | `/api/materialize` → disposable worktree branch; main/HEAD/tree byte-identical; never push/merge/sign |
+| Fu never authority / ceilings | Fu advisory verdict only; $2/$10 ceilings + non-vote-on-failure preserved (R36/R37 adapters) |
+
+### Door transcript (deterministic, offline)
+
+```
+GET  /api/door                 → 200 {status: lockedDown:false, booted:false, grantsAuthority:false}
+POST /api/chat  (evil origin)  → 403 {reasonClass:"guard:origin-not-allowed", eventReceipt:42655f76…}
+POST /api/chat  (memory)       → 200 {mode:"model-free-memory-fallback", answer:"From memory (advisory, no model): the covenant holds at dawn", citations:[…], advisoryOnly:true}
+POST /api/propose              → 200 {phase:"awaiting-explicit-materialize", proposalHash:4ac84bf0…, rehearsalReceiptPrefix:9b5e4b6284fe, candidateBranch:null, signed:false, touchedMain:false}
+POST /api/materialize          → 200 {phase:"candidate-materialized", candidateBranch:"candidate/01a7faf4d42e", candidateCommitPrefix:6d0ef7fe610a, signed:false, pushed:false, touchedMain:false}
+POST /api/lockdown             → 200 {lockedDown:true, text:"Lockdown engaged. … advisory-only …"}
+POST /api/propose (locked)     → 423 {reasonClass:"door:locked-down", eventReceipt:4a5c0e02…}
+```
+
+**R38 CHECK (opus-self-review):** the door is a thin governed composition — it adds transport + guards + serialization
++ receipts, and delegates every decision to the already-hardened gate/ceremony. Materialization stays the only
+effectful path and still requires an explicit route + fresh AUMLOK verify, so a restart or a persisted projection can
+never trigger an effect. The transport-agnostic `handle` made all seven directive proofs unit-testable offline;
+`scripts/mind-door-7097.ts` (the only socket-binding code) is excluded from CI. Two `Token =` scanner false positives
+were renamed (recurring R29 lesson). No provider key is executed here — Codex supplies the authorized key at
+verification for the opt-in live smoke.
 
 ## R37 — live advisory runner composed into the local ceremony
 

@@ -174,6 +174,40 @@ Clean stop verified (port empty).
 `local:hold` (hold the backend) · `local:health` (health read) · `local:down` (stop) · `compose:live`
 (the gated live composition proof) · `verify` (typecheck + full suite).
 
+## R38 — safe orchestration + reactive door contract (sanitized)
+
+**SINGLE-DOOR CONTRACT:** `127.0.0.1:7141` is the ONE documented brain projection/control door for consumers
+(Spatial shell, chat door). Port `3210` is the local Convex backend's INTERNAL port — only the composition and
+the door's own live backend talk to it; **consumers must never call 3210 directly.** The door is loopback,
+**origin-closed** (no `Access-Control-Allow-*` header is ever emitted — proven by test), projections-only plus
+two bounded cancellation reflexes; no authority.
+
+**Reactive projections served (all `x-aukora-source: live`; no generated projection file can be called live):**
+`/health` · `/snapshot` · `/workflow/:id` · `/workflows?phase=` · `/memory/recall?text=` · `/fu` (canonical
+council seats + provider truth) · `/aumlok` (awaiting-owner view; authority stays outside) · `/candidates`
+(applied = PR-candidate outputs) · `/receipts` · `/truth` · **`/events` (SSE reactive stream over an injected
+subscription seam)** · POST `/control/cancel-rehearsal` · POST `/control/cancel-impulse`.
+
+**Checkout-scoped process control (`scripts/local-ctl.mjs` — up · hold · health · status · down):** the held
+CLI's PID is recorded in `apps/brain/.local/brain.pid` (+ lockfile naming THIS checkout, both gitignored);
+`down` signals ONLY that PID group after verifying the live process belongs to this checkout (command line or
+`lsof` cwd) — **no global `pkill`; concurrent Aukora checkouts cannot kill each other** (unverified PIDs on the
+port are left running, logged). Node preflight: unsupported Node (this box: 26) triggers the side-installed
+Node 22 or a LOUD refusal with instructions.
+
+**Transcript (2026-07-16):**
+```
+local-ctl up      → deploy ok ("Convex functions ready!")
+local-ctl hold    → preflight: node 26 → side-installed Node 22 · holding backend (cli pid recorded)
+local-ctl status  → held cli pid verified · backend listening on 3210: true
+compose:live      → 1 passed (real machine + door on 7141, live)
+zero-outbound     → backend sockets: *:3210 LISTEN · *:3211 LISTEN · one 127.0.0.1→127.0.0.1 ESTABLISHED
+                    (the compose client's own loopback connection; nothing external)
+kill -9 backend   → recovery reads: memory verify valid · receipt events 72, valid   ← restart-proof again
+local-ctl down    → SIGTERM to the OWNED pid group only · pidfile+lockfile cleared · port empty
+local-ctl status  → exits 1 when nothing is held (scriptable by Sam 1)
+```
+
 ## Architecture note surfaced by the REAL runtime
 
 The Convex isolate does not provide `node:crypto`, which the provenance-locked `@aukora/evidence` digest module
