@@ -238,3 +238,42 @@ export function nebiusReadiness(
   if (!integratedShaAccepted) reasons.push('integrated_sha_not_accepted');
   return { ready: reasons.length === 0, reasons, networkPerformed: false };
 }
+
+export interface NebiusCanaryPlan {
+  readonly schema: 'aukora-nebius-canary-v1';
+  /** The smallest canary is exactly one node. */
+  readonly nodeCount: 1;
+  readonly manifestValid: boolean;
+  /** Structurally false this round — prepared, never launched. */
+  readonly launched: false;
+  /** Structurally false — no hardware provisioned. */
+  readonly provisioned: false;
+  /** Structurally false — a plan performs no network I/O. */
+  readonly networkPerformed: false;
+  readonly ready: boolean;
+  readonly reasons: readonly string[];
+}
+
+/**
+ * PREPARE (never launch) the smallest one-node Nebius canary. Performs no provisioning, no generation, and no
+ * network I/O; consults only the runtime manifest and the injected read-only readiness signals. `launched`,
+ * `provisioned`, and `networkPerformed` are structurally false. A live launch is a separate, explicit,
+ * human-gated step in a future round.
+ */
+export function prepareNebiusCanary(
+  manifest: NebiusDeploymentManifest,
+  credentialsPresent: boolean,
+  integratedShaAccepted: boolean,
+): NebiusCanaryPlan {
+  const readiness = nebiusReadiness(manifest, credentialsPresent, integratedShaAccepted);
+  return {
+    schema: 'aukora-nebius-canary-v1',
+    nodeCount: 1,
+    manifestValid: validateNebiusManifest(manifest).length === 0,
+    launched: false,
+    provisioned: false,
+    networkPerformed: false,
+    ready: readiness.ready,
+    reasons: readiness.ready ? ['prepared: would launch one node only on explicit human go-live'] : readiness.reasons,
+  };
+}

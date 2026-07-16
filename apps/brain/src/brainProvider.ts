@@ -23,6 +23,9 @@ export interface BrainProvider {
   complete(prompt: string): Promise<string>;
 }
 
+/** The provider mode a node runs in. A local node is always `deterministic-offline`; `nebius` is fail-closed. */
+export type ProviderMode = 'deterministic-offline' | 'nebius';
+
 /** Deterministic, offline, no-network provider. Same prompt ⇒ same output, forever. */
 export class DeterministicOfflineProvider implements BrainProvider {
   readonly id = 'deterministic-offline-v0';

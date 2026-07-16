@@ -24,6 +24,28 @@ brain provider. Consequently:
 | An **incomplete** (partial-download) `Meta-Llama-3-8B-Instruct.Q4_0.gguf` in a GPT4All cache on the build host | incomplete file, no verified checksum, and unrelated to any brain provider (not Auma-VL/Qwen/Nemotron/Liquid) |
 | Out-of-repo burn-v5 / LUM-READ eval harness + preregistration (see `MODEL_TRUTH.md`) | process/eval evidence, **not weights** and not a checksum-bound model artifact; recorded by hash for provenance only |
 
+## Reachable Nebius models (read-only, R31)
+
+Checked read-only from this build host. **No Nebius credentials are present** in the environment, so the Nebius
+model catalogue is **unreachable** and **no network call was performed**.
+
+**Result: 0 reachable Nebius models.**
+
+The named candidates remain **unavailable**. Each requires ALL FOUR — license + checksum + runnable artifact +
+eval evidence — before it may be claimed; none qualifies:
+
+| candidate | license | checksum | runnable artifact | eval evidence | status |
+| --- | --- | --- | --- | --- | --- |
+| Liquid AI | not found | not found | not found | not found | **unavailable** |
+| Auma-VL LoRA v17 | not found | not found | not found | out-of-repo harness only | **unavailable** |
+| Nemotron | not found | not found | not found | not found | **unavailable** (BLOCKED) |
+| ~3B router | n/a | not found | not found | not found | **unavailable** (DESIGN_ONLY) |
+| distillation | n/a | not found | not found | not found | **unavailable** (DESIGN_ONLY) |
+
+Plainly: nothing qualifies, so the node stays offline-only and every truth label stays gated. The one-node
+Nebius canary (`nebius/canary.manifest.json`) is **prepared but not launched** — no provisioning, no generation,
+no credentials.
+
 ## To add a verified artifact (a future round)
 
 Commit a sanitized, checksum-bound manifest binding a model checksum (never weights, never endpoint/job/bucket

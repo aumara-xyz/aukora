@@ -14,12 +14,16 @@ import {
   NebiusCeilingError,
   validateNebiusManifest,
   nebiusProviderGrantsAuthority,
+  prepareNebiusCanary,
   type NebiusDeploymentManifest,
   type NebiusTransport,
 } from '../src/index.js';
 
 const shippedManifest = (): NebiusDeploymentManifest =>
   JSON.parse(readFileSync(new URL('../../../models/nebius/deployment.manifest.json', import.meta.url), 'utf8'));
+
+const canaryManifest = (): NebiusDeploymentManifest =>
+  JSON.parse(readFileSync(new URL('../../../models/nebius/canary.manifest.json', import.meta.url), 'utf8'));
 
 const enabledBound = (): NebiusDeploymentManifest => ({
   schema: 'aukora-nebius-runtime-v1',
@@ -105,5 +109,23 @@ describe('NebiusBrainProvider — bounded & parked', () => {
     expect(cand.applied).toBe(false);
     expect(cand.autonomousMerge).toBe(false);
     expect(nebiusProviderGrantsAuthority()).toBe(false);
+  });
+
+  it('the one-node canary is a valid, parked runtime manifest', () => {
+    const m = canaryManifest();
+    expect(validateNebiusManifest(m)).toEqual([]);
+    expect(m.enabled).toBe(false);
+    expect(m.ceilings.maxCallsPerSession).toBe(1); // smallest: one call
+  });
+
+  it('prepareNebiusCanary PREPARES one node but does NOT launch / provision / touch the network', () => {
+    const plan = prepareNebiusCanary(canaryManifest(), /* credentialsPresent */ false, /* integratedShaAccepted */ false);
+    expect(plan.nodeCount).toBe(1);
+    expect(plan.launched).toBe(false);
+    expect(plan.provisioned).toBe(false);
+    expect(plan.networkPerformed).toBe(false);
+    expect(plan.manifestValid).toBe(true);
+    expect(plan.ready).toBe(false);
+    expect(plan.reasons).toContain('credentials_absent');
   });
 });
