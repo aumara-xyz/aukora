@@ -108,5 +108,7 @@ describe('@aukora/brain — reactive receipt-chained growing memory', () => {
     // The gate is real: an in-repo checksum-bound manifest WOULD earn AVAILABLE_PRIVATE.
     expect(resolveTruth('AVAILABLE_PRIVATE', {})).toBe('UNVERIFIED_OR_PARKED');
     expect(resolveTruth('AVAILABLE_PRIVATE', { inRepoManifestSha256: 'a'.repeat(64) })).toBe('AVAILABLE_PRIVATE');
+    // R35: Kimi is off the external crew — recorded in provider truth; the Fu roster is not altered here.
+    expect(truth('kimi')).toBe('REJECTED');
   });
 });

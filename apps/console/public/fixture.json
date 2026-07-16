@@ -279,6 +279,11 @@
         "id": "mopd-distillation",
         "label": "MOPD distillation",
         "truth": "DESIGN_ONLY"
+      },
+      {
+        "id": "kimi",
+        "label": "Kimi (external crew — removed)",
+        "truth": "REJECTED"
       }
     ],
     "note": "Truth labels only — no weights, endpoint IDs, job IDs, bucket IDs, or tokens. A provider grants no authority."
