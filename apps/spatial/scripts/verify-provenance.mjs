@@ -15,7 +15,7 @@ const DONOR = process.env.DONOR_DIR; // path to the local authorized aukora-symb
 if (!DONOR) { console.error('Set DONOR_DIR to the local aukora-symbiote checkout, e.g. DONOR_DIR=~/aukora-symbiote npm run verify:provenance'); process.exit(2); }
 const manifest = JSON.parse(readFileSync(join(base, 'provenance.json'), 'utf8'));
 
-let ok = 0;
+let ok = 0, excludedOk = 0;
 const bad = [];
 for (const f of manifest.files) {
   if (f.status === 'NEW') continue;
@@ -24,6 +24,7 @@ for (const f of manifest.files) {
   const same = donorSha === f.sha256;
   if (f.status === 'VERBATIM') (same ? ok++ : bad.push(f.path));
   if (f.status === 'ADAPTED' && same) bad.push(f.path + ' (ADAPTED but identical — status wrong)');
+  if (f.status === 'EXCLUDED') (same ? excludedOk++ : bad.push(f.path + ' (EXCLUDED disposition hash mismatch)'));
 }
-console.log(`VERBATIM byte-identical to donor@${manifest.donorCommit.slice(0, 9)}: ${ok} · mismatches: ${bad.length}`);
+console.log(`VERBATIM byte-identical to donor@${manifest.donorCommit.slice(0, 9)}: ${ok} · EXCLUDED dispositions verified: ${excludedOk} · mismatches: ${bad.length}`);
 if (bad.length) { console.error(bad.join('\n')); process.exit(1); }

@@ -6,24 +6,17 @@
 // pressing a corner ALWAYS pushes its panel out a third — unless the panel is
 // already at its far wall (full), in which case it pulls in a third.
 
+// R37 true-subtractive tree: only the selected roster's mounts are imported — unselected organ files are
+// EXCLUDED from the runtime tree entirely (dispositions recorded in provenance.json).
 import { mountMap, focusNode, deselectNode } from '/app/map/map.js';
-import { mountCouncil, mountKira, mountStatus, loadEngineStatusCard } from '/app/organs.js';
+import { mountKira, loadEngineStatusCard } from '/app/organs.js';
 import { mountAuma } from '/app/auma/auma.js';
 import { mountAura } from '/app/aura.js';
-import { mountMorph } from '/app/morph.js';
 import { mountCanvas } from '/app/canvas.js';
-import { mountForge } from '/app/forge.js';
 import { mountAumlok } from '/app/aumlok.js';
 import { mountAumaLive } from '/app/aumalive.js';
-import { mountMedia } from '/app/media.js';
-import { mountLuminara } from '/app/luminara.js';
 import { mountGhp } from '/app/ghp.js';
-import { mountGraticube } from '/app/graticube.js';
-import { mountAukoraXyz } from '/app/aukora-xyz.js';
 import { mountSettings } from '/app/settings.js';
-import { mountArc3 } from '/app/arc3/arc3.js';
-import { mountBrowser } from '/app/browser.js';
-import { mountApp as mountWolf } from '/app/wolf/wolf.js';
 import { mountConsole } from '/app/console.js'; // NEW (ours): CONSOLE center-pane organ — not donor code
 import { materializeShellModel } from '/app/shell-registry.js';
 import { isChatOpen, closeChat } from '/app/chat.js';
@@ -120,9 +113,9 @@ document.addEventListener('keydown', (e) => {
 // Everything listed is advisory — organs render engine state, never mutate it.
 // ---------------------------------------------------------------------------
 
-// R34 SUBTRACTIVE TRANSPLANT (issue #23): registry reduced to the required roster. Unselected donor
-// organs are removed from this registry/menu ONLY — their files remain in the tree, byte-identical
-// (provenance.json). CONSOLE is a NEW center-pane organ (ours, apps/console evidence), not donor code.
+// R37 TRUE SUBTRACTIVE TREE (issue #23): registry reduced to the required roster, and unselected donor
+// organs are EXCLUDED from the runtime tree entirely — every excluded file keeps its donor path/blob/hash
+// disposition in provenance.json. CONSOLE is a NEW center-pane organ (ours), not donor code.
 const ORGANS_BUILTIN = {
   map: { title: 'Spatial Map', sub: '', mount: mountMap },
   kira: { title: 'Kira Memory', sub: 'recall receipts · hash-chained', mount: mountKira },
@@ -235,7 +228,7 @@ async function routeInitialOrgan() {
     return;
   }
   try {
-    const response = await fetch('http://127.0.0.1:7091/api/settings/openrouter', { headers: { accept: 'application/json' } });
+    const response = await fetch('http://127.0.0.1:7097/api/settings/openrouter', { headers: { accept: 'application/json' } });
     const status = response.ok ? await response.json() : null;
     setOrgan(status && status.present ? 'map' : 'settings');
   } catch {

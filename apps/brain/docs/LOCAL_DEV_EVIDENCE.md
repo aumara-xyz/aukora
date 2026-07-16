@@ -141,6 +141,39 @@ Adapter-level laws (spec parity with `InMemoryWorkflowStore` using the REAL seed
 harmlessness with durable correction, and two-writer divergence deferring to the winner) are proven under
 convex-test in `test/convexWorkflowStore.test.ts`.
 
+## R37 — real composition + local door evidence (same anonymous LOCAL deployment, sanitized)
+
+**NEW-AUKORA port map** (`src/ports.ts` — collision-free, loopback only): `7141` brain projection/control door
+· `7142` keychain broker (contract default) · `3210`/`3211` local Convex backend (upstream defaults, dev-only)
+· donor `7090–7093` reserved, never reused as new services.
+
+**Live composition (`npm run compose:live`, gated `AUKORA_LIVE_COMPOSE=1`) — PASSED against the running
+backend:** Sam 3's real `DurableRecursion` over `ConvexWorkflowStore(liveWorkflowIo(ConvexHttpClient))`:
+propose → settle (durable) → owner-gated complete → applied read back over live HTTP; stale duplicate save →
+**OCC `conflict` live**; memory ingest via the node action + chain `verify: true` live; a rehearsal's receipt
+stream and its **cancellation driven through the DOOR on `127.0.0.1:7141`** (responses carry
+`x-aukora-source: live` — the door has NO fixture path; no generated projection file can be served as live).
+
+**Forced-restart transcript (CLI reads through the real backend):**
+
+```
+saveWorkflow v1 (awaiting-owner)      → { ok: true }
+kill -9 <backend pid>                 → nothing listening on 3210
+restart (fresh CLI command)           → loadWorkflow: phase=awaiting-owner, version=1   ← workflow persisted
+                                        memory:verify → valid: true                     ← memory persisted
+                                        verifyReceiptEvents → valid: true, 69 events    ← receipts persisted
+                                        (includes the live-composition rehearsal's started…cancelled events)
+```
+
+**Zero-outbound:** the held backend process carried ONLY `TCP *:3210` + `*:3211` LISTENers — zero
+established/outbound connections (`lsof -a -p <pid> -i -nP`); the door binds `127.0.0.1` only; the sole
+permitted external transport remains the explicitly injected Fu-lane model transport (untouched, parked).
+Clean stop verified (port empty).
+
+**Composable commands for Sam 1** (`--workspace @aukora/brain`): `npm run local:up` (deploy once) ·
+`local:hold` (hold the backend) · `local:health` (health read) · `local:down` (stop) · `compose:live`
+(the gated live composition proof) · `verify` (typecheck + full suite).
+
 ## Architecture note surfaced by the REAL runtime
 
 The Convex isolate does not provide `node:crypto`, which the provenance-locked `@aukora/evidence` digest module

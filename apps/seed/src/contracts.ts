@@ -45,6 +45,11 @@ export type { WorkflowStateV1, WorkflowStore, WorkflowPhase, SaveResult, Durable
 export type { FuAdvisoryResult, FuAdapterReasonClass, FuAdvisoryOpts } from './fuStructuredAdapter.js';
 export type { CandidateMaterialization, CandidateReasonClass, MaterializeInput } from './localCandidateStage.js';
 
+// ── R37 live runner + composed ceremony (config + result shapes; DI points, never a key) ──
+export type { CredentialSource, ProviderTransportConfig, HttpPost, HttpResponse } from './providerTransport.js';
+export type { CeremonyRunResult, CeremonyRunPhase, LocalCeremonyEnv, LocalCeremonyInvocation } from './localCeremonyRunner.js';
+export type { LiveSmokeResult, LiveSmokeOptions } from './fuLiveSmoke.js';
+
 // ── schema names (local literals; import nothing) ──────────────────────────
 export const CONTRACT_SCHEMAS = Object.freeze({
   ceremonyView: 'aukora-ceremony-view-v1',

@@ -22,3 +22,6 @@ export * from './keychain/credentialStore.js';
 export * from './keychain/macKeychain.js';
 export * from './spatialContracts.js';
 export * from './convexWorkflowStore.js';
+export * from './ports.js';
+export * from './localDoor.js';
+export * from './composeLive.js';

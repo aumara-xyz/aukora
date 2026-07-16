@@ -81,25 +81,29 @@ export async function mountConsole(root) {
       d.append(kk, vv); return d;
     };
     try {
+      // R37: a REACTIVE read of Sam 2's real loopback brain door on every mount — never a generated
+      // snapshot presented as live. The launcher re-queries the door per request (source:'door').
       const r = await fetch('/api/spatial/projection', { headers: { accept: 'application/json' } });
-      if (!r.ok) throw new Error('projection ' + r.status);
+      if (!r.ok) throw new Error('door ' + r.status);
       const pj = await r.json();
       if (pj.grantsAuthority !== false || pj.displayOnly !== true) throw new Error('projection failed the display-only fence');
-      liveTitle.textContent = 'LIVE-LOCAL ORGANISM · source ' + pj.source + ' · generated ' + pj.generatedAt + ' · display-only, authorizes nothing';
+      liveTitle.textContent = 'LIVE DOOR · ' + (pj.door || pj.source) + ' · queried ' + pj.queriedAt + ' · display-only, authorizes nothing';
       liveTitle.style.color = 'var(--ok, #57d08c)';
+      const h = pj.brainHealth || {};
+      const s = pj.snapshot || {};
       liveBody.append(
-        cell('brain', pj.brainHealth.liveCount + ' live · chain ' + pj.brainHealth.chainLength + ' · verified ' + pj.brainHealth.verified),
-        cell('workflow', pj.workflow.awaiting.proposal + ' → ' + pj.workflow.awaiting.phase),
-        cell('Fu advisory', pj.fuAdvisory.verdict + ' · digest ' + (pj.fuAdvisory.evidenceDigestShort || '—')),
-        cell('AUMLOK', pj.aumlok.phase + ' (custody stays local)'),
-        cell('candidate', pj.candidate.proposal + ' → ' + pj.candidate.phase + ' · live repo touched: ' + pj.candidate.liveRepoTouched),
-        cell('receipts', pj.receipts.length + ' chain entries (content-free)'),
+        cell('brain health', (h.ok !== undefined ? 'ok ' + h.ok + ' · ' : '') + 'chain ' + (h.chainLength ?? s.chainLength ?? '—') + ' · head ' + String(h.headHash ?? s.headHash ?? '—').slice(0, 12) + '…'),
+        cell('memory', (s.liveCount ?? '—') + ' live · forgotten ' + (s.forgottenCount ?? '—')),
+        cell('chain verify', String((pj.verify && (pj.verify.valid ?? pj.verify.ok)) ?? '—')),
+        cell('workflow', 'durable state via ' + (pj.contracts ? pj.contracts.workflowState : 'workflows:loadWorkflow')),
+        cell('receipts', 'stream via ' + (pj.contracts ? pj.contracts.receiptStream : 'rehearsal:receiptStream')),
+        cell('AUMLOK', 'custody local — displayed state never authorizes'),
       );
     } catch (e) {
-      liveTitle.textContent = 'OFFLINE — live-local projection unavailable (' + (e && e.message ? e.message : e) + ')';
+      liveTitle.textContent = 'OFFLINE — brain door unreachable (' + (e && e.message ? e.message : e) + ')';
       liveTitle.style.color = '#e2b04a';
       const hint = document.createElement('div');
-      hint.textContent = 'Start with `npm run launch:live` to project the real local organism. Everything below is the labelled DEMO_FIXTURE — not live.';
+      hint.textContent = 'Start the local Convex brain door (apps/brain, loopback :3210) and reload. Everything below is the labelled DEMO_FIXTURE — not live.';
       liveBody.append(hint);
     }
 
