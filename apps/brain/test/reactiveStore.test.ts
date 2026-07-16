@@ -70,6 +70,19 @@ describe('@aukora/brain — reactive receipt-chained growing memory', () => {
     expect(JSON.stringify(store.chain())).not.toContain('private thought');
   });
 
+  it('health() valid on a healthy chain; a corrupted chain fails closed on ingest/forget', () => {
+    const store = new ReactiveMemoryStore();
+    const a = buildMemoryRecord({ content: 'alpha', createdAt: at(1) });
+    store.ingest(a);
+    store.ingest(buildMemoryRecord({ content: 'beta', createdAt: at(2) }));
+    expect(store.health().valid).toBe(true);
+    // white-box corruption of a prior entry's stored hash
+    (store as unknown as { entries: { chainHash: string }[] }).entries[0].chainHash = '0'.repeat(64);
+    expect(store.health().valid).toBe(false);
+    expect(store.ingest(buildMemoryRecord({ content: 'gamma', createdAt: at(3) })).ok).toBe(false);
+    expect(store.forget(a.recordId, () => true, at(4)).ok).toBe(false);
+  });
+
   it('refuses a memory whose content carries a secret (canonical @aukora/evidence scanner reuse)', () => {
     const store = new ReactiveMemoryStore();
     const withSecret = buildMemoryRecord({ content: 'note: AKIAIOSFODNN7EXAMPLE is my access key', createdAt: at(1) });

@@ -35,6 +35,16 @@ function rowPayload(row: any) {
     : memoryCommitment({ recordId: row.recordId, createdAt: row.createdAt, kind: row.recordKind, consent: row.consent, provenance: row.provenance });
 }
 
+function reconstructEntries(chain: any[]) {
+  return chain.map((row: any) => ({ payload: rowPayload(row), prevHash: row.prevHash, chainHash: row.chainHash }));
+}
+
+// Fail-closed corruption gate: run the CANONICAL verifier over the stored chain. A mutation that would extend a
+// corrupt store REFUSES rather than appending on top of a broken chain.
+function chainVerdict(chain: any[]) {
+  return verifyReceiptChain(reconstructEntries(chain));
+}
+
 async function recompute(ctx: any) {
   const chain = await chainRows(ctx);
   const forgotten = await ctx.db.query('forgotten').collect();
@@ -62,7 +72,10 @@ export const ingest = mutation({
     if (r === null) return { ok: false, refusal: 'refused: malformed or authority-shaped memory' };
     if (textHasSecret(r.content)) return { ok: false, refusal: 'refused: memory content carries a secret; not persisted in plaintext' };
     const chain = await chainRows(ctx);
+    if (chain.length > 0 && !chainVerdict(chain).valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     const prevHash = chain.length ? chain[chain.length - 1].chainHash : null;
+    // receipt-before-row: the receipt (chainHash) is computed BEFORE the row is written and stored ON it, so a
+    // memoryChain row can never exist without its receipt.
     const chainHash = receiptChainHash(memoryCommitment(r), prevHash); // content-free commitment
     await ctx.db.insert('memoryChain', {
       index: chain.length,
@@ -87,6 +100,8 @@ export const forget = mutation({
   args: { recordId: v.string(), at: v.string(), ownerAuthorized: v.boolean() },
   handler: async (ctx, { recordId, at, ownerAuthorized }) => {
     if (!ownerAuthorized) return { ok: false, refusal: 'refused: forgetting requires owner authorization' };
+    const chain = await chainRows(ctx);
+    if (chain.length > 0 && !chainVerdict(chain).valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     const rows = await ctx.db.query('memoryChain').withIndex('by_record', (q: any) => q.eq('recordId', recordId)).collect();
     const memoryRows = rows.filter((row: any) => row.kind === 'memory');
     if (memoryRows.length === 0) return { ok: false, refusal: 'refused: unknown record' };
@@ -98,7 +113,6 @@ export const forget = mutation({
       await ctx.db.replace(_id, withoutContent);
     }
     await ctx.db.insert('forgotten', { recordId, at });
-    const chain = await chainRows(ctx);
     const prevHash = chain.length ? chain[chain.length - 1].chainHash : null;
     const chainHash = receiptChainHash(tombstoneCommitment({ recordId, at }), prevHash); // content-free audit
     await ctx.db.insert('memoryChain', {
@@ -130,9 +144,19 @@ export const verify = query({
   args: {},
   handler: async (ctx) => {
     const chain = await chainRows(ctx);
-    const entries = chain.map((row: any) => ({ payload: rowPayload(row), prevHash: row.prevHash, chainHash: row.chainHash }));
-    const verdict = verifyReceiptChain(entries);
+    const verdict = verifyReceiptChain(reconstructEntries(chain));
     const merkleRootHex = chain.length ? bytesToHex(merkleRoot(chain.map((e: any) => hexToBytes(e.chainHash)))) : null;
     return { ...verdict, chainLength: chain.length, merkleRootHex };
+  },
+});
+
+// Fail-closed health gate: `ok` is the canonical chain verdict. A corrupt store reports `ok:false` and blocks
+// further ingest/forget (they refuse). Read-only.
+export const health = query({
+  args: {},
+  handler: async (ctx) => {
+    const chain = await chainRows(ctx);
+    const verdict = verifyReceiptChain(reconstructEntries(chain));
+    return { ok: verdict.valid, breakIndex: verdict.breakIndex, headHash: verdict.headHash, chainLength: chain.length };
   },
 });

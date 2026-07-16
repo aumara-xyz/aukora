@@ -24,8 +24,24 @@ export interface NebiusCeilings {
   readonly maxCallsPerSession: number;
 }
 
+/** The ONLY way generated changes leave this runtime: as PR candidates. Never a direct write, never a merge. */
+export type OutputContract = 'pr-only';
+
+/** Reproducibility descriptor: a pinned, deterministic entrypoint over pinned inputs only. */
+export interface NebiusRuntimeSpec {
+  readonly entrypoint: string;
+  readonly reproducible: true;
+  /** `pinned-only` = network limited to the pinned image/model digests; `none` = fully offline. */
+  readonly networkPolicy: 'pinned-only' | 'none';
+}
+
+/**
+ * The reproducible container/runtime manifest. Binds a code SHA, an image digest, and a model checksum; carries
+ * hard call/token/time/cost ceilings; declares a PR-only output contract and a reproducible runtime; and grants
+ * no authority and no autonomous merge. An ENABLED manifest MUST pin all three real digests.
+ */
 export interface NebiusDeploymentManifest {
-  readonly schema: 'aukora-nebius-deployment-v1';
+  readonly schema: 'aukora-nebius-runtime-v1';
   /** Exact container image digest (sha256, 64 hex). '' = unbound (only allowed while PARKED). */
   readonly imageSha256: string;
   /** Exact code / commit digest binding (sha256, 64 hex). '' = unbound (only allowed while PARKED). */
@@ -35,6 +51,10 @@ export interface NebiusDeploymentManifest {
   readonly ceilings: NebiusCeilings;
   /** Credentials are env-sourced at call time, never embedded. */
   readonly credentials: 'env';
+  /** Generated changes emerge ONLY as PR candidates. */
+  readonly outputContract: OutputContract;
+  /** Reproducible runtime descriptor. */
+  readonly runtime: NebiusRuntimeSpec;
   /** Live generation gate. `false` = PARKED (this round). */
   readonly enabled: boolean;
   /** Structurally false — this adapter never merges anything. */
@@ -42,6 +62,9 @@ export interface NebiusDeploymentManifest {
   /** Structurally false — a provider grants no authority. */
   readonly grantsAuthority: false;
 }
+
+/** Alias emphasising this is the reproducible container/runtime manifest. */
+export type NebiusRuntimeManifest = NebiusDeploymentManifest;
 
 export interface NebiusCredentials {
   readonly apiKey: string;
@@ -77,11 +100,19 @@ export function validateNebiusManifest(m: unknown): string[] {
   const v: string[] = [];
   if (m === null || typeof m !== 'object') return ['manifest_not_object'];
   const o = m as Record<string, unknown>;
-  if (o.schema !== 'aukora-nebius-deployment-v1') v.push('schema_invalid');
+  if (o.schema !== 'aukora-nebius-runtime-v1') v.push('schema_invalid');
   if (o.credentials !== 'env') v.push('credentials_must_be_env_never_embedded');
   if (o.autonomousMerge !== false) v.push('autonomous_merge_must_be_false');
   if (o.grantsAuthority !== false) v.push('grants_authority_must_be_false');
+  if (o.outputContract !== 'pr-only') v.push('output_contract_must_be_pr_only');
   if (typeof o.enabled !== 'boolean') v.push('enabled_must_be_boolean');
+  const rt = o.runtime as Record<string, unknown> | undefined;
+  if (!rt || typeof rt !== 'object') v.push('runtime_missing');
+  else {
+    if (typeof rt.entrypoint !== 'string' || rt.entrypoint.length === 0) v.push('runtime_entrypoint_invalid');
+    if (rt.reproducible !== true) v.push('runtime_must_be_reproducible');
+    if (rt.networkPolicy !== 'pinned-only' && rt.networkPolicy !== 'none') v.push('runtime_network_policy_invalid');
+  }
   const c = o.ceilings as Record<string, unknown> | undefined;
   if (!c || typeof c !== 'object') v.push('ceilings_missing');
   else {
@@ -178,4 +209,32 @@ export class NebiusBrainProvider implements BrainProvider {
 /** A provider grants no authority. Constant. */
 export function nebiusProviderGrantsAuthority(): false {
   return false;
+}
+
+export interface NebiusReadiness {
+  readonly ready: boolean;
+  readonly reasons: readonly string[];
+  /** Always false — a readiness check performs NO network I/O, no generation, no provisioning. */
+  readonly networkPerformed: false;
+}
+
+/**
+ * READ-ONLY Nebius readiness check. Performs no network call, launches no generation, provisions no hardware.
+ * `credentialsPresent` and `integratedShaAccepted` are computed read-only by the caller (env presence, SHA
+ * acceptance) and injected, so this stays free of ambient I/O. `ready` requires a valid, enabled, fully-bound
+ * runtime manifest AND present credentials AND an accepted integrated Git SHA — none of which hold this round.
+ */
+export function nebiusReadiness(
+  manifest: NebiusDeploymentManifest,
+  credentialsPresent: boolean,
+  integratedShaAccepted: boolean,
+): NebiusReadiness {
+  const reasons: string[] = [];
+  const violations = validateNebiusManifest(manifest);
+  if (violations.length > 0) reasons.push(`manifest_invalid:${violations.join(',')}`);
+  if (!manifest.enabled) reasons.push('runtime_not_enabled');
+  if (manifest.imageSha256 === '' || manifest.codeSha256 === '' || manifest.modelChecksumSha256 === '') reasons.push('digests_unbound');
+  if (!credentialsPresent) reasons.push('credentials_absent');
+  if (!integratedShaAccepted) reasons.push('integrated_sha_not_accepted');
+  return { ready: reasons.length === 0, reasons, networkPerformed: false };
 }

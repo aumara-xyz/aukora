@@ -146,4 +146,35 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     const snap = await t.query(api.memory.snapshot, {});
     expect(snap?.chainLength ?? 0).toBe(0); // the secret never entered the chain
   });
+
+  it('receipt-before-row: every stored row carries a valid receipt; health is ok', async () => {
+    const t = convexTest(schema, modules);
+    for (let i = 1; i <= 3; i++) await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: `r ${i}`, createdAt: at(i) }) });
+    const rows = await t.run(async (ctx) => ctx.db.query('memoryChain').withIndex('by_index').collect());
+    for (const row of rows as any[]) expect(row.chainHash).toMatch(/^[0-9a-f]{64}$/); // no row without a receipt
+    const h = await t.query(api.memory.health, {});
+    expect(h.ok).toBe(true);
+    expect(h.chainLength).toBe(3);
+  });
+
+  it('corrupt store fails closed: a tampered chain blocks further ingest/forget and health reports not-ok', async () => {
+    const t = convexTest(schema, modules);
+    const first = buildMemoryRecord({ content: 'alpha', createdAt: at(1) });
+    await t.mutation(api.memory.ingest, { record: first });
+    await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: 'beta', createdAt: at(2) }) });
+
+    // Corrupt a prior row's committed metadata.
+    await t.run(async (ctx) => {
+      const rows = await ctx.db.query('memoryChain').withIndex('by_index').collect();
+      await ctx.db.patch(rows[0]._id, { provenance: 'tampered' });
+    });
+
+    expect((await t.query(api.memory.health, {})).ok).toBe(false);
+    const ingestBlocked = await t.mutation(api.memory.ingest, { record: buildMemoryRecord({ content: 'gamma', createdAt: at(3) }) });
+    expect(ingestBlocked.ok).toBe(false);
+    expect(ingestBlocked.refusal).toContain('corrupt store');
+    const forgetBlocked = await t.mutation(api.memory.forget, { recordId: first.recordId, at: at(4), ownerAuthorized: true });
+    expect(forgetBlocked.ok).toBe(false);
+    expect(forgetBlocked.refusal).toContain('corrupt store');
+  });
 });

@@ -88,6 +88,7 @@ export class ReactiveMemoryStore {
     const r = validateMemoryRecord(record);
     if (r === null) return { ok: false, refusal: 'refused: malformed or authority-shaped memory' };
     if (textHasSecret(r.content)) return { ok: false, refusal: 'refused: memory content carries a secret; not persisted in plaintext' };
+    if (this.entries.length > 0 && !this.verifyChain().valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     const chainHash = this.appendEntry(memoryCommitment(r)); // content-free commitment
     this.records.push(r);
     this.lastEventAt = r.createdAt;
@@ -109,6 +110,7 @@ export class ReactiveMemoryStore {
   forget(recordId: string, verifyOwner: () => boolean, at: string): ForgetVerdict {
     if (!this.records.some((r) => r.recordId === recordId)) return { ok: false, refusal: 'refused: unknown record' };
     if (!verifyOwner()) return { ok: false, refusal: 'refused: forgetting requires owner authorization' };
+    if (this.entries.length > 0 && !this.verifyChain().valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     this.forgotten.add(recordId); // read-time invisibility
     // REMOVE the plaintext: drop every live record carrying this content-addressed id from the recall store.
     for (let i = this.records.length - 1; i >= 0; i--) if (this.records[i].recordId === recordId) this.records.splice(i, 1);
@@ -125,6 +127,11 @@ export class ReactiveMemoryStore {
   /** The canonical receipt-chain verifier — tamper of any link is detected. */
   verifyChain(): ReceiptChainVerdict {
     return verifyReceiptChain(this.entries);
+  }
+
+  /** Fail-closed health gate: `ok` is the canonical chain verdict. A corrupt store blocks further ingest/forget. */
+  health(): ReceiptChainVerdict {
+    return this.verifyChain();
   }
 
   chain(): readonly ReceiptChainEntryV1[] {

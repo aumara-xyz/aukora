@@ -22,25 +22,36 @@ const shippedManifest = (): NebiusDeploymentManifest =>
   JSON.parse(readFileSync(new URL('../../../models/nebius/deployment.manifest.json', import.meta.url), 'utf8'));
 
 const enabledBound = (): NebiusDeploymentManifest => ({
-  schema: 'aukora-nebius-deployment-v1',
+  schema: 'aukora-nebius-runtime-v1',
   imageSha256: 'a'.repeat(64),
   codeSha256: 'b'.repeat(64),
   modelChecksumSha256: 'c'.repeat(64),
   ceilings: { maxOutputTokens: 100, maxWallClockMs: 1000, maxCostUsd: 0.1, maxCallsPerSession: 2 },
   credentials: 'env',
+  outputContract: 'pr-only',
+  runtime: { entrypoint: 'aukora-brain-nebius', reproducible: true, networkPolicy: 'pinned-only' },
   enabled: true,
   autonomousMerge: false,
   grantsAuthority: false,
 });
 
 describe('NebiusBrainProvider — bounded & parked', () => {
-  it('the shipped manifest is valid and PARKED (enabled:false, credentials:env, no autonomous merge)', () => {
+  it('the shipped manifest is a valid, reproducible, PARKED runtime manifest with a PR-only output contract', () => {
     const m = shippedManifest();
     expect(validateNebiusManifest(m)).toEqual([]); // parked-with-unbound-digests is valid
+    expect(m.schema).toBe('aukora-nebius-runtime-v1');
     expect(m.enabled).toBe(false);
     expect(m.credentials).toBe('env');
+    expect(m.outputContract).toBe('pr-only');
+    expect(m.runtime.reproducible).toBe(true);
+    expect(m.runtime.networkPolicy === 'pinned-only' || m.runtime.networkPolicy === 'none').toBe(true);
     expect(m.autonomousMerge).toBe(false);
     expect(m.grantsAuthority).toBe(false);
+  });
+
+  it('rejects a non-PR-only output contract and a non-reproducible runtime', () => {
+    expect(validateNebiusManifest({ ...enabledBound(), outputContract: 'direct-write' } as unknown)).toContain('output_contract_must_be_pr_only');
+    expect(validateNebiusManifest({ ...enabledBound(), runtime: { entrypoint: 'x', reproducible: false, networkPolicy: 'pinned-only' } } as unknown)).toContain('runtime_must_be_reproducible');
   });
 
   it('parked manifest ⇒ complete() refuses (no launch, no paid call)', async () => {
