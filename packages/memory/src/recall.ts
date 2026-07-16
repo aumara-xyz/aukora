@@ -9,6 +9,7 @@
  * Pure: no I/O, no clock, no randomness, no mutation of inputs.
  */
 import type { MemoryRecordV1, ProvenanceKind } from './envelope.js';
+import { classifyScope, type MemoryScope } from './scope.js';
 
 export interface RecallQuery {
   /** Substring/keyword to match against content (case-insensitive). Empty = match all. */
@@ -16,6 +17,12 @@ export interface RecallQuery {
   readonly kind?: ProvenanceKind;
   /** Max hits (default 20). */
   readonly limit?: number;
+  /** SCOPE-AWARE (opt-in; #62): keep ONLY records in these scopes. Absent ⇒ no scope filter. */
+  readonly scopes?: readonly MemoryScope[];
+  /** SCOPE-AWARE (opt-in; #62): drop records in these scopes (e.g. exclude test/code noise). */
+  readonly excludeScopes?: readonly MemoryScope[];
+  /** SCOPE-AWARE (opt-in; #62): rank records in these scopes above equal-keyword-score records of other scopes. */
+  readonly preferScopes?: readonly MemoryScope[];
 }
 
 export interface RecallHit {
@@ -24,6 +31,8 @@ export interface RecallHit {
   readonly kind: ProvenanceKind;
   readonly content: string;
   readonly score: number;
+  /** The record's classified scope (additive; #62). Present on every hit; unused unless the query opts in. */
+  readonly scope: MemoryScope;
 }
 
 /** Deterministic keyword score: term hits, higher for exact/earlier matches. No randomness. */
@@ -52,16 +61,28 @@ export function recall(
 ): RecallHit[] {
   const term = query.text ?? '';
   const limit = Number.isInteger(query.limit) && (query.limit as number) > 0 ? (query.limit as number) : 20;
+  const include = query.scopes && query.scopes.length ? new Set(query.scopes) : null;
+  const exclude = query.excludeScopes && query.excludeScopes.length ? new Set(query.excludeScopes) : null;
+  const prefer = query.preferScopes && query.preferScopes.length ? new Set(query.preferScopes) : null;
   const hits: RecallHit[] = [];
   for (const r of records) {
     if (forgotten.has(r.recordId)) continue; // forgotten: never recalled
     if (query.kind !== undefined && r.kind !== query.kind) continue;
     const score = scoreOf(r.content, term);
     if (term.length > 0 && score === 0) continue;
-    hits.push({ recordId: r.recordId, createdAt: r.createdAt, kind: r.kind, content: r.content, score });
+    // Scope is computed for every hit (additive). Filters apply ONLY when the query opts in — so a query with
+    // no scope options behaves byte-for-byte as before.
+    const scope = classifyScope(r);
+    if (include && !include.has(scope)) continue;
+    if (exclude && exclude.has(scope)) continue;
+    hits.push({ recordId: r.recordId, createdAt: r.createdAt, kind: r.kind, content: r.content, score, scope });
   }
+  // `preferScopes` is a rank boost that only fires when opted in — a preferred-scope hit sorts above an
+  // equal-keyword-score hit of another scope. Without it, ordering is identical to the pre-#62 law.
+  const boost = prefer ? (h: RecallHit) => (prefer.has(h.scope) ? 1 : 0) : () => 0;
   hits.sort((a, b) =>
     b.score - a.score ||
+    boost(b) - boost(a) ||
     a.createdAt.localeCompare(b.createdAt) ||
     a.recordId.localeCompare(b.recordId));
   return hits.slice(0, limit);
