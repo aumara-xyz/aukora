@@ -18,7 +18,7 @@ CONVEX_AGENT_MODE=anonymous mode is in beta, functionality may change in the fut
  to .env.local
 
 Write your Convex functions in convex/
-Give us feedback at https://convex.dev/community or support@convex.dev
+Give us feedback at https://convex.dev/community or <redacted-email>
 View the Convex dashboard at null
 
 ▌ Developing against deployment:
