@@ -1,0 +1,139 @@
+{
+  "schema": "aukora-native-safety-matrix-v1",
+  "round": "R44",
+  "lane": "SAM 3",
+  "base_main": "d0bb625fce3d908e1a0ca06372fb7083ec7c2fcc",
+  "generated_for": "issue #22 native safety regression matrix",
+  "legend": {
+    "covered": "already proven green by an existing real-component test (cited); NOT rewritten this round",
+    "covered-new": "the smallest missing negative, added this round in the owned lane",
+    "residual": "a gap that is out-of-lane to fix (would widen Ring 0 / supervisor / authority) — reported, not changed"
+  },
+  "proof_kind_note": "Every row below is COMPONENT proof (real modules, disposable repos, deterministic transports). A live HTTP wire transcript over loopback (approve/bind door + mind door on a real socket, real headers) is a SEPARATE, still-required artifact and is NOT claimed here — see live_wire_required.",
+  "rows": [
+    {
+      "id": "R1",
+      "threat": "malicious or structurally valid-but-misleading evidence",
+      "status": "covered",
+      "invariant": "the council/reviewer is advisory (grantsAuthority:false); a well-formed 'pass' is necessary-but-not-sufficient and can never substitute for the owner signature, so misleading evidence cannot cause an effect",
+      "proofs": ["test/recursion.negative.test.ts:12", "test/recursion.positive.test.ts:88", "test/r42.fu-realfixtures.test.ts:54"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R2",
+      "threat": "Fu advice says approve while grantsAuthority:false",
+      "status": "covered",
+      "invariant": "advisory-pass authorizes nothing; only a valid hybrid AUMLOK signature authorizes; the two gates are separate",
+      "proofs": ["test/recursion.negative.test.ts:12", "test/recursion.positive.test.ts:88", "src/recursion.ts:208-215"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R3a",
+      "threat": "forged AUMLOK material (Ed25519 half)",
+      "status": "covered",
+      "proofs": ["test/recursion.negative.test.ts:38", "test/r41.ceremony.test.ts:316"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R3b",
+      "threat": "forged AUMLOK material (ML-DSA-65 half — both halves load-bearing)",
+      "status": "covered",
+      "proofs": ["test/recursion.negative.test.ts:49", "test/r41.ceremony.test.ts:316"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R3c",
+      "threat": "expired / stale AUMLOK authorization",
+      "status": "covered",
+      "proofs": ["test/recursion.negative.test.ts:59"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R3d",
+      "threat": "replayed (already-consumed) AUMLOK authorization",
+      "status": "covered",
+      "proofs": ["test/recursion.negative.test.ts:117", "test/r41.ceremony.test.ts:372"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R3e",
+      "threat": "wrong-signer / untrusted owner root",
+      "status": "covered",
+      "proofs": ["test/recursion.negative.test.ts:70", "test/r41.ceremony.test.ts:331"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R3f",
+      "threat": "byte / content mismatch (same intent, different bytes)",
+      "status": "covered",
+      "proofs": ["test/recursion.negative.test.ts:103"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R3g",
+      "threat": "wrong-PURPOSE AUMLOK material (ML-DSA half bound to a different purpose domain)",
+      "status": "covered-new",
+      "invariant": "the ML-DSA-65 half is purpose-domain-bound; a signature valid for another purpose (or a made-up purpose) cannot authorize an owner promotion — isolated against a positive control that differs ONLY in the context",
+      "proofs": ["test/r44.safety-matrix.test.ts:65", "test/r44.safety-matrix.test.ts:72", "test/r44.safety-matrix.test.ts:78"],
+      "kernel_adjacent": "packages/kernel/test/evidence.test.ts:62-70 proves the mirror case for the receipt-head path; this proves the owner-promotion path used by the seed lane",
+      "live_wire_required": false
+    },
+    {
+      "id": "R4",
+      "threat": "prompt/content injection attempting to cross into authority",
+      "status": "covered",
+      "invariant": "authority-shaped / secret-shaped content is refused at the shape gate and never reaches a trace or receipt; content never enters an authorization predicate",
+      "proofs": ["test/recursion.negative.test.ts:131", "test/recursion.negative.test.ts:149", "test/recursion.adversarial.test.ts:73", "test/ceremony.adversarial.test.ts:113"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R5",
+      "threat": "protected gate/supervisor/signer targets (incl. WAVE 2 ceremony membrane)",
+      "status": "covered",
+      "invariant": "the frozen SELF_PROTECTING list refuses candidate materialization of the fence/gate/monitor/doors/kernel-authority/scanners AND the WAVE 2 membrane, table-independently",
+      "proofs": ["test/r41.ceremony.test.ts:294", "test/ideEnvelope.test.ts:148", "test/r39.security.test.ts"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R6a",
+      "threat": "crash after receipt but before effect",
+      "status": "covered",
+      "invariant": "restart never auto-resumes an effect; re-running over the same durable state materializes nothing unless explicitly asked; a re-attempt against an existing candidate branch/worktree refuses rather than double-applies",
+      "proofs": ["test/r35.durable.test.ts:191", "test/r36.candidate-fu.test.ts"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R6b",
+      "threat": "crash after effect but before completion receipt",
+      "status": "covered",
+      "invariant": "restart reconciles as applied-exactly-once; a different proposal reusing a consumed nonce is a genuine replay refusal, not a reconciliation",
+      "proofs": ["test/r35.durable.test.ts:75", "test/r35.durable.test.ts:96"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R7",
+      "threat": "candidate symlink / path-identity / unrelated-file / staged-set attacks (WAVE 3)",
+      "status": "covered",
+      "proofs": ["test/r43.candidate-integrity.test.ts:106", "test/r43.candidate-integrity.test.ts:116", "test/r43.candidate-integrity.test.ts:125"],
+      "live_wire_required": false
+    },
+    {
+      "id": "R8",
+      "threat": "corrupt / stale Convex projection trying to become a second truth",
+      "status": "covered",
+      "invariant": "projections are non-authoritative; the gate re-verifies authority in-process from scratch; a tampered ownerVerified:true or an extra/hidden projection key is rejected; a corrupt store fails closed, burns no nonce, stays retryable",
+      "proofs": ["test/r35.durable.test.ts:184", "test/r35.durable.test.ts:212", "test/recursion.adversarial.test.ts:16", "test/recursion.adversarial.test.ts:37"],
+      "live_wire_required": false
+    }
+  ],
+  "residuals": [
+    {
+      "id": "RES-1",
+      "note": "The workflow supervisor state modules (durableRecursion.ts / metabolism.ts / eventStream.ts) are NOT on the frozen SELF_PROTECTING list. They hold NO authority (projections-only; authority stays in-process), so targeting them as a candidate is Ring-1 substrate, not a Ring-0 authority bypass. Adding them would WIDEN the self-protecting surface — out of lane for R44 (which must not widen Ring 0 / supervisor / authority). Reported for an owner ruling: should the supervisor substrate be candidate-fenced as well?"
+    },
+    {
+      "id": "RES-2",
+      "note": "LIVE HTTP WIRE TRANSCRIPT is still required and NOT provided here. Every row above is component proof (function-level, disposable repos, injected transports). The approve/bind door + mind door have not been exercised over a real loopback socket with real Origin/Host/Sec-Fetch headers end-to-end. That transcript is Sam 1's headless-proof deliverable; this matrix is its component-level precondition, not a substitute."
+    }
+  ]
+}
