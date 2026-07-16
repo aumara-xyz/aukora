@@ -73,10 +73,53 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: 54 passed / 5 files (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **74 passed / 7 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch.
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
+
+## R30 — AURA portable trace law + adversarial controls
+
+Ported the donor AURA trace law (from `core/src/boundaryTraceTelemetry.ts` + `core/src/forbiddenContent.ts`,
+aukora-symbiote) into this lane, and hardened the failure asymmetry between receipt and effect.
+
+- **`apps/seed/src/forbiddenContent.ts`** — the recursive AURA fence (ported verbatim pattern block): exact
+  `FORBIDDEN_FIELDS`, normalized forbidden-key regex, forbidden secret/production VALUE regex, false-authority
+  CONTENT regex, overclaim/mythology regexes; `scanForbiddenKeys/Values/Claims/AuthorityClaims` recurse through
+  objects AND arrays so a forbidden key/value at ANY depth is found.
+- **`apps/seed/src/auraTrace.ts`** — TRACE_ONLY law: frozen verbatim `TRACE_LIMITS` (MAX_TRACES 2048, MAX_STRING
+  200, MAX_REASON 64, MAX_INTENT_PREFIX 12), positive `ALLOWED_FIELDS` allowlist, `sanitizeTraceEvent` (recursive
+  forbidden refusal → drop unknowns → bound strings), and `AuraTraceLog` (ring-buffered store, `audit` self-scan,
+  `erase` → content-free tombstone, `verifyErasure` → honest iff a content-free tombstone remains, no live copy
+  survives, and the store still audits clean). `advisoryOnly:true` / `grantsAuthority:false` throughout.
+- **Integration** — `runGovernedRecursion` emits a scrubbed AURA trace for EVERY terminal outcome (safe stage
+  category + a ≤12-hex intent prefix; never the proposed content, full intent id, or signature). **Receipt-before-row:**
+  on the accepted path the receipt is recorded FIRST; if the store cannot record it (corrupt/full) the apply is
+  refused (`refused-receipt-unrecordable`), the nonce is NOT burned, and no sandbox effect is exposed — so there is
+  no acknowledged effect without a durable receipt, and the operation stays retryable.
+- **Classifier/reducer/fence separation preserved:** shape classifier (`proposal.ts`), decision reducer
+  (`recursion.ts`), authority fence (`aumlokGate.ts`), and forbidden-content/trace fence (`forbiddenContent.ts` +
+  `auraTrace.ts`) are distinct modules; the trace fence has no read path into the decision.
+- **Byte-compatible intent ids pinned** (frozen golden vectors, `test/recursion.adversarial.test.ts`):
+  intentId(`apps/seed/src/recursion.ts`, supersedes=null) = `4ac84bf07eb32aeecb7094a98c6cdb4ce85a1844849f18f49a956ce57bd7237d`;
+  draftHash(target, `// note`) = `c32347bbcfc22a9e6ab2b671bde33b3f08a293f10a71f2726a454603ce71708c`.
+
+### R30 adversarial matrix (all controls)
+
+| control | result |
+| --- | --- |
+| receipt-before-row failure asymmetry (corrupt store on apply) | `refused-receipt-unrecordable`; no nonce burned; retryable |
+| corrupt store on a refusal path | fails closed, never throws, `receiptHash:null`, still refused |
+| every terminal outcome emits a scrubbed trace | one trace per outcome; store audits clean |
+| authority-shaped INPUT | refused; only the safe category reaches the trace (no `grantsAuthority=true` leak) |
+| recursive forbidden KEY at depth (object+array) | whole record rejected |
+| forbidden secret/production VALUE (64-hex, `sk-…`, PEM, `.convex.cloud`) | whole record rejected |
+| false-authority CONTENT (`grantsAuthority=true`, `advisoryOnly=false`) | whole record rejected |
+| unknown-field forbidden key | rejected; harmless unknown field dropped |
+| TRACE_LIMITS bounds | strings truncated; store ring-buffered at MAX_TRACES |
+| honest erasure | content-free tombstone kept; `verifyErasure` true; store audits clean |
+| unknown-age staleness (unparseable createdAt) | `refused-stale` |
+| trace emission inert to the decision | replay / getter-smuggling still fail closed |
 
 ## Council (advisory bookend — opus-self-review; no council transport on this box)
 
@@ -97,5 +140,14 @@ the nonce extraction were made TOTAL so a hostile `auth` object with a throwing 
 Honest limitation: "wall time" is modelled as an injected absolute deadline (no ambient clock), not measured elapsed
 CPU/wall time; combined with max-attempts it bounds runaway, and it is deterministic and testable.
 
-CODEX FUSION REQUEST: run PRE council over the R29 plan-of-record above.
-CODEX FUSION REQUEST: run POST council over this evidence document (digest recorded in the PR body / handoff).
+**R30 CHECK (opus-self-review):** the AURA trace law is a faithful port of the donor (recursive forbidden
+key/value scan, positive allowlist, frozen limits, TRACE_ONLY, grantsAuthority:false) with an added honest-erasure
+verifier. The one behavioural change to the reducer — receipt-before-row — is a strict tightening: it can only turn
+a would-be accept into a refusal when the store cannot record the receipt, never the reverse, and it burns no nonce
+so it is retryable. The trace fence is a separate module with no read path into the decision; a proxy/getter, a
+64-hex value, and an authority-shaped string are all rejected by the fence, and the pipeline only ever feeds the
+fence a safe stage category plus a ≤12-hex prefix. Honest limitation carried forward: "wall time" remains an
+injected deadline, not measured elapsed time.
+
+CODEX FUSION REQUEST: run PRE council over the R29+R30 plan-of-record above.
+CODEX FUSION REQUEST: run POST council over this evidence document (fresh digest recorded in the PR body + issue #22).

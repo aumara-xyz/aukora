@@ -32,6 +32,7 @@ import {
 import type { RecursionLedger } from './ledger.js';
 import { mockCouncilReview, type CouncilReviewer, type CouncilVerdict } from './mockCouncil.js';
 import { verifyOwnerPromotion, AUMLOK_MODE } from './aumlokGate.js';
+import { AuraTraceLog, TRACE_LIMITS, type TracePhase } from './auraTrace.js';
 
 /** An owner authorization is a hybrid AUMLOK signed promotion — never an Ed25519-only shape. */
 export type OwnerAuthorization = SignedPromotionV2;
@@ -50,6 +51,8 @@ export interface RecursionEnv {
   readonly deadlineMs: number;
   /** Advisory council review. Defaults to the deterministic offline mock; injectable for tests. Authorizes nothing. */
   readonly review?: CouncilReviewer;
+  /** Optional AURA trace log (TRACE_ONLY). Every terminal outcome emits a scrubbed trace here; authorizes nothing. */
+  readonly trace?: AuraTraceLog;
 }
 
 export interface RecursionResult {
@@ -83,23 +86,39 @@ interface Terminal {
 }
 
 /**
- * Record every terminal outcome as a receipt-chained memory and return the result. The receipt content is a fixed,
- * bounded summary — it NEVER echoes the proposed content or any untrusted field, so a secret-shaped or malformed
- * patch cannot leak through the audit trail. `targetLabel` is caller-controlled and safe (a validated path, or a
- * constant placeholder for pre-validation refusals).
+ * Ingest a bounded receipt for a terminal outcome and return its chain hash (null if the store refused the write —
+ * corrupt/full store). The receipt content is a fixed, bounded summary — it NEVER echoes the proposed content or
+ * any untrusted field, so a secret-shaped or malformed patch cannot leak through the audit trail. `targetLabel` is
+ * caller-controlled and safe (a validated path, or a constant placeholder for pre-validation refusals).
  */
-function finalize(env: RecursionEnv, seq: number, t: Terminal, targetLabel: string): RecursionResult {
+function ingestReceipt(env: RecursionEnv, seq: number, accepted: boolean, stage: string, intentId: string | null, targetLabel: string): string | null {
   const content =
-    `governed-recursion ${t.accepted ? 'applied' : 'refused'} · seq=${seq} · stage=${t.stage}` +
-    ` · intent=${t.intentId ?? 'n/a'} · target=${targetLabel}`;
-  const receipt = buildMemoryRecord({
-    content,
-    createdAt: env.nowIso,
-    kind: 'receipt',
-    consent: 'owner-only',
-    provenance: 'governed-recursion',
+    `governed-recursion ${accepted ? 'applied' : 'refused'} · seq=${seq} · stage=${stage}` +
+    ` · intent=${intentId ?? 'n/a'} · target=${targetLabel}`;
+  const ing = env.store.ingest(buildMemoryRecord({ content, createdAt: env.nowIso, kind: 'receipt', consent: 'owner-only', provenance: 'governed-recursion' }));
+  return ing.ok ? ing.chainHash : null;
+}
+
+/** Emit a scrubbed AURA trace (TRACE_ONLY) for a terminal outcome, if a trace log is present. Safe categories only:
+ *  the phase/stage, a safe refusal category, and a SHORT (≤12 hex) intent correlator — never content or a full id. */
+function emitTrace(env: RecursionEnv, seq: number, phase: TracePhase, stage: string, intentId: string | null): void {
+  if (!env.trace) return;
+  env.trace.record({
+    eventId: `rec_${seq}_${stage}`,
+    timestampMs: Number.isSafeInteger(env.nowMs) ? env.nowMs : 0,
+    phase,
+    stage,
+    receiptMode: phase === 'applied' ? 'write' : phase === 'refused' ? 'witness' : 'unknown',
+    refusalCause: phase === 'refused' ? stage : undefined,
+    intentPrefix: intentId ? intentId.slice(0, TRACE_LIMITS.MAX_INTENT_PREFIX) : undefined,
+    source: 'governedRecursion',
   });
-  const ing = env.store.ingest(receipt);
+}
+
+/** Finalize a REFUSAL: receipt it (fail-closed if the store refuses ⇒ receiptHash null) and emit a scrubbed trace. */
+function finalize(env: RecursionEnv, seq: number, t: Terminal, targetLabel: string): RecursionResult {
+  const receiptHash = ingestReceipt(env, seq, t.accepted, t.stage, t.intentId, targetLabel);
+  emitTrace(env, seq, t.accepted ? 'applied' : 'refused', t.stage, t.intentId);
   return {
     accepted: t.accepted,
     stage: t.stage,
@@ -109,7 +128,7 @@ function finalize(env: RecursionEnv, seq: number, t: Terminal, targetLabel: stri
     councilEvidenceDigest: t.councilEvidenceDigest ?? null,
     sandboxApplied: t.sandbox !== undefined,
     sandbox: t.sandbox,
-    receiptHash: ing.ok ? ing.chainHash : null,
+    receiptHash,
     authorityMinted: false,
     aumlokMode: AUMLOK_MODE,
   };
@@ -203,19 +222,34 @@ export function runGovernedRecursion(env: RecursionEnv, proposalInput: unknown, 
   // makes the apply total and guarantees the replay nonce below is always consumed on a successful path.
   if (nonce === undefined) return refuse('refused-owner-gate', ['owner-gate: authorization missing nonce'], cv);
 
-  // 11. Sandbox-only apply — isolated in-memory Map; NEVER the live repo, no filesystem.
+  // 11. Prepare the isolated sandbox effect — an in-memory Map; NEVER the live repo, no filesystem.
   const sandbox = new Map<string, string>();
   sandbox.set(proposal.targetPath, proposal.newContent);
 
-  // 12. Consume the nonce (replay) and record the applied intent (lineage) — only on a fully valid path.
+  // 12. RECEIPT BEFORE ROW — record the receipt FIRST. If the store cannot record it (corrupt/full), the apply
+  //     does NOT count: fail closed, do not consume the nonce (so a legitimate retry still works), expose no
+  //     sandbox. This removes the receipt/row failure asymmetry — no acknowledged effect without a durable receipt.
+  const receiptHash = ingestReceipt(env, seq, true, 'sandbox-applied', intentId, proposal.targetPath);
+  if (receiptHash === null) {
+    emitTrace(env, seq, 'refused', 'refused-receipt-unrecordable', intentId);
+    return {
+      accepted: false, stage: 'refused-receipt-unrecordable',
+      refusals: ['receipt: outcome could not be recorded — apply refused, no effect, retryable'],
+      intentId, councilVerdict: cv.verdict, councilEvidenceDigest: cv.evidenceDigest || null,
+      sandboxApplied: false, receiptHash: null, authorityMinted: false, aumlokMode: AUMLOK_MODE,
+    };
+  }
+
+  // 13. Row committed only after the receipt: consume the nonce (replay) and record the applied intent (lineage).
   ledger.consumeNonce(nonce);
   ledger.recordApplied(intentId, lineage.depth);
+  emitTrace(env, seq, 'applied', 'sandbox-applied', intentId);
 
-  // 13. Receipt the accepted terminal outcome.
-  return finalize(env, seq, {
+  return {
     accepted: true, stage: 'sandbox-applied', refusals: [], intentId,
-    councilVerdict: cv.verdict, councilEvidenceDigest: cv.evidenceDigest, sandbox,
-  }, proposal.targetPath);
+    councilVerdict: cv.verdict, councilEvidenceDigest: cv.evidenceDigest,
+    sandboxApplied: true, sandbox, receiptHash, authorityMinted: false, aumlokMode: AUMLOK_MODE,
+  };
 }
 
 /** The recursion pipeline grants no authority — constant, by construction. */

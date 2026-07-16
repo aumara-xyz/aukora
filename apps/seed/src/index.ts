@@ -6,6 +6,8 @@
  */
 export * from './proposal.js';
 export * from './ledger.js';
+export * from './forbiddenContent.js';
+export * from './auraTrace.js';
 export * from './mockCouncil.js';
 export * from './aumlokGate.js';
 export * from './ownerFixture.js';
