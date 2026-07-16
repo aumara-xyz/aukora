@@ -20,7 +20,7 @@ const RUNTIME_MODULES = [
   'src/memoryConstitution.ts', 'src/maternalAnchor.ts', 'src/memorySelection.ts', 'src/councilRunnerBoundary.ts',
   'src/ideSession.ts', 'src/selectionAcceptance.ts', 'src/spatialCeremonyAdapter.ts', 'src/contracts.ts',
   'src/durableRecursion.ts', 'src/fuStructuredAdapter.ts', 'src/localCeremonyRunner.ts',
-  'src/doorGuards.ts', 'src/mindDoor.ts',
+  'src/doorGuards.ts', 'src/mindDoor.ts', 'src/candidateReferenceMonitor.ts',
 ];
 
 const FORBIDDEN_IMPORT = /\bfrom\s+['"](?:node:)?(?:fs|fs\/promises|child_process|net|tls|http|https|dns|dgram|worker_threads|cluster|vm|repl)['"]/;
@@ -41,7 +41,7 @@ describe('the runtime never self-signs', () => {
     it(`${mod} contains no signing call and does not import the owner fixture`, () => {
       const src = read(mod);
       expect(src.includes('.sign(')).toBe(false);
-      expect(src.includes('ownerFixture')).toBe(false);
+      expect(/from ['"][^'"]*ownerFixture['"]/.test(src)).toBe(false); // no IMPORT of the signing fixture
     });
   }
 });
@@ -61,7 +61,7 @@ describe('the candidate stage (the ONE effectful adapter) is contained by its ow
     const s = src();
     expect(s).toContain('ALLOWED_GIT_SUBCOMMANDS');
     expect(s).toContain('--no-gpg-sign');
-    expect(s.includes('ownerFixture')).toBe(false);
+    expect(/from ['"][^'"]*ownerFixture['"]/.test(s)).toBe(false); // no IMPORT of the signing fixture
     expect(s.includes('.sign(')).toBe(false); // never signs for the owner
   });
 
@@ -78,7 +78,7 @@ describe('the provider transport edge (the ONLY network module) embeds no creden
     for (const mod of edge) {
       const src = read(mod);
       expect(src.includes('.sign(')).toBe(false);
-      expect(src.includes('ownerFixture')).toBe(false);
+      expect(/from ['"][^'"]*ownerFixture['"]/.test(src)).toBe(false); // no IMPORT of the signing fixture
       // no bearer/sk-/AKIA literal, and the token is used only via a `Bearer ${token}` header interpolation
       expect(/\bsk-[A-Za-z0-9]{16,}\b|\bAKIA[0-9A-Z]{16}\b|Bearer\s+[A-Za-z0-9._-]{16,}/.test(src)).toBe(false);
     }

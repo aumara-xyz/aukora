@@ -54,6 +54,10 @@ export type { LiveSmokeResult, LiveSmokeOptions } from './fuLiveSmoke.js';
 export type { DoorRequest, DoorResponse, DoorEvent, MindDoorConfig, DoorDriver, DoorDriverLoader } from './mindDoor.js';
 export type { DoorGuardResult, DoorGuardReason, DoorGuardOptions } from './doorGuards.js';
 
+// ── R39 canonical reference monitor + armed egress (decision + receipt shapes only) ──
+export type { MonitorDecision } from './candidateReferenceMonitor.js';
+export type { ProviderArm, EgressReceipt, ArmedEgressOptions } from './providerEgress.js';
+
 // ── schema names (local literals; import nothing) ──────────────────────────
 export const CONTRACT_SCHEMAS = Object.freeze({
   ceremonyView: 'aukora-ceremony-view-v1',

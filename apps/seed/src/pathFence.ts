@@ -67,12 +67,48 @@ const AUTHORITY = [
   /ownerfixture/i,
 ];
 
+/**
+ * SELF-PROTECTING paths — the fence's own enforcement code and everything that authorizes, gates, or verifies the
+ * one effectful path. These are refused for CANDIDATE materialization UNCONDITIONALLY, checked BEFORE and
+ * INDEPENDENTLY of the SACRED/AUTHORITY tables above — so even if a parsed allowlist is EMPTY or STALE, the fence,
+ * the candidate stage, the ceremony runner, the doors, the kernel authority/reducer/schema, and the provenance/
+ * boundary/CI scripts + workflows can NEVER become candidate-able. This list is frozen and cannot be emptied.
+ */
+const SELF_PROTECTING: readonly RegExp[] = Object.freeze([
+  // the fence itself + the effectful/authorization surfaces (apps/seed and any mirror)
+  /(^|\/)pathFence\.ts$/,
+  /(^|\/)localCandidateStage\.ts$/,
+  /(^|\/)candidateReferenceMonitor\.ts$/,
+  /(^|\/)localCeremonyRunner\.ts$/,
+  /(^|\/)aumlokGate\.ts$/,
+  /(^|\/)ownerFixture\.ts$/,
+  /(^|\/)mindDoor\.ts$/,
+  /(^|\/)doorGuards\.ts$/,
+  /(^|\/)providerTransport\.ts$/,
+  /(^|\/)fuStructuredAdapter\.ts$/,
+  /(^|\/)forbiddenContent\.ts$/,
+  // the kernel authority core
+  /^packages\/kernel\/src\/(authority|reducer|schema|registry|canonical|evidence|merkle)\.ts$/,
+  /(^|\/)kernel\/(dist|conformance)\//,
+  // provenance / boundary / CI scripts + workflows
+  /^scripts\/(verify|generate|check)[-A-Za-z0-9]*\.mjs$/,
+  /(^|\/)\.github\/workflows\//,
+  /(^|\/)scan-public-tree\.mjs$/,
+]);
+
+/** True if `path` is a self-protecting authority/enforcement surface — never candidate-able, table-independent. */
+export function isSelfProtecting(path: string): boolean {
+  return typeof path === 'string' && SELF_PROTECTING.some((re) => re.test(path));
+}
+
 /** Classify a repo-relative path. Total: never throws. */
 export function classifyPath(rawPath: unknown): PathVerdict {
   if (typeof rawPath !== 'string' || rawPath.length === 0 || rawPath.length > 1024 || !SAFE_PATH.test(rawPath)) {
     return { path: typeof rawPath === 'string' ? rawPath.slice(0, 64) : '<non-string>', class: 'invalid', reasonClass: 'fence:invalid-path', text: REASON_TEXT['fence:invalid-path'] };
   }
   if (SECRET.some((re) => re.test(rawPath))) return { path: rawPath, class: 'secret', reasonClass: 'fence:secret-path', text: REASON_TEXT['fence:secret-path'] };
+  // SELF-PROTECTING is checked BEFORE the mutable SACRED/AUTHORITY tables and independently of them.
+  if (isSelfProtecting(rawPath)) return { path: rawPath, class: 'authority', reasonClass: 'fence:authority-path', text: REASON_TEXT['fence:authority-path'] };
   if (AUTHORITY.some((re) => re.test(rawPath))) return { path: rawPath, class: 'authority', reasonClass: 'fence:authority-path', text: REASON_TEXT['fence:authority-path'] };
   if (SACRED.some((re) => re.test(rawPath))) return { path: rawPath, class: 'sacred', reasonClass: 'fence:sacred-path', text: REASON_TEXT['fence:sacred-path'] };
   return { path: rawPath, class: 'allowed', reasonClass: 'fence:ok', text: REASON_TEXT['fence:ok'] };
@@ -83,8 +119,14 @@ export function readAllowed(verdict: PathVerdict): boolean {
   return verdict.class === 'allowed' || verdict.class === 'authority' || verdict.class === 'sacred';
 }
 
-/** May Auma stage a CANDIDATE touching this path? Only ordinary allowed paths — never sacred/authority/secret/invalid. */
+/**
+ * May Auma stage a CANDIDATE touching this path? Only ordinary allowed paths — never sacred/authority/secret/invalid,
+ * and NEVER a self-protecting path. The self-protecting check runs FIRST and is TABLE-INDEPENDENT: even if the
+ * SACRED/AUTHORITY allowlists were emptied or went stale, `classifyPath` would still not mark these `allowed`, and
+ * this second, direct `isSelfProtecting` guard refuses them regardless of the verdict's class.
+ */
 export function candidateAllowed(verdict: PathVerdict): boolean {
+  if (isSelfProtecting(verdict.path)) return false;
   return verdict.class === 'allowed';
 }
 

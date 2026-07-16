@@ -25,11 +25,11 @@ import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import type { ReactiveMemoryStore } from '@aukora/brain';
 import { buildMemoryRecord } from '@aukora/memory';
-import type { AumlokAuthorityRootV2, SignedPromotionV2 } from '@aukora/kernel/schemas';
-import { verifyOwnerPromotion } from './aumlokGate.js';
-import { deriveIntentId, deriveDraftHash, type Proposal } from './proposal.js';
+import type { SignedPromotionV2 } from '@aukora/kernel/schemas';
+import { deriveDraftHash } from './proposal.js';
 import { classifyPath, candidateAllowed } from './pathFence.js';
 import { scrubText } from './councilPack.js';
+import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
 import type { BranchCandidate } from './ideEnvelope.js';
 
 export type CandidateReasonClass =
@@ -40,6 +40,7 @@ export type CandidateReasonClass =
   | 'candidate:not-a-repo'
   | 'candidate:dirty-tree'
   | 'candidate:already-materialized'
+  | 'candidate:reference-monitor-refused'
   | 'candidate:receipt-unrecordable'
   | 'candidate:isolation-violated'
   | 'candidate:git-error';
@@ -64,9 +65,12 @@ export interface MaterializeInput {
   /** Disposable-worktree base directory — MUST be outside repoRoot (isolation is checked, not assumed). */
   readonly worktreeBase: string;
   readonly candidate: BranchCandidate;
-  /** Fresh-verification inputs: every candidate file needs its (proposal, hybrid authorization) pair. */
-  readonly drafts: readonly { readonly proposal: Proposal; readonly auth: SignedPromotionV2 }[];
-  readonly ownerRoot: AumlokAuthorityRootV2;
+  /** The owner's authorization over the candidate PAYLOAD hash (proposalHash===draftHash===candidatePayloadHash). */
+  readonly candidateAuth: SignedPromotionV2 | undefined;
+  /** The canonical kernel reference monitor (durable consumed-id state). The ONE authorization path. */
+  readonly monitor: CandidateReferenceMonitor;
+  /** The owner has explicitly ARMED this materialization (maps to the kernel's humanClearance for self-modify). */
+  readonly ownerArmed: boolean;
   readonly store: ReactiveMemoryStore;
   readonly nowMs: number;
   readonly nowIso: string;
@@ -96,7 +100,7 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
   const refuse = (reasonClass: Exclude<CandidateReasonClass, 'candidate:ok'>, text: string, attemptReceiptHash: string | null = null): CandidateMaterialization =>
     ({ ok: false, reasonClass, text, branch: null, worktreePath: null, commitSha: null, attemptReceiptHash, receiptHash: null, pushed: false, merged: false, signedForOwner: false, grantsAuthority: false });
 
-  const { candidate, drafts, store } = input;
+  const { candidate, store } = input;
 
   // 1. Candidate shape — hard-false literals must actually be false; every file must carry its rehearsal receipt.
   if (candidate.staged !== true || candidate.pushed !== false || candidate.signed !== false || candidate.merged !== false
@@ -113,16 +117,13 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
     if (!candidateAllowed(v)) return refuse('candidate:forbidden-target', `refused: ${v.text} (${f.path})`);
   }
 
-  // 3. FRESH in-process AUMLOK verification — every file's (intent, draft) must verify against a supplied
-  //    authorization NOW. Persisted state (candidate fields, UI, Convex projections) is never trusted.
+  // 3. WORKSPACE INTEGRITY — the content that would be written must match the signed draftHash (no post-sign swap).
+  //    (The kernel monitor authorizes over the candidate payload, which binds these draftHashes.)
   for (const f of candidate.files) {
-    const draft = drafts.find((d) => deriveIntentId(d.proposal) === f.intentId && deriveDraftHash(d.proposal) === f.draftHash);
-    if (!draft) return refuse('candidate:fresh-verification-failed', `refused: no fresh authorization supplied for ${f.path}`);
-    const verdict = verifyOwnerPromotion(draft.auth, input.ownerRoot, { rootId: input.ownerRoot.rootId, proposalHash: f.intentId, draftHash: f.draftHash }, input.nowMs);
-    if (!verdict.valid) return refuse('candidate:fresh-verification-failed', `refused: fresh AUMLOK verification failed for ${f.path} (${verdict.reason})`);
-    if (candidate.workspace.get(f.path) !== draft.proposal.newContent) {
-      return refuse('candidate:fresh-verification-failed', `refused: workspace content does not match the verified draft for ${f.path}`);
-    }
+    const content = candidate.workspace.get(f.path);
+    if (typeof content !== 'string') return refuse('candidate:shape-invalid', `refused: no workspace content for ${f.path}`);
+    const recomputed = deriveDraftHash({ id: 'candidate', targetPath: f.path, newContent: content, createdAt: '2026-01-01T00:00:00.000Z', supersedes: null });
+    if (recomputed !== f.draftHash) return refuse('candidate:fresh-verification-failed', `refused: workspace content does not match the signed draftHash for ${f.path}`);
   }
 
   // 4. Repo + isolation preconditions.
@@ -146,6 +147,12 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
   const headBefore = tryGit(repoRoot, 'rev-parse', ['HEAD']);
   if (headBefore === null) return refuse('candidate:git-error', 'refused: repo has no HEAD commit');
   const mainBefore = tryGit(repoRoot, 'rev-parse', ['--verify', '--quiet', 'refs/heads/main']);
+
+  // 4b. CANONICAL AUTHORIZATION — the ONE reference monitor (kernel decide()): owner-armed self-modify, hybrid
+  //     AUMLOK verify, consumed-once. No parallel or weaker path exists. Placed after the cheap git prechecks so a
+  //     dirty-tree / already-exists refusal never consumes the authorization nonce.
+  const decision = input.monitor.decide(candidate, input.candidateAuth, input.nowMs, { ownerArmed: input.ownerArmed });
+  if (!decision.allowed) return refuse('candidate:reference-monitor-refused', `refused: kernel reference monitor denied materialization (${decision.code})`);
 
   // 5. RECEIPT-BEFORE-EFFECT — the attempt is chained before any git mutation.
   const lineage = candidate.files.map((f) => f.intentId.slice(0, 12)).join(',');
@@ -175,7 +182,7 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
       `explanation: ${scrubText(candidate.explanation).slice(0, 512)}`,
       'staged-only: never pushed, never merged, never signed for the owner',
     ].join('\n');
-    git(worktreePath, 'commit', ['--no-gpg-sign', '-m', message], ['-c', 'user.name=Auma Candidate Stage', '-c', 'user.email=candidate@aukora.local']);
+    git(worktreePath, 'commit', ['--no-gpg-sign', '-m', message], ['-c', 'user.name=Auma Candidate Stage', '-c', 'user.email=candidate@localhost']);
   } catch (e) {
     return refuse('candidate:git-error', `refused: git materialization failed (${e instanceof Error ? e.message.slice(0, 160) : 'unknown'})`, attempt.chainHash);
   }
@@ -190,9 +197,9 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
     return refuse('candidate:isolation-violated', 'REFUSED AND FLAGGED: the primary checkout changed during materialization — investigate before trusting this candidate', attempt.chainHash);
   }
 
-  // 8. Completion receipt binds the commit sha + lineage.
+  // 8. Completion receipt binds the commit sha + lineage + the canonical kernel-monitor receipt draft head.
   const done = store.ingest(buildMemoryRecord({
-    content: `candidate-materialized · candidate=${candidate.candidateId.slice(0, 12)} · branch=${branch} · commit=${(commitSha ?? '').slice(0, 12)} · files=${candidate.files.length} · lineage=${lineage}`,
+    content: `candidate-materialized · candidate=${candidate.candidateId.slice(0, 12)} · branch=${branch} · commit=${(commitSha ?? '').slice(0, 12)} · files=${candidate.files.length} · lineage=${lineage} · monitorReceipt=${(decision.receiptDraftHash ?? '').slice(0, 12)} · rootId=${(decision.authorizedRootId ?? '').slice(0, 12)}`,
     createdAt: input.nowIso, kind: 'receipt', consent: 'owner-only', provenance: 'candidate-stage',
   }));
 
