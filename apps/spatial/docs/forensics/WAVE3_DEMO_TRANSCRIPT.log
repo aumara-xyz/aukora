@@ -1,0 +1,245 @@
+── WAVE 3 LIVE DEMO WITNESS · worktree /Users/asd/AUKORA/wave3-demo · main 486322ff4c9472edfcf0154307307475d973bff3 ──
+[21:58:40Z] START: npm run organism:up --workspace @aukora/brain
+
+> @aukora/brain@0.1.0 organism:up
+> node scripts/organism-ctl.mjs up
+
+[organism] deploying functions to the anonymous LOCAL deployment…
+node:internal/errors:998
+  const err = new Error(message);
+              ^
+
+Error: Command failed: npx convex dev --once --codegen disable --typecheck disable
+CONVEX_AGENT_MODE=anonymous mode is in beta, functionality may change in the future.
+✔ Configured a local deployment for http://127.0.0.1:3210 and saved its:
+    name as CONVEX_DEPLOYMENT
+    client URL as CONVEX_URL
+    HTTP actions URL as CONVEX_SITE_URL
+ to .env.local
+
+Write your Convex functions in convex/
+Give us feedback at https://convex.dev/community or support@convex.dev
+View the Convex dashboard at null
+
+▌ Developing against deployment:
+▌ [Local] Port 3210 • No Convex account (run npx convex login to link to a project)
+▌ └─ http://127.0.0.1:3210
+- Preparing Convex functions...
+
+✘ [ERROR] Could not resolve "@aukora/kernel/merkle"
+
+    convex/heads.ts:14:38:
+      14 │ import { receiptHistoryRootHex } from '@aukora/kernel/merkle';
+         ╵                                       ~~~~~~~~~~~~~~~~~~~~~~~
+
+  The module "./dist/merkle.js" was not found on the file system:
+
+    ../../node_modules/@aukora/kernel/package.json:47:16:
+      47 │       "import": "./dist/merkle.js"
+         ╵                 ~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@aukora/kernel/merkle" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+✘ [ERROR] Could not resolve "@aukora/kernel/evidence"
+
+    convex/rehearsal.ts:29:53:
+      29 │ ...iptChainHash, verifyReceiptChain } from '@aukora/kernel/evidence';
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The module "./dist/evidence.js" was not found on the file system:
+
+    ../../node_modules/@aukora/kernel/package.json:43:16:
+      43 │       "import": "./dist/evidence.js"
+         ╵                 ~~~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@aukora/kernel/evidence" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+✘ [ERROR] Could not resolve "@aukora/kernel/evidence"
+
+    convex/memory.ts:23:53:
+      23 │ ...iptChainHash, verifyReceiptChain } from '@aukora/kernel/evidence';
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The module "./dist/evidence.js" was not found on the file system:
+
+    ../../node_modules/@aukora/kernel/package.json:43:16:
+      43 │       "import": "./dist/evidence.js"
+         ╵                 ~~~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@aukora/kernel/evidence" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+✘ [ERROR] Could not resolve "@aukora/kernel/merkle"
+
+    convex/memory.ts:24:27:
+      24 │ import { merkleRoot } from '@aukora/kernel/merkle';
+         ╵                            ~~~~~~~~~~~~~~~~~~~~~~~
+
+  The module "./dist/merkle.js" was not found on the file system:
+
+    ../../node_modules/@aukora/kernel/package.json:47:16:
+      47 │       "import": "./dist/merkle.js"
+         ╵                 ~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@aukora/kernel/merkle" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+✘ [ERROR] Could not resolve "@aukora/kernel/canonical"
+
+    src/continuity/eraseAttestation.ts:31:30:
+      31 │ import { canonicalJson } from '@aukora/kernel/canonical';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The module "./dist/canonical.js" was not found on the file system:
+
+    ../../node_modules/@aukora/kernel/package.json:39:16:
+      39 │       "import": "./dist/canonical.js"
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@aukora/kernel/canonical" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+✘ [ERROR] Could not resolve "@aukora/kernel/staleness"
+
+    ../../packages/memory/src/staleness.ts:21:7:
+      21 │ } from '@aukora/kernel/staleness';
+         ╵        ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The module "./dist/staleness.js" was not found on the file system:
+
+    ../../node_modules/@aukora/kernel/package.json:63:16:
+      63 │       "import": "./dist/staleness.js"
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@aukora/kernel/staleness" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+✘ [ERROR] Could not resolve "@aukora/kernel/canonical"
+
+    ../../packages/memory/src/envelope.ts:15:51:
+      15 │ ...onicalHash, type CanonicalValue } from '@aukora/kernel/canonical';
+         ╵                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  The module "./dist/canonical.js" was not found on the file system:
+
+    ../../node_modules/@aukora/kernel/package.json:39:16:
+      39 │       "import": "./dist/canonical.js"
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~
+
+  You can mark the path "@aukora/kernel/canonical" as external to exclude it from the bundle, which will remove this error and leave the unresolved path in the bundle.
+
+Convex AI files are not installed. Run npx convex ai-files install to get started or npx convex ai-files disable to hide this message.
+
+    at genericNodeError (node:internal/errors:998:15)
+    at wrappedFn (node:internal/errors:543:14)
+    at checkExecSyncError (node:child_process:926:11)
+    at execFileSync (node:child_process:962:15)
+    at up (file:///Users/asd/AUKORA/wave3-demo/apps/brain/scripts/organism-ctl.mjs:123:5)
+    at file:///Users/asd/AUKORA/wave3-demo/apps/brain/scripts/organism-ctl.mjs:212:25
+    at ModuleJob.run (node:internal/modules/esm/module_job:447:25)
+    at async node:internal/modules/esm/loader:646:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  status: 1,
+  signal: null,
+  output: [
+    null,
+    Buffer(0) [Uint8Array] [],
+    Buffer(5186) [Uint8Array] [
+       67,  79,  78,  86,  69,  88,  95,  65,  71,  69,  78,  84,
+       95,  77,  79,  68,  69,  61,  97, 110, 111, 110, 121, 109,
+      111, 117, 115,  32, 109, 111, 100, 101,  32, 105, 115,  32,
+      105, 110,  32,  98, 101, 116,  97,  44,  32, 102, 117, 110,
+       99, 116, 105, 111, 110,  97, 108, 105, 116, 121,  32, 109,
+       97, 121,  32,  99, 104,  97, 110, 103, 101,  32, 105, 110,
+       32, 116, 104, 101,  32, 102, 117, 116, 117, 114, 101,  46,
+       10, 226, 156, 148,  32,  67, 111, 110, 102, 105, 103, 117,
+      114, 101, 100,  32,
+      ... 5086 more items
+    ]
+  ],
+  pid: 88664,
+  stdout: Buffer(0) [Uint8Array] [],
+  stderr: Buffer(5186) [Uint8Array] [
+     67,  79,  78,  86,  69,  88,  95,  65,  71,  69,  78,  84,
+     95,  77,  79,  68,  69,  61,  97, 110, 111, 110, 121, 109,
+    111, 117, 115,  32, 109, 111, 100, 101,  32, 105, 115,  32,
+    105, 110,  32,  98, 101, 116,  97,  44,  32, 102, 117, 110,
+     99, 116, 105, 111, 110,  97, 108, 105, 116, 121,  32, 109,
+     97, 121,  32,  99, 104,  97, 110, 103, 101,  32, 105, 110,
+     32, 116, 104, 101,  32, 102, 117, 116, 117, 114, 101,  46,
+     10, 226, 156, 148,  32,  67, 111, 110, 102, 105, 103, 117,
+    114, 101, 100,  32,
+    ... 5086 more items
+  ]
+}
+
+Node.js v26.4.0
+npm error Lifecycle script `organism:up` failed with error:
+npm error code 1
+npm error path /Users/asd/AUKORA/wave3-demo/apps/brain
+npm error workspace @aukora/brain@0.1.0
+npm error location /Users/asd/AUKORA/wave3-demo/apps/brain
+npm error command failed
+npm error command sh -c node scripts/organism-ctl.mjs up
+organism:up exit=1
+[21:59:23Z] MISSING LINK (for Sam 1): organism:up on a CLEAN worktree fails at convex deploy — convex/heads.ts imports @aukora/kernel/merkle whose exports point at dist/, and organism-ctl runs no workspace build preflight. Workaround applied: build packages first.
+[21:59:25Z] RETRY: organism:up
+
+> @aukora/brain@0.1.0 organism:up
+> node scripts/organism-ctl.mjs up
+
+[organism] deploying functions to the anonymous LOCAL deployment…
+[organism] convex: started (pid 90257)
+[organism] convex: healthy on 3210/3211
+[organism] door: started (pid 90441)
+[organism] door: HELD on 7141 (canonical brain projection/control door)
+[organism] mind: started (pid 90525)
+[organism] mind: healthy on 7097
+[organism] !! voice: optional, not present — DEGRADED(optional)
+[organism] spatial: started (pid 90581)
+[organism] spatial: healthy on 7096 (projections via the 7141 door)
+[organism] UP with 1 degradation(s):
+[organism] !!   DEGRADED — voice: optional; no standalone voice sidecar on this tree (client-side audio lives in the Spatial app)
+organism:up exit=0
+[21:59:49Z] PROBE brain door :7141 /health
+{"door":"ok","backend":{"breakIndex":null,"chainLength":0,"headHash":null,"ok":true}}
+x-aukora-source: live
+[21:59:49Z] PROBE the LIVE projection (:7096 /api/spatial/projection — first live door read)
+{"schema":"aukora-spatial-projection-v3","source":"door","degradedSenses":[],"door":"http://127.0.0.1:7141","queriedAt":"2026-07-16T21:59:49.325Z","displayOnly":true,"feedsApply":false,"advisoryOnly":true,"grantsAuthority":false,"brainHealth":{"door":"ok","backend":{"breakIndex":null,"chainLength":0,"headHash":null,"ok":true}},"snapshot":{"_creationTime":1784239169081.462,"_id":"kd755fpewmfg8ktppf
+[22:00:06Z] START gateway (:7100, the one external surface)
+Aukora — one gateway → http://127.0.0.1:7100/ (upstream shell :7096; AUMLOK never fronted; declared interfaces only)
+[22:00:07Z] PROBE gateway /aukora/status
+{"schema":"aukora-gateway-status-v1","gateway":7100,"upstreamShell":7096,"supervisorState":{"services":{}},"grantsAuthority":false}
+[22:00:07Z] PROBE AUMLOK refusal law via gateway
+{"refused":true,"law":"the gateway never sits in front of AUMLOK (7094/7095) — ceremony stays on its own local doors; 
+[22:00:07Z] GOVERNED TURN through the gateway (model-free)
+{"entries":[{"kind":"error","text":"refused: missing or bad local POST token"}],"mode":"refused","advisoryOnly":true,"grantsAuthority":false,"citations":[],"eventReceipt":"1030b2be2a60ce0d15d67741cd2439f6aed791239c6b863489f5a4bd91100402"}
+[22:00:07Z] STATUS REACTION: mind door event count after the turn
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":false,"events":1,"grantsAuthority":false}
+[22:00:07Z] HEADLESS LOOP OBSERVATION as Sam 1 exposes it: organism:status
+
+> @aukora/brain@0.1.0 organism:status
+> node scripts/organism-ctl.mjs status
+
+[organism] checkout: /Users/asd/AUKORA/wave3-demo
+[organism] convex: pid=90257 (verified) · port 3210 listening=true
+[organism] door: pid=90441 (verified) · port 7141 listening=true
+[organism] mind: pid=90525 (verified) · port 7097 listening=true
+[organism] spatial: pid=90581 (verified) · port 7096 listening=true
+organism:status exit=0
+[22:00:55Z] MISSING LINK 2 (for Sam 1): organism-ctl.mjs:162 starts spatial with PORT only — the mind door's one-time POST token is never handed over, so gateway/browser chat turns refuse loudly (receipted, events grew 0→1: fail-closed CORRECT). apps/supervisor does this handoff (Wave 2); two lifecycle owners now overlap on main — needs an owner ruling/merge.
+[22:00:55Z] DONOR CHECK: :7090 untouched + independently available
+donor :7090 HTTP 200
+[22:00:55Z] CLEAN BOUNDED SHUTDOWN: organism:down + gateway stop
+
+> @aukora/brain@0.1.0 organism:down
+> node scripts/organism-ctl.mjs down
+
+[organism] spatial: SIGTERM sent to owned pid group 90581
+[organism] mind: SIGTERM sent to owned pid group 90525
+[organism] door: SIGTERM sent to owned pid group 90441
+[organism] convex: SIGTERM sent to owned pid group 90257
+[organism] organism down; pidfiles + lock cleared
+gateway stopped
+[22:00:55Z] POST-DOWN PORT CHECK
+:3210= :7141= :7096= :7097= :7100= 
+[22:00:56Z] DONOR STILL UP AFTER OUR SHUTDOWN
+donor :7090 HTTP 200
+[22:00:56Z] TRANSCRIPT END
+95498ae755d4c735c340a0989b9f8075f55b1a3e95f108660370847f5a513caa  /tmp/wave3-transcript.log
