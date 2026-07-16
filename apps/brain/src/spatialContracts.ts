@@ -133,6 +133,7 @@ export const SAM4_CONVEX_CONTRACTS = {
     rehearsalStatus: 'rehearsal:rehearsalStatus',
     receiptStream: 'rehearsal:receiptStream',
     verifyReceiptEvents: 'rehearsal:verifyReceiptEvents',
+    workflowState: 'workflows:loadWorkflow',
   },
   cancellation: {
     impulse: 'memory:cancelImpulse',

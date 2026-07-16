@@ -21,3 +21,4 @@ export * from './brainRoles.js';
 export * from './keychain/credentialStore.js';
 export * from './keychain/macKeychain.js';
 export * from './spatialContracts.js';
+export * from './convexWorkflowStore.js';
