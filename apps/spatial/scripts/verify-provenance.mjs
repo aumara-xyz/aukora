@@ -11,7 +11,11 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const base = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DONOR = process.env.DONOR_DIR || '/Users/asd/Documents/aukora-symbiote';
+const DONOR = process.env.DONOR_DIR;
+if (!DONOR) {
+  console.error('DONOR_DIR is required (path to the local authorized aukora-symbiote checkout). CI uses the sha256 pins in the test suite instead.');
+  process.exit(2);
+}
 const manifest = JSON.parse(readFileSync(join(base, 'provenance.json'), 'utf8'));
 
 let ok = 0;

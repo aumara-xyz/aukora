@@ -35,9 +35,9 @@ overclaiming. These are governed demonstrations, not live production systems.
 | Provider-neutral brain attachment incl. a Nebius provider path + fail-closed provider selection policy | `apps/brain/src/nebiusProvider.ts`, `apps/brain/src/providerPolicy.ts` | `apps/brain/test/{nebiusProvider,providerPolicy}.test.ts` | **Bounded and parked**: no live model calls, no weights, no endpoint/job IDs |
 | Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory review → refuse(stale/secret/authority) → hybrid AUMLOK owner-gate → sandbox-only apply → receipt/lineage; AURA trace law + receipt-before-row; governed AUMLOK–AURA ceremony contract | `apps/seed/src` | `apps/seed/test` (147) | Council review is **mock/deterministic**; apply is **sandbox-only** and never mutates a live repo |
 | Read-only operator console over authority/memory/proposal/verdict/provider-truth/budget/forgetting | `apps/console/public`, `apps/console/tooling` | `apps/console/test` (44) | Renders a deterministic `DEMO_FIXTURE`; **signs, applies, deploys, and arms nothing** |
+| Donor Spatial shell transplanted subtractively (91 VERBATIM donor blobs, provenance-pinned + tested; registry subtraction; port law :7096 with donor doors 7090–7095 reserved) | `apps/spatial` | `apps/spatial/test` (8) | Donor code, not a recreation; live engine doors NOT bundled — organs show donor **offline states**; custody/signing stays in local doors, never in browser or launcher |
 
-Test totals: 145 (root) + 19 (kernel) + 7 (memory) + 78 (brain) + 147 (seed) + 44 (console) =
-**440**, none borrowed from any external product suite.
+Test totals: 145 (root) + 19 (kernel) + 7 (memory) + 91 (brain; +1 gated macOS-Keychain smoke, skipped unless opted in) + 165 (seed) + 44 (console) + 8 (spatial) + 1 (fixture-regeneration guard) = **480 passing**, none borrowed from any external product suite.
 
 ## Deliberately NOT in this repository
 
