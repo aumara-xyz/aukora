@@ -96,3 +96,25 @@ can never be upgraded to "real model behavior."**
   mechanism**, not a lost capability.
 - None of these categories carry identity CONTENT; they carry hash references + labels — so the #62 empty-shelf
   is orthogonal to them (they were never the identity shelf).
+
+---
+
+## Appendix B (overnight atlas verification) — authority-boundary audit of the CURRENT Convex functions
+
+Directive item: "Convex remains persistence/projection only and can never authorize." Audited every function in
+`apps/brain/convex/*.ts` on main `b17a3f87` (grep-level, read-only):
+
+- **Every persisted row** carries `advisoryOnly: true, grantsAuthority: false` (schema literals + insert sites:
+  memoryChain, receiptEvents, rehearsals, rehearsalEffects, workflows, signedHeads, eraseAttestations).
+- **No handler** returns a grant / permit / decision token, or flips any authority bit
+  (grep for `grantsAuthority: true` / `authorized: true` / `allow…true` → **zero** hits outside `…: false`).
+- The only "authority" tokens present are **refusals** or **evidence references**: `startRehearsal` REQUIRES a
+  64-hex `authorityRef` and states "Convex never authorizes"; `forget` verifies a signed erase attestation as
+  store integrity and RECORDS evidence but obeys, never decides; `recordSignedHead`/`auditSignedHead`
+  verify-and-record, never release.
+- Writes of substance are gated OUTSIDE: the public ingest door is a `"use node"` action that scans then calls
+  an INTERNAL mutation; the door (7141) exposes projections + exactly two cancellations, no ingest/forget/save.
+
+**Verdict: HOLDS.** Kernel/AUMLOK decides; Convex persists and reacts only. This is the WAVE-1 "authority
+outside Convex" law re-verified against the Wave-2 additions (erase attestation + signed heads did not open an
+in-store authority path — they added *evidence* the store records and a shell can independently verify).
