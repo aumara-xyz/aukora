@@ -160,3 +160,53 @@ removes the plaintext column, with a signed erase attestation (Wave-2). Stronger
 third (signed recall PoP) is a real, custody-gated MISSING — the door trades donor per-request reader
 authentication for an origin-closed loopback perimeter. Both are honest positions; only the owner can decide
 whether the local brain should also require a signed recall.
+
+---
+
+## Appendix D (overnight atlas verification) — migration-bridge provenance vs donor `aukora_memory` row
+
+Compared `apps/brain/src/memoryBridge.ts` against the donor row `convex/schema.ts` `aukora_memory` and the
+donor IDE memory rail `memory/memory.ts@46eff426` (read-only; no seed/plaintext read).
+
+### Donor field inventory (what a memory carries)
+
+- **Row** `aukora_memory`: `ownerRootId, writerPrincipalId, readerScope, delegationId, receiptHash, memoryHash,
+  sourceNodeId, visibility, key, **value**, deletedAt?` + M2 quarantine marks
+  (`quarantined?/quarantinedAt?/quarantineReason?`) + M2b erasure marks
+  (`erased?/erasedAt?/eraseReason?/erasureReceiptHash?`). `value` is the PLAINTEXT.
+- **Receipt** (`memory/memory.ts`): `kind, operation, actor, chainKey, seq, hash, prevHash, **contentHash**,
+  tier, covers?, **gateArgsHash**, ts` — content-free (`contentHash` of the plaintext; the plaintext itself is
+  never written to a receipt) and `gateArgsHash` LINKS to the gate authority decision.
+
+### What the bridge PRESERVES — governance skeleton, content-free (HOLDS)
+
+`MigrationEntry` (the public/Git-safe report) + `packProvenance` carry, per record:
+`legacyRef (chainKey#seq)`, `prevHash`, `contentHash`, `hash`, `receiptHash`, **`gateArgsHash`**, `status`
+(active/tombstoned), `consent` (from `visibility`), `tier`, `kiraClass`. Every one is a hash, enum, or class.
+This is a faithful, content-free carry of the donor's chain position + integrity binding + receipt reference +
+**authority-decision link** + consent + class. **Verdict: ADAPTED_BOUNDARY, faithful** — the legacy `gateArgsHash`
+is preserved as AUDIT metadata only; it re-authorizes nothing (legacy grants NO authority — kernel/AUMLOK decides).
+
+### What the bridge deliberately does NOT carry — plaintext (by construction)
+
+The donor row's `value`/`content` PLAINTEXT never enters the report or Git. During dry-run it lives only in the
+isolated in-memory store and is discarded; a secret-bearing record is quarantined content-free; a tombstone is
+preserved content-free and NEVER re-ingested (no resurrection). This MATCHES the donor M2b erasure law, whose
+erased row remains a COUNTABLE STUB (`value=""`, keeps `memoryHash/receiptHash`, adds `erasureReceiptHash` —
+"never an invisible hole"). **Verdict: erasure-stub / no-resurrection law CONTINUOUS (ADAPTED_BOUNDARY).**
+
+### What #62 shows it does NOT preserve — RETRIEVABLE IDENTITY (the falsifier)
+
+Row-count portability + full governance-skeleton preservation is **not** semantic/identity continuity. The bridge
+preserves that a record EXISTED, its integrity, its authority link, its class and consent — but NOT what the memory
+SAYS. Retrievable identity additionally requires the plaintext to be (a) selected, (b) actually imported through the
+AUMLOK-gated real commit, (c) correctly scope-classified, and (d) resolved by recall. #62 is the case where every
+governance field carried yet an identity phrase ("maternal anchor", "the five values") did NOT come back — row
+present, identity NOT retrievable (empty/misclassified shelf). The Appendix-earlier scope-aware-recall candidate
+targets exactly (c)/(d); (a)/(b) are owner-gated. **Verdict: governance-metadata portability ≠ identity continuity —
+the #62 law, now anchored to the exact donor fields the bridge carries vs the one field (plaintext) it withholds.**
+
+**Net:** the bridge carries the donor governance skeleton faithfully and content-free (incl. the `gateArgsHash`
+authority-decision link as audit-only), honors the donor countable-stub / no-resurrection erasure law, and — by the
+same content-free design — cannot and does not deliver retrievable identity without gated plaintext import + correct
+scope + recall resolution. That gap is the #62 falsifier, not a bridge defect.
