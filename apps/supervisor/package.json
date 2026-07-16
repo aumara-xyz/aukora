@@ -1,0 +1,18 @@
+{
+  "name": "@aukora/supervisor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Protected lifecycle owner + the one external gateway (WAVE 2, donor #71/#26 restoration). Internally modular, externally one Aukora.",
+  "scripts": {
+    "up": "node src/supervisor.mjs up",
+    "down": "node src/supervisor.mjs down",
+    "status": "node src/supervisor.mjs status",
+    "doctor": "node src/supervisor.mjs doctor",
+    "swap": "node src/supervisor.mjs swap",
+    "gateway": "node src/gateway.mjs",
+    "verify:protected": "node src/verify-protected.mjs",
+    "test": "vitest run"
+  },
+  "devDependencies": {}
+}
