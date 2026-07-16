@@ -37,10 +37,10 @@ describe('R44 mind-door token lifecycle — acceptance at the lane boundary', ()
     expect(src).toMatch(/clearTokenFile\(ORG_DIR\)/);            // the token dies with the boot
   });
 
-  // HANDOFF → Sam 3 (apps/seed): honor the supervisor-minted token. This is the failing acceptance test the
-  // directive asked for — `it.fails` keeps the gate green while the gap is open, and STARTS FAILING the moment
-  // the seed runner references AUKORA_DOOR_TOKEN (signal to flip it to a plain `it`).
-  it.fails(`SEED side (Sam 3): mind-door-7097.ts honors ${DOOR_TOKEN_ENV} — open handoff, flips when landed`, () => {
+  // HANDOFF → Sam 3 (apps/seed): honor the supervisor-minted token. LANDED in R44b — the seed runner now adopts
+  // `AUKORA_DOOR_TOKEN` when present (and suppresses the value), so this acceptance is genuinely green: flipped
+  // `it.fails` → `it`.
+  it(`SEED side (Sam 3): mind-door-7097.ts honors ${DOOR_TOKEN_ENV} — handoff landed`, () => {
     expect(seedRunner()).toContain(DOOR_TOKEN_ENV);
   });
 
