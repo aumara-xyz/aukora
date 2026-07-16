@@ -19,6 +19,24 @@ authority; everything observable through this layer is advisory.
 | Action (default isolate) | **External nerve (light)** | May call the network; NOT transactional. Keep effects idempotent; call mutations for any write. |
 | Action (`"use node"`) | **External nerve (Node)** | Full Node runtime. Required for the provenance-locked `@aukora/evidence` scanner (`node:crypto`) — our public ingest door. Local backend needs Node 18/20/22/24 present. |
 
+## 1a. License findings (R35, all read-only)
+
+**Local `convex-backend` runtime** (the binary the anonymous LOCAL deployment runs): inspected read-only at
+`~/.cache/convex/binaries/precompiled-2026-07-06-44f7aa7/convex-local-backend` (sha256
+`3d28873cf24019877146367c539104d54a05a9b8ec1b501e503077474c84415d`, ~165 MB; CI-built from
+`convex-backend/convex-backend`, no ZIP retained by the CLI — the extracted binary is what exists on disk).
+Embedded license marker: **`LicenseRef-FSL-1.1-Apache-2.0`** (Functional Source License 1.1 with an Apache-2.0
+future grant). **FSL is not AGPL-compatible for source incorporation ⇒ backend SOURCE must never be imported
+into this AGPL-3.0 repo.** Running the official binary externally as a local dev runtime is use, not
+redistribution — acceptable for LOCAL_DEV; anything beyond (bundling, self-hosted production) awaits Peter's
+license review.
+
+**Convex components** (npm registry metadata, read-only): `@convex-dev/workflow` 0.4.4, `@convex-dev/workpool`
+0.4.8, `@convex-dev/agent` 0.6.4, `@convex-dev/migrations` 0.3.5, `@convex-dev/crons` 0.2.2,
+`@convex-dev/rate-limiter` 0.3.2 — **all Apache-2.0** (compatible: Apache-2.0 code may be incorporated into an
+AGPL work). Lock-in caveat below still holds; none added this round — the R35 durable proof is hand-rolled
+inside our own seam (`convex/rehearsal.ts` + `convex/memory.ts`).
+
 ## 1b. Workflow/Workpool dependency decision (R34)
 
 Checked read-only against the npm registry: `@convex-dev/workflow` 0.4.4 and `@convex-dev/workpool` 0.4.8 are

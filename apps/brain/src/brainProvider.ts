@@ -128,6 +128,12 @@ const RAW_MANIFEST: readonly RawEntry[] = [
     claim: 'DESIGN_ONLY',
     evidence: { note: 'design document only; not trained' },
   },
+  {
+    id: 'kimi',
+    label: 'Kimi (external crew — removed)',
+    claim: 'REJECTED',
+    evidence: { note: 'off the external crew per owner (R35). Provider-truth records the removal; the canonical Fu council roster is NOT altered for this — seat availability is governed by provider truth + quorum law.' },
+  },
 ];
 
 export const MODEL_MANIFEST: readonly ModelManifestEntry[] = RAW_MANIFEST.map((e) => ({

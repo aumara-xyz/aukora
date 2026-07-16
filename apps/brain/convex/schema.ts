@@ -65,4 +65,46 @@ export default defineSchema({
   // The impulse SPEND CEILING (fail-closed): a single budget row; every scheduled run decrements; exhausted ⇒
   // further impulses refuse. Raising the budget is an explicit owner action, never automatic.
   impulseBudget: defineTable({ remaining: v.number() }),
+
+  // IMMUTABLE LIFECYCLE RECEIPT EVENTS (R35): an append-only, content-free, kernel-chained event log for
+  // durable rehearsals. Rows are NEVER patched or deleted (append-only law); time is LOGICAL (`index`) — wall
+  // time is never canonical here. `authorityRef` is a consumed-authority EVIDENCE REFERENCE recorded for audit;
+  // Convex never authorizes.
+  receiptEvents: defineTable({
+    index: v.number(),
+    rehearsalKey: v.string(),
+    event: v.string(), // started | step-receipt | step-effect-applied | completed | cancelled | retry
+    step: v.union(v.number(), v.null()),
+    authorityRef: v.union(v.string(), v.null()),
+    prevHash: v.union(v.string(), v.null()),
+    chainHash: v.string(),
+    advisoryOnly: v.literal(true),
+    grantsAuthority: v.literal(false),
+  }).index('by_index', ['index']).index('by_rehearsal', ['rehearsalKey']),
+
+  // DURABLE REHEARSALS (R35): the workflow state machine. Start is IDEMPOTENT by `key`. Steps advance through
+  // scheduled mutations in TWO PHASES per step — receipt txn commits BEFORE the effect txn (the donor
+  // receipt-before-effect asymmetry, deliberately NOT flattened into one transaction).
+  rehearsals: defineTable({
+    key: v.string(),
+    status: v.union(v.literal('running'), v.literal('completed'), v.literal('cancelled')),
+    totalSteps: v.number(),
+    currentStep: v.number(),
+    authorityRef: v.string(),
+    scheduledId: v.union(v.string(), v.null()),
+    advisoryOnly: v.literal(true),
+    grantsAuthority: v.literal(false),
+  }).index('by_key', ['key']),
+
+  // Step EFFECTS, keyed rehearsalKey+step — written exactly once (no duplicate effect), only AFTER the step's
+  // receipt event exists (fail-closed).
+  rehearsalEffects: defineTable({
+    rehearsalKey: v.string(),
+    step: v.number(),
+    effect: v.string(),
+  }).index('by_key_step', ['rehearsalKey', 'step']),
+
+  // BOUNDED ATTENTION (R35): a single pool row; at most maxConcurrent rehearsals may be running at once — a
+  // start beyond capacity refuses (fail-closed). Concurrency is attention, and attention is bounded.
+  attentionPool: defineTable({ maxConcurrent: v.number() }),
 });

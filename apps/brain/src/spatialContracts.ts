@@ -95,6 +95,52 @@ export function liveBrainContract(input: LiveContractInput): BrainLocalContractV
   };
 }
 
+// ── Convex-side contracts for Sam 4 (R35) ─────────────────────────────────────────────────────────────────
+
+/** Read-only rehearsal (workflow) state, as returned by the `rehearsal.rehearsalStatus` query. */
+export interface RehearsalStateV1 {
+  readonly key: string;
+  readonly status: 'running' | 'completed' | 'cancelled';
+  readonly totalSteps: number;
+  readonly currentStep: number;
+  readonly authorityRef: string;
+  readonly effectsApplied: number;
+}
+
+/** One immutable receipt-stream event, as returned by the `rehearsal.receiptStream` query (logical time). */
+export interface ReceiptStreamEventV1 {
+  readonly index: number;
+  readonly rehearsalKey: string;
+  readonly event: string;
+  readonly step: number | null;
+  readonly chainHash: string;
+}
+
+/**
+ * The STABLE Convex function names Sam 4's console wires to on the LOCAL deployment. Senses are reactive
+ * queries (subscribe via the Convex client); the two cancellation reflexes are the only writes exposed, and
+ * neither grants authority. Names are contract — renaming any is a breaking change requiring a round.
+ */
+export const SAM4_CONVEX_CONTRACTS = {
+  senses: {
+    health: 'memory:health',
+    snapshot: 'memory:snapshot',
+    recall: 'memory:recall',
+    verify: 'memory:verify',
+    impulseStatus: 'memory:impulseStatus',
+    impulseBudget: 'memory:impulseBudgetRemaining',
+    scheduledStatus: 'memory:scheduledStatus',
+    rehearsalStatus: 'rehearsal:rehearsalStatus',
+    receiptStream: 'rehearsal:receiptStream',
+    verifyReceiptEvents: 'rehearsal:verifyReceiptEvents',
+  },
+  cancellation: {
+    impulse: 'memory:cancelImpulse',
+    rehearsal: 'rehearsal:cancelRehearsal',
+  },
+  grantsAuthority: false,
+} as const;
+
 /**
  * The FIXTURE fallback — canned data, VISIBLY labelled (`source: 'fixture'`). It emits nothing and recalls
  * nothing; a consumer that hides the label is out of contract.
