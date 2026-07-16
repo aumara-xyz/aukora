@@ -1,0 +1,35 @@
+{
+  "name": "@aukora/council-node",
+  "version": "0.1.0",
+  "description": "Node-only I/O adapter for the Aukora council: a filesystem-backed persistent daily spend ledger. Separated from the pure @aukora/council so the advisory core stays free of ambient authority.",
+  "author": "Aumara",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aumara-xyz/aukora.git",
+    "directory": "packages/council-node"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "types": "./src/aukoraFuSpendLedger.ts",
+  "module": "./src/aukoraFuSpendLedger.ts",
+  "exports": {
+    ".": {
+      "types": "./src/aukoraFuSpendLedger.ts",
+      "import": "./src/aukoraFuSpendLedger.ts"
+    }
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --config vitest.config.ts"
+  }
+}

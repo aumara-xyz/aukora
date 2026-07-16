@@ -1,0 +1,51 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+ * Aukora Spatial — versioned design tokens (design-constitution v1).
+ *
+ * These are the durable primitives every inside-out surface reuses. Values are matched to the donor
+ * Symbiote Spatial shell (aukora-symbiote/spatial/app/style.css) for exact visual parity: the trinity
+ * hues, the glass surface system, spacing, motion, and depth. DEPTH COMES FROM borders, translucency,
+ * spacing, motion, and geometry — never from dark boxes. There is exactly one base background
+ * (the trinity stage); panes are translucent glass over it, not darker regions.
+ *
+ * Versioning rule: bump DESIGN_TOKENS_VERSION and record the change in DESIGN_CONSTITUTION.md before
+ * altering any value here. Surfaces must consume these variables, never hard-code a colour or size.
+ */
+:root {
+  --design-tokens-version: "1.0.0";
+
+  /* trinity hues (RGB triplets → use as rgba(var(--hue-x), a)) */
+  --hue-l: 129, 212, 180;   /* green  · left / inspector */
+  --hue-c: 150, 180, 255;   /* blue   · center / canvas  */
+  --hue-r: 196, 170, 255;   /* purple · right / menu     */
+
+  /* ink */
+  --text: rgba(244, 246, 255, 0.92);
+  --dim: rgba(228, 232, 248, 0.60);
+  --faint: rgba(220, 226, 245, 0.34);
+
+  /* glass surfaces — translucent WHITE over the stage, never dark boxes */
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass-bright: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --input-fill: rgba(255, 255, 255, 0.06);
+  --btn-fill: rgba(255, 255, 255, 0.08);
+  --code-fill: rgba(0, 0, 0, 0.28);
+
+  /* the single base stage (near-black navy + trinity felt at 7–12% alpha) */
+  --stage-base: #111520;
+  --stage:
+    radial-gradient(1200px 800px at 18% -10%, rgba(var(--hue-l), 0.10), transparent 60%),
+    radial-gradient(1100px 760px at 82% 110%, rgba(var(--hue-r), 0.12), transparent 60%),
+    radial-gradient(900px 700px at 50% 50%, rgba(var(--hue-c), 0.07), transparent 65%),
+    linear-gradient(160deg, #090a12 0%, #0b0d18 55%, #080910 100%);
+
+  /* motion + geometry */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --lane-glide: 0.5s;
+  --gap: 6px;
+  --head-h: 52px;
+  --lane-radius: 22px;
+  --corner-size: 74px;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

@@ -1,49 +1,76 @@
-# Aukora Architecture
+# Architecture
 
-## Package Graph
+Aukora is a governed digital-organism seed. The design goal is a *distilled* constitutional
+spine: one canonical implementation per primitive, an acyclic dependency graph in which every
+arrow points inward toward the pure packages, a hard boundary between pure logic and I/O, and
+governance (verify authority, don't mint it) baked into the shape rather than bolted on.
+
+## Two layers
 
 ```
-                    @aukora/workspace
-                    (root, private)
-                          |
-          +---------------+---------------+
-          |               |               |
-          v               v               v
-   @aukora/kernel   @aukora/evidence  @aukora/council
-   (crypto + law)   (immune gate)     (advisory council)
+  external products (elsewhere: aukora-symbiote, aukora-fu, product UI/games, cloud)
+        │  import ▼
+  apps/ (in-repo governed adapters — own the I/O, demos, and fixtures)
+    brain/    reactive receipt-chained memory over a SIMULATED Convex backend (convex-test)
+    seed/     sandbox-only governed recursion + real hybrid AUMLOK owner-gate
+    console/  read-only operator view; renders a deterministic DEMO_FIXTURE
+        │  import ▼
+  packages/ (pure, portable, dependency-light — never import an app)
+    kernel/       AUMLOK: authority verification, policy law, Merkle, canonical hashing
+    evidence/     AURA: EvidencePack, canonical JSON, digest, secret projections
+    council/      Fu: advisory council + glyph geometry; no signer/apply/authority
+    council-node/ the one Node fs adapter (spend ledger)
+    memory/       KIRA: pure consent-scoped memory envelope + governed forgetting
+        │  depends only on ▼
+  Node built-ins + @noble/*
 ```
 
-**Dependency direction**: Packages never import from apps. Apps (aukora-symbiote, aukora-fu) import from packages.
+- **Every arrow points inward.** `apps/*` consume `packages/*`; the pure packages consume only
+  Node built-ins and `@noble/*`. No package imports an app; the pure packages take no ambient
+  I/O. `apps/*` are the sanctioned place for adapters, demos, and fixtures.
+- **Acyclic by construction.** The pure packages are leaves; `apps/*` sit strictly above them.
 
-## Capability Truth Table
+## The council / council-node split
 
-| Capability | Package | Status | Tests |
-|------------|---------|--------|-------|
-| ML-DSA-65 post-quantum signing | `@aukora/kernel` | CANONICAL_PORTABLE | 397 |
-| Merkle append-only receipt history | `@aukora/kernel` | CANONICAL_PORTABLE | 397 |
-| Authority schema + registry | `@aukora/kernel` | CANONICAL_PORTABLE | 397 |
-| Staleness law ( expiry → flagged ) | `@aukora/kernel` | CANONICAL_PORTABLE | 80 |
-| EvidencePack V1 D6 (9-projection secret scanner) | `@aukora/evidence` | CANONICAL_PORTABLE | 146 |
-| Canonical digest (JCS-aligned) | `@aukora/evidence` | CANONICAL_PORTABLE | 146 |
-| Fail-closed validator (positive-allow-list) | `@aukora/evidence` | CANONICAL_PORTABLE | 146 |
-| 8-seat Fu Council H1-H8 | `@aukora/council` | CANONICAL_PORTABLE | 60+ |
-| KL-divergence perceiver + phase-lock | `@aukora/council` | CANONICAL_PORTABLE | 60+ |
-| Spend metering ($2/pass, $10/day) | `@aukora/council` | CANONICAL_PORTABLE | 60+ |
-| Core memory envelope (consent scope) | — | DESIGN_ONLY | 0 |
-| Policy kernel (ring table) | — | DESIGN_ONLY | 0 |
-| Proposal intent (self-mod governance) | — | DESIGN_ONLY | 0 |
-| Resource governor | — | DESIGN_ONLY | 0 |
-| Digital metabolism / DHFI | — | RESEARCH_ONLY | 0 |
-| Borromean topology | — | RESEARCH_ONLY | 0 |
+`@aukora/council` is the advisory core: it verifies which model actually answered, parses the
+glyph packets, computes quorum, and *estimates* spend — all pure, offline computation. It must
+never touch the filesystem, the network, or ambient authority. The one piece that genuinely
+needs I/O — a persistent daily spend **ledger** — is isolated in `@aukora/council-node`.
+`scripts/check-canonical-boundary.mjs` fails if any file under `packages/evidence/src`,
+`packages/council/src`, or `packages/council-node/src` imports a forbidden module (network,
+`child_process`, `vm`, authority/organism modules), and forbids `fs` everywhere except the
+sanctioned ledger file.
 
-## Authority Containment
+## Governance shape (what the adapters may and may not do)
 
-Every package exports `*GrantsAuthority(): false` as a testable invariant. No code path assigns `grantsAuthority: true`. The council is advisory-only. Signing and live-apply require owner AUMLOK authorization and are NOT in these portable packages.
+- **AUMLOK — verify, don't mint.** `@aukora/kernel` deterministically *verifies* authority and
+  reduces consumed authority; it holds no keys and performs no signing. The recursion seed's
+  owner-gate is a *real hybrid AUMLOK* check that refuses unsigned or stale proposals.
+- **AURA — advisory, not authority.** Evidence stays `advisoryOnly` / `grantsAuthority:false`.
+- **KIRA — consent + governed forgetting.** Memory carries consent scope and provenance;
+  forgetting is a content-free tombstone that removes plaintext from recall while retaining an
+  audit trail. `apps/brain` demonstrates this over a **simulated** Convex backend, not live cloud.
+- **Fu — advice only.** The council produces a verdict with quorum geometry; it never signs,
+  applies, or authorizes. In `apps/seed` the review is **mock/deterministic** — no live providers.
+- **Recursion — sandbox-only.** Change is proposed, grounded against real files, rehearsed in a
+  sandbox, advisorily reviewed, refused on stale/secret/authority, owner-gated via AUMLOK, and
+  applied only into an isolated sandbox with receipt + lineage. **No live-repo mutation.**
+- **Console — read-only.** It renders a fixture and grants nothing; it signs/applies/deploys nothing.
 
-## Naming Discipline
+## Provenance without imported history
 
-Production code uses boring engineering names:
-- `ResourceSignal`, `AdmissionController`, `CoordinationSignal`, `IncidentShape`
-- `cascade`, `interlocked`
+The repository root is a fresh orphan commit that carries none of the donor's Git history. The
+canonical primitive sources are copied byte-identical from the frozen donor `aukora-kernel` and
+pinned by donor git-blob object hash (see [docs/PROVENANCE.md](docs/PROVENANCE.md));
+`npm run verify:provenance` recomputes each blob hash and fails on any drift.
 
-No Borromean, trefoil, biological isomorphism, consciousness, or aliveness claims in production code.
+## Testing layout
+
+- `@aukora/kernel` self-tests through its own config and the full `test:kernel` gate (boundary,
+  typecheck, tests, build, compatibility manifest, SBOM, runtime matrix, package tarball).
+- `@aukora/evidence`, `@aukora/council`, `@aukora/council-node` and the repo-level boundary/export
+  smoke tests run under the root `vitest.config.ts` (`npm test`).
+- The organism suites run per-workspace under `npm run test:organism`: `@aukora/memory`,
+  `@aukora/brain` (including the `convex-test` simulated backend), `@aukora/seed`, `@aukora/console`.
+- `npm run test:all` runs provenance + boundary + root + kernel + organism. No test count is
+  borrowed from any external product suite.

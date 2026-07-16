@@ -1,26 +1,44 @@
 {
-  "name": "@aukora/workspace",
-  "private": true,
-  "version": "0.0.0",
-  "description": "Aukora — canonical portable core for recursive digital organism governance",
+  "name": "aukora",
+  "description": "Aukora: a governed recursive digital-organism seed. Its constitutional spine is the AUMLOK authority kernel (verify, never mint). Pure portable packages (kernel, evidence, council, memory) plus governed organism adapters — the reactive memory brain, sandbox-only recursion seed, and read-only operator console — built outward under strict governance.",
+  "author": "Aumara",
   "license": "AGPL-3.0-or-later",
+  "version": "0.1.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aumara-xyz/aukora.git"
+  },
+  "type": "module",
   "workspaces": [
-    "packages/kernel",
-    "packages/evidence",
-    "packages/council"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
-    "test": "npm run test --workspaces",
-    "test:release": "npm run test --workspaces && npm run typecheck --workspaces",
-    "typecheck": "npm run typecheck --workspaces",
-    "lint": "npm run lint --workspaces",
-    "build": "npm run build --workspaces"
+    "boundary": "node scripts/check-canonical-boundary.mjs --src packages/evidence/src && node scripts/check-canonical-boundary.mjs --src packages/council/src && node scripts/check-canonical-boundary.mjs --src packages/council-node/src",
+    "verify:provenance": "node scripts/verify-provenance.mjs",
+    "test": "vitest run",
+    "test:portable-boundary": "node scripts/verify-portable-boundary.mjs",
+    "typecheck:kernel": "tsc -p packages/kernel/tsconfig.json",
+    "build:kernel": "tsc -p packages/kernel/tsconfig.build.json",
+    "verify:kernel-compatibility": "node scripts/generate-kernel-compatibility.mjs --check",
+    "verify:kernel-sbom": "node scripts/generate-kernel-sbom.mjs --check",
+    "verify:kernel-runtimes": "node scripts/verify-kernel-runtimes.mjs",
+    "verify:kernel-package": "node scripts/verify-kernel-package.mjs",
+    "test:kernel": "npm run test:portable-boundary && npm run typecheck:kernel && npm test --workspace @aukora/kernel && npm run build:kernel && npm run verify:kernel-compatibility && npm run verify:kernel-sbom && npm run verify:kernel-runtimes && npm run verify:kernel-package",
+    "test:memory": "npm test --workspace @aukora/memory",
+    "test:brain": "npm test --workspace @aukora/brain",
+    "test:seed": "npm test --workspace @aukora/seed",
+    "test:console": "npm test --workspace @aukora/console",
+    "test:organism": "npm run test:memory && npm run test:brain && npm run test:seed && npm run test:console",
+    "test:all": "npm run verify:provenance && npm run boundary && npm run test && npm run test:kernel && npm run test:organism",
+    "demo:organism": "npm run demo --workspace @aukora/seed"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
-    "vitest": "^3.0.0"
-  },
-  "engines": {
-    "node": ">=20.0.0"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.7",
+    "esbuild": "0.27.0",
+    "@edge-runtime/vm": "^5.0.0",
+    "@types/node": "^22"
   }
 }
