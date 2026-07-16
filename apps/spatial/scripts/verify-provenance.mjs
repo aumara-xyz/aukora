@@ -11,7 +11,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const base = join(dirname(fileURLToPath(import.meta.url)), '..');
-const DONOR = process.env.DONOR_DIR || '/Users/asd/Documents/aukora-symbiote';
+const DONOR = process.env.DONOR_DIR; // path to the local authorized aukora-symbiote checkout
+if (!DONOR) { console.error('Set DONOR_DIR to the local aukora-symbiote checkout, e.g. DONOR_DIR=~/aukora-symbiote npm run verify:provenance'); process.exit(2); }
 const manifest = JSON.parse(readFileSync(join(base, 'provenance.json'), 'utf8'));
 
 let ok = 0;
