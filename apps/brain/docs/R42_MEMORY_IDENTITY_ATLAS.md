@@ -58,3 +58,41 @@ The one unambiguous, deterministic, donor-backed, non-Ring-0, wholly-in-`package
 distinguish "corpus absent" from "retrieval bias." Synthetic identity fixtures only; a negative falsifier proves
 the fix never fabricates identity when the shelf is empty. Everything else is out-of-lane, owner-gated, or
 requires real identity content → parked.
+
+---
+
+## Appendix A (overnight atlas verification) — donor memory-category BEHAVIORS
+
+Read-only deepening of Wave-1 §1b row "donor memory categories … behaviors unported." All five exist ONLY in
+the donor (`aukora-symbiote@ed1824a` `core/src/*`); **none** exists in `packages/memory` or `apps/brain` on
+main `b17a3f87` (grep-confirmed). They share ONE hard law that the current lane already honors elsewhere:
+**evidence-only, source-LABELED (`real | test_double | fixture`), never authority; a synthetic/fixture record
+can never be upgraded to "real model behavior."**
+
+| Category | Donor blob | Core law / shape | Current counterpart | Class | Continuity grade |
+| --- | --- | --- | --- | --- | --- |
+| Episode memory | `core/src/episodeMemory.ts@96583173998d` | bundles HASH REFERENCES of what happened (sandbox-apply/canonicalization/HRT/Accord/structured-truth receipts) with hard SOURCE LABELS; NO raw prompt/output/key/grant; no meta escape hatch; `createdAtBucket` (bucketed, never raw ms) | none | MISSING (behavior) | **DOC-only**: the label discipline (`real/test_double/fixture`, "never upgrade to real") is the same non-authority law the current provider-truth + node-print already enforce; the episode BUNDLE itself is unported |
+| Hypothesis memory | `core/src/hypothesisMemory.ts@0349b7dd7a2c` | `LiquidHypothesis{claim,status:open/supported/contradicted,confidence, evidenceFor/AgainstReceiptIds, lastSignedOutcome, refusalCause}`; verified against a signed receipt chain + pinned edge key | none | MISSING (behavior) | **DOC-only**: depends on signed receipt chains (Wave-2 signed heads are the current substrate) + a pinned key (out-of-lane custody); the hypothesis LEDGER is unported |
+| MDL process memory | `core/src/mdlProcessMemory.ts@660a2e0366d4` | advisory generator memory (`phi_rotation/sqrt2/vdc/sobol/argmax/prng`); PUBLIC categorical actions only; `phi` is a candidate GENERATOR, **not identity/authority/proof**; FIREWALL: imports no gate/apply/signer | none | MISSING (behavior) | **EXCLUDED-adjacent**: this is GHP/skunkworks-flavored (generator research); belongs behind the walled lane + the #93 status-atom discipline, not the identity brain |
+| Structural memory | `core/src/structuralMemory.ts@f32bcedf2e60` | `Predictor` over `GateExample`s → `PredictionResult`; `evaluatePredictor`; learns the SHAPE of gate decisions (advisory), never the decision | none | MISSING (behavior) | **DOC-only**: a learned advisory shape-model; would sit above the kernel gate as pure advisory (like the metabolism simulator) — never Ring-0 |
+| IDE memory | `core/src/aukoraIdeMemory.ts` + donor `ide_memory` table | session/IDE evidence rows (read views) | the 7141 door read-only projections | MISSING (table) / ADAPTED (read surface) | **read-surface exists**, the per-IDE row store does not |
+
+### Verdicts for Sam 1's ledger (owner-decision candidates, NOT built)
+
+1. Episode/hypothesis/structural memory are **advisory evidence ledgers** — if ever restored they belong in
+   `packages/memory` (pure) + `apps/brain` (adapter) under the existing evidence-only law, each with a source
+   label and NO authority path. All three are **PARKED_PENDING_OWNER** (product-memory organs).
+2. MDL-process memory is **GHP/skunkworks-flavored** and should stay walled; if surfaced at all, via the #93
+   status-bearing-atom discipline, never as identity. **BLOCKED_OWNER**.
+3. The shared "source label, never upgrade fixture→real" law is already LIVE in the current lane (provider
+   truth, node-print, migration classification) — so restoring any category is a *shape* port, not a new
+   safety invention. This is the honest good news the row-count falsifier (#62) otherwise obscures: the
+   *governance spine* for these memories exists; only the *typed ledgers* are missing.
+
+### Non-continuity clarifications (kept explicit)
+
+- `createdAtBucket` (bucketed time) vs the current LOGICAL-time receipt index: both avoid raw wall-clock in the
+  law; the donor bucketed for privacy, the current lane uses logical indices — **equivalent intent, different
+  mechanism**, not a lost capability.
+- None of these categories carry identity CONTENT; they carry hash references + labels — so the #62 empty-shelf
+  is orthogonal to them (they were never the identity shelf).
