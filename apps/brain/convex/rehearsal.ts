@@ -36,8 +36,9 @@ async function eventRows(ctx: any) {
   return await ctx.db.query('receiptEvents').withIndex('by_index').collect();
 }
 
-// Append one immutable lifecycle receipt event to the kernel-chained log. LOGICAL time = index.
-async function appendReceiptEvent(ctx: any, fields: { rehearsalKey: string; event: string; step: number | null; authorityRef: string | null }) {
+// Append one immutable lifecycle receipt event to the kernel-chained log. LOGICAL time = index. Exported for the
+// erasure-receipt path (memory.ts) so ALL lifecycle receipts live on ONE governed spine.
+export async function appendReceiptEvent(ctx: any, fields: { rehearsalKey: string; event: string; step: number | null; authorityRef: string | null }) {
   const events = await eventRows(ctx);
   const prevHash = events.length ? events[events.length - 1].chainHash : null;
   const payload = { kind: 'rehearsal-receipt', index: events.length, rehearsalKey: fields.rehearsalKey, event: fields.event, step: fields.step, authorityRef: fields.authorityRef };

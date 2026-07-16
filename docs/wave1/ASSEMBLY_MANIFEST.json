@@ -1,7 +1,7 @@
 {
-  "schema": "aukora-anatomy-genome-v0",
-  "wave": 1,
-  "status": "READ_ONLY_FORENSICS_COMPLETE — this is the map, not the port. Dispositions pending owner ratification. No implementation occurred this wave.",
+  "schema": "aukora-anatomy-genome-v0.2",
+  "wave": 2,
+  "status": "WAVE 2 (hard endoskeleton) integrated. Dispositions below updated per owner rulings + comparative evidence. Manifest remains EVIDENCE/CLAIM — never executable authority; the receipt chain is proof of actual state and must reconcile against this manifest.",
   "anatomy_spec": "https://github.com/aumara-xyz/aukora/issues/53",
   "pins": {
     "current_main": "b38d625697470c9da11afdab106c800260245bf8",
@@ -66,25 +66,18 @@
       "map_complete": true,
       "headline": "content-free chain SUPERSEDED_WITH_PROOF (removes plaintext, donor kept it); receipt-before-row preserved",
       "missing": [
-        "signed recall proof-of-possession",
-        "signed erase attestation + erasure receipts",
-        "PQC-signed chain heads",
         "donor memory categories as distinct runtimes (episode/hypothesis/mdlProcess/structural, ide_memory, womb-memory)",
         "node identity/trust registry/kill switch (multi-node era)"
-      ]
+      ],
+      "wave2": "RESTORED: signed continuity + KIRA attestation (signed erase attestation + erasure receipts + signed chain heads + recall PoP per Sam 2 Wave 2)"
     },
     {
       "family": "AUMLOK ceremony/custody/onboarding",
       "lane": "sam3",
       "map_complete": true,
-      "headline": "verification core EXACT_PORT; ceremony CONTRACT formalized; the complete donor ceremony/onboarding/custody/bind flow is donor-side",
-      "missing": [
-        "aumlokApproveCeremony/Challenge/Guard",
-        "aumlokBondCeremony",
-        "aumlokSigningAssistant",
-        "approval/authority roots",
-        "spatial approve/bind doors (custody)"
-      ]
+      "headline": "WAVE2: complete ceremony/custody/onboarding membrane restored from donor (approve/challenge/guard/bond/signing-assistant/roots) — P0 closed; custody stays out-of-tree (hash-verified)",
+      "missing": [],
+      "wave2": "RESTORED (EXACT_PORT/ADAPTED_BOUNDARY per file; see lane forensics + PR)"
     },
     {
       "family": "AURA trace/geometry",
@@ -127,7 +120,8 @@
       "headline": "transplanted subset EXACT_PORT (46) + shell; the rest of the 1139-file donor mapped file-by-file",
       "missing": [
         "bulk of product organs pending EXCLUDED_BY_PETER rulings — see decisions"
-      ]
+      ],
+      "wave2": "Supervisor/one-gateway added as protected deterministic core (Sam 4) — adaptive organs cannot command it; NOT a Spatial redesign"
     }
   ],
   "future_supervisor_gateway_source": {
@@ -210,5 +204,50 @@
     "families_mapped": 8,
     "families_absent": 0,
     "verdict": "MAP COMPLETE — close permitted. (Port completeness is a different number and is stated honestly above.)"
+  },
+  "owner_rulings_wave2": {
+    "ratified": [
+      "fail-closed staleness supersession",
+      "authority outside Convex: kernel/AUMLOK decides; Convex persists/projects only"
+    ],
+    "standing": [
+      "manifest = evidence/claim, never executable authority",
+      "receipt chain = proof of actual state, reconciles against manifest",
+      "supervisor = protected deterministic core; adaptive organs cannot modify or command it directly",
+      "multi-node PARKED",
+      "product organs = MISSING/PARKED_PENDING_OWNER (not silently excluded, not blocking P0)"
+    ]
+  },
+  "new_fields_wave2": {
+    "owner_private_out_of_tree_state": {
+      "rule": "hash/verification only — content never enters public Git",
+      "applies_to": [
+        "AUMLOK custody material",
+        "owner keychain entries",
+        "private research pack"
+      ]
+    },
+    "consent_surfaces": {
+      "rule": "every owner-facing ceremony/onboarding step is an explicit consent surface; recorded per capability",
+      "initial": [
+        "AUMLOK approve ceremony",
+        "bind ceremony",
+        "onboarding phrase challenge",
+        "reveal-once keychain ops"
+      ]
+    },
+    "receipt_reconciliation": {
+      "rule": "receipts are truth; manifest claims must reconcile against the receipt chain; divergence = manifest is wrong, not the receipts"
+    }
+  },
+  "round_close_falsifiers_wave2": {
+    "required": [
+      "deterministic core boots/gates/receipts/shuts down with adaptive organs+Spatial disabled",
+      "corrupt/stale Convex projection cannot authorize or override receipt truth",
+      "proposal flood: reference monitor/supervisor bounded + responsive",
+      "crash during recovery: no duplicate effect, split-brain or lost receipt",
+      "every touched donor capability has exact disposition + comparative evidence"
+    ],
+    "evidence": "see integration PR + lane Wave 2 suites; gate results recorded in the #20 report"
   }
 }
