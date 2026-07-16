@@ -38,3 +38,8 @@ export * from './doorGuards.js';
 export * from './mindDoor.js';
 export * from './candidateReferenceMonitor.js';
 export * from './providerEgress.js';
+export * from './approveChallenge.js';
+export * from './approveGuard.js';
+export * from './ownerCustody.js';
+export * from './bondCeremony.js';
+export * from './approveDoor.js';

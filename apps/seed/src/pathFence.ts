@@ -87,6 +87,12 @@ const SELF_PROTECTING: readonly RegExp[] = Object.freeze([
   /(^|\/)providerTransport\.ts$/,
   /(^|\/)fuStructuredAdapter\.ts$/,
   /(^|\/)forbiddenContent\.ts$/,
+  // WAVE 2 — the AUMLOK ceremony authority membrane (approve/bind door + guard + challenge + custody + bond)
+  /(^|\/)approveDoor\.ts$/,
+  /(^|\/)approveGuard\.ts$/,
+  /(^|\/)approveChallenge\.ts$/,
+  /(^|\/)ownerCustody\.ts$/,
+  /(^|\/)bondCeremony\.ts$/,
   // the kernel authority core
   /^packages\/kernel\/src\/(authority|reducer|schema|registry|canonical|evidence|merkle)\.ts$/,
   /(^|\/)kernel\/(dist|conformance)\//,
