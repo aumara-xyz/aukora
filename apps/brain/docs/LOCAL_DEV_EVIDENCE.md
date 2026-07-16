@@ -54,6 +54,39 @@ The local backend runs per-command under the CLI; after the last command nothing
 repository. Nothing was committed except source, the CLI's standard `convex/tsconfig.json`, and a `.gitignore`
 covering `.env.local`.
 
+## R34 — durability evidence (same anonymous LOCAL deployment, sanitized)
+
+All on `127.0.0.1:3210`, no account, no cloud; stopped cleanly afterwards (port empty).
+
+**Reactive subscription (cross-process push):** a standalone Node subscriber (`ConvexClient.onUpdate` on
+`memory.snapshot`) received the current state, then was PUSHED the new state when a *different process* ran a
+mutation:
+
+```
+UPDATE 1: liveCount=2 chainLength=2 head=30bfdb3b5935
+UPDATE 2: liveCount=3 chainLength=3 head=bb6ea2b4ae5a      ← pushed on ingest from another process
+```
+
+**Crash/restart recovery:** the backend process was killed with `kill -9` (verified: nothing listening on
+3210), then a fresh CLI command restarted it:
+
+```
+snapshot → liveCount=3, chainLength=3, head=bb6ea2b4…      ← ALL data persisted through the crash
+verify   → valid: true, merkleRootHex=c952db49…
+health   → ok: true
+```
+
+**Durable impulse with REAL retry (live):** scheduled with `failFirstAttempts:1, maxAttempts:3`:
+
+```
+impulseStatus → status=success, attempts=2                  ← failed once, retried, succeeded
+                chainHeadAtCompletion=bb6ea2b4…             ← receipt linkage to the observed chain head
+impulseBudgetRemaining → 62 (of 64)                          ← spend ceiling decremented per RUN
+```
+
+**Idempotent ingest** is proven under convex-test (same content-addressed record twice ⇒ one row, same
+receipt), as are cancellation and the exhausted-ceiling refusal (fail-closed).
+
 ## Architecture note surfaced by the REAL runtime
 
 The Convex isolate does not provide `node:crypto`, which the provenance-locked `@aukora/evidence` digest module

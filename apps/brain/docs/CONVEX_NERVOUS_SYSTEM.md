@@ -19,6 +19,20 @@ authority; everything observable through this layer is advisory.
 | Action (default isolate) | **External nerve (light)** | May call the network; NOT transactional. Keep effects idempotent; call mutations for any write. |
 | Action (`"use node"`) | **External nerve (Node)** | Full Node runtime. Required for the provenance-locked `@aukora/evidence` scanner (`node:crypto`) — our public ingest door. Local backend needs Node 18/20/22/24 present. |
 
+## 1b. Workflow/Workpool dependency decision (R34)
+
+Checked read-only against the npm registry: `@convex-dev/workflow` 0.4.4 and `@convex-dev/workpool` 0.4.8 are
+both **Apache-2.0** — license-compatible with this AGPL-3.0 repo (Apache-2.0 code may be incorporated; the
+combination ships AGPL). Lock-in assessment: both are Convex **components** — they install into the deployment
+and their journals/queues live in component-scoped tables, so they deepen the Convex coupling beyond our two
+seams and are NOT portable across backends.
+
+**Decision: add NEITHER this round.** The R34 durable-impulse needs (idempotency, retry state, cancellation,
+spend ceiling, receipt linkage) are covered by the hand-rolled `impulses` + `impulseBudget` tables inside the
+existing seam (`convex/memory.ts`), fully proven under convex-test and the local deployment. Adopt Workpool
+only when real concurrency metering demands it, and Workflow only when a genuinely multi-step durable rehearsal
+lands (the migration's live import is the likely trigger) — behind the ReactiveBrainAdapter vocabulary either way.
+
 ## 2. Retries + idempotency
 
 - **Mutations** are transactions; Convex may retry them on OCC conflicts — handlers must be deterministic

@@ -41,7 +41,8 @@ absent. Only an exact, tested, independently reviewed integration head is promot
 | --- | --- | --- |
 | [`apps/brain`](apps/brain) | Reactive, receipt-chained, growing memory with content-free forgetting; KIRA memory classes; reactive brain adapter; local-dev path. | **Simulated** Convex backend via `convex-test` (headless, in-process) — **not** a live cloud deploy. The Nebius provider path is **bounded and parked**; no live model calls. |
 | [`apps/seed`](apps/seed) | Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory Fu → refuse(stale/secret/authority) → **real hybrid AUMLOK owner-gate** → sandbox-only apply → receipt + lineage; memory constitution (ROOT/UNITE/RISE/GOLD); council-runner boundary. | Council review is **mock/deterministic** (no live providers; no transport embedded); apply is **sandbox-only** — never mutates a live repository. |
-| [`apps/console`](apps/console) | Spatial operator shell (▲ AUMA LIVE / LINGWA · ■ AUMLOK / AURA / KIRA / SPATIAL MAP / GHP / CONSOLE / SETTINGS · ● KNVS) over authority, growing memory, proposals, the advisory council, provider truth-labels, budgets, and governed forgetting. | Read-only; panels are **fixture-fed** and labelled FIXTURE where a live adapter is not injected; it **signs, applies, deploys, and arms nothing**. Local launcher binds `127.0.0.1:7094`; donor `:7090` untouched. |
+| [`apps/spatial`](apps/spatial) | The donor Symbiote Spatial shell, transplanted **subtractively** (91 donor files byte-identical, provenance-pinned): donor Chats/Auma lane, thirds/corners geometry, tokens, animations, mobile law; roster ▲ AUMA LIVE / LINGWA · ■ AUMLOK / AURA / KIRA / SPATIAL MAP / GHP / CONSOLE / SETTINGS · ● KNVS. | Static local launcher on `127.0.0.1:7096` (donor `:7090` untouched; donor governed doors stay local). Live engine endpoints are **not** bundled — organs render their donor **offline states** until the local doors run; nothing simulated is labelled live. |
+| [`apps/console`](apps/console) | Read-only operator panels; the CONSOLE center-pane organ inside the Spatial shell derives from this work (evidence/reference). | Panels are **fixture-fed** and labelled FIXTURE where no live adapter is injected; signs/applies/deploys/arms nothing. |
 
 Every arrow points inward: adapters consume packages; packages consume only Node built-ins and
 `@noble/*`. See [ARCHITECTURE.md](ARCHITECTURE.md).
@@ -60,7 +61,7 @@ npm run verify:provenance   # canonical sources byte-identical to the reviewed d
 npm run boundary            # evidence/council/council-node import no fs/network/authority
 npm test                    # evidence + council + council-node + export/boundary smoke
 npm run test:kernel         # kernel: boundary, typecheck, tests, build, compat, SBOM, runtimes, package
-npm run test:organism       # memory + brain + seed + console
+npm run test:organism       # memory + brain + seed + console + spatial
 ```
 
 ## Provenance and honesty

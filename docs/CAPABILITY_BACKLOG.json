@@ -1,6 +1,6 @@
 {
   "schema": "aukora-capability-backlog-v0",
-  "status": "Durable backlog for capability families (A–L). Sanitized: dispositions + provenance only. Sensitive research detail + owner-local paths live in the private aukora-symbiote ledger. Pending owner ratification; promote to tracked issues on ratification.",
+  "status": "Durable backlog for capability families (A–M). Sanitized: dispositions + provenance only. Sensitive research detail + owner-local paths live in the private aukora-symbiote ledger. Pending owner ratification; promote to tracked issues on ratification.",
   "families": [
     {
       "id": "BL-A",
@@ -143,6 +143,16 @@
       "status": "scheduled",
       "provenance": {
         "note": "R33: served-model verification is IMPLEMENTED in @aukora/council; the verified-32B serving path (weights, checksums, endpoints) stays private/parked — no weights or endpoint IDs in public repo. Ties to BL-E (model truth)."
+      }
+    },
+    {
+      "id": "BL-M",
+      "family": "Local Aukora Keychain broker (IDE + provider credentials)",
+      "disposition": "PORT",
+      "status": "scheduled",
+      "provenance": {
+        "public_issue": "https://github.com/aumara-xyz/aukora/issues/30",
+        "note": "Local-first secret broker: raw secret bytes live only in the OS credential store (macOS Keychain first; portable adapter boundary). Aukora holds only opaque references + scope/fingerprint/rotation/spend metadata. Loopback-only broker; short-lived scoped capability handles to IDE clients; explicit owner approval for create/replace/reveal-once/revoke/scope-widening; fail-closed when the OS keychain is unavailable. Raw secrets never enter GitHub, Convex, memory recall, model context, or receipts. Local-only phase; cloud later uses native secret managers, never plaintext sync."
       }
     }
   ]

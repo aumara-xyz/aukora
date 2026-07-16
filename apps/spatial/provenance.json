@@ -1,0 +1,684 @@
+{
+  "schema": "aukora-spatial-provenance-v1",
+  "donorRepo": "github.com/aumara-xyz/aukora-symbiote",
+  "donorCommit": "41707f910d10696482c28ee80346c252a55e9d41",
+  "transplantedAt": "2026-07-16",
+  "rule": "subtractive transplant (issue #23 R34 owner correction): donor files byte-identical (VERBATIM) except ADAPTED (registry subtraction only) and NEW (ours — CONSOLE organ + launcher). VERBATIM entries must hash-match the donor blob; the test enforces it.",
+  "files": [
+    {
+      "path": "apps/spatial/app/agora.js",
+      "donorPath": "spatial/app/agora.js",
+      "donorBlob": "cd7ac245e6e8f92544c993296af93f4b92bc88b8",
+      "sha256": "f5a8a3e407a259a0db5792413d5443604a73b7cd9b927e0ebdc3b7869c233e57",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/app-registry.d.ts",
+      "donorPath": "spatial/app/app-registry.d.ts",
+      "donorBlob": "799fef3c9c50e5380f14da530dd65d3690aad24a",
+      "sha256": "849edbcb51be81dc3733511e94195cf159c6acaa50f1a44e06bfa49b7588622f",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/app-registry.js",
+      "donorPath": "spatial/app/app-registry.js",
+      "donorBlob": "da136ee00d40b034296148658c8933783bab2600",
+      "sha256": "7d1c29138195a7f569627dd2f11501d9d92baad83e1b1b903d6138288bf4c1ee",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/arc3.css",
+      "donorPath": "spatial/app/arc3/arc3.css",
+      "donorBlob": "9afea56d8eeb960a5715a36869ec6c872c0b91c6",
+      "sha256": "241f5fdfb6f8fb131ec61fd444c59f29e4e07afa09a812a5eeb6d7926903b2fb",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/arc3.js",
+      "donorPath": "spatial/app/arc3/arc3.js",
+      "donorBlob": "e47cea3abd0773074ff9ee2e71c540dab7ec0353",
+      "sha256": "9125ce812608c228776f83e13e23fcadd5ee38aa53f266861ad73c6cb979d0a4",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/engine.d.ts",
+      "donorPath": "spatial/app/arc3/engine.d.ts",
+      "donorBlob": "8423e47e032cbaa0a81d4554ec73c93fba8d5ad4",
+      "sha256": "0d58d6242faa79c340d7cf94c3185f0d5a4dc3cd30add2850e7543aedd3032f3",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/engine.js",
+      "donorPath": "spatial/app/arc3/engine.js",
+      "donorBlob": "7bf144617741700350b9750f68bf9104e84e5ffc",
+      "sha256": "f7da7d3c6ed8661dfb38b54be835fa78a5cbcb6037ba6ee88a761e929ddb4eee",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/mind.d.ts",
+      "donorPath": "spatial/app/arc3/mind.d.ts",
+      "donorBlob": "6984ee79fb840c6907fa7f9d33fd185261195e95",
+      "sha256": "ec84b1fe319a0a8499b0b84147a4c230f0e5fab638f955c7c61010d517861493",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/mind.js",
+      "donorPath": "spatial/app/arc3/mind.js",
+      "donorBlob": "654eb02527a9be4f047ae66dc57325d8b32c932b",
+      "sha256": "b10889df2a4c71f9015399896588fc32793951dfa0a7e6a0c2424076c124d89a",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/mock-arcade.d.ts",
+      "donorPath": "spatial/app/arc3/mock-arcade.d.ts",
+      "donorBlob": "10ae2a1f64e32fdaedfb3c7b3ef8fbd6ca558cd2",
+      "sha256": "4e6356fa18080ca75683eb4b9e930b287a48ea9b7de213241b0b45b656315151",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/arc3/mock-arcade.js",
+      "donorPath": "spatial/app/arc3/mock-arcade.js",
+      "donorBlob": "a609716a15a3d3ce75d3c63db470c1eb6a85e652",
+      "sha256": "9fabcb04045f1feb59ea582722de1e34de1ebf9c0ea5c055fcd0cb3dfdef7840",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/aukora-xyz.js",
+      "donorPath": "spatial/app/aukora-xyz.js",
+      "donorBlob": "15677f7b2bc8b60566f350c57785e89498cb3ba5",
+      "sha256": "bfb24c63a81faf89fdf3f2c1a0fdd21c460d0d40a0dc6aed1e1cf44423abfd82",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/auma/auma.css",
+      "donorPath": "spatial/app/auma/auma.css",
+      "donorBlob": "0b3ad94b73108d6ccf18dda18a9675ed0f04864d",
+      "sha256": "644a48545522b1be4f8a38c0f198ea9ca9aec1ea6190dc1b4a9f05e50291c90c",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/auma/auma.js",
+      "donorPath": "spatial/app/auma/auma.js",
+      "donorBlob": "d589c376dc649c8d28ad0fc5c7e683033dba712f",
+      "sha256": "81f8ae277451a1360c58f69801c0ff12f48b9bf855781c5a50702365e2f68d36",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/auma/canon-v16.json",
+      "donorPath": "spatial/app/auma/canon-v16.json",
+      "donorBlob": "9b3db522cf2bc3bf2bc0522554abad620133427f",
+      "sha256": "2d9ffed46912a7860b16c282d071bfed4c5555ee78c0bf8623e77d793531eb7e",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/auma/readers-v1.json",
+      "donorPath": "spatial/app/auma/readers-v1.json",
+      "donorBlob": "e75b6a89f5c372d4b40a290fe6266779be6e1250",
+      "sha256": "e4c1b35fa4087cb2f692e1c3f4a831d3ef39b22ddef21849c56634b9bda1224c",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/aumalive-audio.js",
+      "donorPath": "spatial/app/aumalive-audio.js",
+      "donorBlob": "301f3dc67dab24e5b7c982f8af1950201da8e1b0",
+      "sha256": "484642694c8ead403dd5253d3d999fa1f7b8f60de44027f83596c6db9d4face2",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/aumalive.js",
+      "donorPath": "spatial/app/aumalive.js",
+      "donorBlob": "432923274b9ab5f79bd673b56367a5d49db45442",
+      "sha256": "fa301bf25eadd5b38d34d7f3aa6088e3883ae1a4f1ca484b0a3bd2c6f572ed3f",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/aumlok.js",
+      "donorPath": "spatial/app/aumlok.js",
+      "donorBlob": "877bb3c129ebc1f5fe50cd301c3e4b5cd62a9abb",
+      "sha256": "f887658baeda46892f51d0ac82455167d2943d6cd1738ce5823363ee25493d59",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/aura-core.js",
+      "donorPath": "spatial/app/aura-core.js",
+      "donorBlob": "0487945861916646337a449b9ce116cdd2bc5654",
+      "sha256": "571d5909687299537056e111389b6fb5e2c979e36b49a12cf50c67caceec03ab",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/aura.js",
+      "donorPath": "spatial/app/aura.js",
+      "donorBlob": "00588ea088d5dd4c11eb64f3345e0dc5990f167d",
+      "sha256": "d6cf9e63bd3e6a162e6e3b836c2d8d8bead065d56d4d7f63e1ec79ee50d818a5",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/browser.js",
+      "donorPath": "spatial/app/browser.js",
+      "donorBlob": "748549e0fb490fab73579e65b88dbb7c918dbb03",
+      "sha256": "66d3975f6d5d0bd7b68ccfe71143aee60b389fb66d54cbaddd89a3dacf3e7239",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/canvas.js",
+      "donorPath": "spatial/app/canvas.js",
+      "donorBlob": "73524cec0f9991e812fd39b6c6c4cfffc0e6b645",
+      "sha256": "4b08a30edfa52edde1aec051a7987f93b5620c2ce802af1b46bb5733939c6f77",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/chat.js",
+      "donorPath": "spatial/app/chat.js",
+      "donorBlob": "6cb252fe6b090c2052caf6e82681aa95b6b300fe",
+      "sha256": "33b336a15a8511caaf5f53b22e6f60919dec326493ff365f1d2b697842f95045",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/coherence-glyph.js",
+      "donorPath": "spatial/app/coherence-glyph.js",
+      "donorBlob": "65213bf809ee694d77169612b9508b4aabd53f8a",
+      "sha256": "b9bd74c5355578053932cfb954125378bcd60b5abc6d75a8de4884eb1b835341",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/console.js",
+      "source": "apps/console evidence (ours)",
+      "sha256": "17efd8a94b9cd8e36d41ca181fe5f3082f2d096a68f63813da82dc80bb4ebabb",
+      "status": "NEW"
+    },
+    {
+      "path": "apps/spatial/app/console/console.css",
+      "source": "apps/console evidence (ours)",
+      "sha256": "52d8c299b427729e1361262a8ab1388e73c1a955519aaa279af31d72a0730bbe",
+      "status": "NEW"
+    },
+    {
+      "path": "apps/spatial/app/console/fixture.js",
+      "source": "apps/console evidence (ours)",
+      "sha256": "e21e4c31df8615dc73c3023b6bca9a31d96a9b4b0a928812a3689e0e774d2c2a",
+      "status": "NEW"
+    },
+    {
+      "path": "apps/spatial/app/console/panels.js",
+      "source": "apps/console evidence (ours)",
+      "sha256": "c49e7ac78f4a6612323f891bcb4006bc76a5b1f163340a074f7e91118b5650a6",
+      "status": "NEW"
+    },
+    {
+      "path": "apps/spatial/app/field-directives.d.ts",
+      "donorPath": "spatial/app/field-directives.d.ts",
+      "donorBlob": "abc9cc81fb96880615e7c48b91275dfcf889ddb2",
+      "sha256": "08ba8050d0e8c4cc163daa6cd5bc038b0bc6b470ac618491638a7f930d812489",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/field-directives.js",
+      "donorPath": "spatial/app/field-directives.js",
+      "donorBlob": "caea751702da10a18bb802b1dab4958e0f30a886",
+      "sha256": "41e1ea5801243c3ad22842511c9e1fb155c846553b216019cca3febf91017a38",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/focus.js",
+      "donorPath": "spatial/app/focus.js",
+      "donorBlob": "a600bf47d80aea2fd9df0fea7b76fcb8f50f2cbe",
+      "sha256": "e06c1d9c8dfb1bd62c9223832754d8865ec57702665128b054626ff98677771c",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/forge.js",
+      "donorPath": "spatial/app/forge.js",
+      "donorBlob": "abb57d5e85334de0a90c1a0b5fc3a2291b3ed450",
+      "sha256": "b9a4f607848e6c7b2f58db7a56d10128058e4a3d332198b1fcfc4ff5d6824b91",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/ghp.js",
+      "donorPath": "spatial/app/ghp.js",
+      "donorBlob": "6804ef74985db34f1da391b72b7c4d4e83965dfb",
+      "sha256": "1c644487e2bb139069845263b383ea3c5fece7f20ad526f0917004b2d5b673da",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/graticube-core.js",
+      "donorPath": "spatial/app/graticube-core.js",
+      "donorBlob": "2db6eb48709992b735a28ba5e5bd6f816d4518c7",
+      "sha256": "5e92f71c906444f592946c87bf8b4f243ed5a08ed8d8f9d73333fb74f0c7b1de",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/graticube-data.js",
+      "donorPath": "spatial/app/graticube-data.js",
+      "donorBlob": "a8f32510565b8bd37cc31e2473475a1c3ab7009a",
+      "sha256": "f2de85d4008fea919e4a0c418bccb1d56a4ea089d8c60b69a1d6869e371c9202",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/graticube.js",
+      "donorPath": "spatial/app/graticube.js",
+      "donorBlob": "259bffa1004b87d526459cd5f2331e79d9088a81",
+      "sha256": "4a552e5d9c6ec23723738cdf60009f0fda9650802d0dc39c9158298fbe63d56b",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/index.html",
+      "donorPath": "spatial/app/index.html",
+      "donorBlob": "5c8236b2fee94d0853e2aa0dcf2d7b44957b049d",
+      "sha256": "734d78b1fc1bae3341a64295bf5b607c459053f68f9960e5f05c6b46969cca33",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/knvs-duplex.js",
+      "donorPath": "spatial/app/knvs-duplex.js",
+      "donorBlob": "55525af9b51c13d90167f199c82e51486d0c3578",
+      "sha256": "690baa753e3c9dc59367c4023315aa59764348fbdedbc2b572b409a64f2a0265",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/knvs-test.js",
+      "donorPath": "spatial/app/knvs-test.js",
+      "donorBlob": "7f9a90f6e96c105b42fa3cda61c9962dcba6849b",
+      "sha256": "d70c0eee76e6be9e31ddcd4f561b465b05934616430f36414746a742951a5005",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/luminara-canon.d.ts",
+      "donorPath": "spatial/app/luminara-canon.d.ts",
+      "donorBlob": "cd16305ff8159aba529bcde3ad2088c70e2dc940",
+      "sha256": "5fbaea2e69d38bca4026f49e857b8023147563ec51bad1c864cbae36ae34c207",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/luminara-canon.js",
+      "donorPath": "spatial/app/luminara-canon.js",
+      "donorBlob": "2c8786bd68e25578c3399fb4e74d1c78355446bf",
+      "sha256": "cd4676a6e2518b44baab1282ddc47fad7ba3ac510ece52e6864358663125cd8e",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/luminara-data.js",
+      "donorPath": "spatial/app/luminara-data.js",
+      "donorBlob": "5937964447a1f62d6044af7dc4f3daec8719d44c",
+      "sha256": "44777dfc82420e1431f935e90d025a87fbb80e2fc61a05f9af384d8f5c6c86f1",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/luminara.js",
+      "donorPath": "spatial/app/luminara.js",
+      "donorBlob": "c28e0e2b0ad91c8e0a9109c239504ec7d8c9ff48",
+      "sha256": "89b738bc482fe338aff618d5957c1a6b1e8f73dfb5059836f803dafa65ab128a",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/map/camera.js",
+      "donorPath": "spatial/app/map/camera.js",
+      "donorBlob": "e9ea31a54e81d32ff9f2774df61a6957cf5dcbcf",
+      "sha256": "825e8d4771bb630856266173e4c5d34bfd46feb7ee3e0549ad2765172a25c154",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/map/layout.worker.js",
+      "donorPath": "spatial/app/map/layout.worker.js",
+      "donorBlob": "825e349039e55772e9759973117c363aae982e72",
+      "sha256": "126328d080464415405b78dff8c277eaee1f6a1a880198f7b285a518c59ebf73",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/map/map.js",
+      "donorPath": "spatial/app/map/map.js",
+      "donorBlob": "809f8dc37045542ad8a8b304a46990d7e0896703",
+      "sha256": "4abdbb2b4cb8b3f5ac5a92432832dd64d65cd256c512f802d5d17406c176bc99",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/map/renderer.js",
+      "donorPath": "spatial/app/map/renderer.js",
+      "donorBlob": "b53d7ed42026d3a7c167fd5cc0238d9f944548ca",
+      "sha256": "a85171fe21cd1cdc3b59bfda0234d3753fd497540199bc3b09ffa4c34416d36b",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/media.js",
+      "donorPath": "spatial/app/media.js",
+      "donorBlob": "48b9b5ea0748ba48353a891cc48fc5cd08b3e44a",
+      "sha256": "9d0a689676702001d2eba007344c44bfacd7bb9627f7ff81fb21040ba7ef43be",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/mock/aumlok.js",
+      "donorPath": "spatial/app/mock/aumlok.js",
+      "donorBlob": "4c400cadcc78e79a912b7383c8c4f317988b75ff",
+      "sha256": "f839210d38a0d9035f5558ab179b1427d6cebe3023862be9f3b8b84bbc399bb9",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/morph.js",
+      "donorPath": "spatial/app/morph.js",
+      "donorBlob": "71804bb5a9f80dc7227ca815bff067e6f6b9d682",
+      "sha256": "2b8696ea3768685a2169eba8ac14992025b9c830c13b029e940d00d5059878b3",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/onboarding.js",
+      "donorPath": "spatial/app/onboarding.js",
+      "donorBlob": "cc306c85c2496cf0c6a4b7a21008c665d21dd233",
+      "sha256": "8e2ad018a1f5c00d7126aa677d287f3c023f9396203eb403fac0cb2c9bda063c",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/operate.js",
+      "donorPath": "spatial/app/operate.js",
+      "donorBlob": "32c6be84f9d2d316202f5bf074726e99e29042a4",
+      "sha256": "188c53f3d21eede80b9e0ab860322a0e5b91b078f082bba5e96f655e5f44b37e",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/organs.js",
+      "donorPath": "spatial/app/organs.js",
+      "donorBlob": "aeab4ba7809dbddf90382d1a89124cacc01fd61f",
+      "sha256": "f165d85830f97117b4943a5d1c0b7e8c66c3b347bb8bd5baccc9157b7be18bfb",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/settings.js",
+      "donorPath": "spatial/app/settings.js",
+      "donorBlob": "e724e01d04ff12e167779575a91ad08c25a329dc",
+      "sha256": "f00210e1687f9d8a1e6c3cabfdbeaf707eba2925edb5af966b4bfaf3c89abfd0",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/shearfield.js",
+      "donorPath": "spatial/app/shearfield.js",
+      "donorBlob": "fa791cd8b22ef9eb7673d9c0277e7513e9c3b676",
+      "sha256": "8606842cfcee56e7083c6006ae8db888b140630649d850445fac699ef69acb9f",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/shell-registry.d.ts",
+      "donorPath": "spatial/app/shell-registry.d.ts",
+      "donorBlob": "865df2bb659a81bfdea9bd0bfdfaeb9b3ad33fbc",
+      "sha256": "5ba4e12d387e1b578a2bf30ff340222bdbbdbde637d7af76940092cc7d4038d4",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/shell-registry.js",
+      "donorPath": "spatial/app/shell-registry.js",
+      "donorBlob": "d3f20b0e007479d5cc0ff7c31b39a70a5f05d7fa",
+      "sha256": "3f2357b033f7a0252aa8ec9fb1acff62757f86134526f1f2345a2e93bac7da9e",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/shell.js",
+      "donorPath": "spatial/app/shell.js",
+      "donorBlob": "4599340d34b1f8346660c29640d8ce049c84ab70",
+      "sha256": "77776d74d687bf4a79ac4109175a9bd014e447247e1b9e261fffb9d47a80b7ac",
+      "status": "ADAPTED",
+      "note": "registry/menu subtraction to the R34 roster + one console import; imports/state machine/behavior otherwise untouched"
+    },
+    {
+      "path": "apps/spatial/app/style.css",
+      "donorPath": "spatial/app/style.css",
+      "donorBlob": "4ee31c87a446f061e1951f39434fb43f86b78af4",
+      "sha256": "dffbd374e2f086b10461dabfcf362aba4ac9606d764384ba50c89e9b220e83cd",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/translate.js",
+      "donorPath": "spatial/app/translate.js",
+      "donorBlob": "dfce652f99313eff05ec636a7e8a9a6c10b68d12",
+      "sha256": "6fbc6b5295e1feecf4ea63c22e80bb698023dffe07f9c93a95e3e67ce8cac0ba",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/tuning.js",
+      "donorPath": "spatial/app/tuning.js",
+      "donorBlob": "d952320f81b9f5738d5e0688994372fc511768c7",
+      "sha256": "01d8da267e733f84dac87446182ad2776f3adec77046b3209623e71f574d1253",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/ui/states.js",
+      "donorPath": "spatial/app/ui/states.js",
+      "donorBlob": "9a30f0b17a25c5b5999eeec2def015c122e56c6b",
+      "sha256": "2f771fefb1cbcceef2d19290492cb64bb2235ddac133e92978872c15ca24a44b",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-lab.d.ts",
+      "donorPath": "spatial/app/wolf/wolf-lab.d.ts",
+      "donorBlob": "0224a3f426753f719e5618531c15c97a4b69b15c",
+      "sha256": "14f141de98b66f6eca59cdad3287fa261c25718fcb5958e9a29ee0f44aa55f41",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-lab.js",
+      "donorPath": "spatial/app/wolf/wolf-lab.js",
+      "donorBlob": "d55848ee1b65d15cf7a038b2e696b85aa66adbc7",
+      "sha256": "eb9a161434520f24eab70fd7f55efcef9439d5afe0d24893b7e6c63de9da516e",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-ledger.d.ts",
+      "donorPath": "spatial/app/wolf/wolf-ledger.d.ts",
+      "donorBlob": "f4c0dc3a999a0dbb6a23dc061d91e59b43d99bef",
+      "sha256": "48bc8bfe411c04fae8a9cfc3e0710dfd306174c07f0115667c470e328d67ce3a",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-ledger.js",
+      "donorPath": "spatial/app/wolf/wolf-ledger.js",
+      "donorBlob": "96a77ab2420945004f235f4bc831b9348bee735b",
+      "sha256": "efcc4595d64d3440b6cbc18e9d897f067619f1ac0dbef4773cc65a20fa75c2d5",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-live.d.ts",
+      "donorPath": "spatial/app/wolf/wolf-live.d.ts",
+      "donorBlob": "85405a1cb22ba837472dbdeaa096943f87d6a03c",
+      "sha256": "777aee57769a3ecdfbe5359b569a48745b7c02583967e79745338457cfa40198",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-live.js",
+      "donorPath": "spatial/app/wolf/wolf-live.js",
+      "donorBlob": "8229e1ce5dd3d6d901c89e018a4453f50eb2bc5c",
+      "sha256": "992eda090af0000f7cfe17264d3427f7d80c4bd0cc2dc09829bd4558fd2105a9",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-market.d.ts",
+      "donorPath": "spatial/app/wolf/wolf-market.d.ts",
+      "donorBlob": "da2b75b9ac90cd7948c020fa1dca9967f7b4f933",
+      "sha256": "c87776ba8af1061a2eb2ee39219a3b8ff96c68935d4461e34a4c9f85f45b54f9",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-market.js",
+      "donorPath": "spatial/app/wolf/wolf-market.js",
+      "donorBlob": "17b9376a83ee8c5197e9305577ddf899a3c63adf",
+      "sha256": "fd3c94efe7bec44323215723fa085fd9aa5c3ddf019c7d3308a8b5f21001da70",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-mind-env.d.ts",
+      "donorPath": "spatial/app/wolf/wolf-mind-env.d.ts",
+      "donorBlob": "ddd3d18beed7e4a82c721781a3cd5106df9a3c86",
+      "sha256": "0657bdf4a23159687e4b7eb7e1422462208cd8973b9049866d011a0686ee6223",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-mind-env.js",
+      "donorPath": "spatial/app/wolf/wolf-mind-env.js",
+      "donorBlob": "b4b8d2158ab5c63f17e4aa87acff71265ff2ec6c",
+      "sha256": "a8e12fedd08b1ce157f576a1e20da4857442f72d2099821df60f68b9676a3728",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-mind-story.d.ts",
+      "donorPath": "spatial/app/wolf/wolf-mind-story.d.ts",
+      "donorBlob": "5e86948e014798f6c956f34f3523a7f9f1c53bfb",
+      "sha256": "618e3bb9e2968c0f18b52686ecfa2c72ac5911ceae888bb86d0ed5008860620d",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-mind-story.js",
+      "donorPath": "spatial/app/wolf/wolf-mind-story.js",
+      "donorBlob": "41fe25067ba88f5c5b2d935aaeb67dc830dc8aab",
+      "sha256": "9344bf9db65117e4b1501dd38f4959afbbe19491fd56d17673a69276fc97958c",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf-totem.js",
+      "donorPath": "spatial/app/wolf/wolf-totem.js",
+      "donorBlob": "afca9e94850a3143c1d7cd3e2b9febd823f9d737",
+      "sha256": "e3072af2b0b510adc32e23e25f22e68422db0ef077f3e982b9f199eda5ae9741",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf.css",
+      "donorPath": "spatial/app/wolf/wolf.css",
+      "donorBlob": "8f6973d5a538fffc5bf12a4de06960abf849d5b2",
+      "sha256": "afd0992eecb943b3148883dd75cc12842bf598d1d48179bf98a3930acdcaab92",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/app/wolf/wolf.js",
+      "donorPath": "spatial/app/wolf/wolf.js",
+      "donorBlob": "8c0b1c40a18e466f385d2f43e110f1d1672ed1f1",
+      "sha256": "03540112c80234204652d4195e726fbe1e4ba716918cad77def41a71d29268b0",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/aumara-icon-96.png",
+      "donorPath": "spatial/assets/aumara-icon-96.png",
+      "donorBlob": "8700d1fb300f94eddd27f729eca9b48c37652ab7",
+      "sha256": "6d7dc0cd8d9e981bb47b3d313840c33d0e4c3d2faa314a319fe36c8734625ec9",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/aumara-icon.png",
+      "donorPath": "spatial/assets/aumara-icon.png",
+      "donorBlob": "d7162e0fc4c98f28b1dd6a4856a21ceaf2694803",
+      "sha256": "47a32fa5412143fcd02da96b43cb49882e1b56bde7e482cd17805e5a102daf1b",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/aura-birth.js",
+      "donorPath": "spatial/assets/aura-birth.js",
+      "donorBlob": "846361640aecc90b9675d2921ef112a840b3fcd6",
+      "sha256": "2c3bfc92be194e5f36212b36075cb4114dfd53c8ea3be7eb4147b7c263cc0f4e",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-1.png",
+      "donorPath": "spatial/assets/graticube/chakra-1.png",
+      "donorBlob": "0f8548834ded10e07940f7b6f86f9cbe25685689",
+      "sha256": "f9d6b204d108e21dfc1aba49e31a83afc50d4bc72be6cc4205199358abd054b1",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-2.png",
+      "donorPath": "spatial/assets/graticube/chakra-2.png",
+      "donorBlob": "000199a600b8c16cb48fe86e900bff1f2f7f6e00",
+      "sha256": "5154ed81b19772ef1f02f19b4e804b10522ff31c33be07976682773510371148",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-3.png",
+      "donorPath": "spatial/assets/graticube/chakra-3.png",
+      "donorBlob": "b6c16abecf8f5e10eaa845993018ed556a60b246",
+      "sha256": "ccc5ae73327dd22b27c06c8e7968e00553c8b20856c7a4ab30edb1ce9a69924d",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-4.png",
+      "donorPath": "spatial/assets/graticube/chakra-4.png",
+      "donorBlob": "6cd7df5668bb9380958dd423336245400202a659",
+      "sha256": "25ffecd0dbff3efefe7182f4bfb1f2fb430c06d33c8f384fc1fe317683dc5427",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-5.png",
+      "donorPath": "spatial/assets/graticube/chakra-5.png",
+      "donorBlob": "b9d9d610c4b10f2be2c08567c4f38646d5de0aee",
+      "sha256": "fbc79f3f47c20bfb715dbf60e7f64d958e3ccec01e0c0e6cf3f767a63b2d9080",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-6.png",
+      "donorPath": "spatial/assets/graticube/chakra-6.png",
+      "donorBlob": "4d12b932149df98b0299f462df71ba1d292eff4d",
+      "sha256": "4c016a9892e1583e4b0ac27f4b1a3ba87da7aeca8bbf68f58a9c9a63a852e7f0",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-7.png",
+      "donorPath": "spatial/assets/graticube/chakra-7.png",
+      "donorBlob": "980ec8e739d36d004fc68bcdec4cc8f4f104fd03",
+      "sha256": "8a64b7c090b5874a3d77c90f8ba679ba48806ee4d2ad30e1b9b04a134f0a6266",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/chakra-8.png",
+      "donorPath": "spatial/assets/graticube/chakra-8.png",
+      "donorBlob": "acace8ea3a32899932d46e2ce15ea507c32e4d11",
+      "sha256": "ee9fe0efc7e7fccc5c4cc9a3db4a44d8b03802b86264141d00e4ad6b20a7462f",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/character-reference.jpg",
+      "donorPath": "spatial/assets/graticube/character-reference.jpg",
+      "donorBlob": "f7e1fac2aee2d83a9c2af0af2c9a7a6126105d0f",
+      "sha256": "b7610b9ee4f7964c25f24a7b3179009a90a1129d1d4e1acb8a339a76e33b5f1c",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/cosmic.png",
+      "donorPath": "spatial/assets/graticube/cosmic.png",
+      "donorBlob": "eb1930448a5992b7a23c4869010f8017a5a9ea63",
+      "sha256": "00cc94c4629d9975e4b95c7927eb9978ba75843e16580e5e9a25b47f53366a8e",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/gc-logo.png",
+      "donorPath": "spatial/assets/graticube/gc-logo.png",
+      "donorBlob": "0957a9aba9ba86738eb5454309bc6a5975c3fbd4",
+      "sha256": "99b9eab143a1211e151f3ec5bee5cc01c27c26744ecc5f4fe84e0ff242b0a6b7",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/logo-rainbow.png",
+      "donorPath": "spatial/assets/graticube/logo-rainbow.png",
+      "donorBlob": "e3fe6418f7596e69e81e0d449401f9df42e6c696",
+      "sha256": "79ad90d3eda981664746980163aeb6fb50ae59225161497f1fdb2eaf2d7a4bbf",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/graticube/wood.jpeg",
+      "donorPath": "spatial/assets/graticube/wood.jpeg",
+      "donorBlob": "57995169048291d9b30a590288ba4873c268a0a3",
+      "sha256": "70f246f72a37bafb72eb68a0d983394a910e0fffaf1694e9d4cee132e1a7b356",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/vendor/three.LICENSE",
+      "donorPath": "spatial/assets/vendor/three.LICENSE",
+      "donorBlob": "05f85a30ac0429ace78c3f796ad8143f87f47a6f",
+      "sha256": "bbe572b185c240dea9f69a33434ab2d3d8645f975d5ed29cbab53ce0917daf1c",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/assets/vendor/three.module.min.js",
+      "donorPath": "spatial/assets/vendor/three.module.min.js",
+      "donorBlob": "424ef1c8e5dd8ce1ca89c8004954b17485aef269",
+      "sha256": "f7cee3c7533449a1505cc12cb5128b89e3d4fd3d7ea62b05f9f5464a217472ee",
+      "status": "VERBATIM"
+    },
+    {
+      "path": "apps/spatial/scripts/launch.mjs",
+      "source": "ours (launcher)",
+      "sha256": "f0047cd662f888542f675136f3faeba04e5535c491f3b00383f2c429dc7ec789",
+      "status": "NEW"
+    }
+  ]
+}

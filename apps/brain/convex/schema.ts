@@ -46,4 +46,23 @@ export default defineSchema({
     merkleRootHex: v.union(v.string(), v.null()),
     lastEventAt: v.union(v.string(), v.null()),
   }),
+
+  // DURABLE IMPULSES (R34): scheduled work with explicit retry state, cancellation, and receipt linkage.
+  // status is the impulse lifecycle; attempts/maxAttempts is the retry state; chainHeadAtCompletion links the
+  // completed impulse to the receipt chain head it observed (receipt linkage, content-free).
+  impulses: defineTable({
+    name: v.string(),
+    status: v.union(v.literal('pending'), v.literal('running'), v.literal('success'), v.literal('failed'), v.literal('cancelled')),
+    attempts: v.number(),
+    maxAttempts: v.number(),
+    scheduledId: v.union(v.string(), v.null()),
+    lastError: v.union(v.string(), v.null()),
+    chainHeadAtCompletion: v.union(v.string(), v.null()),
+    advisoryOnly: v.literal(true),
+    grantsAuthority: v.literal(false),
+  }),
+
+  // The impulse SPEND CEILING (fail-closed): a single budget row; every scheduled run decrements; exhausted ⇒
+  // further impulses refuse. Raising the budget is an explicit owner action, never automatic.
+  impulseBudget: defineTable({ remaining: v.number() }),
 });
