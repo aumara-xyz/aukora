@@ -16,9 +16,14 @@ const pub = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const read = (f: string) => readFileSync(join(pub, f), 'utf-8');
 const html = read('index.html');
 const appJs = read('app.js');
+const panelsJs = read('panels.js');
+const shellHtml = read('shell.html');
+const shellJs = read('shell.js');
 const fixtureJs = read('fixture.js');
 const fixtureJson = read('fixture.json');
-const allShipped = [html, appJs, fixtureJs, fixtureJson].join('\n');
+// Everything that actually ships to the browser (both pages + the shared renderers + the fixture).
+const allShipped = [html, appJs, panelsJs, shellHtml, shellJs, fixtureJs, fixtureJson].join('\n');
+const allScripts = [appJs, panelsJs, shellJs];
 
 describe('read-only: no control surface in the browser bundle', () => {
   it('has no form or input elements', () => {
@@ -32,9 +37,18 @@ describe('read-only: no control surface in the browser bundle', () => {
     expect(html).toMatch(/id="download-fixture"/);
   });
   it('opens no network connection and uses no code-injection sink', () => {
-    for (const bad of [/\bfetch\s*\(/, /XMLHttpRequest/, /WebSocket/, /\beval\s*\(/, /\.innerHTML\b/, /new Function\s*\(/]) {
-      expect(appJs, `app.js must not contain ${bad}`).not.toMatch(bad);
+    for (const js of allScripts) {
+      for (const bad of [/\bfetch\s*\(/, /XMLHttpRequest/, /WebSocket/, /\beval\s*\(/, /\.innerHTML\b/, /new Function\s*\(/]) {
+        expect(js, `a shipped script must not contain ${bad}`).not.toMatch(bad);
+      }
     }
+  });
+  it('the spatial shell exposes only tab buttons and no form/input', () => {
+    expect(shellHtml).not.toMatch(/<form\b/i);
+    expect(shellHtml).not.toMatch(/<input\b/i);
+    const buttons = shellHtml.match(/<button\b[^>]*>/gi) ?? [];
+    expect(buttons.length).toBe(6); // exactly the six zone tabs
+    for (const b of buttons) expect(b, `button must be a tab: ${b}`).toMatch(/role="tab"/);
   });
   it('makes no forbidden alive / conscious / self-replicating claim', () => {
     // No POSITIVE claim anywhere in the shipped files.

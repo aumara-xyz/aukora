@@ -1,0 +1,112 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later
+   Spatial-shell chrome. Loads AFTER styles.css and reuses its design tokens (colors, radius, fonts).
+   Theme-aware, responsive, keyboard-accessible, reduced-motion aware. No external resources. */
+
+.shell-header h1 { font-size: clamp(1.4rem, 1rem + 1.8vw, 2.1rem); }
+
+/* ── shape rail (tablist) ──────────────────────────────────────── */
+.shape-rail {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin: 18px 0 4px; padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.shape-group-label { font: 700 11px/1 var(--mono); color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; padding: 0 2px; }
+.shape-divider { width: 1px; align-self: stretch; background: var(--line); margin: 2px 2px; }
+
+.shape-tab {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 600 13px var(--sans); color: var(--ink-soft);
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 8px 13px; cursor: pointer;
+}
+.shape-tab:hover { border-color: var(--line-strong); color: var(--ink); }
+.shape-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.shape-glyph { font-size: 13px; line-height: 1; }
+.shape--triangle .shape-glyph { color: var(--accent); }
+.shape--square .shape-glyph { color: var(--info); }
+.shape--circle .shape-glyph { color: var(--warn); }
+
+.shape-tab[aria-selected="true"] {
+  color: var(--ink); background: var(--panel); border-color: var(--accent);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.shape--triangle[aria-selected="true"] { border-color: var(--accent); box-shadow: inset 0 -2px 0 var(--accent); }
+.shape--square[aria-selected="true"] { border-color: var(--info); box-shadow: inset 0 -2px 0 var(--info); }
+.shape--circle[aria-selected="true"] { border-color: var(--warn); box-shadow: inset 0 -2px 0 var(--warn); }
+
+/* ── zone ──────────────────────────────────────────────────────── */
+.zone { margin: 18px 0 8px; scroll-margin-top: 12px; }
+.zone:focus-visible { outline: none; }
+.zone[hidden] { display: none; }
+
+.zone-head { display: flex; align-items: center; gap: 12px; margin: 6px 0 12px; }
+.zone-glyph {
+  flex: 0 0 auto; width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: 10px; font-size: 18px; background: var(--panel-2); border: 1px solid var(--line);
+}
+.zone-glyph--triangle { color: var(--accent); }
+.zone-glyph--square { color: var(--info); }
+.zone-glyph--circle { color: var(--warn); }
+.zone-headtext { flex: 1 1 auto; min-width: 0; }
+.zone-title { margin: 0; font-size: 1.15rem; letter-spacing: -0.01em; }
+.zone-desc { margin: 2px 0 0; font-size: 13px; color: var(--ink-faint); }
+.mode-chip { flex: 0 0 auto; }
+
+.zone-banner { margin: 0 0 12px; padding: 10px 14px; border-radius: 8px; font-size: 13px; border-left: 4px solid; }
+.zone-banner--lock { background: var(--warn-bg); color: var(--warn); border-color: var(--warn); }
+
+.zone-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+
+/* ── AUMA advisory strip ───────────────────────────────────────── */
+.advisory { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin: 0 0 16px; }
+.advisory-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.advisory-cannot { font: 600 12px var(--mono); color: var(--ink-faint); }
+
+/* ── AURA legend ───────────────────────────────────────────────── */
+.aura-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 14px; }
+.aura-legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-faint); }
+
+/* ── SPATIAL MAP ───────────────────────────────────────────────── */
+.spatial-fig { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
+.spatial-svg { display: block; width: 100%; height: auto; }
+.spatial-cap { margin: 6px 2px 2px; font-size: 12.5px; color: var(--ink-faint); }
+.spatial-cap strong { color: var(--ink-soft); }
+
+.edge { stroke: var(--line-strong); stroke-width: 1.2; opacity: 0.7; }
+.edge--seat { stroke: var(--line); opacity: 0.5; }
+.edge--owner-gate { stroke: var(--warn); stroke-dasharray: 4 3; opacity: 0.8; }
+.edge--receipt { stroke: var(--ok); stroke-dasharray: 4 3; opacity: 0.8; }
+
+.node-dot { stroke: var(--panel); stroke-width: 1.5; }
+.node-label { fill: var(--ink-soft); font: 600 11px var(--sans); }
+.node--core .node-dot { fill: var(--accent); }
+.node--core .node-label { fill: var(--ink); font-size: 13px; }
+.node--authority .node-dot { fill: var(--warn); }
+.node--provider .node-dot { fill: var(--info); }
+.node--council .node-dot { fill: var(--ok); }
+.node--proposal .node-dot { fill: var(--accent); }
+.node--seat .node-dot { fill: var(--ink-faint); }
+.node--seat .node-label { font-size: 10px; fill: var(--ink-faint); }
+.node--memory .node-dot { fill: var(--info); }
+.node--tombstone .node-dot { fill: var(--ink-faint); opacity: 0.7; }
+.node--memory .node-label, .node--tombstone .node-label { font-size: 10px; }
+
+/* ── SETTINGS ──────────────────────────────────────────────────── */
+.mode-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+
+/* ── KNVS placeholder ──────────────────────────────────────────── */
+.knvs-placeholder {
+  border: 1px dashed var(--line-strong); border-radius: var(--radius); padding: 20px;
+  background: repeating-linear-gradient(135deg, var(--panel), var(--panel) 10px, var(--panel-2) 10px, var(--panel-2) 20px);
+}
+
+/* ── misc ──────────────────────────────────────────────────────── */
+.other-view { font-size: 13px; }
+.other-view a, a.other-view { color: var(--accent); text-decoration: none; }
+.other-view a:hover, a.other-view:hover { text-decoration: underline; }
+p.other-view { margin: 20px 0 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .zone { animation: zone-in 0.3s ease both; }
+  @keyframes zone-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+}

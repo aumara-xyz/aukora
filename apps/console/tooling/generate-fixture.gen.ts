@@ -157,11 +157,81 @@ const council = await runAukoraFuCouncil(
   { now: NOW_MS },
 );
 
+// ── 6b. AUMA LIVE advisory context — real BrainProvider output, deterministic and offline ───────
+// This is UNTRUSTED advisory context: a provider completion grants no authority and cannot sign,
+// authorize, apply, or merge. The value is the actual DeterministicOfflineProvider output.
+const advisoryProvider = new DeterministicOfflineProvider();
+const advisoryPrompt = 'status: is the organism healthy and growing?';
+const advisoryOutput = await advisoryProvider.complete(advisoryPrompt);
+
+// ── 6c. SPATIAL MAP graph — derived from the ACTUAL organism state (not a decorative diagram) ────
+// Nodes/edges are computed from the real roster, receipt chain, and proposal. Counts equal the live
+// organism state, so the map cannot drift from the data a test can independently recompute.
+const receiptIndex = lineage.find((e) => e.provenance === 'governed-recursion')?.index ?? null;
+const spatialNodes = [
+  { id: 'auma', kind: 'core', label: 'AUMA' },
+  { id: 'authority', kind: 'authority', label: 'AUMLOK' },
+  { id: 'provider', kind: 'provider', label: advisoryProvider.id },
+  { id: 'council', kind: 'council', label: 'Fu council' },
+  ...CANONICAL_SEATS.map((s) => ({ id: `seat:${s.id}`, kind: 'seat', label: s.name })),
+  ...lineage.map((e) => ({ id: `chain:${e.index}`, kind: e.kind, label: `${e.kind} #${e.index}` })),
+  { id: 'proposal', kind: 'proposal', label: proposal.id },
+];
+const spatialEdges = [
+  { from: 'auma', to: 'authority', kind: 'governs' },
+  { from: 'auma', to: 'provider', kind: 'advises' },
+  { from: 'auma', to: 'council', kind: 'advises' },
+  ...CANONICAL_SEATS.map((s) => ({ from: 'council', to: `seat:${s.id}`, kind: 'seat' })),
+  { from: 'auma', to: 'chain:0', kind: 'memory' },
+  ...lineage.slice(1).map((e) => ({ from: `chain:${e.index - 1}`, to: `chain:${e.index}`, kind: 'chain' })),
+  { from: 'authority', to: 'proposal', kind: 'owner-gate' },
+  ...(receiptIndex !== null ? [{ from: 'proposal', to: `chain:${receiptIndex}`, kind: 'receipt' }] : []),
+];
+
+// A committed, self-contained SVG snapshot of the SPATIAL MAP — inline-styled (no external CSS/theme) so it
+// renders anywhere, including GitHub's file view. Same nodes/edges/layout as the live shell; it is a faithful
+// visual artifact of the data-driven map for the PR, not a decorative diagram.
+function buildSpatialSvgSnapshot(): string {
+  const W = 820, H = 470;
+  const seatNodes = spatialNodes.filter((n) => n.kind === 'seat');
+  const chainNodes = spatialNodes.filter((n) => n.id.startsWith('chain:'));
+  const pos: Record<string, [number, number]> = {
+    auma: [380, 235], authority: [380, 66], proposal: [170, 132], provider: [170, 360], council: [560, 150],
+  };
+  const colDY = seatNodes.length > 1 ? 400 / (seatNodes.length - 1) : 0;
+  seatNodes.forEach((n, i) => { pos[n.id] = [680, 44 + i * colDY]; });
+  chainNodes.forEach((n, i) => { pos[n.id] = [230 + i * 96, 428]; });
+  const R: Record<string, number> = { core: 26, authority: 16, provider: 14, council: 18, proposal: 14, seat: 9, memory: 11, tombstone: 11 };
+  const FILL: Record<string, string> = { core: '#6ea0ff', authority: '#e2b04a', provider: '#9cc0ff', council: '#57d08c', proposal: '#6ea0ff', seat: '#8a93a3', memory: '#9cc0ff', tombstone: '#8a93a3' };
+  const edgeStyle = (k: string) => k === 'owner-gate' ? 'stroke="#e2b04a" stroke-dasharray="4 3" opacity="0.85"'
+    : k === 'receipt' ? 'stroke="#57d08c" stroke-dasharray="4 3" opacity="0.85"'
+    : k === 'seat' ? 'stroke="#262d38" opacity="0.6"' : 'stroke="#38404d" opacity="0.7"';
+  const lines = spatialEdges.map((e) => {
+    const a = pos[e.from], b = pos[e.to]; if (!a || !b) return '';
+    return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" ${edgeStyle(e.kind)} stroke-width="1.2"/>`;
+  }).join('');
+  const dots = spatialNodes.map((n) => {
+    const p = pos[n.id]; if (!p) return '';
+    const r = R[n.kind] ?? 10, below = n.kind !== 'core';
+    const ly = p[1] + (below ? r + 13 : 4);
+    const fs = (n.kind === 'seat' || n.kind === 'memory' || n.kind === 'tombstone') ? 10 : (n.kind === 'core' ? 13 : 11);
+    const tf = n.kind === 'core' ? '#e8ecf2' : '#b3bcc9';
+    return `<circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="${FILL[n.kind] ?? '#8a93a3'}" stroke="#161b22" stroke-width="1.5"/>`
+      + `<text x="${p[0]}" y="${ly}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="${fs}" font-weight="600" fill="${tf}">${n.label.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</text>`;
+  }).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Aukora spatial map (DEMO_FIXTURE)">`
+    + `<rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="#0e1116" stroke="#262d38"/>`
+    + `<text x="16" y="26" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="#8a93a3">AUKORA SPATIAL MAP · DEMO_FIXTURE · ${spatialNodes.length} nodes / ${spatialEdges.length} edges</text>`
+    + `<g>${lines}</g><g>${dots}</g></svg>\n`;
+}
+
 // ── 7. Assemble the fixture (all values above are REAL organism / council outputs) ──────────────
 const fixture = {
   schema: 'aukora-console-fixture-v1',
   label: 'DEMO_FIXTURE',
   readOnly: true,
+  dataMode: 'DEMO_FIXTURE', // the active source; the others are labelled but not live
+  dataModes: ['DEMO_FIXTURE', 'CONVEX_TEST', 'LIVE'],
   generatedFromSeedInstant: NOW_ISO,
   provenance:
     'Generated by apps/console/tooling/generate-fixture.gen.ts running the real @aukora organism + one ' +
@@ -323,6 +393,35 @@ const fixture = {
     chainRewritten: false,
     note: 'Owner-authorized tombstone → the content is invisible to recall and never surfaced again; a content-free audit that it existed and was forgotten is kept; the historical chain is never rewritten.',
   },
+
+  // ── R30 spatial shell surfaces ────────────────────────────────────────────────────────────────
+  auma: {
+    title: 'AUMA LIVE',
+    truth: 'IMPLEMENTED',
+    providerId: advisoryProvider.id,
+    advisoryPrompt,
+    advisoryOutput, // real DeterministicOfflineProvider output — deterministic, offline
+    councilVerdict: council.verdict,
+    untrusted: true,
+    cannot: ['sign', 'authorize', 'apply', 'merge'],
+    note: 'BrainProvider output is UNTRUSTED advisory context. AUMA LIVE cannot sign, authorize, apply, or merge; only the AUMLOK owner-gate authorizes anything.',
+  },
+
+  spatial: {
+    title: 'SPATIAL MAP',
+    truth: 'IMPLEMENTED',
+    derivedFrom: { seats: CANONICAL_SEATS.length, chainEntries: lineage.length, proposals: 1, receiptChainIndex: receiptIndex },
+    nodes: spatialNodes,
+    edges: spatialEdges,
+    note: 'Driven from actual council / memory / proposal / receipt data — node and edge counts equal the real organism state, not a decorative static diagram.',
+  },
+
+  knvs: {
+    title: 'KNVS',
+    truth: 'ROADMAP',
+    state: 'PLACEHOLDER',
+    note: 'Honest placeholder. No portable, safe KNVS implementation is present in this tree; shown as a labelled placeholder, not a capability claim.',
+  },
 } as const;
 
 // ── 8. Write the committed fixture (JSON for tests/transparency, JS global for the browser) ─────
@@ -341,8 +440,14 @@ describe('generate DEMO_FIXTURE', () => {
     expect(council.quorumMet).toBe(true);
     expect(council.grantsAuthority).toBe(false);
     expect(council.actualUsd).toBe(0);
+    // R30: advisory context is present + untrusted; the spatial graph is derived from real counts.
+    expect(advisoryOutput.startsWith('advisory:offline:')).toBe(true);
+    expect(spatialNodes.filter((n) => n.kind === 'seat').length).toBe(CANONICAL_SEATS.length);
+    expect(spatialNodes.filter((n) => n.id.startsWith('chain:')).length).toBe(lineage.length);
+    expect(receiptIndex).not.toBeNull();
 
-    const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
+    const base = join(dirname(fileURLToPath(import.meta.url)), '..');
+    const outDir = join(base, 'public');
     mkdirSync(outDir, { recursive: true });
     const json = JSON.stringify(fixture, null, 2);
     writeFileSync(join(outDir, 'fixture.json'), json + '\n');
@@ -352,7 +457,11 @@ describe('generate DEMO_FIXTURE', () => {
         '// Loaded as a plain script so the console renders from file:// or any static server, with no fetch.\n' +
         `globalThis.AUKORA_CONSOLE_FIXTURE = ${json};\n`,
     );
+    // Committed visual artifact of the data-driven spatial map (self-contained SVG).
+    const docsDir = join(base, 'docs');
+    mkdirSync(docsDir, { recursive: true });
+    writeFileSync(join(docsDir, 'spatial-map.svg'), buildSpatialSvgSnapshot());
     // eslint-disable-next-line no-console
-    console.log(`  wrote fixture.json + fixture.js (${fixture.council.verdict} · ${snap.liveCount} live memories)`);
+    console.log(`  wrote fixture.json + fixture.js + docs/spatial-map.svg (${fixture.council.verdict} · ${snap.liveCount} live memories)`);
   });
 });

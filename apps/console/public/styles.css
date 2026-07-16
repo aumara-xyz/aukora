@@ -187,6 +187,10 @@ table.lineage td.mono { font-family: var(--mono); }
 
 code { background: var(--panel-2); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
 
+.other-view { margin: 20px 0 0; font-size: 13px; }
+.other-view a, a.other-view { color: var(--accent); text-decoration: none; }
+.other-view a:hover, a.other-view:hover { text-decoration: underline; }
+
 /* ── motion ───────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: no-preference) {
   .panel { animation: rise 0.4s ease both; }

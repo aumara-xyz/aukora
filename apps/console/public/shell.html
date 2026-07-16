@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Auma — Spatial Shell</title>
+  <meta name="description" content="Minimal inside-out spatial shell for the Aukora organism: Triangle (AUMA LIVE), Square (AUMLOK · AURA · SPATIAL MAP · SETTINGS), Circle (KNVS). Read-only; reuses the operator-console panels." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="shell.css" />
+</head>
+<body class="shell-body">
+  <a class="skip-link" href="#zone-main">Skip to shell</a>
+
+  <header class="site-header shell-header" role="banner">
+    <div class="wrap">
+      <p class="eyebrow">Auma · inside-out</p>
+      <h1>Spatial Shell</h1>
+      <p class="subtitle">A minimal shell around the governed organism: one live apex, four operator faces, one open frontier.</p>
+      <ul class="badges" aria-label="Shell status">
+        <li class="badge badge--demo" id="mode-badge" title="The active data source.">DEMO_FIXTURE</li>
+        <li class="badge badge--readonly" title="This shell displays state only.">READ-ONLY</li>
+        <li class="badge badge--offline" title="No cloud, no live provider, no paid API calls.">OFFLINE · $0</li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <p class="readonly-notice" role="note">
+      This shell <strong>displays</strong> the organism. It cannot sign, authorize, apply, merge, deploy, or arm anything,
+      and it carries no private keys, tokens, prompts, or secret-shaped data.
+    </p>
+
+    <!-- Geometric information architecture. One tablist; shapes group the tabs visually. -->
+    <div class="shape-rail" role="tablist" aria-label="Organism zones" id="shape-rail">
+      <span class="shape-group-label" aria-hidden="true">△ live</span>
+      <button role="tab" id="tab-auma" class="shape-tab shape--triangle" aria-controls="panel-auma" aria-selected="true" tabindex="0">
+        <span class="shape-glyph" aria-hidden="true">▲</span> AUMA LIVE
+      </button>
+      <span class="shape-divider" aria-hidden="true"></span>
+      <span class="shape-group-label" aria-hidden="true">▢ operate</span>
+      <button role="tab" id="tab-aumlok" class="shape-tab shape--square" aria-controls="panel-aumlok" aria-selected="false" tabindex="-1">
+        <span class="shape-glyph" aria-hidden="true">■</span> AUMLOK
+      </button>
+      <button role="tab" id="tab-aura" class="shape-tab shape--square" aria-controls="panel-aura" aria-selected="false" tabindex="-1">
+        <span class="shape-glyph" aria-hidden="true">■</span> AURA
+      </button>
+      <button role="tab" id="tab-map" class="shape-tab shape--square" aria-controls="panel-map" aria-selected="false" tabindex="-1">
+        <span class="shape-glyph" aria-hidden="true">■</span> SPATIAL MAP
+      </button>
+      <button role="tab" id="tab-settings" class="shape-tab shape--square" aria-controls="panel-settings" aria-selected="false" tabindex="-1">
+        <span class="shape-glyph" aria-hidden="true">■</span> SETTINGS
+      </button>
+      <span class="shape-divider" aria-hidden="true"></span>
+      <span class="shape-group-label" aria-hidden="true">◯ frontier</span>
+      <button role="tab" id="tab-knvs" class="shape-tab shape--circle" aria-controls="panel-knvs" aria-selected="false" tabindex="-1">
+        <span class="shape-glyph" aria-hidden="true">●</span> KNVS
+      </button>
+    </div>
+  </div>
+
+  <main id="zone-main" class="wrap" tabindex="-1">
+    <section role="tabpanel" id="panel-auma" aria-labelledby="tab-auma" class="zone"></section>
+    <section role="tabpanel" id="panel-aumlok" aria-labelledby="tab-aumlok" class="zone" hidden></section>
+    <section role="tabpanel" id="panel-aura" aria-labelledby="tab-aura" class="zone" hidden></section>
+    <section role="tabpanel" id="panel-map" aria-labelledby="tab-map" class="zone" hidden></section>
+    <section role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" class="zone" hidden></section>
+    <section role="tabpanel" id="panel-knvs" aria-labelledby="tab-knvs" class="zone" hidden></section>
+    <p class="loading" id="shell-loading">Loading organism state…</p>
+  </main>
+
+  <footer class="site-footer wrap" role="contentinfo">
+    <p id="shell-provenance"></p>
+    <p class="footer-actions">
+      <a class="other-view" href="index.html">← Flat operator console</a>
+      <span class="footer-hint">Preview: <code>npm run serve</code> · Regenerate: <code>npm run fixture</code></span>
+    </p>
+    <p class="footer-fine">
+      Aukora is <strong>governed · growing · remembering</strong>. It is <strong>not</strong> claimed to be alive, conscious, or
+      self-replicating. AGPL-3.0-or-later.
+    </p>
+  </footer>
+
+  <noscript><p class="wrap">This shell renders the organism fixture with JavaScript. The data is in <code>fixture.json</code>.</p></noscript>
+
+  <script src="fixture.js"></script>
+  <script src="panels.js"></script>
+  <script src="shell.js"></script>
+</body>
+</html>
