@@ -73,7 +73,7 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **180 passed / 14 files** (`npm test --workspace @aukora/seed`).
+- `apps/seed` tests: **191 passed / 15 files** (`npm test --workspace @aukora/seed`).
 - Repo `npm run test:all` (CI equivalent): PASS on this branch (incl. `test:kernel` — portable boundary, compatibility, SBOM, runtimes, package all green; 19 kernel tests).
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
@@ -236,6 +236,58 @@ sandbox-only apply; forbidden capabilities, stale epochs, tampered challenges, a
 are receipted). The UI boundary is one-way and provably fence-clean (public fingerprint + hash prefixes only; no
 key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
 encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
+
+## R36 — real governed local candidate + operational Fu
+
+Branch `sam/r36-recursion` off merged main `4ee5e46a` (R35 integrated). Two convergences, both keeping authority in-process.
+
+- **Local Git candidate stage** (`apps/seed/src/localCandidateStage.ts`) — the ONE deliberately effectful adapter.
+  A staged `BranchCandidate` (already a PASSED, receipted rehearsal) materializes into a DISPOSABLE worktree on a
+  `candidate/<id>` branch ONLY after a FRESH in-process AUMLOK hybrid verification of every draft, done here at
+  materialization time (persisted candidate/UI/Convex state is never trusted). Isolation is checked, not assumed:
+  the worktree lives OUTSIDE the repo root, the branch is created at HEAD without touching the current checkout, and
+  HEAD/main refs + the primary working tree are verified UNCHANGED after (a change → `candidate:isolation-violated`,
+  refused-and-flagged). The git surface is a runtime subcommand ALLOWLIST (`status`, `rev-parse`, `worktree`, `add`,
+  `commit`) — no push/merge/fetch/pull/reset/rebase/remote exists; the commit is `--no-gpg-sign` (a record, never a
+  signature). RECEIPT-BEFORE-EFFECT: an attempt receipt chains before any git mutation (unrecordable → refuse); the
+  completion receipt binds the commit sha + intent lineage. Replay-safe: an existing candidate branch refuses; a
+  dirty tree refuses; forbidden targets are re-fenced. Its containment is proven by its own structural tests (no
+  push/merge/sign/remote/network; allowlist + `--no-gpg-sign` present).
+- **Fu structured adapter** (`fuStructuredAdapter.ts`) — makes the REAL `runAukoraFuCouncil` operational behind
+  boundary law: injected transport (none embedded → no call), roster refuses any external reviewer (Fugu Ultra can
+  never seat), spend CLAMPED to the frozen $2/$10 ceilings and enforced fail-closed by the engine's SpendMeter
+  (projected breach refuses before any seat call), failures→non-votes (engine law), every pass RECEIPTED. A PURE
+  `verdictFromCouncilOutcome` projects the outcome to the pipeline's sync `CouncilVerdict` (quorum-met + valid basis
+  ⇒ advisory-pass with the outcome digest as evidence; insufficient quorum ⇒ hold). `reviewerFor(outcome)` is a
+  `CouncilReviewer` injected as `env.review`, so the durable gate consumes REAL Fu evidence with zero gate changes.
+  `advisoryOnly:true`/`grantsAuthority:false` throughout; a favorable verdict still never substitutes for the owner.
+
+### R36 adversarial matrix (real tmp git repo + offline transport)
+
+| control | result |
+| --- | --- |
+| happy path | disposable worktree + `candidate/<id>` branch; main/HEAD/tree untouched; no remote; exact receipt lineage |
+| candidate isolation | primary checkout byte-identical after; worktree outside repo; HEAD/main refs unchanged |
+| fresh AUMLOK verification | missing auth / forged sig / stale (expired) approval → `candidate:fresh-verification-failed` (nothing happens) |
+| dirty tree | `candidate:dirty-tree` |
+| forbidden target | `candidate:forbidden-target` (re-fenced at the door) |
+| replay / restart | existing candidate branch → `candidate:already-materialized`; worktree-in-repo → shape-refused |
+| exact receipt lineage | rehearsal → attempt (before effect) → completion (binds commit sha + intents), chain verifies |
+| Fu invalid JSON / garbage | non-votes (engine law) |
+| Fu partial council | insufficient-quorum → `advisory-hold` → durable gate `refused-council-evidence` (no owner wait) |
+| Fu spend ceiling | refuses BEFORE any seat call (0 calls) |
+| Fugu Ultra in roster | `fu:external-reviewer-in-roster` |
+| no transport | `fu:no-transport` — no paid call is possible |
+| real-evidence convergence | outcome digest is the durable workflow's `councilEvidenceDigest`; owner gate still decides |
+
+**R36 CHECK (opus-self-review):** authority never leaves the process — the candidate stage re-verifies AUMLOK
+freshly at materialization and the Fu adapter is advisory plumbing whose verdict the owner gate can always override.
+The one effectful module is fenced three ways (path re-check, git-subcommand allowlist, isolation post-conditions)
+and receipts before it acts. One design truth surfaced by tests: the receipt CHAIN is content-free by construction
+(only recordId hashes enter it), so lineage is read via `recall` (full content) while the content-free chain proves
+ordering/integrity — the evidence uses recall, not chain-payload scraping. AURA stays display-only (unchanged).
+Honest limits: `execFileSync` is synchronous (fine for a local disposable stage; a long-running server would want
+async); the candidate branch is left as durable evidence after worktree disposal (intentional — never auto-deleted).
 
 ## R35 — durable governed recursion
 
