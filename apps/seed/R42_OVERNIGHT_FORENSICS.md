@@ -83,8 +83,28 @@ Gate law unchanged at this base: exact-shape → canonical intent → lineage/st
 3. **#82 baseline-runner law** for the future experiment loop — acceptance in §1/#82.
 4. **#92 session grants** — owner-gated; acceptance in §1/#92.
 
-## 4 · Candidate outcome
+## 4 · Candidate outcome — **KEPT** (cycle 1 of 3; no further cycles needed)
 
-(filled after the cycles — see the addendum committed with the candidate.)
+Two test suites, ZERO src changes (the execution path existed; it was unproven on real payloads):
+- `packages/council/test/aukoraFuCouncil.realfixtures.test.ts` (4 tests): the five verbatim captured replies through
+  the FULL `runAukoraFuCouncil` via a deterministic fixture transport, on the donor live run's ACTUAL roster (passed
+  through the public `seats` option). **RAW mode** pins the protocol evolution: the capture predates the packet
+  envelope, so every raw reply fails CLOSED (`no-packet-block`) → insufficient-quorum — historical raw-format output
+  can never be counted by the current orchestrator. **ENVELOPE mode** (real payloads in the current canonical framing,
+  honest empty `CLAIMS:()`): the three genuinely compliant replies become REAL votes — DeepSeek's reordered-DIST
+  reply now exercises the issue-#34 parser fix at ORCHESTRATOR level — while the really-empty and really-prose
+  replies stay non-votes; the DEFAULT quorum (≥6+Fable) still refuses this historical 5-seat run; only an EXPLICIT
+  3-votes/3-families rule (public `quorum` option) completes the pass, with the blocker-5 law voiding synthesis (no
+  USED_CLAIMS in a real captured reply) → the advisory answer is a top-weighted REAL model hypothesis. Spend law:
+  projection > 0, actual $0 (no billed tokens in fixtures).
+- `apps/seed/test/r42.fu-realfixtures.test.ts` (2 tests): the same real payloads through the seed adapter
+  (`runFuAdvisory` → `verdictFromCouncilOutcome` → receipts): default-quorum run projects to `advisory-hold` (real
+  replies cannot launder a pass), receipts stay content-free (no problem text / no model text — asserted), digest
+  present, `grantsAuthority:false` end to end.
 
-NEXT: commit this report, then run candidate cycle 1 (fixture transport through runAukoraFuCouncil).
+**Fu execution continuity is now PROVEN, not asserted:** real captured model output flows through the full local
+execution path (orchestrator + seed adapter) deterministically, offline, $0, advisory-only.
+
+Suites after the candidate: seed **257/257** (+2), council **65/65** (+4), council-node 5/5, kernel 19/19, typecheck 0.
+
+NEXT: post the R42 report to issue #22 (PR opened, all suites green).
