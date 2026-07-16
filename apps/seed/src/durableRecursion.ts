@@ -183,7 +183,10 @@ export class DurableRecursion {
       return this.outcome('workflow:ok', 'resumed existing workflow (idempotent propose)', valid, null, true);
     }
 
-    const cv = mockCouncilReview(`apply ${shape.proposal.targetPath}`, [shape.proposal.newContent.slice(0, 160)], this.env.nowMs);
+    // Convergence with the real Fu boundary: an injected reviewer (e.g. reviewerFor(realCouncilOutcome)) is
+    // consumed here exactly like the offline mock — advisory evidence only, never authority.
+    const review = this.env.review ?? mockCouncilReview;
+    const cv = review(`apply ${shape.proposal.targetPath}`, [shape.proposal.newContent.slice(0, 160)], this.env.nowMs);
     const pass = cv.verdict === 'advisory-pass' && cv.basisValid && cv.evidenceDigest.length > 0;
     const phase: WorkflowPhase = pass ? 'awaiting-owner' : 'refused';
     const stage = pass ? 'awaiting-owner' : 'refused-council-evidence';

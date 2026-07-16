@@ -41,6 +41,10 @@ export type { RunnerDecision, RunnerAdmission, RunnerRefusal, RunnerReasonClass,
 // ── durable workflow (Sam 2's Convex adapter implements WorkflowStore; states are projections only) ──
 export type { WorkflowStateV1, WorkflowStore, WorkflowPhase, SaveResult, DurableOutcome, DurableReasonClass } from './durableRecursion.js';
 
+// ── real Fu adapter + local candidate stage (result shapes only) ──
+export type { FuAdvisoryResult, FuAdapterReasonClass, FuAdvisoryOpts } from './fuStructuredAdapter.js';
+export type { CandidateMaterialization, CandidateReasonClass, MaterializeInput } from './localCandidateStage.js';
+
 // ── schema names (local literals; import nothing) ──────────────────────────
 export const CONTRACT_SCHEMAS = Object.freeze({
   ceremonyView: 'aukora-ceremony-view-v1',
