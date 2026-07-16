@@ -1,0 +1,76 @@
+{
+  "schema": "aukora-spatial-projection-v1",
+  "source": "live-local",
+  "generatedAt": "2026-07-16T08:25:38.104Z",
+  "baseMain": "4ee5e46a4fdd4edf1dab8d1e408007e0e1f4059e",
+  "displayOnly": true,
+  "feedsApply": false,
+  "advisoryOnly": true,
+  "grantsAuthority": false,
+  "brainHealth": {
+    "schema": "BrainHealthSnapshotV1",
+    "mode": "in-memory",
+    "liveCount": 3,
+    "chainLength": 3,
+    "forgottenCount": 0,
+    "headHashShort": "d71f947c07d61c5c…",
+    "merkleRootShort": "ddc623a5780888c9…",
+    "verified": true,
+    "grantsAuthority": false
+  },
+  "workflow": {
+    "awaiting": {
+      "phase": "awaiting-owner",
+      "reasonClass": "workflow:ok",
+      "councilEvidenceDigestShort": "6d04b3693f3a…",
+      "proposal": "proj-awaiting",
+      "note": "held durably at the gate — a restart resumes this exact workflow without duplication"
+    },
+    "completed": {
+      "phase": "applied",
+      "reasonClass": "workflow:ok",
+      "proposal": "proj-candidate",
+      "note": "owner-signed, applied once into the isolated sandbox; completing again is a terminal no-op"
+    }
+  },
+  "fuAdvisory": {
+    "boundary": "deterministic offline advisory (in-process council reviewer)",
+    "verdict": "advisory-pass",
+    "evidenceDigestShort": "6d04b3693f3a…",
+    "advisoryOnly": true,
+    "grantsAuthority": false,
+    "note": "the review is evidence pinned by digest — it never authorizes; only the owner signature does"
+  },
+  "aumlok": {
+    "phase": "awaiting-owner",
+    "workflowProposal": "proj-awaiting",
+    "custody": "the owner key never enters this projection, the browser, or the launcher",
+    "grantsAuthority": false
+  },
+  "receipts": [
+    {
+      "index": 0,
+      "kind": "memory",
+      "provenance": "sensor",
+      "chainHashShort": "6a5e821d196e631a…"
+    },
+    {
+      "index": 1,
+      "kind": "memory",
+      "provenance": "reflection",
+      "chainHashShort": "06c627cb78a2736a…"
+    },
+    {
+      "index": 2,
+      "kind": "memory",
+      "provenance": "governed-recursion",
+      "chainHashShort": "d71f947c07d61c5c…"
+    }
+  ],
+  "candidate": {
+    "proposal": "proj-candidate",
+    "phase": "applied",
+    "liveRepoTouched": false,
+    "note": "sandbox-only candidate; materialization into a disposable worktree is Sam 3's R36 lane"
+  }
+}

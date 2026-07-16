@@ -88,6 +88,45 @@ describe('launcher port law', () => {
   });
 });
 
+// ── R36: the loopback live-local projection contract ────────────────────────────────────────────
+describe('R36 live-local projection', () => {
+  const projection = JSON.parse(readFileSync(join(base, 'projection', 'projection.json'), 'utf8'));
+  it('is the versioned display-only contract with all six R36 surfaces', () => {
+    expect(projection.schema).toBe('aukora-spatial-projection-v1');
+    expect(['live-local', 'door']).toContain(projection.source);
+    expect(projection.generatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    for (const k of ['brainHealth', 'workflow', 'fuAdvisory', 'aumlok', 'receipts', 'candidate']) {
+      expect(projection, 'missing surface ' + k).toHaveProperty(k);
+    }
+  });
+  it('carries the real organism outcomes: awaiting-owner gate + applied candidate + verified brain', () => {
+    expect(projection.workflow.awaiting.phase).toBe('awaiting-owner');
+    expect(projection.aumlok.phase).toBe('awaiting-owner');
+    expect(projection.workflow.completed.phase).toBe('applied');
+    expect(projection.candidate.phase).toBe('applied');
+    expect(projection.candidate.liveRepoTouched).toBe(false);
+    expect(projection.fuAdvisory.verdict).toBe('advisory-pass');
+    expect(projection.brainHealth.verified).toBe(true);
+    expect(projection.receipts.length).toBeGreaterThanOrEqual(3);
+  });
+  it('displayed state can never authorize: the fence holds at every level', () => {
+    expect(projection.displayOnly).toBe(true);
+    expect(projection.feedsApply).toBe(false);
+    expect(JSON.stringify(projection)).not.toMatch(/"grantsAuthority":\s*true/);
+  });
+  it('the launcher serves it at the seam with a LOUD offline fallback', () => {
+    expect(launcher).toMatch(/\/api\/spatial\/projection/);
+    expect(launcher).toMatch(/projection not generated/);
+  });
+  it('the CONSOLE organ labels live vs fixture distinctly and re-checks the fence', () => {
+    const consoleJs = readFileSync(join(base, 'app', 'console.js'), 'utf8');
+    expect(consoleJs).toMatch(/LIVE-LOCAL ORGANISM/);
+    expect(consoleJs).toMatch(/OFFLINE — live-local projection unavailable/);
+    expect(consoleJs).toMatch(/display-only fence/); // client refuses a projection that claims authority
+    expect(consoleJs).toMatch(/not live/i);          // the fixture is never presented as live
+  });
+});
+
 // ── R35 §8: exact import graph — every static /app/* module import resolves to a file ──────────
 function walkJs(dir, out = []) {
   for (const e of readdirSync(dir, { withFileTypes: true })) {

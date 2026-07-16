@@ -3,7 +3,7 @@
   "donorRepo": "github.com/aumara-xyz/aukora-symbiote",
   "donorCommit": "41707f910d10696482c28ee80346c252a55e9d41",
   "transplantedAt": "2026-07-16",
-  "rule": "subtractive transplant (issue #23 R34 owner correction): donor files byte-identical (VERBATIM) except ADAPTED (registry subtraction only) and NEW (ours — CONSOLE organ + launcher). VERBATIM entries must hash-match the donor blob; the test enforces it.",
+  "rule": "subtractive transplant (issue #23): donor files byte-identical (VERBATIM) except ADAPTED (registry subtraction only) and NEW (ours — CONSOLE organ, launcher, provenance verifier). VERBATIM entries must hash-match the donor blob; tests enforce the pins. The generated projection/ payload and tooling/ generator are ours and deliberately outside this manifest (the projection is regenerated per launch).",
   "files": [
     {
       "path": "apps/spatial/app/agora.js",
@@ -183,7 +183,7 @@
     {
       "path": "apps/spatial/app/console.js",
       "source": "apps/console evidence (ours)",
-      "sha256": "17efd8a94b9cd8e36d41ca181fe5f3082f2d096a68f63813da82dc80bb4ebabb",
+      "sha256": "f136b0f8e2a0f32fc47e7d6b7b1222a47860e10811c6f0d4cc0d16cd0296c9d7",
       "status": "NEW"
     },
     {
@@ -676,8 +676,14 @@
     },
     {
       "path": "apps/spatial/scripts/launch.mjs",
-      "source": "ours (launcher)",
-      "sha256": "f0047cd662f888542f675136f3faeba04e5535c491f3b00383f2c429dc7ec789",
+      "source": "ours (launcher/tooling)",
+      "sha256": "e21b5dd5c77660d9cda683914a9e31fee57d4e4392eb35609737cfc8e2803a7f",
+      "status": "NEW"
+    },
+    {
+      "path": "apps/spatial/scripts/verify-provenance.mjs",
+      "source": "ours (launcher/tooling)",
+      "sha256": "1dee232a41bb2ab81411680e57cbd4726b83e82dea23a19c0d10dd22e1c58ce4",
       "status": "NEW"
     }
   ]
