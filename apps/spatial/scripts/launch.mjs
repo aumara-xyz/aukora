@@ -4,14 +4,18 @@
 // Local launcher for the transplanted Aukora Spatial shell (apps/spatial). Serves the donor URL layout
 // (/ → /app/index.html, plus /app/* and /assets/* statics) so every donor-relative path works unchanged.
 //
-// CANONICAL PORT: 127.0.0.1:7096. Grounded correction to R34 §8 ("may scan 7094–7099"): the donor's OWN
-// AUMLOK doors live on 7094 (approval gate) and 7095 (binding door) — see donor aumlok.js GATE_URL/BIND_URL
-// and knvs-test.js. Binding those would shadow Peter's ceremony. RESERVED (never bound): 7090 donor spatial ·
-// 7091 chat door · 7092 voice sidecar · 7093 arc3 · 7094 AUMLOK gate · 7095 AUMLOK bind. Busy → scan 7096–7099.
+// R37 LIVE PATH: /api/spatial/projection is a REACTIVE per-request read of Sam 2's real loopback brain
+// door — the local self-hosted Convex deployment (default http://127.0.0.1:3210, override with
+// AUKORA_BRAIN_DOOR) using the stable SAM4 contracts (apps/brain/src/spatialContracts.ts). No generated
+// JSON is ever served as live; door unreachable → LOUD 503 and the shell shows its offline truth.
 //
-// The app's live features keep talking to the donor governed doors on 127.0.0.1 (loopback adapters); this
-// server is static-only (GET/HEAD, no traversal, writes nothing). Same-origin /api/* calls answer 503 with a
-// plain refusal so donor organs show their loud offline states instead of hanging.
+// PORT MAP (all reserved ports are never bound by this launcher):
+//   :7090 donor spatial · :7091 donor chat door · :7092 donor voice sidecar · :7093 arc3 lane ·
+//   :7094 AUMLOK approval gate · :7095 AUMLOK binding door ·
+//   :7096 THIS organism (canonical; fallback :7099) ·
+//   :7097 the NEW organism's chat/mind door · :7098 the NEW organism's voice sidecar ·
+//   :3210/:3211 Sam 2's local Convex brain door (read via HTTP, never bound here).
+// The donor stack stays untouched and independently usable.
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -20,9 +24,54 @@ import { dirname, join, normalize, extname } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const HOST = process.env.HOST || "127.0.0.1";
 const CANONICAL = 7096;
-const SCAN_MAX = 7099;
-const RESERVED = new Set([7090, 7091, 7092, 7093, 7094, 7095]);
-const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".ico": "image/x-icon", ".woff2": "font/woff2", ".d.ts": "text/plain; charset=utf-8" };
+const RESERVED = new Set([7090, 7091, 7092, 7093, 7094, 7095, 7097, 7098]);
+const CANDIDATES = [7096, 7099]; // 7097/7098 belong to the new organism's own services — never auto-bind them
+const BRAIN_DOOR = process.env.AUKORA_BRAIN_DOOR || "http://127.0.0.1:3210";
+const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".ico": "image/x-icon", ".woff2": "font/woff2" };
+
+// SAM4 senses used for the composed projection (names from apps/brain/src/spatialContracts.ts).
+const SENSES = { health: "memory:health", snapshot: "memory:snapshot", verify: "memory:verify" };
+
+async function queryDoor(path, args = {}) {
+  const res = await fetch(`${BRAIN_DOOR}/api/query`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ path, args, format: "json" }),
+    signal: AbortSignal.timeout(2500),
+  });
+  if (!res.ok) throw new Error(`door ${path} → HTTP ${res.status}`);
+  const body = await res.json();
+  if (body.status !== "success") throw new Error(`door ${path} → ${body.status}: ${String(body.errorMessage ?? "").slice(0, 120)}`);
+  return body.value;
+}
+
+// Reactive read: every request re-queries the door — no cache, no generated snapshot as live.
+async function composeProjection() {
+  const [health, snapshot, verify] = await Promise.all([
+    queryDoor(SENSES.health),
+    queryDoor(SENSES.snapshot),
+    queryDoor(SENSES.verify),
+  ]);
+  return {
+    schema: "aukora-spatial-projection-v2",
+    source: "door",
+    door: BRAIN_DOOR,
+    queriedAt: new Date().toISOString(),
+    displayOnly: true,
+    feedsApply: false,
+    advisoryOnly: true,
+    grantsAuthority: false,
+    brainHealth: health,
+    snapshot,
+    verify,
+    contracts: {
+      workflowState: "workflows:loadWorkflow (by workflow id)",
+      receiptStream: "rehearsal:receiptStream",
+      rehearsalStatus: "rehearsal:rehearsalStatus",
+      note: "stable SAM4 senses on the local Convex door — read-only, advisory, never an apply input",
+    },
+  };
+}
 
 function makeServer() {
   return createServer(async (req, res) => {
@@ -30,20 +79,17 @@ function makeServer() {
     let pathname = decodeURIComponent(new URL(req.url, `http://${req.headers.host}`).pathname);
     if (pathname === "/" || pathname === "/index.html") pathname = "/app/index.html";
     if (pathname === "/api/spatial/projection") {
-      // R36 loopback projection seam: serve the live-local projection generated by `npm run launch:live`
-      // (tooling/projection.gen.ts — the REAL merged-main organism, display-only, grantsAuthority:false).
-      // Missing/unreadable projection → LOUD 503 offline, never a stale or fabricated "live".
       try {
-        const data = await readFile(join(ROOT, "projection", "projection.json"));
+        const projection = await composeProjection();
         res.writeHead(200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
-        return res.end(req.method === "HEAD" ? undefined : data);
-      } catch {
+        return res.end(req.method === "HEAD" ? undefined : JSON.stringify(projection));
+      } catch (e) {
         res.writeHead(503, { "Content-Type": "application/json; charset=utf-8" });
-        return res.end(JSON.stringify({ offline: true, note: "projection not generated — run `npm run launch:live` (or `npm run projection`)" }));
+        return res.end(JSON.stringify({ offline: true, door: BRAIN_DOOR, note: "brain door unreachable — start the local Convex deployment (apps/brain) and retry", detail: String(e && e.message ? e.message : e).slice(0, 200) }));
       }
     }
     if (pathname.startsWith("/api/")) {
-      // Static launcher: donor engine APIs are not served here. 503 keeps donor organs in their offline states.
+      // Donor engine APIs are not served here. 503 keeps donor organs in their offline states.
       res.writeHead(503, { "Content-Type": "application/json; charset=utf-8" });
       return res.end(JSON.stringify({ offline: true, note: "static launcher — engine doors are separate local services" }));
     }
@@ -68,11 +114,10 @@ function listenOn(port) {
 
 const explicit = process.env.PORT ? Number(process.env.PORT) : null;
 if (explicit && RESERVED.has(explicit)) {
-  console.error(`Port ${explicit} is reserved for the donor stack (7090 spatial · 7091 door · 7092 voice · 7093 arc3 · 7094 AUMLOK gate · 7095 AUMLOK bind). Pick another.`);
+  console.error(`Port ${explicit} is reserved (7090–7095 donor/gates · 7097 chat door · 7098 voice). Pick another.`);
   process.exit(1);
 }
-const candidates = explicit ? [explicit] : [];
-if (!explicit) for (let p = CANONICAL; p <= SCAN_MAX; p++) if (!RESERVED.has(p)) candidates.push(p);
+const candidates = explicit ? [explicit] : CANDIDATES;
 
 let bound = null;
 for (const port of candidates) {
@@ -80,13 +125,14 @@ for (const port of candidates) {
   bound = await listenOn(port);
   if (bound) {
     const addr = bound.address();
-    if (addr.port !== CANONICAL && !explicit) console.log(`(canonical ${CANONICAL} busy — using next free port)`);
-    console.log(`Aukora Spatial (transplant) → http://${HOST}:${addr.port}/`);
+    if (addr.port !== CANONICAL && !explicit) console.log(`(canonical ${CANONICAL} busy — using ${addr.port})`);
+    console.log(`Aukora Spatial (new organism) → http://${HOST}:${addr.port}/`);
+    console.log(`Brain door (Sam 2, read-only) → ${BRAIN_DOOR} · chat door :7097 · voice :7098 (loud offline until running)`);
     console.log(`Donor stack untouched: :7090 spatial · :7091 door · :7092 voice · :7093 arc3 · :7094 gate · :7095 bind.`);
     break;
   }
 }
 if (!bound) {
-  console.error(`No free port in ${CANONICAL}–${SCAN_MAX}. Run with PORT=<port> to choose one explicitly.`);
+  console.error(`No free candidate port (${CANDIDATES.join(", ")}). Run with PORT=<port> to choose one explicitly.`);
   process.exit(1);
 }

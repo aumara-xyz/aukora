@@ -3,7 +3,7 @@
 // Threads are client-side transcripts (localStorage) over ONE shared engine
 // session: whatever any thread teaches the loop lands in the same Kira brain —
 // one being, one memory. The Aukora threads speak the governed workbench
-// grammar through the chat door (7091); friend-to-friend threads are a future
+// grammar through the chat door (7097 — the new organism's own door; donor :7091 untouched); friend-to-friend threads are a future
 // organ (node-to-node messaging) and appear as soon-rows only.
 //
 // Nothing in this lane can apply anything: proposals halt for the AUMLOK
@@ -11,7 +11,7 @@
 
 import { award } from '/app/aura-core.js';
 
-const CHAT_DOOR = 'http://127.0.0.1:7091';
+const CHAT_DOOR = 'http://127.0.0.1:7097'; // R37: the NEW organism's chat door — never the donor :7091
 const APP_LAB_ORGAN = 'app-lab';
 const MAX_IMAGE_BYTES = 2_500_000;   // dataURL preview cap
 const MAX_TEXT_BYTES = 256_000;      // inline-into-message cap
