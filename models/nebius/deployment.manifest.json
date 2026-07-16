@@ -1,0 +1,23 @@
+{
+  "schema": "aukora-nebius-runtime-v1",
+  "description": "Reproducible, bounded, PARKED Nebius brain container/runtime manifest. Prepared this round, not launched. Bound to a code SHA, an image digest, and a model checksum, with hard call/token/time/cost ceilings and a PR-only output contract. Consumed by apps/brain/src/nebiusProvider.ts (validateNebiusManifest / NebiusBrainProvider).",
+  "imageSha256": "",
+  "codeSha256": "",
+  "modelChecksumSha256": "",
+  "ceilings": {
+    "maxOutputTokens": 512,
+    "maxWallClockMs": 60000,
+    "maxCostUsd": 0.5,
+    "maxCallsPerSession": 8
+  },
+  "credentials": "env",
+  "outputContract": "pr-only",
+  "runtime": {
+    "entrypoint": "aukora-brain-nebius",
+    "reproducible": true,
+    "networkPolicy": "pinned-only"
+  },
+  "enabled": false,
+  "autonomousMerge": false,
+  "grantsAuthority": false
+}
