@@ -19,11 +19,12 @@
  * NEVER signs (verification only); a favorable council verdict can NEVER substitute for the owner's signature;
  * replays, stale/forged signatures, target/content mismatch, secret-shaped patches, invalid lineage, and missing
  * council evidence all fail closed. This orchestrator reuses canonical law only — @aukora/evidence (secret scan),
- * @aukora/memory (staleness, containment, receipts), @aukora/council (advisory basis), @aukora/kernel/authority
+ * @aukora/memory (containment, receipts), @aukora/kernel/staleness (the canonical staleness law), @aukora/council (advisory basis), @aukora/kernel/authority
  * (hybrid AUMLOK verify), @aukora/brain (receipt-chained memory).
  */
 import { textHasSecret } from '@aukora/evidence';
-import { stalenessVerdict, advisoryContainmentGrantsAuthority, buildMemoryRecord } from '@aukora/memory';
+import { advisoryContainmentGrantsAuthority, buildMemoryRecord } from '@aukora/memory';
+import { stalenessVerdict } from '@aukora/kernel/staleness'; // canonical staleness law (single source)
 import type { ReactiveMemoryStore } from '@aukora/brain';
 import type { AumlokAuthorityRootV2, SignedPromotionV2 } from '@aukora/kernel/schemas';
 import {
@@ -33,6 +34,7 @@ import type { RecursionLedger } from './ledger.js';
 import { mockCouncilReview, type CouncilReviewer, type CouncilVerdict } from './mockCouncil.js';
 import { verifyOwnerPromotion, AUMLOK_MODE } from './aumlokGate.js';
 import { AuraTraceLog, TRACE_LIMITS, type TracePhase } from './auraTrace.js';
+import { metabolismDecision } from './metabolism.js';
 
 /** An owner authorization is a hybrid AUMLOK signed promotion — never an Ed25519-only shape. */
 export type OwnerAuthorization = SignedPromotionV2;
@@ -53,6 +55,9 @@ export interface RecursionEnv {
   readonly review?: CouncilReviewer;
   /** Optional AURA trace log (TRACE_ONLY). Every terminal outcome emits a scrubbed trace here; authorizes nothing. */
   readonly trace?: AuraTraceLog;
+  /** Optional metabolism capacity in [0,1] — a MONOTONIC CONTRACTION input. Low capacity can only ADD a refusal;
+   *  it can never grant authority or turn a refusal into an acceptance. */
+  readonly metabolismCapacity?: number;
 }
 
 export interface RecursionResult {
@@ -148,6 +153,14 @@ export function runGovernedRecursion(env: RecursionEnv, proposalInput: unknown, 
   // HARD STOP 2 — wall-time budget.
   if (!Number.isSafeInteger(env.nowMs) || env.nowMs > env.deadlineMs) {
     return finalize(env, seq, { accepted: false, stage: 'hard-stop-wall-time', refusals: ['hard-stop: wall-time budget exceeded'], intentId: null }, '<wall-time>');
+  }
+
+  // METABOLIC CONTRACTION — a refuse-only resource gate. Low capacity defers work; it never grants authority.
+  if (env.metabolismCapacity !== undefined) {
+    const metabolic = metabolismDecision(env.metabolismCapacity);
+    if (!metabolic.admit) {
+      return finalize(env, seq, { accepted: false, stage: 'refused-metabolic-contraction', refusals: [metabolic.reason], intentId: null }, '<contracted>');
+    }
   }
 
   // 1. Exact-shape validation (snapshot-first; smuggling rejected). Untrusted input never flows past this.

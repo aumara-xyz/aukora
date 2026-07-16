@@ -58,6 +58,10 @@
       "types": "./dist/schema.d.ts",
       "import": "./dist/schema.js"
     },
+    "./staleness": {
+      "types": "./dist/staleness.d.ts",
+      "import": "./dist/staleness.js"
+    },
     "./conformance/v1.json": "./conformance/v1.json",
     "./conformance/hybrid-v1.json": "./conformance/hybrid-v1.json",
     "./conformance/manifest.json": "./conformance/manifest.json",

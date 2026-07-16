@@ -73,8 +73,8 @@ Hard stops enforced up front: **max attempts** (64), **wall-time** deadline, **p
 ## Verification
 
 - `apps/seed` typecheck: PASS (`tsc -p apps/seed/tsconfig.json`, exit 0).
-- `apps/seed` tests: **98 passed / 9 files** (`npm test --workspace @aukora/seed`).
-- Repo `npm run test:all` (CI equivalent): PASS on this branch.
+- `apps/seed` tests: **125 passed / 11 files** (`npm test --workspace @aukora/seed`).
+- Repo `npm run test:all` (CI equivalent): PASS on this branch (incl. `test:kernel` — portable boundary, compatibility, SBOM, runtimes, package all green; 19 kernel tests).
 - Secret self-scan of `apps/seed/src/*.ts` with `@aukora/evidence` `scanForSecrets`: 0 findings.
   (Test files carry deliberate, well-known example vectors — e.g. `AKIAIOSFODNN7EXAMPLE` — as fixtures only.)
 
@@ -187,6 +187,48 @@ so it is retryable. The trace fence is a separate module with no read path into 
 fence a safe stage category plus a ≤12-hex prefix. Honest limitation carried forward: "wall time" remains an
 injected deadline, not measured elapsed time.
 
+## R32 — canonical staleness / Auma IDE envelope / council pack
+
+One-round narrow lease: `apps/seed/**` + only the canonical-staleness files/exports/tests under `packages/kernel/**`.
+
+- **Staleness P0 → one canonical law in the kernel.** New `packages/kernel/src/staleness.ts` (exported as
+  `@aukora/kernel/staleness`) is the single source: strict canonical time (`parseCanonicalIsoUtcMs` + a pure
+  `canonicalIsoFromMs`, NO ambient `Date`), donor semantics preserved (unknown age flagged stale; a stale/unknown
+  draft cannot mint without an explicit revive in the same gesture via `challengeStalenessGate`; grants no authority;
+  UI renders verdicts, never recomputes). apps/seed now imports staleness from the kernel canonical. Kernel gate green
+  (compatibility manifest regenerated; boundary/SBOM/runtimes/package pass). **CROSS-LANE FLAG:** `packages/memory/src/staleness.ts`
+  (SAM 2's lane, PR #18 — off my lease) should be collapsed to `export * from '@aukora/kernel/staleness'` to finish the
+  one-law consolidation; the kernel law is API-compatible so the re-export is drop-in.
+- **Auma IDE envelope R0–R3** (`apps/seed/src/ideEnvelope.ts`, over an INJECTED read-only `RepoReadCapability` — no fs
+  import): R0 confined list/read/search with visible fence refusals; R1 integrity-checked, content-addressed recall
+  with citations (gated on chain verification); R2 draft (candidate-able target only) + rehearse against real files in
+  the sandbox (owner-signed; verbatim refusal logs); R3 `stageBranchCandidate` ONLY after a PASSED rehearsal — isolated
+  workspace + diff + receipts + explanation + lineage; `pushed/signed/merged/deployed/grantsAuthority` are hard-false
+  literals. `apps/seed/src/pathFence.ts` classifies every path allowed/authority/sacred/secret/invalid: secret never
+  read, sacred/authority readable but never candidate-able, stable reason classes + quotable text. Auma reasons over
+  the whole repo but never past the secret/authority fences.
+- **Read-only Spatial stream** (`apps/seed/src/eventStream.ts`) — `spatialStream` exposes geometry frames through a
+  read-only view (`feedsApply:false`, `grantsAuthority:false`, no write/apply/mutate method); display never feeds an apply.
+- **Metabolism as monotonic contraction** (`apps/seed/src/metabolism.ts`) — capacity in [0,1] only decreases; the gate
+  reads `env.metabolismCapacity` and can only ADD a refusal (`refused-metabolic-contraction`), never grant/expand authority.
+- **CouncilEvidencePackV1** (`apps/seed/src/councilPack.ts`) — head/tree, bounded scrubbed diff, tests, claims, refusals,
+  receipt refs, digest; `scrubText` redacts secret/production/authority lines; a final fence audit fails closed on residue.
+  `verifyCouncilPack` re-derives the digest for an external reviewer. Advisory; `councilVerdictWaivesGates()` is a hard false.
+
+### R32 adversarial matrix
+
+| control | result |
+| --- | --- |
+| hostile repo paths (absolute, traversal, secret) | `fence:invalid-path` / `fence:secret-path`; never read |
+| authority/sacred source | readable for reasoning, never candidate-able |
+| staged-candidate escape (hand-built sacred/authority target) | refused at stage (fence re-check) |
+| receipt-before-effect / unrehearsed draft | `ide:not-rehearsed` — never staged without a passed, receipted rehearsal |
+| capability widening | no widen/addCapability/sign/push/merge/deploy method exists |
+| display → authority leakage | Spatial stream is read-only, `feedsApply:false`, no write surface |
+| stale replay / unknown-age | canonical kernel staleness refuses; replay never mints |
+| metabolic contraction | refuse-only; a valid owner sig is still refused under contraction |
+| council pack secrets | scrubbed + fail-closed audit; digest-verifiable; advisory-only |
+
 **R31 CHECK (opus-self-review):** the ceremony is a thin formalization over the already-hardened gate — the owner
 signature (over intentId+draftHash+nonce) remains the sole authority boundary; the ceremony's epoch/capability/
 gateArgs gates are additive constraints and cannot escalate (every allowed capability leads to the same
@@ -195,5 +237,15 @@ are receipted). The UI boundary is one-way and provably fence-clean (public fing
 key material, no full 64-hex, no sandbox content), so no authority can be derived from display state. Geometry
 encodes the decided verdict as bounded numbers, so the Spatial shell renders without recomputing governance.
 
-CODEX FUSION REQUEST: run PRE council over the R29+R30+R31 plan-of-record above.
+**R32 CHECK (opus-self-review):** the staleness move is a single canonical law in the lowest package (kernel), strict
+and deterministic, with apps/seed switched to it and the one remaining parallel copy (memory, off-lease) flagged for a
+drop-in re-export. The IDE envelope keeps every stronger invariant load-bearing: the read fence never surfaces secret
+material, the candidate fence is re-checked at stage so a hand-built proposal can't escape to sacred/authority, R3
+stages only after an owner-signed rehearsal that already produced a receipt, and the envelope has no tool-widening or
+signing surface at all. Display (Spatial stream) and resource state (metabolism) are structurally one-directional —
+one can only be read, the other can only refuse. Honest limitation: the IDE envelope reads the repo through an injected
+capability rather than shipping a real fs adapter this round, so the fence law is proven against a fake repo; the thin
+fs adapter is a follow-up (keeps the law pure and the runtime fs-free).
+
+CODEX FUSION REQUEST: run PRE council over the R29+R30+R31+R32 plan-of-record above.
 CODEX FUSION REQUEST: run POST council over this evidence document (fresh digest recorded in the PR body + issue #22).
