@@ -1,0 +1,214 @@
+{
+  "schema": "aukora-anatomy-genome-v0",
+  "wave": 1,
+  "status": "READ_ONLY_FORENSICS_COMPLETE — this is the map, not the port. Dispositions pending owner ratification. No implementation occurred this wave.",
+  "anatomy_spec": "https://github.com/aumara-xyz/aukora/issues/53",
+  "pins": {
+    "current_main": "b38d625697470c9da11afdab106c800260245bf8",
+    "donors": {
+      "aukora-kernel": {
+        "url": "https://github.com/aumara-xyz/aukora-kernel",
+        "commit": "b441edc4d17d",
+        "tree": "711336558a13"
+      },
+      "aukora-fu": {
+        "url": "https://github.com/aumara-xyz/aukora-fu",
+        "commit": "60d2145d7492",
+        "tree": "9439710dd75a"
+      },
+      "aukora-symbiote": {
+        "url": "https://github.com/aumara-xyz/aukora-symbiote",
+        "commit": "41707f910d10",
+        "tree": "7020cc0230fa",
+        "private": true
+      }
+    },
+    "lane_forensic_heads": {
+      "sam2_kernel_kira_brain": "bdc8990175f46d40fe2076c185d1b0001f54dab7",
+      "sam3_fu_aumlok_aura_recursion": "b8b7c82fe38d7722de0a8574e2565ce0a6ad2206",
+      "sam4_complete_symbiote": "d2934b692c2b42b519e690d1ee76c4aa71f88bd5"
+    }
+  },
+  "vocabulary": [
+    "EXACT_PORT",
+    "MOVED_UNCHANGED",
+    "ADAPTED_BOUNDARY",
+    "SUPERSEDED_WITH_COMPARATIVE_PROOF",
+    "EXCLUDED_BY_PETER",
+    "MISSING"
+  ],
+  "evidence_grades": {
+    "FILE": "byte/blob-level provenance (hash-verified)",
+    "BEHAVIOR": "law-level parity proven by comparative/negative tests",
+    "LIVE": "end-to-end lifecycle evidence on a running organism",
+    "rule": "Green unit tests are NOT continuity proof. Each capability carries all three grades independently."
+  },
+  "file_level_totals_vs_complete_symbiote_donor": {
+    "total_donor_files": 1139,
+    "MISSING": 1069,
+    "MOVED_UNCHANGED": 13,
+    "EXACT_PORT": 46,
+    "ADAPTED_BOUNDARY": 10,
+    "SUPERSEDED_WITH_COMPARATIVE_PROOF": 1,
+    "note": "1069 MISSING at file level includes product organs pending owner exclusion rulings — MISSING is a statement, not a verdict. See owner_decisions_required."
+  },
+  "capability_families": [
+    {
+      "family": "kernel/authority/evidence/council",
+      "lane": "sam2+sam3",
+      "map_complete": true,
+      "headline": "EXACT_PORT core (10 pinned blobs verified this round); staleness SUPERSEDED_WITH_COMPARATIVE_PROOF (fail-closed beats donor Date.parse)",
+      "missing": []
+    },
+    {
+      "family": "KIRA memory",
+      "lane": "sam2",
+      "map_complete": true,
+      "headline": "content-free chain SUPERSEDED_WITH_PROOF (removes plaintext, donor kept it); receipt-before-row preserved",
+      "missing": [
+        "signed recall proof-of-possession",
+        "signed erase attestation + erasure receipts",
+        "PQC-signed chain heads",
+        "donor memory categories as distinct runtimes (episode/hypothesis/mdlProcess/structural, ide_memory, womb-memory)",
+        "node identity/trust registry/kill switch (multi-node era)"
+      ]
+    },
+    {
+      "family": "AUMLOK ceremony/custody/onboarding",
+      "lane": "sam3",
+      "map_complete": true,
+      "headline": "verification core EXACT_PORT; ceremony CONTRACT formalized; the complete donor ceremony/onboarding/custody/bind flow is donor-side",
+      "missing": [
+        "aumlokApproveCeremony/Challenge/Guard",
+        "aumlokBondCeremony",
+        "aumlokSigningAssistant",
+        "approval/authority roots",
+        "spatial approve/bind doors (custody)"
+      ]
+    },
+    {
+      "family": "AURA trace/geometry",
+      "lane": "sam3",
+      "map_complete": true,
+      "headline": "trace law + forbiddenContent EXACT_PORT; glyph ENGINE moved unchanged",
+      "missing": [
+        "seed wiring of the full evolving glyph-field geometry (current geometry.ts is a bounded display scalar)"
+      ]
+    },
+    {
+      "family": "Fu council/routing/transports",
+      "lane": "sam3",
+      "map_complete": true,
+      "headline": "pure council EXACT_PORT; runner boundary present",
+      "missing": [
+        "live in-organism multi-provider transport (advisory-only, key-gated)"
+      ]
+    },
+    {
+      "family": "recursion/rehearsal/candidate staging",
+      "lane": "sam3",
+      "map_complete": true,
+      "headline": "donor REPL+sandbox SUPERSEDED_WITH_PROOF (disposable worktree + kernel decide() beats same-host allowlist)",
+      "missing": []
+    },
+    {
+      "family": "reactive brain/Convex",
+      "lane": "sam2",
+      "map_complete": true,
+      "headline": "authority moved OUTSIDE Convex (SUPERSEDED boundary law: kernel decides, Convex persists)",
+      "missing": [
+        "donor in-Convex manifest-write law retained as reference only"
+      ]
+    },
+    {
+      "family": "spatial embodiment + product organs",
+      "lane": "sam4",
+      "map_complete": true,
+      "headline": "transplanted subset EXACT_PORT (46) + shell; the rest of the 1139-file donor mapped file-by-file",
+      "missing": [
+        "bulk of product organs pending EXCLUDED_BY_PETER rulings — see decisions"
+      ]
+    }
+  ],
+  "future_supervisor_gateway_source": {
+    "rule": "Inventory only this wave — NOT implemented.",
+    "donor_issue_71": {
+      "repo": "aukora-symbiote",
+      "state": "open",
+      "note": "metadata pinned; private content not copied"
+    },
+    "donor_issue_26": {
+      "repo": "aukora-symbiote",
+      "state": "open",
+      "note": "metadata pinned; private content not copied"
+    },
+    "convex_canonical_brain_spec": {
+      "path": "docs/CONVEX_CANONICAL_BRAIN_SPEC.md",
+      "blob_sha_prefix": "a3af164bef32b4a5",
+      "size": 16690,
+      "repo": "aukora-symbiote"
+    }
+  },
+  "genome_readiness_assessment": {
+    "question": "Can this ledger later serve as an executable organism genome?",
+    "answer": "YES — this manifest is drafted in the ANATOMY (#53) schema lineage; the addendum's eight genome fields are declared below and graded INVENTORY_ONLY this wave. Wave 2+ fills them per organ.",
+    "genome_fields": [
+      "identity+donor provenance",
+      "dependency closure (incl. n-ary)",
+      "readiness/health probe + signal provenance",
+      "durable state location + receipt/event chain",
+      "protected supervisor/lifecycle ownership",
+      "admission behavior + maximum authority effect",
+      "restart/isolation/recovery/rollback policy",
+      "runtime recovery proof + claim/evidence grade"
+    ],
+    "lifecycle_inventory": "OBSERVE→HOLD EVIDENCE→TRACE→PROPOSE→AUTHORIZE→REHEARSE/APPLY IN ISOLATION→VERIFY→COMMIT OR ROLLBACK→RECEIPT — present today as: door receipts (OBSERVE/EVIDENCE), AURA trace (TRACE), proposal+Fu (PROPOSE), kernel decide() (AUTHORIZE), disposable worktree (REHEARSE/ISOLATION), gate tests (VERIFY), candidate branch (COMMIT), receipts chain (RECEIPT). Rollback policy = declared gap.",
+    "constraints_acknowledged": [
+      "observer may inspect/start/stop/isolate/contract/propose — never sign/promote/widen/silently release",
+      "Convex persists/projects; AUMLOK authorizes",
+      "one external gateway preserves the tiny reference monitor",
+      "private research analogy ≠ implementation or public proof"
+    ]
+  },
+  "consolidated_missing_and_conflicts": {
+    "p0_authority": [
+      "signed erase attestation + erasure receipts",
+      "PQC-signed chain heads",
+      "complete AUMLOK ceremony/custody/onboarding flow"
+    ],
+    "p1_organism": [
+      "donor memory categories as runtimes",
+      "full glyph-field geometry wiring",
+      "live Fu transport (advisory, key-gated)",
+      "signed recall PoP"
+    ],
+    "p2_scale": [
+      "node identity/trust registry/kill switch (multi-node)",
+      "product organs pending exclusion rulings"
+    ],
+    "conflicts": [
+      "donor in-Convex authority vs current outside-Convex law — Wave 1 records current law as SUPERSEDED_WITH_PROOF; owner may ratify or overturn"
+    ]
+  },
+  "wave2_merge_order": [
+    "1. AUMLOK ceremony/custody/onboarding port (P0 — restores the owner's full approve/bind flow; donor files named by Sam 3)",
+    "2. Signed erase attestation + erasure receipts + PQC chain heads (P0 — closes the attestation gaps Sam 2 named)",
+    "3. Donor memory categories: carry rows via migration bridge, then per-category behaviors (P1)",
+    "4. Glyph-field geometry wiring into seed (P1 — engine already present)",
+    "5. Live Fu transport behind runner boundary (P1 — advisory-only, key-gated, spend-capped)",
+    "6. Supervisor/gateway from donor #71/#26 + CONVEX_CANONICAL_BRAIN_SPEC (after core; one external gateway)",
+    "7. Spatial organ set per owner exclusion rulings (Wave 4 proper)"
+  ],
+  "owner_decisions_required": [
+    "Ratify or overturn each SUPERSEDED_WITH_COMPARATIVE_PROOF (esp. authority-outside-Convex and staleness fail-closed)",
+    "Rule EXCLUDED_BY_PETER per product organ family in the 1069 MISSING files (agora/forge/wolf/etc.) — until ruled, they stay MISSING and blocking",
+    "Confirm P0 order above; confirm multi-node families stay parked",
+    "Ratify the genome fields as the Wave 2+ anatomy schema (merges #53 with the addendum)"
+  ],
+  "round_close_check": {
+    "rule": "Refuse close if any donor family is absent from the capability map",
+    "families_mapped": 8,
+    "families_absent": 0,
+    "verdict": "MAP COMPLETE — close permitted. (Port completeness is a different number and is stated honestly above.)"
+  }
+}
