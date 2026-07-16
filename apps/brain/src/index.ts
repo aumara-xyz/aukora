@@ -12,3 +12,7 @@ export * from './nodePrint.js';
 export * from './supervisedGeneration.js';
 export * from './healthContract.js';
 export * from './offlineExecutor.js';
+export * from './reactiveBrainAdapter.js';
+export * from './perceptionProvider.js';
+export * from './memoryBridge.js';
+export * from './metabolismSimulator.js';
