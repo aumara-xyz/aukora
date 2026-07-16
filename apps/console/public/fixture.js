@@ -25,8 +25,8 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     "title": "AUMLOK authority",
     "lockState": "LOCKED",
     "truth": "IMPLEMENTED",
-    "gate": "Owner-gate — Ed25519 signature over the canonical proposal digest",
-    "ownerPublicKeyHex": "541dda3eb6e0b6801b6acfd9c961608432bd54f33b52dc74346cee2d2c0b61b4",
+    "gate": "Owner-gate — hybrid Ed25519 + ML-DSA-65 signatures over the canonical intent/draft binding",
+    "ownerPublicKeyHex": "03351b005275a91dcdf1dd5f608a01756087789edd17981539e566719bba803a",
     "noModelCanSign": true,
     "grantsAuthority": false,
     "productionSuite": "aumlok-ed25519-ml-dsa-65-v1 — hybrid Ed25519 + ML-DSA-65 verify (verifyAumlokPromotionV2 in @aukora/kernel/authority)",
@@ -35,11 +35,11 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
   "memory": {
     "title": "Reactive memory",
     "truth": "IMPLEMENTED",
-    "liveCount": 2,
-    "chainLength": 4,
+    "liveCount": 3,
+    "chainLength": 5,
     "forgottenCount": 1,
-    "headHashShort": "fba0737ed9c49dbb…",
-    "merkleRootShort": "683dbde0ea5a02a4…",
+    "headHashShort": "0a06f00a5a774a80…",
+    "merkleRootShort": "545ee992180d6336…",
     "lastEventAt": "2026-07-16T08:00:05.000Z",
     "growth": [
       {
@@ -54,8 +54,8 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
       },
       {
         "step": "owner-signed proposal → receipt memory",
-        "liveCount": 3,
-        "chainLength": 3
+        "liveCount": 4,
+        "chainLength": 4
       }
     ],
     "note": "Snapshot recomputes on every ingest/forget; live memory count strictly rises across ingests."
@@ -64,14 +64,14 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     "title": "Receipt & Merkle lineage",
     "truth": "IMPLEMENTED",
     "verified": true,
-    "merkleRootShort": "683dbde0ea5a02a4…",
+    "merkleRootShort": "545ee992180d6336…",
     "entries": [
       {
         "index": 0,
         "kind": "memory",
         "provenance": "sensor",
         "recordIdShort": "b130cc53f3a4…",
-        "chainHashShort": "70e847f20cecc3d7…",
+        "chainHashShort": "5cb7d5f3f94d4571…",
         "prevHashShort": null
       },
       {
@@ -79,24 +79,32 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
         "kind": "memory",
         "provenance": "reflection",
         "recordIdShort": "e6bc28b014c9…",
-        "chainHashShort": "7a4427a04fe35fb2…",
-        "prevHashShort": "70e847f20cecc3d7…"
+        "chainHashShort": "be3283808fd26007…",
+        "prevHashShort": "5cb7d5f3f94d4571…"
       },
       {
         "index": 2,
         "kind": "memory",
         "provenance": "governed-recursion",
-        "recordIdShort": "dde5dbf3150a…",
-        "chainHashShort": "49ebe346aac84ed9…",
-        "prevHashShort": "7a4427a04fe35fb2…"
+        "recordIdShort": "09c1fb0b557d…",
+        "chainHashShort": "aead5717907dd7be…",
+        "prevHashShort": "be3283808fd26007…"
       },
       {
         "index": 3,
+        "kind": "memory",
+        "provenance": "governed-recursion",
+        "recordIdShort": "710dbba1edcc…",
+        "chainHashShort": "c26a9b7fa4f0a646…",
+        "prevHashShort": "aead5717907dd7be…"
+      },
+      {
+        "index": 4,
         "kind": "tombstone",
         "provenance": null,
         "recordIdShort": null,
-        "chainHashShort": "fba0737ed9c49dbb…",
-        "prevHashShort": "49ebe346aac84ed9…"
+        "chainHashShort": "0a06f00a5a774a80…",
+        "prevHashShort": "c26a9b7fa4f0a646…"
       }
     ],
     "note": "Append-only receipt chain (memories + content-free tombstones); the canonical verifier detects any tampered link. Entries carry hashes and kinds only — never plaintext."
@@ -118,7 +126,7 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     ],
     "refusedWithoutOwner": {
       "accepted": false,
-      "stage": "owner-gate-refused",
+      "stage": "refused-owner-gate",
       "councilVerdict": "advisory-pass",
       "sandboxApplied": false,
       "meaning": "advisory review ran and PASSED, yet the owner-gate refused — review never authorizes."
@@ -127,7 +135,7 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
       "accepted": true,
       "stage": "sandbox-applied",
       "sandboxApplied": true,
-      "receiptHashShort": "49ebe346aac84ed9…",
+      "receiptHashShort": "c26a9b7fa4f0a646…",
       "liveRepoTouched": false,
       "meaning": "owner-signed → applied to an ISOLATED in-memory sandbox; the live repository is never written."
     },
@@ -247,17 +255,17 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
       {
         "id": "qwen2.5-vl-32b-instruct",
         "label": "base vision-language model",
-        "truth": "AVAILABLE_PRIVATE"
+        "truth": "UNVERIFIED_OR_PARKED"
       },
       {
         "id": "auma-vl-lora",
-        "label": "Auma-VL LoRA ladder (v5..v17 reported; provenance pending)",
-        "truth": "AVAILABLE_PRIVATE"
+        "label": "Auma-VL LoRA ladder (v5..v17 reported; provenance out-of-repo)",
+        "truth": "UNVERIFIED_OR_PARKED"
       },
       {
         "id": "liquid-candidate",
-        "label": "Liquid AI candidate (licensing concerns)",
-        "truth": "BLOCKED"
+        "label": "Liquid AI candidate",
+        "truth": "UNVERIFIED_OR_PARKED"
       },
       {
         "id": "nemotron",
@@ -267,6 +275,11 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
       {
         "id": "router-3b-seed",
         "label": "~3B router seed",
+        "truth": "DESIGN_ONLY"
+      },
+      {
+        "id": "mopd-distillation",
+        "label": "MOPD distillation",
         "truth": "DESIGN_ONLY"
       }
     ],
@@ -335,7 +348,7 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     "truth": "IMPLEMENTED",
     "derivedFrom": {
       "seats": 8,
-      "chainEntries": 4,
+      "chainEntries": 5,
       "proposals": 1,
       "receiptChainIndex": 2
     },
@@ -417,8 +430,13 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
       },
       {
         "id": "chain:3",
+        "kind": "memory",
+        "label": "memory #3"
+      },
+      {
+        "id": "chain:4",
         "kind": "tombstone",
-        "label": "tombstone #3"
+        "label": "tombstone #4"
       },
       {
         "id": "proposal",
@@ -503,6 +521,11 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
         "kind": "chain"
       },
       {
+        "from": "chain:3",
+        "to": "chain:4",
+        "kind": "chain"
+      },
+      {
         "from": "authority",
         "to": "proposal",
         "kind": "owner-gate"
@@ -520,11 +543,11 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     "source": "fixture-fallback",
     "mode": "in-memory",
     "convexMode": "in-memory",
-    "liveCount": 2,
-    "chainLength": 4,
+    "liveCount": 3,
+    "chainLength": 5,
     "forgottenCount": 1,
-    "headHashShort": "fba0737ed9c49dbb…",
-    "merkleRootShort": "683dbde0ea5a02a4…",
+    "headHashShort": "0a06f00a5a774a80…",
+    "merkleRootShort": "545ee992180d6336…",
     "verified": true,
     "lastEventAt": "2026-07-16T08:00:05.000Z",
     "grantsAuthority": false
@@ -702,7 +725,7 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
           {
             "kind": "receipt",
             "provenance": "governed-recursion",
-            "recordIdShort": "dde5dbf3150a…",
+            "recordIdShort": "09c1fb0b557d…",
             "note": "an owner-signed candidate, rehearsed in sandbox"
           }
         ]
@@ -840,7 +863,7 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
         "id": "memory",
         "title": "Memory",
         "gist": "an append-only receipt chain with a Merkle root; growth is provable, forgetting is governed",
-        "proof": "chain 4 entries · verified true · 2 live after one governed forget"
+        "proof": "chain 5 entries · verified true · 3 live after one governed forget"
       },
       {
         "id": "council",
@@ -852,13 +875,13 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
         "id": "gate",
         "title": "AUMLOK · AURA",
         "gist": "only the owner signature authorizes; AURA is the coherence the witnessed ceremony grows",
-        "proof": "unsigned proposal → owner-gate-refused; owner-signed → sandbox-applied"
+        "proof": "unsigned proposal → refused-owner-gate; owner-signed → sandbox-applied"
       },
       {
         "id": "candidate",
         "title": "Candidate recursion",
         "gist": "an accepted change rehearses in an isolated sandbox and lands as a receipt — the loop that grows the organism",
-        "proof": "receipt 49ebe346aac84ed9… on the chain · live repo untouched"
+        "proof": "receipt c26a9b7fa4f0a646… on the chain · live repo untouched"
       }
     ],
     "disclaimer": "First principles only. Not claimed: alive, conscious, self-replicating. No private research or infrastructure identifiers appear here."
@@ -912,7 +935,7 @@ globalThis.AUKORA_CONSOLE_FIXTURE = {
     "receipts": [
       {
         "kind": "receipt",
-        "hashShort": "49ebe346aac84ed9…"
+        "hashShort": "c26a9b7fa4f0a646…"
       }
     ],
     "candidate": {

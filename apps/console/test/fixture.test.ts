@@ -15,7 +15,14 @@ const here = dirname(fileURLToPath(import.meta.url));
 const fixture = JSON.parse(readFileSync(join(here, '..', 'public', 'fixture.json'), 'utf-8'));
 
 const PANEL_TRUTHS = new Set(['IMPLEMENTED', 'ROADMAP', 'UNARMED']);
-const MANIFEST_TRUTHS = new Set(['IMPLEMENTED', 'AVAILABLE_PRIVATE', 'BLOCKED', 'DESIGN_ONLY', 'REJECTED']);
+const MANIFEST_TRUTHS = new Set([
+  'IMPLEMENTED',
+  'AVAILABLE_PRIVATE',
+  'UNVERIFIED_OR_PARKED',
+  'BLOCKED',
+  'DESIGN_ONLY',
+  'REJECTED',
+]);
 
 describe('DEMO_FIXTURE — honest labelling', () => {
   it('is labelled DEMO_FIXTURE and read-only', () => {
@@ -59,7 +66,7 @@ describe('DEMO_FIXTURE — every required operator surface is present', () => {
   it('5. proposal lifecycle + staleness', () => {
     expect(fixture.recursion.pipeline).toContain('AUMLOK owner-gate');
     expect(fixture.recursion.refusedWithoutOwner.accepted).toBe(false);
-    expect(fixture.recursion.refusedWithoutOwner.stage).toBe('owner-gate-refused');
+    expect(fixture.recursion.refusedWithoutOwner.stage).toBe('refused-owner-gate');
     expect(fixture.recursion.refusedWithoutOwner.councilVerdict).toBe('advisory-pass');
     expect(fixture.recursion.acceptedWithOwner.accepted).toBe(true);
     expect(fixture.recursion.acceptedWithOwner.liveRepoTouched).toBe(false);

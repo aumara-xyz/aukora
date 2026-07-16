@@ -28,10 +28,14 @@ import {
 } from '@aukora/brain';
 import { buildMemoryRecord, stalenessVerdict } from '@aukora/memory';
 import {
-  LocalOwnerAdapter,
-  proposalDigest,
+  HybridOwnerAdapter,
+  RecursionLedger,
+  LIMITS,
+  deriveIntentId,
+  deriveDraftHash,
   runGovernedRecursion,
   type Proposal,
+  type RecursionEnv,
 } from '@aukora/seed';
 import {
   runAukoraFuCouncil,
@@ -63,20 +67,36 @@ growth.push({ step: 'ingest #2 · provenance=reflection', liveCount: store.snaps
 const chainVerified = store.verifyChain().valid;
 
 // ── 2. Governed recursion — refused (no owner sig) then accepted (owner-signed), into a sandbox ──
-const owner = new LocalOwnerAdapter('demo'); // deterministic fixture owner; the PUBLIC key is safe to show
+const owner = new HybridOwnerAdapter('demo'); // deterministic fixture owner; PUBLIC root material is safe to show
 const targetPath = 'apps/seed/src/recursion.ts';
-const proposal: Proposal = { id: 'p1', targetPath, newContent: '// governed refinement to the recursion note', createdAt: at(3) };
-const env = {
+const proposal: Proposal = {
+  id: 'p1',
+  targetPath,
+  newContent: '// governed refinement to the recursion note',
+  createdAt: at(3),
+  supersedes: null,
+};
+const env: RecursionEnv = {
   store,
   knownFiles: new Set([targetPath, 'apps/brain/src/reactiveStore.ts']),
-  ownerPublicKeyHex: owner.publicKeyHex,
+  ownerRoot: owner.root,
+  ledger: new RecursionLedger(),
   nowMs: NOW_MS,
   nowIso: NOW_ISO,
+  deadlineMs: NOW_MS + LIMITS.DEFAULT_WALL_TIME_BUDGET_MS,
 };
 
 const refused = runGovernedRecursion(env, proposal /* no owner authorization */);
-const digest = proposalDigest(proposal.id, proposal.targetPath, proposal.newContent);
-const accepted = runGovernedRecursion(env, proposal, { signatureHex: owner.sign(digest), publicKeyHex: owner.publicKeyHex });
+const intentId = deriveIntentId(proposal);
+const draftHash = deriveDraftHash(proposal);
+const authorization = owner.authorize({
+  proposalHash: intentId,
+  draftHash,
+  nonce: 'console-fixture-demo-1',
+  issuedAt: NOW_ISO,
+  expiresAt: null,
+});
+const accepted = runGovernedRecursion(env, proposal, authorization);
 growth.push({ step: 'owner-signed proposal → receipt memory', liveCount: store.snapshot().liveCount, chainLength: store.snapshot().chainLength });
 
 // ── 3. Governed forgetting — owner-authorized tombstone (content-free audit; chain still verifies) ─
@@ -250,8 +270,8 @@ const fixture = {
     title: 'AUMLOK authority',
     lockState: 'LOCKED',
     truth: 'IMPLEMENTED',
-    gate: 'Owner-gate — Ed25519 signature over the canonical proposal digest',
-    ownerPublicKeyHex: owner.publicKeyHex, // PUBLIC key only — never a secret
+    gate: 'Owner-gate — hybrid Ed25519 + ML-DSA-65 signatures over the canonical intent/draft binding',
+    ownerPublicKeyHex: owner.root.publicKeys.ed25519, // PUBLIC key only — never a secret
     noModelCanSign: true,
     grantsAuthority: false,
     productionSuite: 'aumlok-ed25519-ml-dsa-65-v1 — hybrid Ed25519 + ML-DSA-65 verify (verifyAumlokPromotionV2 in @aukora/kernel/authority)',
@@ -606,7 +626,7 @@ describe('generate DEMO_FIXTURE', () => {
     expect(A.ok).toBe(true);
     expect(chainVerified).toBe(true);
     expect(refused.accepted).toBe(false);
-    expect(refused.stage).toBe('owner-gate-refused');
+    expect(refused.stage).toBe('refused-owner-gate');
     expect(accepted.accepted).toBe(true);
     expect(accepted.sandboxApplied).toBe(true);
     expect(recallAfter).toBe(0);
