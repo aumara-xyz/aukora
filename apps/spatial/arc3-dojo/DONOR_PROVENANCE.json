@@ -1,0 +1,40 @@
+{
+  "schema": "aukora-arc3-donor-provenance-v1",
+  "note": "Byte-exact transplant of the donor ARC-3 reasoning line. gitBlobSha is git's blob object id (git hash-object) and MUST equal the donor's for byte-identity; sha256 is a repo-side tamper pin recomputed by the r50 dojo test. NO donor file is edited — the adapter/replay/runner are NEW and sit beside these.",
+  "donor": {
+    "repo": "github.com/aumara-xyz/aukora-symbiote",
+    "branch": "fable/arc3-reasoning-engine-20260710",
+    "commit": "e5768a2fcf974a564ef842551a27bbb6287e6c8b",
+    "sourceDir": "spatial/app/arc3"
+  },
+  "files": [
+    {
+      "path": "apps/spatial/arc3-dojo/donor/engine.js",
+      "donorPath": "spatial/app/arc3/engine.js",
+      "disposition": "VERBATIM",
+      "gitBlobSha": "7bf144617741700350b9750f68bf9104e84e5ffc",
+      "sha256": "f7da7d3c6ed8661dfb38b54be835fa78a5cbcb6037ba6ee88a761e929ddb4eee"
+    },
+    {
+      "path": "apps/spatial/arc3-dojo/donor/mock-arcade.js",
+      "donorPath": "spatial/app/arc3/mock-arcade.js",
+      "disposition": "VERBATIM",
+      "gitBlobSha": "a609716a15a3d3ce75d3c63db470c1eb6a85e652",
+      "sha256": "9fabcb04045f1feb59ea582722de1e34de1ebf9c0ea5c055fcd0cb3dfdef7840"
+    },
+    {
+      "path": "apps/spatial/arc3-dojo/donor/engine.d.ts",
+      "donorPath": "spatial/app/arc3/engine.d.ts",
+      "disposition": "VERBATIM",
+      "gitBlobSha": "8423e47e032cbaa0a81d4554ec73c93fba8d5ad4",
+      "sha256": "0d58d6242faa79c340d7cf94c3185f0d5a4dc3cd30add2850e7543aedd3032f3"
+    },
+    {
+      "path": "apps/spatial/arc3-dojo/donor/mock-arcade.d.ts",
+      "donorPath": "spatial/app/arc3/mock-arcade.d.ts",
+      "disposition": "VERBATIM",
+      "gitBlobSha": "10ae2a1f64e32fdaedfb3c7b3ef8fbd6ca558cd2",
+      "sha256": "4e6356fa18080ca75683eb4b9e930b287a48ea9b7de213241b0b45b656315151"
+    }
+  ]
+}

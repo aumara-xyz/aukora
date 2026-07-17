@@ -1,0 +1,120 @@
+{
+  "schema": "aukora-spatial-parity-ledger-v1",
+  "donorCommit": "41707f910d10696482c28ee80346c252a55e9d41",
+  "note": "Fresh byte-provenance of the selected Spatial roster vs the owner-approved Symbiote source. VERBATIM files whose donorBlob equals the byte in donorCommit are COMMITTED donor bytes; EXCLUDED surfaces are absent-by-design (their committed donor blob is recorded so the owner can ship them as the next brick).",
+  "surfaces": {
+    "icons + palette": [
+      {
+        "path": "apps/spatial/app/style.css",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "4ee31c87a446",
+        "tier": "COMMITTED donor bytes"
+      }
+    ],
+    "menu order/motion": [
+      {
+        "path": "apps/spatial/app/shell.js",
+        "disposition": "ADAPTED",
+        "sha256PinOk": true,
+        "donorBlob": "4599340d34b1",
+        "tier": "ADAPTED boundary (ours)"
+      }
+    ],
+    "chat pin/archive": [
+      {
+        "path": "apps/spatial/app/chat.js",
+        "disposition": "ADAPTED",
+        "sha256PinOk": true,
+        "donorBlob": "6cb252fe6b09",
+        "tier": "ADAPTED boundary (ours)"
+      }
+    ],
+    "onboarding": [
+      {
+        "path": "apps/spatial/app/onboarding.js",
+        "disposition": "EXCLUDED",
+        "absentByDesign": true,
+        "donorCommittedBlob": "cc306c85c249",
+        "tier": "committed donor bytes, NOT shipped (candidate next brick)"
+      },
+      {
+        "path": "apps/spatial/app/focus.js",
+        "disposition": "EXCLUDED",
+        "absentByDesign": true,
+        "donorCommittedBlob": "a600bf47d80a",
+        "tier": "committed donor bytes, NOT shipped (candidate next brick)"
+      }
+    ],
+    "AUMLOK": [
+      {
+        "path": "apps/spatial/app/aumlok.js",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "877bb3c129eb",
+        "tier": "COMMITTED donor bytes"
+      }
+    ],
+    "AURA": [
+      {
+        "path": "apps/spatial/app/aura.js",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "00588ea088d5",
+        "tier": "COMMITTED donor bytes"
+      },
+      {
+        "path": "apps/spatial/app/aura-core.js",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "048794586191",
+        "tier": "COMMITTED donor bytes"
+      }
+    ],
+    "Lingwa": [
+      {
+        "path": "apps/spatial/app/auma/auma.js",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "d589c376dc64",
+        "tier": "COMMITTED donor bytes"
+      }
+    ],
+    "voice": [
+      {
+        "path": "apps/spatial/voice/sidecar.py",
+        "disposition": "ADAPTED",
+        "sha256PinOk": true,
+        "donorBlob": "41ce589a4c68",
+        "tier": "ADAPTED boundary (ours)"
+      }
+    ],
+    "KNVS": [
+      {
+        "path": "apps/spatial/app/canvas.js",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "73524cec0f99",
+        "tier": "COMMITTED donor bytes"
+      }
+    ],
+    "GHP": [
+      {
+        "path": "apps/spatial/app/ghp.js",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "6804ef74985d",
+        "tier": "COMMITTED donor bytes"
+      }
+    ],
+    "Map": [
+      {
+        "path": "apps/spatial/app/map/map.js",
+        "disposition": "VERBATIM",
+        "sha256PinOk": true,
+        "donorBlob": "809f8dc37045",
+        "tier": "COMMITTED donor bytes"
+      }
+    ]
+  }
+}

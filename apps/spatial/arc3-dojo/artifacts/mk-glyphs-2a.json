@@ -1,0 +1,7262 @@
+{
+  "schema": "aukora-arc3-dojo-bundle-v1",
+  "coreHash": "5216981991afcf6509ec57871273ad699484e0111b412dc52b4e3ae7c88418a8",
+  "core": {
+    "schema": "aukora-arc3-dojo-episode-v1",
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "donorCode": {
+      "branch": "fable/arc3-reasoning-engine-20260710",
+      "commit": "e5768a2fcf974a564ef842551a27bbb6287e6c8b",
+      "files": {
+        "engine.js": "7bf144617741700350b9750f68bf9104e84e5ffc",
+        "mock-arcade.js": "a609716a15a3d3ce75d3c63db470c1eb6a85e652"
+      }
+    },
+    "world": {
+      "gameId": "mk-glyphs-2a",
+      "winLevels": 2,
+      "version": "onboard-arcade-v1"
+    },
+    "seeds": {
+      "arcadeSeed": 42,
+      "policySeed": 7
+    },
+    "budget": {
+      "maxSteps": 400
+    },
+    "result": {
+      "terminal": "NOT_FINISHED",
+      "won": false,
+      "levelsCompleted": 1,
+      "steps": 400,
+      "exhaustedBudget": true,
+      "normalizeRejections": 0
+    },
+    "steps": [
+      {
+        "step": 0,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking the 196-cell region I have not touched at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": -1,
+        "hashBefore": "683546e9",
+        "hashAfter": "ad4fa3ed",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 1,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking the 196-cell region I have not touched at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ad4fa3ed",
+        "hashAfter": "d2c7722d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 2,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking the 196-cell region I have not touched at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "d2c7722d",
+        "hashAfter": "add35cad",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 3,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking the 196-cell region I have not touched at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "add35cad",
+        "hashAfter": "6d42ddd9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 4,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking the 196-cell region I have not touched at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "6d42ddd9",
+        "hashAfter": "d3b7f69d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 5,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking the 196-cell region I have not touched at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "d3b7f69d",
+        "hashAfter": "970471a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 6,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking the 196-cell region I have not touched at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "970471a1",
+        "hashAfter": "f4885e31",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 7,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking the 196-cell region I have not touched at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f4885e31",
+        "hashAfter": "a100ec25",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 8,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking the 196-cell region I have not touched at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a100ec25",
+        "hashAfter": "1cfe7bb5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 9,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1cfe7bb5",
+        "hashAfter": "061b16b1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 10,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "061b16b1",
+        "hashAfter": "02b7305d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 11,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "02b7305d",
+        "hashAfter": "ea85a341",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 12,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ea85a341",
+        "hashAfter": "e9cb3ba9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 13,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e9cb3ba9",
+        "hashAfter": "82287945",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 14,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "82287945",
+        "hashAfter": "02b7305d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 15,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "02b7305d",
+        "hashAfter": "23e8acf1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 16,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "23e8acf1",
+        "hashAfter": "4e1bb431",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 17,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4e1bb431",
+        "hashAfter": "62dcb6b5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 18,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "62dcb6b5",
+        "hashAfter": "4f4a22a9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 19,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "4f4a22a9",
+        "hashAfter": "4eeea791",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 20,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4eeea791",
+        "hashAfter": "ceecd14d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 21,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ceecd14d",
+        "hashAfter": "e622210d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 22,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e622210d",
+        "hashAfter": "f6493621",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 23,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "f6493621",
+        "hashAfter": "7054eab9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 24,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "7054eab9",
+        "hashAfter": "532745f1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 25,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "532745f1",
+        "hashAfter": "ad4fa3ed",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 26,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "ad4fa3ed",
+        "hashAfter": "05fe9d79",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 27,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "05fe9d79",
+        "hashAfter": "008b55cd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 28,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "008b55cd",
+        "hashAfter": "a878a4a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 29,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a878a4a1",
+        "hashAfter": "2caba411",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 30,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking the odd one out — a color-8 piece among 8 look-alikes at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "2caba411",
+        "hashAfter": "bfc8b141",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 31,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "bfc8b141",
+        "hashAfter": "2caba411",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 32,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "2caba411",
+        "hashAfter": "a878a4a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 33,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a878a4a1",
+        "hashAfter": "e8ec7019",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 34,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e8ec7019",
+        "hashAfter": "36c67e21",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 35,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "36c67e21",
+        "hashAfter": "2caba411",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 36,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "2caba411",
+        "hashAfter": "36c67e21",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 37,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "36c67e21",
+        "hashAfter": "e8ec7019",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 38,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e8ec7019",
+        "hashAfter": "a878a4a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 39,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a878a4a1",
+        "hashAfter": "008b55cd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 40,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "008b55cd",
+        "hashAfter": "29361095",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 41,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "29361095",
+        "hashAfter": "498fd339",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 42,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "498fd339",
+        "hashAfter": "efeef231",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 43,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "efeef231",
+        "hashAfter": "c6360fe9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 44,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c6360fe9",
+        "hashAfter": "02369019",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 45,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "02369019",
+        "hashAfter": "69a291d5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 46,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "69a291d5",
+        "hashAfter": "2c6200c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 47,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "2c6200c5",
+        "hashAfter": "625cef71",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 48,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "625cef71",
+        "hashAfter": "2c6200c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 49,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "2c6200c5",
+        "hashAfter": "03d5bbdd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 50,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "03d5bbdd",
+        "hashAfter": "ade43ea9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 51,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ade43ea9",
+        "hashAfter": "4e388239",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 52,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4e388239",
+        "hashAfter": "7802a76d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 53,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "7802a76d",
+        "hashAfter": "32102739",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 54,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "32102739",
+        "hashAfter": "7802a76d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 55,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "7802a76d",
+        "hashAfter": "03b745fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 56,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "03b745fd",
+        "hashAfter": "2c6200c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 57,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "2c6200c5",
+        "hashAfter": "b836ee9d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 58,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "b836ee9d",
+        "hashAfter": "c8a3c341",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 59,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c8a3c341",
+        "hashAfter": "b5e0fe9d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 60,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "b5e0fe9d",
+        "hashAfter": "c8a3c341",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 61,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c8a3c341",
+        "hashAfter": "4cbbc369",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 62,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4cbbc369",
+        "hashAfter": "f8ee5d85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 63,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "f8ee5d85",
+        "hashAfter": "625cef71",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 64,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "625cef71",
+        "hashAfter": "dfe3db4d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 65,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "dfe3db4d",
+        "hashAfter": "217be295",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 66,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "217be295",
+        "hashAfter": "9a56ed79",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 67,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "9a56ed79",
+        "hashAfter": "ae583ca1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 68,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "ae583ca1",
+        "hashAfter": "c375d959",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 69,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c375d959",
+        "hashAfter": "32102739",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 70,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "32102739",
+        "hashAfter": "62dcb6b5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 71,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "62dcb6b5",
+        "hashAfter": "3d12e9fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 72,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "3d12e9fd",
+        "hashAfter": "4eeea791",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 73,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "4eeea791",
+        "hashAfter": "57f19995",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 74,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "57f19995",
+        "hashAfter": "2876ce5d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 75,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "2876ce5d",
+        "hashAfter": "7f9bae1d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 76,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "7f9bae1d",
+        "hashAfter": "dc1670e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 77,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "dc1670e9",
+        "hashAfter": "853109bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 78,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "853109bd",
+        "hashAfter": "74e4e44d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 79,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "74e4e44d",
+        "hashAfter": "0bc72a6d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 80,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0bc72a6d",
+        "hashAfter": "f8ee5d85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 81,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f8ee5d85",
+        "hashAfter": "4fa94499",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 82,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "4fa94499",
+        "hashAfter": "e0a0e855",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 83,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "e0a0e855",
+        "hashAfter": "a5ff49cd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 84,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a5ff49cd",
+        "hashAfter": "96c9de3d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 85,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "96c9de3d",
+        "hashAfter": "a5ff49cd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 86,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a5ff49cd",
+        "hashAfter": "1cb3ab01",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 87,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "1cb3ab01",
+        "hashAfter": "8718eeb1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 88,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "8718eeb1",
+        "hashAfter": "7dc20c4d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 89,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "7dc20c4d",
+        "hashAfter": "153bdd99",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 90,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "153bdd99",
+        "hashAfter": "2b279901",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 91,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "2b279901",
+        "hashAfter": "27a63925",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 92,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "27a63925",
+        "hashAfter": "6fed1bed",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 93,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "6fed1bed",
+        "hashAfter": "0cc3a171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 94,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "0cc3a171",
+        "hashAfter": "02a8c761",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 95,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "02a8c761",
+        "hashAfter": "d3b7f69d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 96,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "d3b7f69d",
+        "hashAfter": "65d7ce0d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 97,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "65d7ce0d",
+        "hashAfter": "d1d861d5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 98,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "d1d861d5",
+        "hashAfter": "caa278f5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 99,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "caa278f5",
+        "hashAfter": "f88bcaed",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 100,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f88bcaed",
+        "hashAfter": "03720811",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 101,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking the odd one out — a color-8 piece among 8 look-alikes at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "03720811",
+        "hashAfter": "112ebbb5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 102,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "112ebbb5",
+        "hashAfter": "2af0c541",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 103,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "2af0c541",
+        "hashAfter": "23018a41",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 104,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "23018a41",
+        "hashAfter": "998dacc9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 105,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "998dacc9",
+        "hashAfter": "886cd7a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 106,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "886cd7a5",
+        "hashAfter": "a7470c31",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 107,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a7470c31",
+        "hashAfter": "886cd7a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 108,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "886cd7a5",
+        "hashAfter": "210b183d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 109,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "210b183d",
+        "hashAfter": "32102739",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 110,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "32102739",
+        "hashAfter": "65d7ce0d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 111,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "65d7ce0d",
+        "hashAfter": "a02b628d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 112,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a02b628d",
+        "hashAfter": "9ec9691d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 113,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "9ec9691d",
+        "hashAfter": "897423e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 114,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "897423e9",
+        "hashAfter": "dd61cea1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 115,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "dd61cea1",
+        "hashAfter": "628675ad",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 116,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "628675ad",
+        "hashAfter": "dd61cea1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 117,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "dd61cea1",
+        "hashAfter": "27a63925",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 118,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "27a63925",
+        "hashAfter": "02369019",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 119,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "02369019",
+        "hashAfter": "27a63925",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 120,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "27a63925",
+        "hashAfter": "dd61cea1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 121,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "dd61cea1",
+        "hashAfter": "e510c189",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 122,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e510c189",
+        "hashAfter": "9a56ed79",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 123,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "9a56ed79",
+        "hashAfter": "217be295",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 124,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "217be295",
+        "hashAfter": "5d27063d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 125,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "5d27063d",
+        "hashAfter": "34f38031",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 126,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "34f38031",
+        "hashAfter": "c2f4a171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 127,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c2f4a171",
+        "hashAfter": "93b72781",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 128,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "93b72781",
+        "hashAfter": "8894217d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 129,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "8894217d",
+        "hashAfter": "ccd00ff9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 130,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ccd00ff9",
+        "hashAfter": "6b51aab1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 131,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "6b51aab1",
+        "hashAfter": "bb956db5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 132,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "bb956db5",
+        "hashAfter": "cf7fb509",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 133,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "cf7fb509",
+        "hashAfter": "bb956db5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 134,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "bb956db5",
+        "hashAfter": "6b51aab1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 135,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "6b51aab1",
+        "hashAfter": "3ffcca89",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 136,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "3ffcca89",
+        "hashAfter": "061b16b1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 137,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "061b16b1",
+        "hashAfter": "1f2ce551",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 138,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1f2ce551",
+        "hashAfter": "86d3d799",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 139,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "86d3d799",
+        "hashAfter": "cfc91899",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 140,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "cfc91899",
+        "hashAfter": "0cde4ce5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 141,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "0cde4ce5",
+        "hashAfter": "acdcf735",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 142,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "acdcf735",
+        "hashAfter": "86d3d799",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 143,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "86d3d799",
+        "hashAfter": "1f2ce551",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 144,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1f2ce551",
+        "hashAfter": "a100ec25",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 145,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a100ec25",
+        "hashAfter": "cb87d899",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 146,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "cb87d899",
+        "hashAfter": "fb1e29ad",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 147,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "fb1e29ad",
+        "hashAfter": "8729e2ed",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 148,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "8729e2ed",
+        "hashAfter": "3b631a01",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 149,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "3b631a01",
+        "hashAfter": "06ddb0bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 150,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "06ddb0bd",
+        "hashAfter": "69810655",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 151,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "69810655",
+        "hashAfter": "1e447a21",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 152,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "1e447a21",
+        "hashAfter": "0841b105",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 153,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "0841b105",
+        "hashAfter": "414ece01",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 154,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "414ece01",
+        "hashAfter": "443c5105",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 155,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "443c5105",
+        "hashAfter": "c6360fe9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 156,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "c6360fe9",
+        "hashAfter": "443c5105",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 157,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "443c5105",
+        "hashAfter": "f98291b9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 158,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "f98291b9",
+        "hashAfter": "750354a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 159,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "750354a1",
+        "hashAfter": "7b99201d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 160,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "7b99201d",
+        "hashAfter": "f2fb9f05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 161,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f2fb9f05",
+        "hashAfter": "301df361",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 162,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "301df361",
+        "hashAfter": "83e82579",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 163,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "83e82579",
+        "hashAfter": "301df361",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 164,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "301df361",
+        "hashAfter": "dfc00f8d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 165,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "dfc00f8d",
+        "hashAfter": "0ba8d4e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 166,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "0ba8d4e9",
+        "hashAfter": "d11d1715",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 167,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "d11d1715",
+        "hashAfter": "7c99670d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 168,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "7c99670d",
+        "hashAfter": "dd187d25",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 169,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "dd187d25",
+        "hashAfter": "ed78b609",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 170,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking the odd one out — a color-8 piece among 8 look-alikes at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "ed78b609",
+        "hashAfter": "d85b1951",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 171,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "d85b1951",
+        "hashAfter": "4328bab9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 172,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4328bab9",
+        "hashAfter": "36b45821",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 173,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "36b45821",
+        "hashAfter": "22704fbd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 174,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "22704fbd",
+        "hashAfter": "1fbeac09",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 175,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "1fbeac09",
+        "hashAfter": "2ca75da5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 176,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "2ca75da5",
+        "hashAfter": "5c738a01",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 177,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "5c738a01",
+        "hashAfter": "1183a559",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 178,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1183a559",
+        "hashAfter": "b1719ed1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 179,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "b1719ed1",
+        "hashAfter": "d44b2e5d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 180,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "d44b2e5d",
+        "hashAfter": "0cde4ce5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 181,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0cde4ce5",
+        "hashAfter": "d833b369",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 182,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "d833b369",
+        "hashAfter": "cd36b9d9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 183,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "cd36b9d9",
+        "hashAfter": "d833b369",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 184,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "d833b369",
+        "hashAfter": "3f9fb525",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 185,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "3f9fb525",
+        "hashAfter": "ddd95821",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 186,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ddd95821",
+        "hashAfter": "86c51525",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 187,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "86c51525",
+        "hashAfter": "7fa9db2d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 188,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "7fa9db2d",
+        "hashAfter": "871415a9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 189,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "871415a9",
+        "hashAfter": "7fa9db2d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 190,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "7fa9db2d",
+        "hashAfter": "7dc20c4d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 191,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "7dc20c4d",
+        "hashAfter": "e510c189",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 192,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "e510c189",
+        "hashAfter": "dd61cea1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 193,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "dd61cea1",
+        "hashAfter": "897423e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 194,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "897423e9",
+        "hashAfter": "c9b7d7a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 195,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c9b7d7a5",
+        "hashAfter": "9a7a5db5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 196,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "9a7a5db5",
+        "hashAfter": "91776bb1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 197,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "91776bb1",
+        "hashAfter": "938a57fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 198,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "938a57fd",
+        "hashAfter": "6d42ddd9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 199,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "6d42ddd9",
+        "hashAfter": "710a95f9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 200,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "710a95f9",
+        "hashAfter": "1a960a01",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 201,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1a960a01",
+        "hashAfter": "710a95f9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 202,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "710a95f9",
+        "hashAfter": "2437086d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 203,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "2437086d",
+        "hashAfter": "b3340949",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 204,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "b3340949",
+        "hashAfter": "4eeea791",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 205,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4eeea791",
+        "hashAfter": "b82467a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 206,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "b82467a5",
+        "hashAfter": "e6cb2a99",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 207,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "e6cb2a99",
+        "hashAfter": "eea3ca39",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 208,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "eea3ca39",
+        "hashAfter": "e6cb2a99",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 209,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e6cb2a99",
+        "hashAfter": "0461220d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 210,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "0461220d",
+        "hashAfter": "cba33c09",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 211,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "cba33c09",
+        "hashAfter": "0091c989",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 212,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0091c989",
+        "hashAfter": "88d9c6a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 213,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "88d9c6a1",
+        "hashAfter": "79dfa425",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 214,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "79dfa425",
+        "hashAfter": "88d9c6a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 215,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "88d9c6a1",
+        "hashAfter": "78f18441",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 216,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking the odd one out — a color-8 piece among 8 look-alikes at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "78f18441",
+        "hashAfter": "970471a1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 217,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "970471a1",
+        "hashAfter": "e261c045",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 218,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "e261c045",
+        "hashAfter": "cecf2c39",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 219,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "cecf2c39",
+        "hashAfter": "28cf1ae9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 220,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "28cf1ae9",
+        "hashAfter": "3579e34d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 221,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "3579e34d",
+        "hashAfter": "c14cf7bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 222,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c14cf7bd",
+        "hashAfter": "874c2b49",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 223,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "874c2b49",
+        "hashAfter": "cb87d899",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 224,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "cb87d899",
+        "hashAfter": "9dc8cd79",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 225,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "9dc8cd79",
+        "hashAfter": "f15c6e01",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 226,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f15c6e01",
+        "hashAfter": "0024d19d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 227,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "0024d19d",
+        "hashAfter": "f95a5495",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 228,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f95a5495",
+        "hashAfter": "48a3dad1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 229,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "48a3dad1",
+        "hashAfter": "fc9b3d51",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 230,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "fc9b3d51",
+        "hashAfter": "8d79625d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 231,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "8d79625d",
+        "hashAfter": "164ee7cd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 232,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "164ee7cd",
+        "hashAfter": "4c02cf09",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 233,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "4c02cf09",
+        "hashAfter": "7b99201d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 234,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "7b99201d",
+        "hashAfter": "069df841",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 235,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking the odd one out — a color-8 piece among 8 look-alikes at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "069df841",
+        "hashAfter": "9778c185",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 236,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "9778c185",
+        "hashAfter": "c6cc10f9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 237,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c6cc10f9",
+        "hashAfter": "06ddb0bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 238,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "06ddb0bd",
+        "hashAfter": "ea85a341",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 239,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ea85a341",
+        "hashAfter": "baeb50c9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 240,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "baeb50c9",
+        "hashAfter": "c9f1e245",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 241,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c9f1e245",
+        "hashAfter": "baeb50c9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 242,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "baeb50c9",
+        "hashAfter": "285c5119",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 243,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "285c5119",
+        "hashAfter": "886cd7a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 244,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "886cd7a5",
+        "hashAfter": "ad225415",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 245,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "ad225415",
+        "hashAfter": "5981ec6d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 246,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "5981ec6d",
+        "hashAfter": "50440f09",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 247,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "50440f09",
+        "hashAfter": "b836ee9d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 248,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "b836ee9d",
+        "hashAfter": "e42504d5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 249,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e42504d5",
+        "hashAfter": "c85be869",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 250,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c85be869",
+        "hashAfter": "8af55ce1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 251,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "8af55ce1",
+        "hashAfter": "a2653b75",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 252,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a2653b75",
+        "hashAfter": "1873758d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 253,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1873758d",
+        "hashAfter": "cfc91899",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 254,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "cfc91899",
+        "hashAfter": "1873758d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 255,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "1873758d",
+        "hashAfter": "a2653b75",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 256,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a2653b75",
+        "hashAfter": "f7f2397d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 257,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f7f2397d",
+        "hashAfter": "1cfe7bb5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 258,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1cfe7bb5",
+        "hashAfter": "f7f2397d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 259,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f7f2397d",
+        "hashAfter": "078f0c19",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 260,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "078f0c19",
+        "hashAfter": "061b16b1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 261,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "061b16b1",
+        "hashAfter": "1b51be15",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 262,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "1b51be15",
+        "hashAfter": "5e69faf5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 263,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "5e69faf5",
+        "hashAfter": "a4b1fedd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 264,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a4b1fedd",
+        "hashAfter": "f1858c69",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 265,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "f1858c69",
+        "hashAfter": "ccd00ff9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 266,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "ccd00ff9",
+        "hashAfter": "94c9bc7d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 267,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "94c9bc7d",
+        "hashAfter": "a4b1fedd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 268,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a4b1fedd",
+        "hashAfter": "92ac4529",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 269,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "92ac4529",
+        "hashAfter": "4aefc401",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 270,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4aefc401",
+        "hashAfter": "7fde5181",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 271,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "7fde5181",
+        "hashAfter": "aad724fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 272,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "aad724fd",
+        "hashAfter": "0cde4ce5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 273,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0cde4ce5",
+        "hashAfter": "cfc91899",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 274,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "cfc91899",
+        "hashAfter": "869c21fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 275,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "869c21fd",
+        "hashAfter": "d833b369",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 276,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "d833b369",
+        "hashAfter": "5717c8d1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 277,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "5717c8d1",
+        "hashAfter": "688c0f55",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 278,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "688c0f55",
+        "hashAfter": "a1f5594d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 279,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a1f5594d",
+        "hashAfter": "253e3391",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 280,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "253e3391",
+        "hashAfter": "28f197a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 281,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "28f197a5",
+        "hashAfter": "8bcb431d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 282,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 8 look-alikes at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "8bcb431d",
+        "hashAfter": "3f5d8a09",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 283,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "3f5d8a09",
+        "hashAfter": "72ba895d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 284,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "72ba895d",
+        "hashAfter": "e0a0e855",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 285,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e0a0e855",
+        "hashAfter": "c5fd8e51",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 286,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c5fd8e51",
+        "hashAfter": "b22d1a11",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 287,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "b22d1a11",
+        "hashAfter": "431a8da9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 288,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "431a8da9",
+        "hashAfter": "2fb07be5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 289,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "2fb07be5",
+        "hashAfter": "76c42c91",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 290,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "76c42c91",
+        "hashAfter": "fde9eb95",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 291,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "fde9eb95",
+        "hashAfter": "1f4a404d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 292,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1f4a404d",
+        "hashAfter": "fde9eb95",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 293,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "fde9eb95",
+        "hashAfter": "d1e0fd69",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 294,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "d1e0fd69",
+        "hashAfter": "0c3491e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 295,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0c3491e9",
+        "hashAfter": "153bdd99",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 296,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "153bdd99",
+        "hashAfter": "9fafca5d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 297,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "9fafca5d",
+        "hashAfter": "b64eb4e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 298,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "b64eb4e9",
+        "hashAfter": "458297e1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 299,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "458297e1",
+        "hashAfter": "bee29399",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 300,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "bee29399",
+        "hashAfter": "0b504cad",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 301,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "0b504cad",
+        "hashAfter": "d1e0fd69",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 302,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "d1e0fd69",
+        "hashAfter": "fde9eb95",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 303,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "fde9eb95",
+        "hashAfter": "8f4f9db5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 304,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "8f4f9db5",
+        "hashAfter": "02a8c761",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 305,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "02a8c761",
+        "hashAfter": "24d1be01",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 306,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "24d1be01",
+        "hashAfter": "fde9eb95",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 307,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "fde9eb95",
+        "hashAfter": "9c17c569",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 308,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "9c17c569",
+        "hashAfter": "3427aee9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 309,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "3427aee9",
+        "hashAfter": "7cc72dad",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 310,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "7cc72dad",
+        "hashAfter": "28f197a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 311,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "28f197a5",
+        "hashAfter": "df35d015",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 312,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "df35d015",
+        "hashAfter": "93d88171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 313,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "93d88171",
+        "hashAfter": "a4b1fedd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 314,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a4b1fedd",
+        "hashAfter": "93d88171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 315,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "93d88171",
+        "hashAfter": "df35d015",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 316,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "df35d015",
+        "hashAfter": "28f197a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 317,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "28f197a5",
+        "hashAfter": "b5e0fe9d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 318,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "b5e0fe9d",
+        "hashAfter": "9dd4fbf5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 319,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "9dd4fbf5",
+        "hashAfter": "938022b9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 320,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "938022b9",
+        "hashAfter": "017e7ad1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 321,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "017e7ad1",
+        "hashAfter": "c14cf7bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 322,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c14cf7bd",
+        "hashAfter": "da2ae6e1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 323,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "da2ae6e1",
+        "hashAfter": "3cd90d81",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 324,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "3cd90d81",
+        "hashAfter": "4bdc6a59",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 325,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "4bdc6a59",
+        "hashAfter": "a4cfe7bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 326,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a4cfe7bd",
+        "hashAfter": "93d88171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 327,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "93d88171",
+        "hashAfter": "a4cfe7bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 328,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a4cfe7bd",
+        "hashAfter": "3c2eaf15",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 329,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "3c2eaf15",
+        "hashAfter": "eb0d1981",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 330,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "eb0d1981",
+        "hashAfter": "a0f2bf15",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 331,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a0f2bf15",
+        "hashAfter": "0fd669a9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 332,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "0fd669a9",
+        "hashAfter": "a2656959",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 333,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a2656959",
+        "hashAfter": "42f03921",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 334,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "42f03921",
+        "hashAfter": "dd74f825",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 335,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "dd74f825",
+        "hashAfter": "6f8e992d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 336,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "6f8e992d",
+        "hashAfter": "f31d45f1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 337,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "f31d45f1",
+        "hashAfter": "6f8e992d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 338,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "6f8e992d",
+        "hashAfter": "00f44b4d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 339,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "00f44b4d",
+        "hashAfter": "0fd669a9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 340,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "0fd669a9",
+        "hashAfter": "a0f2bf15",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 341,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "a0f2bf15",
+        "hashAfter": "0461220d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 342,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0461220d",
+        "hashAfter": "8894217d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 343,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "8894217d",
+        "hashAfter": "0461220d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 344,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0461220d",
+        "hashAfter": "c2f4a171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 345,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c2f4a171",
+        "hashAfter": "0fd669a9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 346,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0fd669a9",
+        "hashAfter": "b9527a65",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 347,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "b9527a65",
+        "hashAfter": "23018a41",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 348,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "23018a41",
+        "hashAfter": "611b5d6d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 349,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "611b5d6d",
+        "hashAfter": "23018a41",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 350,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "23018a41",
+        "hashAfter": "96f3414d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 351,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "96f3414d",
+        "hashAfter": "23018a41",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 352,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "23018a41",
+        "hashAfter": "91776bb1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 353,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "91776bb1",
+        "hashAfter": "177f6811",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 354,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "177f6811",
+        "hashAfter": "43d5e66d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 355,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "43d5e66d",
+        "hashAfter": "ce39c811",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 356,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "ce39c811",
+        "hashAfter": "43d5e66d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 357,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "43d5e66d",
+        "hashAfter": "6109c3bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 358,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "6109c3bd",
+        "hashAfter": "338867f1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 359,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "338867f1",
+        "hashAfter": "29c4c075",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 360,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "29c4c075",
+        "hashAfter": "4f411041",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 361,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking the odd one out — a color-8 piece among 8 look-alikes at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "4f411041",
+        "hashAfter": "52f47455",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 362,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "52f47455",
+        "hashAfter": "c9b7d7a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 363,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c9b7d7a5",
+        "hashAfter": "897423e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 364,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "897423e9",
+        "hashAfter": "e555f769",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 365,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "e555f769",
+        "hashAfter": "6f8e992d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 366,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "6f8e992d",
+        "hashAfter": "e555f769",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 367,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "e555f769",
+        "hashAfter": "f8efadfd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 368,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "f8efadfd",
+        "hashAfter": "ea34e645",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 369,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "ea34e645",
+        "hashAfter": "f8efadfd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 370,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "f8efadfd",
+        "hashAfter": "0115dbc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 371,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0115dbc5",
+        "hashAfter": "a02b628d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 372,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "a02b628d",
+        "hashAfter": "0115dbc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 373,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0115dbc5",
+        "hashAfter": "0091c989",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 374,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "0091c989",
+        "hashAfter": "cba33c09",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 375,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "cba33c09",
+        "hashAfter": "26785aa5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 376,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "26785aa5",
+        "hashAfter": "7802a76d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 377,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "7802a76d",
+        "hashAfter": "26785aa5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 378,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "26785aa5",
+        "hashAfter": "c2f4a171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 379,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "c2f4a171",
+        "hashAfter": "34f38031",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 380,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (11,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "34f38031",
+        "hashAfter": "19d7336d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 381,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "19d7336d",
+        "hashAfter": "0461220d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 382,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0461220d",
+        "hashAfter": "e6cb2a99",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 383,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "e6cb2a99",
+        "hashAfter": "bc7a6fa5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 384,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (30,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "bc7a6fa5",
+        "hashAfter": "f1858c69",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 385,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 980,
+        "hashBefore": "f1858c69",
+        "hashAfter": "331bf171",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 386,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "331bf171",
+        "hashAfter": "18170f21",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 387,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (11,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "18170f21",
+        "hashAfter": "f95a5495",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 388,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "f95a5495",
+        "hashAfter": "869c21fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 389,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "869c21fd",
+        "hashAfter": "6e3f2db5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 390,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "6e3f2db5",
+        "hashAfter": "0024d19d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 391,
+        "action": {
+          "name": "ACTION6",
+          "x": 11,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (11,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "0024d19d",
+        "hashAfter": "1b51be15",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 392,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (49,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "1b51be15",
+        "hashAfter": "9dc8cd79",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 393,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "9dc8cd79",
+        "hashAfter": "c5fd8e51",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 394,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c5fd8e51",
+        "hashAfter": "9dc8cd79",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 395,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (30,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "9dc8cd79",
+        "hashAfter": "c3908979",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 396,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 49
+        },
+        "reason": "clicking a live region from a new angle at (49,49)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c3908979",
+        "hashAfter": "6715c6ad",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 397,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 588,
+        "hashBefore": "6715c6ad",
+        "hashAfter": "8bcb431d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 398,
+        "action": {
+          "name": "ACTION6",
+          "x": 49,
+          "y": 30
+        },
+        "reason": "clicking a live region from a new angle at (49,30)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "8bcb431d",
+        "hashAfter": "c52fb53d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 399,
+        "action": {
+          "name": "ACTION6",
+          "x": 30,
+          "y": 11
+        },
+        "reason": "clicking a live region from a new angle at (30,11)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 784,
+        "hashBefore": "c52fb53d",
+        "hashAfter": "a7fbd7ed",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      }
+    ],
+    "frameHashChain": [
+      "683546e9",
+      "ad4fa3ed",
+      "d2c7722d",
+      "add35cad",
+      "6d42ddd9",
+      "d3b7f69d",
+      "970471a1",
+      "f4885e31",
+      "a100ec25",
+      "1cfe7bb5",
+      "061b16b1",
+      "02b7305d",
+      "ea85a341",
+      "e9cb3ba9",
+      "82287945",
+      "02b7305d",
+      "23e8acf1",
+      "4e1bb431",
+      "62dcb6b5",
+      "4f4a22a9",
+      "4eeea791",
+      "ceecd14d",
+      "e622210d",
+      "f6493621",
+      "7054eab9",
+      "532745f1",
+      "ad4fa3ed",
+      "05fe9d79",
+      "008b55cd",
+      "a878a4a1",
+      "2caba411",
+      "bfc8b141",
+      "2caba411",
+      "a878a4a1",
+      "e8ec7019",
+      "36c67e21",
+      "2caba411",
+      "36c67e21",
+      "e8ec7019",
+      "a878a4a1",
+      "008b55cd",
+      "29361095",
+      "498fd339",
+      "efeef231",
+      "c6360fe9",
+      "02369019",
+      "69a291d5",
+      "2c6200c5",
+      "625cef71",
+      "2c6200c5",
+      "03d5bbdd",
+      "ade43ea9",
+      "4e388239",
+      "7802a76d",
+      "32102739",
+      "7802a76d",
+      "03b745fd",
+      "2c6200c5",
+      "b836ee9d",
+      "c8a3c341",
+      "b5e0fe9d",
+      "c8a3c341",
+      "4cbbc369",
+      "f8ee5d85",
+      "625cef71",
+      "dfe3db4d",
+      "217be295",
+      "9a56ed79",
+      "ae583ca1",
+      "c375d959",
+      "32102739",
+      "62dcb6b5",
+      "3d12e9fd",
+      "4eeea791",
+      "57f19995",
+      "2876ce5d",
+      "7f9bae1d",
+      "dc1670e9",
+      "853109bd",
+      "74e4e44d",
+      "0bc72a6d",
+      "f8ee5d85",
+      "4fa94499",
+      "e0a0e855",
+      "a5ff49cd",
+      "96c9de3d",
+      "a5ff49cd",
+      "1cb3ab01",
+      "8718eeb1",
+      "7dc20c4d",
+      "153bdd99",
+      "2b279901",
+      "27a63925",
+      "6fed1bed",
+      "0cc3a171",
+      "02a8c761",
+      "d3b7f69d",
+      "65d7ce0d",
+      "d1d861d5",
+      "caa278f5",
+      "f88bcaed",
+      "03720811",
+      "112ebbb5",
+      "2af0c541",
+      "23018a41",
+      "998dacc9",
+      "886cd7a5",
+      "a7470c31",
+      "886cd7a5",
+      "210b183d",
+      "32102739",
+      "65d7ce0d",
+      "a02b628d",
+      "9ec9691d",
+      "897423e9",
+      "dd61cea1",
+      "628675ad",
+      "dd61cea1",
+      "27a63925",
+      "02369019",
+      "27a63925",
+      "dd61cea1",
+      "e510c189",
+      "9a56ed79",
+      "217be295",
+      "5d27063d",
+      "34f38031",
+      "c2f4a171",
+      "93b72781",
+      "8894217d",
+      "ccd00ff9",
+      "6b51aab1",
+      "bb956db5",
+      "cf7fb509",
+      "bb956db5",
+      "6b51aab1",
+      "3ffcca89",
+      "061b16b1",
+      "1f2ce551",
+      "86d3d799",
+      "cfc91899",
+      "0cde4ce5",
+      "acdcf735",
+      "86d3d799",
+      "1f2ce551",
+      "a100ec25",
+      "cb87d899",
+      "fb1e29ad",
+      "8729e2ed",
+      "3b631a01",
+      "06ddb0bd",
+      "69810655",
+      "1e447a21",
+      "0841b105",
+      "414ece01",
+      "443c5105",
+      "c6360fe9",
+      "443c5105",
+      "f98291b9",
+      "750354a1",
+      "7b99201d",
+      "f2fb9f05",
+      "301df361",
+      "83e82579",
+      "301df361",
+      "dfc00f8d",
+      "0ba8d4e9",
+      "d11d1715",
+      "7c99670d",
+      "dd187d25",
+      "ed78b609",
+      "d85b1951",
+      "4328bab9",
+      "36b45821",
+      "22704fbd",
+      "1fbeac09",
+      "2ca75da5",
+      "5c738a01",
+      "1183a559",
+      "b1719ed1",
+      "d44b2e5d",
+      "0cde4ce5",
+      "d833b369",
+      "cd36b9d9",
+      "d833b369",
+      "3f9fb525",
+      "ddd95821",
+      "86c51525",
+      "7fa9db2d",
+      "871415a9",
+      "7fa9db2d",
+      "7dc20c4d",
+      "e510c189",
+      "dd61cea1",
+      "897423e9",
+      "c9b7d7a5",
+      "9a7a5db5",
+      "91776bb1",
+      "938a57fd",
+      "6d42ddd9",
+      "710a95f9",
+      "1a960a01",
+      "710a95f9",
+      "2437086d",
+      "b3340949",
+      "4eeea791",
+      "b82467a5",
+      "e6cb2a99",
+      "eea3ca39",
+      "e6cb2a99",
+      "0461220d",
+      "cba33c09",
+      "0091c989",
+      "88d9c6a1",
+      "79dfa425",
+      "88d9c6a1",
+      "78f18441",
+      "970471a1",
+      "e261c045",
+      "cecf2c39",
+      "28cf1ae9",
+      "3579e34d",
+      "c14cf7bd",
+      "874c2b49",
+      "cb87d899",
+      "9dc8cd79",
+      "f15c6e01",
+      "0024d19d",
+      "f95a5495",
+      "48a3dad1",
+      "fc9b3d51",
+      "8d79625d",
+      "164ee7cd",
+      "4c02cf09",
+      "7b99201d",
+      "069df841",
+      "9778c185",
+      "c6cc10f9",
+      "06ddb0bd",
+      "ea85a341",
+      "baeb50c9",
+      "c9f1e245",
+      "baeb50c9",
+      "285c5119",
+      "886cd7a5",
+      "ad225415",
+      "5981ec6d",
+      "50440f09",
+      "b836ee9d",
+      "e42504d5",
+      "c85be869",
+      "8af55ce1",
+      "a2653b75",
+      "1873758d",
+      "cfc91899",
+      "1873758d",
+      "a2653b75",
+      "f7f2397d",
+      "1cfe7bb5",
+      "f7f2397d",
+      "078f0c19",
+      "061b16b1",
+      "1b51be15",
+      "5e69faf5",
+      "a4b1fedd",
+      "f1858c69",
+      "ccd00ff9",
+      "94c9bc7d",
+      "a4b1fedd",
+      "92ac4529",
+      "4aefc401",
+      "7fde5181",
+      "aad724fd",
+      "0cde4ce5",
+      "cfc91899",
+      "869c21fd",
+      "d833b369",
+      "5717c8d1",
+      "688c0f55",
+      "a1f5594d",
+      "253e3391",
+      "28f197a5",
+      "8bcb431d",
+      "3f5d8a09",
+      "72ba895d",
+      "e0a0e855",
+      "c5fd8e51",
+      "b22d1a11",
+      "431a8da9",
+      "2fb07be5",
+      "76c42c91",
+      "fde9eb95",
+      "1f4a404d",
+      "fde9eb95",
+      "d1e0fd69",
+      "0c3491e9",
+      "153bdd99",
+      "9fafca5d",
+      "b64eb4e9",
+      "458297e1",
+      "bee29399",
+      "0b504cad",
+      "d1e0fd69",
+      "fde9eb95",
+      "8f4f9db5",
+      "02a8c761",
+      "24d1be01",
+      "fde9eb95",
+      "9c17c569",
+      "3427aee9",
+      "7cc72dad",
+      "28f197a5",
+      "df35d015",
+      "93d88171",
+      "a4b1fedd",
+      "93d88171",
+      "df35d015",
+      "28f197a5",
+      "b5e0fe9d",
+      "9dd4fbf5",
+      "938022b9",
+      "017e7ad1",
+      "c14cf7bd",
+      "da2ae6e1",
+      "3cd90d81",
+      "4bdc6a59",
+      "a4cfe7bd",
+      "93d88171",
+      "a4cfe7bd",
+      "3c2eaf15",
+      "eb0d1981",
+      "a0f2bf15",
+      "0fd669a9",
+      "a2656959",
+      "42f03921",
+      "dd74f825",
+      "6f8e992d",
+      "f31d45f1",
+      "6f8e992d",
+      "00f44b4d",
+      "0fd669a9",
+      "a0f2bf15",
+      "0461220d",
+      "8894217d",
+      "0461220d",
+      "c2f4a171",
+      "0fd669a9",
+      "b9527a65",
+      "23018a41",
+      "611b5d6d",
+      "23018a41",
+      "96f3414d",
+      "23018a41",
+      "91776bb1",
+      "177f6811",
+      "43d5e66d",
+      "ce39c811",
+      "43d5e66d",
+      "6109c3bd",
+      "338867f1",
+      "29c4c075",
+      "4f411041",
+      "52f47455",
+      "c9b7d7a5",
+      "897423e9",
+      "e555f769",
+      "6f8e992d",
+      "e555f769",
+      "f8efadfd",
+      "ea34e645",
+      "f8efadfd",
+      "0115dbc5",
+      "a02b628d",
+      "0115dbc5",
+      "0091c989",
+      "cba33c09",
+      "26785aa5",
+      "7802a76d",
+      "26785aa5",
+      "c2f4a171",
+      "34f38031",
+      "19d7336d",
+      "0461220d",
+      "e6cb2a99",
+      "bc7a6fa5",
+      "f1858c69",
+      "331bf171",
+      "18170f21",
+      "f95a5495",
+      "869c21fd",
+      "6e3f2db5",
+      "0024d19d",
+      "1b51be15",
+      "9dc8cd79",
+      "c5fd8e51",
+      "9dc8cd79",
+      "c3908979",
+      "6715c6ad",
+      "8bcb431d",
+      "c52fb53d",
+      "a7fbd7ed"
+    ]
+  },
+  "session": {
+    "guidPresent": true,
+    "note": "donor Math.random session key — excluded from evidence"
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "officialArcAgi3": false,
+    "grantsAuthority": false,
+    "network": "none (in-process; onboard arcade, no key, no benchmark API)",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}

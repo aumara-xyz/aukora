@@ -1,0 +1,1854 @@
+{
+  "schema": "aukora-arc3-dojo-bundle-v1",
+  "coreHash": "cd3e710771ddcfe9db9cad59e9f95e84aed5122b1b7c835cbb73fa05fa90e677",
+  "core": {
+    "schema": "aukora-arc3-dojo-episode-v1",
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "donorCode": {
+      "branch": "fable/arc3-reasoning-engine-20260710",
+      "commit": "e5768a2fcf974a564ef842551a27bbb6287e6c8b",
+      "files": {
+        "engine.js": "7bf144617741700350b9750f68bf9104e84e5ffc",
+        "mock-arcade.js": "a609716a15a3d3ce75d3c63db470c1eb6a85e652"
+      }
+    },
+    "world": {
+      "gameId": "mk-rail-2a",
+      "winLevels": 2,
+      "version": "onboard-arcade-v1"
+    },
+    "seeds": {
+      "arcadeSeed": 42,
+      "policySeed": 7
+    },
+    "budget": {
+      "maxSteps": 400
+    },
+    "result": {
+      "terminal": "WIN",
+      "won": true,
+      "levelsCompleted": 2,
+      "steps": 112,
+      "exhaustedBudget": false,
+      "normalizeRejections": 0
+    },
+    "steps": [
+      {
+        "step": 0,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": -1,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 1,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 2,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 3,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 4,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 5,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 6,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 7,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 8,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 9,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 10,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 11,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 12,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 13,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "45f1b1c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 14,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "45f1b1c5",
+        "hashAfter": "45f1b1c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 15,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "45f1b1c5",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 16,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (50,18) — ACTION3 is my up",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "a8e0ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 17,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "a8e0ab45",
+        "hashAfter": "45f1b1c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 18,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "45f1b1c5",
+        "hashAfter": "f7b76dc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 19,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "f7b76dc5",
+        "hashAfter": "ce1131c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 20,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (50,18) — ACTION3 is my up",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "ce1131c5",
+        "hashAfter": "60b6edc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 21,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "60b6edc5",
+        "hashAfter": "b230b1c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 22,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "b230b1c5",
+        "hashAfter": "25b66dc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 23,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (50,18) — ACTION3 is my up",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "25b66dc5",
+        "hashAfter": "f25031c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 24,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "f25031c5",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 25,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 26,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "exploring — an action I have not tried from here (ACTION1)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 27,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "pressing again — some worlds turn before they step (ACTION1)",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 28,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking my map toward unexplored ground (ACTION2)",
+        "tag": "escape",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 29,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking my map toward unexplored ground — ACTION4 is my down",
+        "tag": "escape",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 30,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "exploring — an action that usually changes something (ACTION3)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 31,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 32,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "exploring — an action that usually changes something (ACTION3)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 33,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 34,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "exploring — an action that usually changes something (ACTION2)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "343dbc05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 35,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "pressing again — some worlds turn before they step (ACTION2)",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "343dbc05",
+        "hashAfter": "3472ddc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 36,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "the follow-through press — this world steps on the second touch — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "3472ddc5",
+        "hashAfter": "3ee0e005",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 37,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "I can see a 24-step route to the one-of-a-kind island, around the color-5 walls",
+        "tag": "route",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "3ee0e005",
+        "hashAfter": "c72289c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 38,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "c72289c5",
+        "hashAfter": "ec538405",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 39,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "ec538405",
+        "hashAfter": "c0b8b5c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 40,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "c0b8b5c5",
+        "hashAfter": "c0b8b5c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 41,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "c0b8b5c5",
+        "hashAfter": "443a0c05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 42,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "443a0c05",
+        "hashAfter": "fb89b385",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 43,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "fb89b385",
+        "hashAfter": "78f88c05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 44,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "78f88c05",
+        "hashAfter": "b0ac3385",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 45,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "b0ac3385",
+        "hashAfter": "99b70c05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 46,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "99b70c05",
+        "hashAfter": "31ceb385",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 47,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "31ceb385",
+        "hashAfter": "a6758c05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 48,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "a6758c05",
+        "hashAfter": "3d19f105",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 49,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "3d19f105",
+        "hashAfter": "3d19f105",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 50,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "3d19f105",
+        "hashAfter": "14fee345",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 51,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "14fee345",
+        "hashAfter": "5fc69d05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 52,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "5fc69d05",
+        "hashAfter": "e8408745",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 53,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "e8408745",
+        "hashAfter": "3ab9c905",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 54,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "3ab9c905",
+        "hashAfter": "1301ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 55,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "1301ab45",
+        "hashAfter": "1301ab45",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 56,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "1301ab45",
+        "hashAfter": "476f05c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 57,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "476f05c5",
+        "hashAfter": "b77859c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 58,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "b77859c5",
+        "hashAfter": "bb2e85c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 59,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "bb2e85c5",
+        "hashAfter": "76d7d9c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 60,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "76d7d9c5",
+        "hashAfter": "8aee05c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 61,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "8aee05c5",
+        "hashAfter": "923759c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 62,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "923759c5",
+        "hashAfter": "b6ad85c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 63,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "b6ad85c5",
+        "hashAfter": "efb40dc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 64,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (14,18) — ACTION3 is my up",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 1056,
+        "hashBefore": "efb40dc5",
+        "hashAfter": "efb40dc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 65,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "efb40dc5",
+        "hashAfter": "33702045",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 66,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "33702045",
+        "hashAfter": "d7630445",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 67,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "d7630445",
+        "hashAfter": "c32ba045",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 68,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (14,18) — ACTION3 is my up",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "c32ba045",
+        "hashAfter": "d33e8445",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 69,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "d33e8445",
+        "hashAfter": "8ee72045",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 70,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "8ee72045",
+        "hashAfter": "0b1a0445",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 71,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (14,18) — ACTION3 is my up",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "0b1a0445",
+        "hashAfter": "96a2a045",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 72,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "96a2a045",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 73,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 74,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "exploring — an action I have not tried from here (ACTION2)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 75,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 76,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking my map toward unexplored ground (ACTION1)",
+        "tag": "escape",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 77,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking my map toward unexplored ground — ACTION4 is my down",
+        "tag": "escape",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 78,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "exploring — an action that usually changes something (ACTION3)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 79,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 80,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "exploring — an action that usually changes something (ACTION2)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 81,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION2 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 82,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "exploring — an action that usually changes something (ACTION1)",
+        "tag": "explore",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "e8d2c485",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 83,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "pressing again — some worlds turn before they step (ACTION1)",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "e8d2c485",
+        "hashAfter": "20a78845",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 84,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "the follow-through press — this world steps on the second touch — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "20a78845",
+        "hashAfter": "e7bb6a85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 85,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "I can see a 24-step route to the one-of-a-kind island, around the color-5 walls",
+        "tag": "route",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "e7bb6a85",
+        "hashAfter": "fa8ce645",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 86,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "fa8ce645",
+        "hashAfter": "ff52d085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 87,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "ff52d085",
+        "hashAfter": "cd000445",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 88,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "cd000445",
+        "hashAfter": "cd000445",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 89,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "cd000445",
+        "hashAfter": "8c904a85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 90,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "8c904a85",
+        "hashAfter": "73898405",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 91,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "73898405",
+        "hashAfter": "b732ca85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 92,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "b732ca85",
+        "hashAfter": "ff800405",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 93,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "ff800405",
+        "hashAfter": "add54a85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 94,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "add54a85",
+        "hashAfter": "b7768405",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 95,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "b7768405",
+        "hashAfter": "7077ca85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 96,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "7077ca85",
+        "hashAfter": "73998d85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 97,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "73998d85",
+        "hashAfter": "73998d85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 98,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "73998d85",
+        "hashAfter": "1dc27fc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 99,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "1dc27fc5",
+        "hashAfter": "28d26b85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 100,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "28d26b85",
+        "hashAfter": "543f65c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 101,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "543f65c5",
+        "hashAfter": "bd890985",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 102,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "bd890985",
+        "hashAfter": "d9b30bc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 103,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 32,
+        "hashBefore": "d9b30bc5",
+        "hashAfter": "d9b30bc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 104,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "d9b30bc5",
+        "hashAfter": "2e72f645",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 105,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "2e72f645",
+        "hashAfter": "c7ffa245",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 106,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "c7ffa245",
+        "hashAfter": "345e7645",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 107,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "345e7645",
+        "hashAfter": "b24b2245",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 108,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "b24b2245",
+        "hashAfter": "f649f645",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 109,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "f649f645",
+        "hashAfter": "5896a245",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 110,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "5896a245",
+        "hashAfter": "74357645",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 111,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "walking the route I read off the board — ACTION3 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 32,
+        "hashBefore": "74357645",
+        "hashAfter": "ebf5bbc5",
+        "state": "WIN",
+        "levelsCompleted": 2
+      }
+    ],
+    "frameHashChain": [
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "a8e0ab45",
+      "45f1b1c5",
+      "45f1b1c5",
+      "a8e0ab45",
+      "a8e0ab45",
+      "45f1b1c5",
+      "f7b76dc5",
+      "ce1131c5",
+      "60b6edc5",
+      "b230b1c5",
+      "25b66dc5",
+      "f25031c5",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "343dbc05",
+      "3472ddc5",
+      "3ee0e005",
+      "c72289c5",
+      "ec538405",
+      "c0b8b5c5",
+      "c0b8b5c5",
+      "443a0c05",
+      "fb89b385",
+      "78f88c05",
+      "b0ac3385",
+      "99b70c05",
+      "31ceb385",
+      "a6758c05",
+      "3d19f105",
+      "3d19f105",
+      "14fee345",
+      "5fc69d05",
+      "e8408745",
+      "3ab9c905",
+      "1301ab45",
+      "1301ab45",
+      "476f05c5",
+      "b77859c5",
+      "bb2e85c5",
+      "76d7d9c5",
+      "8aee05c5",
+      "923759c5",
+      "b6ad85c5",
+      "efb40dc5",
+      "efb40dc5",
+      "33702045",
+      "d7630445",
+      "c32ba045",
+      "d33e8445",
+      "8ee72045",
+      "0b1a0445",
+      "96a2a045",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "e8d2c485",
+      "20a78845",
+      "e7bb6a85",
+      "fa8ce645",
+      "ff52d085",
+      "cd000445",
+      "cd000445",
+      "8c904a85",
+      "73898405",
+      "b732ca85",
+      "ff800405",
+      "add54a85",
+      "b7768405",
+      "7077ca85",
+      "73998d85",
+      "73998d85",
+      "1dc27fc5",
+      "28d26b85",
+      "543f65c5",
+      "bd890985",
+      "d9b30bc5",
+      "d9b30bc5",
+      "2e72f645",
+      "c7ffa245",
+      "345e7645",
+      "b24b2245",
+      "f649f645",
+      "5896a245",
+      "74357645",
+      "ebf5bbc5"
+    ]
+  },
+  "session": {
+    "guidPresent": true,
+    "note": "donor Math.random session key — excluded from evidence"
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "officialArcAgi3": false,
+    "grantsAuthority": false,
+    "network": "none (in-process; onboard arcade, no key, no benchmark API)",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}
