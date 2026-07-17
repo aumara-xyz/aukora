@@ -9,6 +9,7 @@ import { describe, it, expect } from "vitest";
 import * as evidence from "@aukora/evidence";
 import * as council from "@aukora/council";
 import * as councilNode from "@aukora/council-node";
+import * as mind from "@aukora/mind";
 
 describe("@aukora/evidence public export", () => {
   it("exposes the canonical EvidencePack + secret-projection primitives", () => {
@@ -37,5 +38,26 @@ describe("@aukora/council-node public export", () => {
   it("exposes only the Node fs spend-ledger adapter", () => {
     expect(typeof councilNode.AukoraFuSpendLedger).toBe("function");
     expect(typeof councilNode.utcDay).toBe("function");
+  });
+});
+
+describe("@aukora/mind public export", () => {
+  it("exposes the pure reasoning-loop surface", () => {
+    expect(typeof mind.GOVERNOR_PROMPT).toBe("string");
+    expect(typeof mind.buildTurnMessage).toBe("function");
+    expect(typeof mind.parseMindReply).toBe("function");
+    expect(typeof mind.validateAction).toBe("function");
+    expect(typeof mind.checkPlanExpectation).toBe("function");
+    expect(typeof mind.renderFrame).toBe("function");
+    expect(typeof mind.TurnWindow).toBe("function");
+    expect(typeof mind.rolloutPlan).toBe("function");
+    expect(typeof mind.rolloutBest).toBe("function");
+  });
+  it("grants no authority and carries no store, ledger, or signer", () => {
+    expect(mind.mindGrantsAuthority()).toBe(false);
+    const surface = mind as Record<string, unknown>;
+    expect(surface.AukoraFuSpendLedger).toBeUndefined();       // no fs ledger (that lives in @aukora/council-node)
+    expect(surface.buildMemoryRecord).toBeUndefined();         // no memory law (that lives in @aukora/memory)
+    expect(surface.recall).toBeUndefined();
   });
 });

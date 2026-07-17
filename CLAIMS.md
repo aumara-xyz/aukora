@@ -14,10 +14,11 @@ Labels used here:
 
 | Capability | Source | Tests | Export |
 | --- | --- | --- | --- |
-| Deterministic authority verification + reducer, canonical encoding, Merkle, registries, schemas, conformance vectors | `packages/kernel/src` | `packages/kernel/test` (19) + conformance vectors | `@aukora/kernel` (built `dist`) |
+| Deterministic authority verification + reducer, canonical encoding, Merkle, registries, schemas, conformance vectors | `packages/kernel/src` | `packages/kernel/test` (21) + conformance vectors | `@aukora/kernel` (built `dist`) |
 | EvidencePack closed-schema validation, JCS-aligned canonical JSON, domain-separated length-framed digest | `packages/evidence/src/{canonical,digest,validate,types}.ts` | `packages/evidence/test/evidencePackV1.test.ts` | `@aukora/evidence` |
 | Confusable-resistant secret projections + catalogue (NFC/NFKC/NFD, zero-width strip, skeleton), linear JWT/URL/step-budget scanners | `packages/evidence/src/catalogue.ts` | `packages/evidence/test/evidencePackV1.test.ts` | `@aukora/evidence` |
-| KIRA memory law: consent-scoped content-addressed envelope, deterministic recall, governed forgetting (content-free tombstone), staleness, advisory containment | `packages/memory/src/envelope.ts` | `packages/memory/test` (7) | `@aukora/memory` |
+| KIRA memory law: consent-scoped content-addressed envelope, deterministic recall, governed forgetting (content-free tombstone), staleness, advisory containment | `packages/memory/src/envelope.ts` | `packages/memory/test` (17) | `@aukora/memory` |
+| Pure reasoning-loop primitives: tolerant single-legal-action reply parsing, bounded plan-step grammar with fail-safe expectation checks, parity-safe bounded turn window, ONE unified rigid-move law shared by diff rendering and plan verification, deterministic plan rollout + donor scoring law over an injected simulator, advisory-only trace payloads | `packages/mind/src` | `packages/mind/test` (51) | `@aukora/mind` |
 | Advisory council: served-model verification (no substitution), quorum rule, spend estimation, claim-basis freeze/verify | `packages/council/src/aukoraFuCouncil.ts` | `packages/council/test/aukoraFuCouncil.test.ts` | `@aukora/council` |
 | Glyph-packet parsing / perception channel (deterministic, offline) | `packages/council/src/aukoraFuGlyph.ts` | `packages/council/test/aukoraFuGlyph.test.ts` | `@aukora/council` |
 | Persistent daily spend ledger (filesystem JSONL) | `packages/council-node/src/aukoraFuSpendLedger.ts` | `packages/council-node/test/aukoraFuSpendLedger.test.ts` | `@aukora/council-node` |
@@ -31,29 +32,26 @@ overclaiming. These are governed demonstrations, not live production systems.
 
 | Capability | Source | Tests | Honesty caveat |
 | --- | --- | --- | --- |
-| Reactive, receipt-chained, growing memory with governed forgetting (content-free chain); corrupt-store fail-closed + reproducible runtime manifest; node print, supervised generation, offline executor, health contract, Nebius preflight | `apps/brain/src`, `apps/brain/convex` | `apps/brain/test` (78) | Convex backend is the **headless simulated** `convex-test` (in-process), **not** a live cloud deploy |
+| Reactive, receipt-chained, growing memory with governed forgetting (content-free chain); corrupt-store fail-closed + reproducible runtime manifest; node print, supervised generation, offline executor, health contract, Nebius preflight | `apps/brain/src`, `apps/brain/convex` | `apps/brain/test` (148; +2 gated smokes) | Deterministic tests use `convex-test`; the separately proven live path is local/self-hosted Convex, never managed cloud |
 | Provider-neutral brain attachment incl. a Nebius provider path + fail-closed provider selection policy | `apps/brain/src/nebiusProvider.ts`, `apps/brain/src/providerPolicy.ts` | `apps/brain/test/{nebiusProvider,providerPolicy}.test.ts` | **Bounded and parked**: no live model calls, no weights, no endpoint/job IDs |
-| Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory review → refuse(stale/secret/authority) → hybrid AUMLOK owner-gate → sandbox-only apply → receipt/lineage; AURA trace law + receipt-before-row; governed AUMLOK–AURA ceremony contract | `apps/seed/src` | `apps/seed/test` (147) | Council review is **mock/deterministic**; apply is **sandbox-only** and never mutates a live repo |
+| Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory review → refuse(stale/secret/authority) → hybrid AUMLOK owner-gate → isolated candidate → receipt/lineage; AURA trace law + receipt-before-row; governed AUMLOK–AURA ceremony contract | `apps/seed/src` | `apps/seed/test` (298) | Effects stop at an isolated local candidate worktree/branch; never direct `main`, push, or merge |
 | Read-only operator console over authority/memory/proposal/verdict/provider-truth/budget/forgetting | `apps/console/public`, `apps/console/tooling` | `apps/console/test` (44) | Renders a deterministic `DEMO_FIXTURE`; **signs, applies, deploys, and arms nothing** |
-| Donor Spatial shell transplanted subtractively (91 VERBATIM donor blobs, provenance-pinned + tested; registry subtraction; port law :7096 with donor doors 7090–7095 reserved) | `apps/spatial` | `apps/spatial/test` (8) | Donor code, not a recreation; live engine doors NOT bundled — organs show donor **offline states**; custody/signing stays in local doors, never in browser or launcher |
+| Donor Spatial shell transplanted subtractively (46 VERBATIM donor blobs, provenance-pinned + tested; registry subtraction; port law :7096 with donor doors 7090–7095 reserved) | `apps/spatial` | `apps/spatial/test` (38) | Donor code, not a recreation; local doors are supervisor-owned and fail honestly when unavailable; custody/signing stays out of the browser and launcher |
 
-Test totals: 145 (root) + 19 (kernel) + 7 (memory) + 91 (brain; +1 gated macOS-Keychain smoke, skipped unless opted in) + 165 (seed) + 44 (console) + 8 (spatial) + 1 (fixture-regeneration guard) = **480 passing**, none borrowed from any external product suite.
+Test totals: 156 (root) + 21 (kernel) + 17 (memory) + 51 (mind) + 148 (brain; +2 gated smokes) + 298 (seed) + 44 (console) + 38 (spatial) + 1 (fixture-regeneration guard) = **774 passing**, none borrowed from any external product suite.
 
 ## Deliberately NOT in this repository
 
 These are excluded on purpose and are **not** claimed as shipped capabilities anywhere here:
 
-- Product applications: the Symbiote product organism, the Fu review application, a live Convex
-  product backend/deployment, dashboards, servers, friend harness, Portal CLI. (The in-repo
-  `apps/*` are governed *adapters/demonstrations* built on these packages, not those products.)
-- Product/UI surfaces: spatial UI, lander, voice, chat, board/creative surfaces.
+- Private donor history and unpublished product/research material are not automatically copied
+  into this public tree; included `apps/*` and `packages/*` are real in-repo working surfaces.
 - Quarantined material and research corpora.
 - Private planning, handoffs, continuity notes, strategy, or patent drafts.
 - Any "digital metabolism", biological-isomorphism, consciousness, or "aliveness" claim. Such
   material, where it exists at all, is research/design in other repositories and is **not**
   implemented capability. It does not appear here as a claim.
-- Signing, live-apply, key generation, ceremony/custody. This core verifies authority; it never
-  mints or applies it.
+- Owner signing secrets and key material. The kernel verifies authority; models never mint it.
 
 If a future capability is designed but not built, it belongs in a private issue or a
 design record — not in this claims table.
