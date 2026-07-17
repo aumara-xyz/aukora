@@ -43,3 +43,4 @@ export * from './approveGuard.js';
 export * from './ownerCustody.js';
 export * from './bondCeremony.js';
 export * from './approveDoor.js';
+export * from './proposerQualification.js';
