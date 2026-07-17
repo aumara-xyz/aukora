@@ -1,0 +1,29 @@
+{
+  "lane": "sam2-constitutional-authority-trusted-state",
+  "anchorIssue": 21,
+  "finalHead": "0524aecc080af1505475a0bb7ce1d25a536bfb45",
+  "branch": "sam/overnight-trusted-state",
+  "pr": 124,
+  "base": "5ae15481bf5676ede97aab28b5c16e189358472c",
+  "bricksDone": [1, 2, 3, 4, 5, 6],
+  "node20FixLanded": true,
+  "node20VerifiedOn": "20.20.2",
+  "tests": { "kernelNode": 23, "kernel": 21 },
+  "testMatrix": {
+    "node20.20.2": { "kernelNode": 23, "kernel": 21 },
+    "node22.23.1": { "kernelNode": 23 }
+  },
+  "acceptanceBarMet": true,
+  "acceptanceBar": "consumed authority + kernel receipt head remain consumed across a REAL kill -9 (replay refused)",
+  "invariants": "I1-I9 in FORMAL_MODEL.md",
+  "residual": "two-file consistent rollback needs external monotonic source (out of scope: no AUMLOK v3/hardware-roots/threshold-keys)",
+  "openContracts": [],
+  "notMerged": true,
+  "aumlokV2BytesByteIdentical": true,
+  "nodeFixes": [
+    "esbuild-bundle scripts/child-consume.ts to plain ESM (target node18) + spawn bare `node child.mjs` (removed --experimental-transform-types, Node>=22.6-only, which broke child startup on Node 20)",
+    "parent resolves each child on the 'close' event (not 'exit'): 'exit' could fire before the final stdout 'data' reached the parent; under vitest console interception on Node 20 that raced the concurrent test to an empty buffer (0 prepares). Belt-and-braces: child emits via synchronous writeSync(1,...); store writer-lock treats an empty/partial (in-progress) lock as live-contended, not reclaimable-stale (closes a two-writer TOCTOU)."
+  ],
+  "next": "handoff written — lane parked clean, awaiting integration (#132 re-gate off HEAD 0524aec; base bump into the branch when #120 admin-merges — never force-push, never merge main)",
+  "stoppedAtWITA": "2026-07-18T06:03 WITA"
+}
