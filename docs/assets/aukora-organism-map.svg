@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Aukora governed digital organism architecture</title>
+  <desc id="desc">A bounded loop from perception through memory, reasoning, advisory review, owner authorization, isolated candidate materialization, tests, receipts, and reactive state, with Inkling and Tinker shown as a future evolution laboratory.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050812"/>
+      <stop offset="0.52" stop-color="#0c1020"/>
+      <stop offset="1" stop-color="#080712"/>
+    </linearGradient>
+    <radialGradient id="glowG"><stop stop-color="#81d4b4" stop-opacity=".18"/><stop offset="1" stop-color="#81d4b4" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowB"><stop stop-color="#96b4ff" stop-opacity=".18"/><stop offset="1" stop-color="#96b4ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowP"><stop stop-color="#c4aaff" stop-opacity=".18"/><stop offset="1" stop-color="#c4aaff" stop-opacity="0"/></radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="10"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#7181a8"/></marker>
+    <style>
+      .sans{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+      .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+      .eyebrow{font-size:18px;letter-spacing:6px;fill:#8d98b5}
+      .title{font-size:58px;font-weight:300;letter-spacing:12px;fill:#f4f6ff}
+      .subtitle{font-size:21px;fill:#b8c0d8}
+      .organTitle{font-size:23px;font-weight:650;fill:#f4f6ff}
+      .organSub{font-size:15px;fill:#aeb7d0}
+      .micro{font-size:13px;letter-spacing:1.5px;fill:#7e89a8}
+      .future{font-size:15px;fill:#d8c9ff}
+      .box{fill:#111728;fill-opacity:.92;stroke:#303a58;stroke-width:1.5}
+      .line{stroke:#7181a8;stroke-width:2;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#846ec4;stroke-width:2;stroke-dasharray:8 8;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="210" cy="280" r="360" fill="url(#glowG)"/>
+  <circle cx="800" cy="420" r="430" fill="url(#glowB)"/>
+  <circle cx="1420" cy="260" r="350" fill="url(#glowP)"/>
+
+  <text x="800" y="74" text-anchor="middle" class="sans eyebrow">A GOVERNED RECURSIVE DIGITAL ORGANISM</text>
+  <text x="800" y="142" text-anchor="middle" class="sans title">AUKORA</text>
+  <text x="800" y="184" text-anchor="middle" class="sans subtitle">Intelligence may propose. Evidence may advise. Only the owner authorizes.</text>
+
+  <path d="M250 330H375" class="line"/><path d="M600 330H725" class="line"/><path d="M950 330H1075" class="line"/><path d="M1300 330H1415" class="line"/>
+
+  <g transform="translate(55 255)">
+    <rect width="195" height="150" rx="24" class="box" stroke="#81d4b4"/>
+    <text x="98" y="44" text-anchor="middle" class="sans organTitle">SPATIAL</text>
+    <text x="98" y="72" text-anchor="middle" class="sans organSub">perception + voice</text>
+    <text x="98" y="99" text-anchor="middle" class="sans organSub">bounded repo sight</text>
+    <text x="98" y="128" text-anchor="middle" class="mono micro">SENSE</text>
+  </g>
+  <g transform="translate(375 255)">
+    <rect width="225" height="150" rx="24" class="box" stroke="#81d4b4"/>
+    <text x="113" y="44" text-anchor="middle" class="sans organTitle">KIRA</text>
+    <text x="113" y="72" text-anchor="middle" class="sans organSub">consent-scoped memory</text>
+    <text x="113" y="99" text-anchor="middle" class="sans organSub">governed forgetting</text>
+    <text x="113" y="128" text-anchor="middle" class="mono micro">REMEMBER</text>
+  </g>
+  <g transform="translate(725 255)">
+    <rect width="225" height="150" rx="24" class="box" stroke="#96b4ff"/>
+    <text x="113" y="44" text-anchor="middle" class="sans organTitle">MIND + FU</text>
+    <text x="113" y="72" text-anchor="middle" class="sans organSub">reason + simulate</text>
+    <text x="113" y="99" text-anchor="middle" class="sans organSub">advisory council review</text>
+    <text x="113" y="128" text-anchor="middle" class="mono micro">PROPOSE</text>
+  </g>
+  <g transform="translate(1075 245)">
+    <rect width="225" height="170" rx="30" fill="#171326" stroke="#d7b36a" stroke-width="2.5"/>
+    <text x="113" y="44" text-anchor="middle" class="sans organTitle">AUMLOK</text>
+    <text x="113" y="72" text-anchor="middle" class="sans organSub">hybrid owner gate</text>
+    <text x="113" y="99" text-anchor="middle" class="sans organSub">verify · never mint</text>
+    <text x="113" y="128" text-anchor="middle" class="sans organSub">fresh byte-bound consent</text>
+    <text x="113" y="153" text-anchor="middle" class="mono micro">AUTHORIZE</text>
+  </g>
+  <g transform="translate(1415 255)">
+    <rect width="130" height="150" rx="24" class="box" stroke="#c4aaff"/>
+    <text x="65" y="44" text-anchor="middle" class="sans organTitle">GIT</text>
+    <text x="65" y="72" text-anchor="middle" class="sans organSub">isolated</text>
+    <text x="65" y="96" text-anchor="middle" class="sans organSub">candidate</text>
+    <text x="65" y="128" text-anchor="middle" class="mono micro">MATERIALIZE</text>
+  </g>
+
+  <path d="M1480 405V510H1188" class="line"/>
+  <g transform="translate(895 475)">
+    <rect width="293" height="135" rx="24" class="box" stroke="#c4aaff"/>
+    <text x="147" y="40" text-anchor="middle" class="sans organTitle">TESTS + RECEIPTS</text>
+    <text x="147" y="70" text-anchor="middle" class="sans organSub">rehearsal · lineage · Merkle evidence</text>
+    <text x="147" y="103" text-anchor="middle" class="mono micro">VERIFY THE CHANGE</text>
+  </g>
+  <path d="M895 542H650" class="line"/>
+  <g transform="translate(355 475)">
+    <rect width="295" height="135" rx="24" class="box" stroke="#96b4ff"/>
+    <text x="148" y="40" text-anchor="middle" class="sans organTitle">LOCAL CONVEX</text>
+    <text x="148" y="70" text-anchor="middle" class="sans organSub">durable reactive nervous system</text>
+    <text x="148" y="103" text-anchor="middle" class="mono micro">PERSIST · REACT · NEVER RULE</text>
+  </g>
+  <path d="M355 542H155V405" class="line"/>
+
+  <rect x="72" y="690" width="1456" height="140" rx="28" fill="#100d1d" stroke="#715aa8" stroke-width="1.5" stroke-dasharray="9 8"/>
+  <text x="110" y="726" class="sans micro">ACTIVE FRONTIER · ISOLATED EVOLUTION LAB</text>
+  <text x="110" y="770" class="sans organTitle">INKLING ON NEBIUS</text>
+  <text x="110" y="800" class="sans future">multimodal frontier teacher + proposer · no keys · no authority · checksum-bound outputs</text>
+  <path d="M565 760H760" class="dash"/>
+  <text x="805" y="770" class="sans organTitle">TINKER</text>
+  <text x="805" y="800" class="sans future">LoRA / RL post-training · exported adapters return as candidates</text>
+  <path d="M1250 760H1435V610H1188" class="dash"/>
+
+  <text x="800" y="875" text-anchor="middle" class="sans micro">AURA MAKES THE EVIDENCE VISIBLE · THE SUPERVISOR OWNS ONE LIFECYCLE · NO MODEL HOLDS THE OWNER KEY</text>
+</svg>
