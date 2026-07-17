@@ -101,16 +101,18 @@ const headOf = (): string => execFileSync('git', ['-C', repoRoot, 'rev-parse', '
 
 interface Harness { door: MindDoor; owner: HybridOwnerAdapter; store: ReactiveMemoryStore; convexStore: ConvexWorkflowStore | null }
 /** One "process": a door + adapter cache + ledger. Kill it by dropping it; only the injected io survives. */
-function bootProcess(io: FakeConvexIo | null, over: { workflowStore?: WorkflowStore; owner?: HybridOwnerAdapter } = {}): Harness {
+function bootProcess(io: FakeConvexIo | null, over: { workflowStore?: WorkflowStore; owner?: HybridOwnerAdapter; durabilityOverride?: DoorDurability | null } = {}): Harness {
   const store = new ReactiveMemoryStore();
   const owner = over.owner ?? new HybridOwnerAdapter('r50-door');
   const monitor = new CandidateReferenceMonitor(owner.root);
   const convexStore = io === null ? null : new ConvexWorkflowStore(io, validateWorkflowState as never);
   const workflowStore = over.workflowStore ?? (convexStore === null ? new InMemoryWorkflowStore() : (convexStore as unknown as WorkflowStore));
-  const durability: DoorDurability | undefined = convexStore === null ? undefined : {
+  const defaultDurability: DoorDurability | undefined = convexStore === null ? undefined : {
     hydrate: (id) => convexStore.hydrate(id),
     settle: () => convexStore.settle(),
   };
+  // durabilityOverride: undefined ⇒ default; null ⇒ force no durability; a value ⇒ inject that contract exactly.
+  const durability: DoorDurability | undefined = over.durabilityOverride === undefined ? defaultDurability : (over.durabilityOverride ?? undefined);
   const loadDriver = async (): Promise<DoorDriver> => {
     const recursionEnv = { store, knownFiles: new Set([TARGET]), ownerRoot: owner.root, ledger: new RecursionLedger(), nowMs: NOW_MS, nowIso: NOW_ISO, deadlineMs: NOW_MS + LIMITS.DEFAULT_WALL_TIME_BUDGET_MS };
     const ceremonyEnv: LocalCeremonyEnv = { recursionEnv, workflowStore, repo: repoCap(), ownerRoot: owner.root, store, monitor, gitRepoRoot: repoRoot, worktreeBase: wtBase, nowMs: NOW_MS, nowIso: NOW_ISO };
@@ -284,5 +286,66 @@ describe('R50 · durable ceremony over the real ConvexWorkflowStore + process de
     const store = h.convexStore! as unknown as WorkflowStore;
     const bad = { schema: 'aukora-recursion-workflow-v1' } as unknown as WorkflowStateV1;
     expect(store.save(bad, 0)).toEqual({ ok: false, reason: 'refused' });
+  });
+});
+
+// ── 3. settle-contract convergence: a REPORTED outage stays store-unavailable, never divergence ──
+// The current `ConvexWorkflowStore.settle()` reports a backend outage as data (`SettleResult.unavailable`)
+// instead of throwing. These tests inject that exact contract shape at the door's `DoorDurability` seam so the
+// mapping is proven WITHOUT depending on which store version is present (this branch's base still throws; the
+// merged tree reports) — the same fact must always carry the same 503 class, never a 409 conflict.
+
+describe('R50 · settle contract — a reported outage is door:store-unavailable, not a concurrent-writer conflict', () => {
+  const WID = 'ab'.repeat(32); // a stand-in 64-hex workflow id; the door only ever exposes a 12-hex prefix
+
+  /** Boot a durable door whose settle() returns EXACTLY the given result shape (no throw) — the reporting contract. */
+  const settleReporting = (result: { ok: boolean; pushed: number; divergence: readonly string[]; unavailable?: readonly string[] }) =>
+    bootProcess(null, {
+      workflowStore: new InMemoryWorkflowStore(), // ceremony runs in-process; only the settle RESULT is under test
+      durabilityOverride: { hydrate: async () => null, settle: async () => result },
+    });
+  const proposeNoAuth = (h: Harness) => h.door.handle(post('/api/propose', { proposalInput: makeProposal({ newContent: '// r50 settle-contract\n' }), nonce: 'r50-settle-1' }));
+
+  it('settle reports unavailable (ok:false, divergence:[]) → 503 door:store-unavailable with content-free prefixes', async () => {
+    const h = settleReporting({ ok: false, pushed: 0, divergence: [], unavailable: [WID] });
+    const res = await proposeNoAuth(h);
+    expect(res.status).toBe(503);
+    expect(res.json.reasonClass).toBe('door:store-unavailable'); // NOT door:settle-divergence
+    expect(res.json.unavailableWorkflowPrefixes).toEqual([WID.slice(0, 12)]);
+    expect(res.json.eventReceipt).toBeTruthy();
+    // the exact merged-tree regression Sam 1 pinned: an empty divergence list must never surface as a conflict
+    expect(res.json.divergentWorkflowPrefixes).toBeUndefined();
+  });
+
+  it('ORDERING: unavailable is checked BEFORE divergence — a settle with both reports store-unavailable (the retryable truth)', async () => {
+    const h = settleReporting({ ok: false, pushed: 0, divergence: [WID], unavailable: [WID] });
+    const res = await proposeNoAuth(h);
+    expect(res.status).toBe(503);
+    expect(res.json.reasonClass).toBe('door:store-unavailable');
+  });
+
+  it('REGRESSION: a genuine divergence (unavailable empty/absent) still maps to 409 door:settle-divergence', async () => {
+    const h = settleReporting({ ok: false, pushed: 0, divergence: [WID], unavailable: [] });
+    const res = await proposeNoAuth(h);
+    expect(res.status).toBe(409);
+    expect(res.json.reasonClass).toBe('door:settle-divergence');
+    expect(res.json.divergentWorkflowPrefixes).toEqual([WID.slice(0, 12)]);
+  });
+
+  it('a store that still THROWS on an outage (older settle contract) maps to the SAME 503 class', async () => {
+    const h = bootProcess(null, {
+      workflowStore: new InMemoryWorkflowStore(),
+      durabilityOverride: { hydrate: async () => null, settle: async () => { throw new Error('ECONNREFUSED 127.0.0.1:3210'); } },
+    });
+    const res = await proposeNoAuth(h);
+    expect(res.status).toBe(503);
+    expect(res.json.reasonClass).toBe('door:store-unavailable');
+  });
+
+  it('a fully-settled result (ok:true) lets the ceremony result stand (here: refused-owner-gate, no durability override of the verdict)', async () => {
+    const h = settleReporting({ ok: true, pushed: 1, divergence: [], unavailable: [] });
+    const res = await proposeNoAuth(h);
+    expect(res.status).toBe(409); // the ceremony's own refused-owner-gate, untouched by a clean settle
+    expect(res.json.reasonClass).toBe('refused-owner-gate');
   });
 });

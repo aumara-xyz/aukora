@@ -59,10 +59,16 @@ export interface DoorEvent {
  * R50 durability hooks — present when the workflow store persists OUTSIDE this process (the local Convex
  * adapter's hydrate/settle contract). The door pulls the durable row into the cache BEFORE the ceremony and
  * pushes accepted saves through the authoritative OCC mutation AFTER it. Absent for a purely in-process store.
+ *
+ * `unavailable` is OPTIONAL by design: the durable-store contract now reports a settle-time backend OUTAGE as a
+ * data field (`ConvexWorkflowStore.SettleResult.unavailable`) instead of a thrown error, so an outage stays
+ * distinct from a genuine concurrent-writer `divergence`. Older stores that still throw on an outage remain
+ * compatible (the door's try/catch maps a throw to the same `door:store-unavailable` class), and the field is
+ * simply absent for them — so this one interface serves both the throwing and the reporting settle contracts.
  */
 export interface DoorDurability {
   hydrate(workflowId: string): Promise<unknown>;
-  settle(): Promise<{ readonly ok: boolean; readonly pushed: number; readonly divergence: readonly string[] }>;
+  settle(): Promise<{ readonly ok: boolean; readonly pushed: number; readonly divergence: readonly string[]; readonly unavailable?: readonly string[] }>;
 }
 
 /** Injected lazy driver: the heavy composition modules. A throwing loader models a compile/import break. */
@@ -312,12 +318,22 @@ export class MindDoor {
     // race (divergence) or an unreachable durability point FAILS CLOSED — the durable truth wins, and the
     // machine's restart reconciliation handles any unsettled projection honestly.
     if (driver.durability) {
-      let settled: { readonly ok: boolean; readonly pushed: number; readonly divergence: readonly string[] };
+      let settled: { readonly ok: boolean; readonly pushed: number; readonly divergence: readonly string[]; readonly unavailable?: readonly string[] };
       try {
         settled = await driver.durability.settle();
       } catch {
+        // A store that still THROWS on an outage (older settle contract) — same fact, same class.
         const ev = this.receipt('refused', route, 'door:store-unavailable');
         return this.respond(503, { error: 'refused: durable store unreachable at the durability point (fail-closed; the projection is unsettled and reconciles on restart)', reasonClass: 'door:store-unavailable', eventReceipt: ev.receiptHash });
+      }
+      // A backend OUTAGE reported as data (current settle contract) must NOT masquerade as a concurrent-writer
+      // conflict: an unavailable item is unsettled-and-retryable, not a lost OCC race. Check it BEFORE divergence
+      // so the same fact carries the same 503 class whether the store throws or reports it — the exact
+      // refusal-class separation #87 established, held at this seam.
+      const unavailable = settled.unavailable ?? [];
+      if (unavailable.length > 0) {
+        const ev = this.receipt('refused', route, 'door:store-unavailable');
+        return this.respond(503, { error: 'refused: durable store unreachable at the durability point (fail-closed; the projection is unsettled and reconciles on restart)', reasonClass: 'door:store-unavailable', unavailableWorkflowPrefixes: unavailable.map((u) => u.slice(0, 12)), eventReceipt: ev.receiptHash });
       }
       if (!settled.ok) {
         const ev = this.receipt('refused', route, 'door:settle-divergence');
