@@ -366,9 +366,9 @@
     {
       "path": "apps/spatial/scripts/launch.mjs",
       "source": "ours (launcher/tooling)",
-      "sha256": "a6c7c7632873329d8e40019a2356bc5b7e605fbbb02025908292da9af206adfc",
+      "sha256": "6cd37eb5768e559cc3f4a3eafa43b6e5e45514a17ab0e3576f4dade1490cf7c0",
       "status": "NEW",
-      "note": "R47: mounts the GET/HEAD-only read spine (readSpine.mjs)"
+      "note": "R47: mounts the GET/HEAD-only read spine (readSpine.mjs) + workbench seams; pin = merged file"
     },
     {
       "path": "apps/spatial/scripts/verify-provenance.mjs",
