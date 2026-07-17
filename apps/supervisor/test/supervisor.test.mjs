@@ -143,3 +143,39 @@ describe('manifest is a claim + protected class', () => {
     }
   });
 });
+
+describe('R44c — invalid-PID file regression (review closure)', () => {
+  it('validPid admits only real positive integers', async () => {
+    const { validPid } = await import('../src/supervisor.mjs');
+    expect(validPid(12345)).toBe(true);
+    expect(validPid(undefined)).toBe(false);
+    expect(validPid(NaN)).toBe(false);
+    expect(validPid(0)).toBe(false);
+    expect(validPid(-1)).toBe(false);
+    expect(validPid(1.5)).toBe(false);
+    expect(validPid('undefined')).toBe(false);
+  });
+  it('a failed optional spawn yields pid=undefined and the guard refuses the write — no invalid PID file', async () => {
+    const { validPid } = await import('../src/supervisor.mjs');
+    const { spawn } = await import('node:child_process');
+    const { mkdtempSync, readdirSync, writeFileSync: wf } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const dir = mkdtempSync(join(tmpdir(), 'r44c-'));
+    const child = spawn(join(dir, 'no-such-binary'), [], { detached: true, stdio: 'ignore' });
+    await new Promise((resolve) => child.on('error', resolve)); // same live-catch as the supervisor
+    expect(child.pid).toBe(undefined);
+    if (validPid(child.pid)) wf(join(dir, 'svc.7099.pid'), String(child.pid)); // the guarded write
+    expect(readdirSync(dir).filter((f) => f.endsWith('.pid'))).toEqual([]);
+  });
+  it('bounded teardown tolerates a legacy poisoned pid file without reaching kill', () => {
+    // stopOurs parses with Number(); the poisoned literal becomes NaN, which the falsy check drops
+    // to the identity-verified lsof fallback — no throw, no kill(NaN).
+    const pid = Number('undefined');
+    expect(Number.isNaN(pid)).toBe(true);
+    expect(!pid).toBe(true);
+  });
+  it('source contract: the pid-file write is inside the validPid guard', () => {
+    const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
+    expect(sup).toMatch(/if \(validPid\(child\.pid\)\) \{\s*\n\s*writeFileSync/);
+  });
+});

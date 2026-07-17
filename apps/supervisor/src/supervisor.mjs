@@ -27,6 +27,10 @@ const RECEIPTS = join(STATE_DIR, 'receipts.jsonl');
 const STATE = join(STATE_DIR, 'state.json');
 const policy = JSON.parse(readFileSync(join(APP, 'policy.json'), 'utf8'));
 
+// R44c PID-file law: only a real positive-integer PID may ever be recorded. A failed optional
+// spawn (child.pid === undefined) must leave NO pid file, so bounded teardown stays bounded.
+export const validPid = (pid) => Number.isInteger(pid) && pid > 0;
+
 // ── protected-class integrity: refuse to run if the pinned surface drifted ─────────────────────────
 export function verifyProtected() {
   const pins = readFileSync(join(APP, 'protected.sha256'), 'utf8').trim().split('\n').map((l) => l.split(/\s{2,}| /));
@@ -97,7 +101,11 @@ function startService(svc, port) {
     });
   }
   child.unref();
-  writeFileSync(join(STATE_DIR, `${svc.name}.${port}.pid`), String(child.pid));
+  // R44c: a failed spawn leaves child.pid undefined — a PID file may only ever hold a real positive
+  // integer, or bounded teardown could act on the literal string "undefined".
+  if (validPid(child.pid)) {
+    writeFileSync(join(STATE_DIR, `${svc.name}.${port}.pid`), String(child.pid));
+  }
   return child.pid;
 }
 async function waitReady(svc, port) {
