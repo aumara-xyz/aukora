@@ -54,3 +54,27 @@ wants an explicit rename, seed's could become `EffectLifecycleEvent`. Posted to 
 
 Convergence-only: no new functionality (union + requalification only). `apps/brain/**` only; never merged main;
 authority/keys/signatures kept outside Convex; local self-hosted only; AUMLOK v2 bytes untouched. No dirty tree.
+
+## R53 equivalence confirmation (documentation only) — #141 ≡ #142
+
+Blob/tree comparison proving the requalified effect-event implementation on **#141** (`sam/r53-brain-union` @ `200e5154`) is **byte-identical** to the corresponding implementation in **#142** (`sam/r53-convergence` @ `02a89361`), apart from this named R53 qualification document.
+
+`git diff --name-only origin/sam/r53-brain-union origin/sam/r53-convergence` over all 16 effect-event files (4 src + `effectRoot.mjs` + canary + `index.ts` + 7 tests + `EFFECT_PROJECTION_LIVE.md` + `HANDOFF.json`) is **EMPTY**. Per-file git blob shas:
+
+| file | blob (both #141 and #142) |
+|---|---|
+| `src/effectEvent.ts` | `4dfd06f5b8` |
+| `src/effectEventLog.ts` | `5067f2ebdb` |
+| `src/effectEventStore.ts` | `67485e58d7` |
+| `src/effectCancellation.ts` | `88add91bf7` |
+| `scripts/lib/effectRoot.mjs` | `d58a36c58b` |
+| `scripts/effect-projection-canary.mjs` | `126a9c6d1b` |
+| `src/index.ts` | `95b5313681` |
+| `test/effectRootCrosscheck.test.ts` | `eedeadf442` |
+| (+ 6 remaining test files) | identical (empty `--name-only` diff) |
+
+**Sole delta** in the `apps/brain` + `docs/continuity/r53` scope: `docs/continuity/r53/SAM4_R52_UNION_REQUALIFICATION.md` (this file), present on #141 only. So #142 carries exactly my requalified implementation.
+
+**Boundary reconfirmed with Sam 3** (agreed on #22, owner-ratified, no rename): *the seed coordinator drives + settles an effect through its lifecycle; the brain store durably projects the settled effect and rebuilds it byte-identically; kernel-node holds the one durable PREPARED authority transaction.* `EffectEvent` (seed, a lifecycle transition union) vs `EffectEventV1` (brain, a durable projected record) — distinct shapes, distinct packages, zero exact symbol collision; no rename per the directive bar.
+
+**Path-tier labels reconfirmed EXACT** (table above, unchanged): production primary path (`mind-door-7097.ts` → `ConvexWorkflowStore` → `apps/brain/convex`) · live local canary (`effect-projection-canary.mjs`, real kill -9) · pilot table (`apps/brain/canary/convex`) · convex-test simulation (`apps/brain/test/**`) · disconnected (in-memory, outage → `unavailable` + lossless retry) · parked (Nebius/Inkling `enabled:false`).
