@@ -34,7 +34,9 @@
       "NEBIUS_LATER": 20,
       "SUPERSEDED": 3,
       "BLOCKED_OWNER": 14
-    }
+    },
+    "executed_gate_reference": "R46 integration gate (see PR)",
+    "note": "counts reconciled R46"
   },
   "privacy": "aukora-symbiote rows are PRIVATE_HOLD: number/state/url/family/disposition only; titles/bodies stay in the private repo.",
   "rows": [
@@ -1709,7 +1711,7 @@
       "number": 1,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/1",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1719,14 +1721,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 2,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/2",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1736,14 +1739,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 3,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/3",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "core/restore-queue",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1753,14 +1757,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 5,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/5",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1770,14 +1775,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 6,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/6",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1787,14 +1793,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 7,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/7",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "blocked/owner",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1804,14 +1811,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 8,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/8",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1821,14 +1829,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 9,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/9",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1838,14 +1847,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 10,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/10",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1855,14 +1865,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 11,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/11",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1872,14 +1883,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 12,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/12",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1889,14 +1901,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 13,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/13",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1906,14 +1919,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 14,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/14",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1923,14 +1937,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 15,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/15",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "superseded",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1940,14 +1955,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 16,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/16",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "blocked/owner",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1957,14 +1973,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 17,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/17",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "blocked/owner",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1974,14 +1991,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 18,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/18",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -1991,14 +2009,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 19,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/19",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2008,14 +2027,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 20,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/20",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2025,14 +2045,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 21,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/21",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2042,14 +2063,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 22,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/22",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2059,14 +2081,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 23,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/23",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "superseded",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2076,14 +2099,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 24,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/24",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2093,14 +2117,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 25,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/25",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "blocked/owner",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2110,14 +2135,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 27,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/27",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2127,14 +2153,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 28,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/28",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2144,14 +2171,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 29,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/29",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2161,7 +2189,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -2185,7 +2214,7 @@
       "number": 31,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/31",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2195,14 +2224,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 32,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/32",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2212,14 +2242,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 33,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/33",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/restore-queue",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2229,7 +2260,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -2270,7 +2302,7 @@
       "number": 37,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/37",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2280,7 +2312,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -2610,7 +2643,7 @@
       "number": 59,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/59",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2620,7 +2653,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -2644,7 +2678,7 @@
       "number": 64,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/64",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2654,7 +2688,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -2865,7 +2900,7 @@
       "number": 80,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/80",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2875,7 +2910,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -2984,7 +3020,7 @@
       "number": 88,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/88",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "blocked/owner",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -2994,7 +3030,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -3171,7 +3208,7 @@
       "number": 102,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/102",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3181,7 +3218,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -3290,7 +3328,7 @@
       "number": 149,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/149",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3300,14 +3338,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 150,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/150",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3317,14 +3356,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 151,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/151",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3334,14 +3374,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 152,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/152",
       "issue_state": "closed",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3351,14 +3392,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 178,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/178",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3368,7 +3410,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -3647,7 +3690,7 @@
       "number": 244,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/244",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/restore-queue",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3657,14 +3700,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 265,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/265",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "done/verified",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3674,14 +3718,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 270,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/270",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3691,14 +3736,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 274,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/274",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/active",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3708,14 +3754,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 280,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/280",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/active",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3725,14 +3772,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 288,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/288",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3742,14 +3790,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 292,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/292",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3759,14 +3808,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 295,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/295",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3776,14 +3826,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 296,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/296",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3793,14 +3844,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 297,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/297",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3810,14 +3862,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 298,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/298",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/restore-queue",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3827,14 +3880,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 299,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/299",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3844,14 +3898,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 300,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/300",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3861,14 +3916,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 301,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/301",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3878,14 +3934,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 302,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/302",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3895,14 +3952,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 303,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/303",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3912,14 +3970,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 304,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/304",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3929,14 +3988,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 308,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/308",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3946,14 +4006,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 315,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/315",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3963,14 +4024,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 319,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/319",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3980,14 +4042,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 320,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/320",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "research/parked",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -3997,14 +4060,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 330,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/330",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4014,14 +4078,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 335,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/335",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/active",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4031,14 +4096,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 336,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/336",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "blocked/owner",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4048,14 +4114,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 342,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/342",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/active",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4065,14 +4132,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 344,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/344",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/restore-queue",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4082,14 +4150,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 345,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/345",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4099,14 +4168,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 357,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/357",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4116,7 +4186,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -4140,7 +4211,7 @@
       "number": 361,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/361",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4150,7 +4221,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
@@ -4242,7 +4314,7 @@
       "number": 384,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/384",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4252,14 +4324,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 385,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/385",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "product/pending-owner-ruling",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4269,14 +4342,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 389,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/389",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4286,14 +4360,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 390,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/390",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "nebius/parked-local-phase",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4303,14 +4378,15 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     },
     {
       "source": "aukora-symbiote",
       "number": 391,
       "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/391",
       "issue_state": "open",
-      "capability": "uncategorized",
+      "capability": "core/restore-queue",
       "ring": "unassigned",
       "priority": "P2",
       "privacy_class": "PRIVATE_HOLD",
@@ -4320,7 +4396,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "capability_explanation": "R46 reconcile: family derived from disposition + source labels (no lane: label on the source issue); owner may re-family in a batch ruling"
     }
   ],
   "checkpoints": [
@@ -4348,6 +4425,11 @@
       "checkpoint": "wave3",
       "action": "reconciled memory/identity appendices (Sam 2 A–I) + continuity-witness registers (Sam 4) into the canonical atlas as evidence refs; #65 amend verified (default recall shape preserved, recallScoped opt-in); Sam 3 candidate-write integrity CONSUMED (6/6 adversarial suite green)",
       "live_proof": "docs/wave3/SAM1_LIVE_PROOF_TRANSCRIPT.log — one-command boot (organism:up, all PIDs verified), receipt-chain state carried byte-identical across SIGKILL crash/restart (headHash f70e5b41…, chainLength 1→1, no dup), bounded shutdown, donor :7090 HTTP 200 after"
+    },
+    {
+      "checkpoint": "r46",
+      "action": "reconciled: 75 uncategorized rows familied+explained (0 unexplained remaining); anatomy.json v0 + executable verifier landed and wired into test:all; owner corrections encoded as distinct rows (aura-birth EXACT_HISTORICAL_PORT, ghp-organ present, lingwa-lessons present, lingwa-lane MISSING, duplex-voice RUNTIME_UNPROVEN, gaussian-palace RESEARCH_NEW); 17 spatial seams (7 live/10 donor-offline), launcher token gap, two-lifecycle-owner state recorded in anatomy.known_gaps"
     }
-  ]
+  ],
+  "laws": "R46: source_continuity is recorded separately from runtime_reachability — presence of bytes proves origin, never live behavior; anatomy.json carries both fields per entry."
 }

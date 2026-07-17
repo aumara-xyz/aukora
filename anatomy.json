@@ -1,0 +1,170 @@
+{
+  "schema": "aukora-anatomy-v0",
+  "note": "Minimum executable ANATOMY (issue #53) — R46 truth round. source_continuity (where the bytes came from) is recorded SEPARATELY from runtime_reachability (what is proven live). Explicit MISSING/RUNTIME_UNPROVEN entries are honest and legal here; they block the next feature profile until closed or owner-deferred.",
+  "vocabulary": [
+    "EXACT_PORT",
+    "EXACT_HISTORICAL_PORT",
+    "ADAPTED_BOUNDARY",
+    "SUPERSEDED_WITH_COMPARATIVE_PROOF",
+    "OWNER_EXCLUDED",
+    "RUNTIME_UNPROVEN",
+    "MISSING",
+    "RESEARCH_NEW"
+  ],
+  "coverage_scopes": [
+    {
+      "glob": "apps/supervisor/src",
+      "note": "protected deterministic core — full file coverage enforced"
+    }
+  ],
+  "entries": [
+    {
+      "id": "supervisor-core",
+      "disposition": "ADAPTED_BOUNDARY",
+      "source_continuity": "donor #71/#26 + CONVEX_CANONICAL_BRAIN_SPEC (blob a3af164bef32…) restoration, Wave 2",
+      "runtime_reachability": "LIVE (R44 boot/status/teardown transcripts)",
+      "files": [
+        {
+          "path": "apps/supervisor/src/engine.mjs"
+        },
+        {
+          "path": "apps/supervisor/src/supervisor.mjs"
+        },
+        {
+          "path": "apps/supervisor/src/gateway.mjs"
+        },
+        {
+          "path": "apps/supervisor/src/verify-protected.mjs"
+        }
+      ],
+      "tests": [
+        "apps/supervisor/test/supervisor.test.mjs"
+      ],
+      "checked_by": "apps/supervisor/protected.sha256 (verify:protected)"
+    },
+    {
+      "id": "kernel-canonical",
+      "disposition": "EXACT_PORT",
+      "source_continuity": "donor aukora-kernel@b441edc4d17d, 10 blob-pinned sources",
+      "runtime_reachability": "LIVE (in-gate, Edge/Bun/browser)",
+      "files": [],
+      "tests": [
+        "packages/kernel/test/reducer.test.ts"
+      ],
+      "checked_by": "scripts/verify-provenance.mjs (byte-identity gate)"
+    },
+    {
+      "id": "aura-birth",
+      "disposition": "EXACT_HISTORICAL_PORT",
+      "source_continuity": "donor commits 204540f53ee4b4ff835ebf72b4a096b2c00fcc06 + 6d3e23881d4f32c24ddd8410ddc9bffc7081b6c7, donor path spatial/assets/aura-birth.js, blob 846361640aecc90b9675d2921ef112a840b3fcd6 (ABSENT from donor HEAD — historical port, owner-corrected R46)",
+      "runtime_reachability": "served by spatial shell; organ-level proof pending",
+      "files": [
+        {
+          "path": "apps/spatial/assets/aura-birth.js",
+          "blob": "846361640aecc90b9675d2921ef112a840b3fcd6"
+        }
+      ],
+      "tests": [
+        "apps/spatial/test/transplant.test.mjs"
+      ],
+      "donor": {
+        "repo": "aukora-symbiote",
+        "commit": "204540f53ee4b4ff835ebf72b4a096b2c00fcc06",
+        "path": "spatial/assets/aura-birth.js",
+        "blob": "846361640aecc90b9675d2921ef112a840b3fcd6"
+      }
+    },
+    {
+      "id": "ghp-organ",
+      "disposition": "EXACT_PORT",
+      "source_continuity": "donor spatial/app/ghp.js same blob across donor history (owner-corrected R46: NOT absent) — commit pinned to the verified donor HEAD (owner cited additional historical commits by prefix; full SHAs recorded in the #20 correction)",
+      "runtime_reachability": "live in shell roster (R38+ transcripts)",
+      "files": [
+        {
+          "path": "apps/spatial/app/ghp.js",
+          "blob": "6804ef74985db34f1da391b72b7c4d4e83965dfb"
+        }
+      ],
+      "tests": [
+        "apps/spatial/test/transplant.test.mjs"
+      ],
+      "donor": {
+        "repo": "aukora-symbiote",
+        "commit": "41707f910d10696482c28ee80346c252a55e9d41",
+        "path": "spatial/app/ghp.js",
+        "blob": "6804ef74985db34f1da391b72b7c4d4e83965dfb"
+      }
+    },
+    {
+      "id": "ghp-research-tree",
+      "disposition": "RESEARCH_NEW",
+      "source_continuity": "donor GHP/ research tree — SEPARATE capability from the UI organ (owner ruling R46); disposition pending its own provenance pass",
+      "runtime_reachability": "n/a",
+      "files": [],
+      "tests": []
+    },
+    {
+      "id": "lingwa-lessons",
+      "disposition": "EXACT_PORT",
+      "source_continuity": "donor spatial/app/auma/auma.js same blob (owner-corrected R46: NOT absent)",
+      "runtime_reachability": "live in shell roster",
+      "files": [
+        {
+          "path": "apps/spatial/app/auma/auma.js",
+          "blob": "d589c376dc649c8d28ad0fc5c7e683033dba712f"
+        }
+      ],
+      "tests": [
+        "apps/spatial/test/transplant.test.mjs"
+      ],
+      "donor": {
+        "repo": "aukora-symbiote",
+        "commit": "41707f910d10696482c28ee80346c252a55e9d41",
+        "path": "spatial/app/auma/auma.js",
+        "blob": "d589c376dc649c8d28ad0fc5c7e683033dba712f"
+      }
+    },
+    {
+      "id": "lingwa-lane-realtime",
+      "disposition": "MISSING",
+      "source_continuity": "donor spatial/lingwaLane.ts (real-time translation lane) — SEPARATE capability from the lesson app (owner ruling R46)",
+      "runtime_reachability": "no current counterpart",
+      "files": [],
+      "tests": []
+    },
+    {
+      "id": "duplex-voice-supervision",
+      "disposition": "RUNTIME_UNPROVEN",
+      "source_continuity": "donor duplex voice present as files; supervision degrades/unwires under the default lifecycle (Sam 2/4 R46)",
+      "runtime_reachability": "DEGRADED(optional) under organism:up",
+      "files": [],
+      "tests": []
+    },
+    {
+      "id": "gaussian-memory-palace",
+      "disposition": "RESEARCH_NEW",
+      "source_continuity": "NOT a donor omission absent an exact donor commit/path/blob (owner ruling R46)",
+      "runtime_reachability": "n/a",
+      "files": [],
+      "tests": []
+    },
+    {
+      "id": "mind-organ",
+      "disposition": "OWNER_EXCLUDED",
+      "source_continuity": "PR #72 quarantined; R45 disposition AMEND (5 items) — adoption blocked until issue #75 gates green",
+      "runtime_reachability": "absent from tree (verified)",
+      "files": [],
+      "tests": []
+    }
+  ],
+  "spatial_seams": {
+    "total": 17,
+    "live_today": 7,
+    "donor_offline_or_unserved": 10,
+    "evidence": "docs/continuity/r46/SAM4_EMBODIMENT_REACHABILITY_AUDIT.md"
+  },
+  "known_gaps": {
+    "launcher_token_handoff": "spatial launcher path lacks the supervisor token handoff (R46 Sam 4)",
+    "two_lifecycle_owners": "organism-ctl (apps/brain) and apps/supervisor both own lifecycles — must converge to ONE owner"
+  }
+}
