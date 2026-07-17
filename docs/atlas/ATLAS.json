@@ -35,7 +35,12 @@
       "SUPERSEDED": 3,
       "BLOCKED_OWNER": 14
     },
-    "executed_gate_reference": "R46 integration gate (see PR)",
+    "executed_gate_reference": {
+      "pr": "https://github.com/aumara-xyz/aukora/pull/83",
+      "command": "npm ci && npm run test:all",
+      "result": "690 passing (+2 gated skips), exit 0",
+      "branch_head_at_reconcile": "ba52f7fd805a4d4fb9696191a2b70c9cb95e2343"
+    },
     "note": "counts reconciled R46"
   },
   "privacy": "aukora-symbiote rows are PRIVATE_HOLD: number/state/url/family/disposition only; titles/bodies stay in the private repo.",

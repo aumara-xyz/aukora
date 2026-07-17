@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs';
 const has = (p) => existsSync(p);
 const items = [
   ['one lifecycle owner', has('apps/brain/scripts/organism-ctl.mjs') && has('apps/supervisor/src/supervisor.mjs') ? 'BLOCKED — TWO owners exist (organism-ctl + apps/supervisor); convergence required (anatomy.known_gaps)' : 'READY'],
-  ['secret-safe token custody', has('apps/brain/scripts/local-ctl.mjs') && /writeTokenFile|mind-door\.token/.test(readFileSync('apps/brain/scripts/organism-ctl.mjs', 'utf8')) ? 'READY — supervisor-minted, 0600 file, injected via env, never printed (R44 live proof)' : 'BLOCKED'],
+  ['secret-safe token custody', has('apps/brain/scripts/organism-ctl.mjs') && /writeTokenFile|mind-door\.token/.test(readFileSync('apps/brain/scripts/organism-ctl.mjs', 'utf8')) ? 'READY — supervisor-minted, 0600 file, injected via env, never printed (R44 live proof)' : 'BLOCKED'],
   ['repo read/search', has('apps/seed/src/ideEnvelope.ts') ? 'READY — IDE envelope (R34+, in-gate)' : 'BLOCKED'],
   ['KIRA recall', has('packages/memory/src/envelope.ts') ? 'READY — default recall shape preserved; scoped recall opt-in (R45 #65 amend)' : 'BLOCKED'],
   ['capability truth', has('anatomy.json') && has('scripts/verify-anatomy.mjs') ? 'READY — executable anatomy in the gate (this round)' : 'BLOCKED'],

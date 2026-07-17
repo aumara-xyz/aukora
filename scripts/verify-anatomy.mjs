@@ -44,8 +44,10 @@ for (const scope of anatomy.coverage_scopes ?? []) {
   const owned = new Map();
   for (const e of anatomy.entries) for (const f of e.files ?? [])
     if (f.path.startsWith(scope.glob)) owned.set(f.path, (owned.get(f.path) ?? 0) + 1);
+  // anatomy paths are always forward-slash; normalize walked paths so prefix matching is
+  // correct on every platform (join() emits backslashes on Windows).
   const walk = (d) => readdirSync(d).flatMap((n) => {
-    const p = join(d, n);
+    const p = join(d, n).split('\\').join('/');
     return statSync(p).isDirectory() ? walk(p) : [p];
   });
   for (const p of walk(scope.glob)) {
