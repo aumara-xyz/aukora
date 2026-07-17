@@ -1,0 +1,55 @@
+{
+  "schema": "aukora-overnight-handoff-v1",
+  "lane": "Sam 4 — durable Convex brain + evidence projection",
+  "night": "2026-07-17 → 2026-07-18",
+  "cutoff": "2026-07-18 06:00 Asia/Makassar (WITA)",
+  "status_as_of": "2026-07-18 05:15 WITA (checkpoint 13, wind-down finalized; clean, pushed, fully green ahead of the 06:00 cutoff)",
+  "base_sha": "5ae15481bf5676ede97aab28b5c16e189358472c",
+  "base_note": "pinned from Sam 1 OVERNIGHT_BASE_READY on #20; never bumped overnight (R52 #120 awaited Codex admin-merge)",
+  "branch": "sam/overnight-brain-c1",
+  "pr": "https://github.com/aumara-xyz/aukora/pull/122",
+  "head_sha": "2e361d4",
+  "head_sha_full_note": "sam/overnight-brain-c1 head at wind-down; 10 commits over 5ae15481 (see `git log 5ae15481..HEAD`)",
+  "report_issue": "#23",
+  "merge_policy": "never merged main; single growing focused PR, one commit per brick",
+  "mission": "Make Convex the fully-integrated reactive nervous system while keeping it constitutionally NON-authoritative (raw authorization/keys/signatures/authority inputs stay OUTSIDE Convex; local self-hosted only, no managed Convex, no external cloud).",
+  "tests": { "brain": "215 passed / 2 skipped", "effect_event_suite": "44 passed (7 files)", "tsc_brain": "clean", "fresh_clone_reproduction": "PASS (npm ci + build + brain 215 + live canary ALL PROOFS PASS on a clean checkout of the pushed head; no orphan)", "live_canary": "ALL PROOFS PASS incl. concurrent (24-way) + real SIGKILL survival + destroy/rebuild; self-contained, no orphan" },
+  "final_state": "CLEAN + PUSHED + FULLY GREEN. Working tree clean; local in sync with origin/sam/overnight-brain-c1; no orphan processes. Nothing left to safely add before cutoff — the mission is covered and reproducible.",
+  "bricks": [
+    { "commit": "8fcc2bc", "title": "closed effect-event validator + deterministic id + convergent projection", "files": ["apps/brain/src/effectEvent.ts"], "mission_items": [1, 2] },
+    { "commit": "aba149d", "title": "append-only effect-event log + destroy-and-rebuild proof", "files": ["apps/brain/src/effectEventLog.ts"], "mission_items": [6] },
+    { "commit": "808e633", "title": "idempotent durable effect-event store adapter", "files": ["apps/brain/src/effectEventStore.ts"], "mission_items": [3, 10] },
+    { "commit": "92e52ff", "title": "hostile-row resilience — compromised backend cannot corrupt the projection", "files": ["apps/brain/test/effectEventHostileRow.test.ts"], "mission_items": [8, 11] },
+    { "commit": "d8ffef2", "title": "LIVE effect-projection crash + rebuild proof (real convex-local-backend)", "files": ["apps/brain/scripts/effect-projection-canary.mjs", "apps/brain/scripts/lib/effectRoot.mjs", "apps/brain/test/effectRootCrosscheck.test.ts", "docs/overnight/2026-07-17/sam4/EFFECT_PROJECTION_LIVE.md"], "mission_items": [4, 5, 6] },
+    { "commit": "8fcd2e5", "title": "adversarial reproduction — replay storm / stuck-effect / stale-cache", "files": ["apps/brain/test/effectEventReplay.test.ts"], "mission_items": [8] },
+    { "commit": "118e44b", "title": "governed effect cancellation + migration/version-pinning", "files": ["apps/brain/src/effectCancellation.ts", "apps/brain/test/effectCancellation.test.ts"], "mission_items": [8, 9] }
+  ],
+  "hard_acceptance": {
+    "ten_identical_to_one_canonical": "PROVEN in-memory (effectEvent) and LIVE (canary: 10+ redeliveries → 3 durable rows)",
+    "duplicate_and_concurrent_converge": "PROVEN LIVE (24 SIMULTANEOUS identical appends via Promise.all → exactly ONE durable row + one canonical effect; Convex serializes the idempotent mutation)",
+    "conflicting_duplicate_refuse_quarantine": "PROVEN (projectEffectEvents quarantines; store write returns conflict)",
+    "backend_outage_drops_nothing": "PROVEN (EffectEventStore: outage → 'unavailable' + lossless retry)",
+    "sigkill_restart_preserves_settled_state": "PROVEN LIVE (real kill -9 of convex-local-backend, restart on same SQLite, R2===R1)",
+    "destroy_projection_rebuild_identical_root": "PROVEN in-memory + LIVE (R3===R1)",
+    "convex_compromise_cannot_authorize_or_execute_git": "PROVEN (hostile-row: injected authority/forged/secret rows refused on rebuild; grantsAuthority row never enters canonical)",
+    "no_managed_convex_no_external_cloud": "HELD (local self-hosted binary only; loopback)"
+  },
+  "mission_item_8_categories": { "malformed_row": "done (hostile-row)", "outage": "done (store)", "replay": "done", "stuck_effect": "done", "stale_state": "done (stale-cache)", "cancellation": "done", "migration": "done" },
+  "outsider_checks": [
+    { "checkpoint": 4, "to": "Sam 1 #20 comment 5005441719", "headline": "live crash-survival proven on the PILOT table, not the primary door's ConvexWorkflowStore path" },
+    { "checkpoint": 8, "to": "Sam 1 #20 comment 5006454573", "headline": "PIPELINE: public main frozen at R51 — R52 #120 and all overnight lane heads (incl. #122) not on origin/main; the merge gate is the #1 evidence risk" },
+    { "checkpoint": 12, "to": "Sam 1 #20 comment 5007310935", "headline": "the merge gate consumed the ENTIRE overnight — #120 still OPEN mergedAt:null at 04:41; public main byte-identical to ~6.5h ago; the code evidence is strong, the coordination model is the failure" }
+  ],
+  "open_items_for_owner": [
+    "MERGE GATE (highest): R52 #120 + this PR #122 are CI-green but stranded off public main; senorsamiam is push-only. An admin/Codex merge is required so the evidence exists where a hostile evaluator clones.",
+    "PRIMARY-DOOR LIVE PROOF: the live crash proof covers the EFFECT projection via the pilot log; the same kill -9 proof for the primary door's ConvexWorkflowStore path (apps/brain/convex/workflows.ts) is the next highest-value artifact. The pattern is proven by effect-projection-canary.mjs.",
+    "memory-v2 encryption/blinded-commitment: RESEARCH only per directive item 9 — NOT started overnight (deliberately not rushed).",
+    "reactive consumption is OPTIONAL (composeLive.ts:56 subscribeSnapshot) — a default-path reactive-push proof would close outsider finding #2."
+  ],
+  "reproduction": {
+    "brain_suite": "npm ci && npm run build --workspace @aukora/kernel && npm test --workspace @aukora/brain",
+    "live_crash_proof": "PATH=/opt/homebrew/opt/node@22/bin:$PATH node apps/brain/scripts/effect-projection-canary.mjs   (needs the official convex-local-backend; exits 2 with a named prerequisite if absent)",
+    "anti_drift_lock": "apps/brain/test/effectRootCrosscheck.test.ts asserts scripts/lib/effectRoot.mjs ≡ src/effectEvent.ts"
+  },
+  "fences_honored": "apps/brain/** + packages/memory/** + local self-hosted Convex only; no root scripts/CI/README/CLAIMS/lockfiles/anatomy edits; never merged main; authority/keys/signatures/authority-inputs stay OUTSIDE Convex; no managed Convex, no external cloud; all bricks additive (new files); no dirty tree; no orphan processes."
+}
