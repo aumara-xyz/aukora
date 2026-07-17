@@ -1,0 +1,231 @@
+{
+ "schema": "sam2-capability-rows-v1",
+ "base_main": "f6130296fad0",
+ "donor_pins": {
+  "symbiote": "ed1824a (arc3 @ e5768a2f)",
+  "kernel": "b441edc4d17d tree 711336558a13",
+  "fu": "canonical seats via kernel reuse"
+ },
+ "rows": [
+  {
+   "n": 1,
+   "capability": "governed memory core (envelope/content-hash/consent)",
+   "donor": "memory/memory.ts @ 46eff426",
+   "current": "packages/memory/src/envelope.ts",
+   "disposition": "ADAPTED_BOUNDARY",
+   "reachability": "convex ingest + door recall + mind door",
+   "proof": "SIMULATED+LIVE",
+   "degradation": null
+  },
+  {
+   "n": 2,
+   "capability": "secret-refusal ingest gate",
+   "donor": "memory.ts remember gate",
+   "current": "apps/brain/convex/ingest.ts + store gate",
+   "disposition": "EXACT_PORT+structural",
+   "reachability": "convex action",
+   "proof": "SIMULATED+LIVE",
+   "degradation": "AUMLOK-lock does not gate advisory ingest (owner ruling open)"
+  },
+  {
+   "n": 3,
+   "capability": "governed forgetting + erase attestation",
+   "donor": "memory.ts forget; M2b stub law",
+   "current": "store forget (Ed25519) + convex forget (ML-DSA attestation)",
+   "disposition": "EXACT_PORT+SUPERSEDED_WITH_PROOF",
+   "reachability": "convex mutation",
+   "proof": "SIMULATED+LIVE",
+   "degradation": null
+  },
+  {
+   "n": 4,
+   "capability": "no-resurrection on re-ingest",
+   "donor": "implied tombstone law",
+   "current": "both rails refuse (R44 fix)",
+   "disposition": "FIXED_CURRENT",
+   "reachability": "ingest paths",
+   "proof": "SIMULATED",
+   "degradation": null
+  },
+  {
+   "n": 5,
+   "capability": "chain verify / tamper detection",
+   "donor": "memory.ts verifyChain",
+   "current": "canonical verifyReceiptChain + content-addressing self-check",
+   "disposition": "EXACT_PORT+ADAPTED",
+   "reachability": "convex verify; door /health",
+   "proof": "SIMULATED+LIVE",
+   "degradation": null
+  },
+  {
+   "n": 6,
+   "capability": "signed chain heads",
+   "donor": "aukoraSignedHead.ts @ b0c2a4fc (vendored byte-faithful)",
+   "current": "convex/heads.ts monotonicity + live re-audit",
+   "disposition": "SUPERSEDED_WITH_PROOF",
+   "reachability": "convex on demand",
+   "proof": "SIMULATED",
+   "degradation": "not emitted per live write (donor B1.5b2) — PARKED_PENDING_OWNER"
+  },
+  {
+   "n": 7,
+   "capability": "signed recall proof-of-possession",
+   "donor": "core/src/memoryRecall.ts @ a8a4861b (aumlokMemRecall)",
+   "current": null,
+   "disposition": "MISSING(custody-gated)",
+   "reachability": null,
+   "proof": null,
+   "degradation": "recall auth = loopback perimeter only"
+  },
+  {
+   "n": 8,
+   "capability": "recall content-minimization",
+   "donor": "memoryRecall.ts no-listing law",
+   "current": "door /memory/recall content-bearing+enumerable BY DESIGN",
+   "disposition": "ADAPTED_BOUNDARY(accepted residual)",
+   "reachability": "door GET",
+   "proof": "LIVE",
+   "degradation": "narrowing PARKED_PENDING_OWNER"
+  },
+  {
+   "n": 9,
+   "capability": "scope-aware recall (#62)",
+   "donor": "kiraBrain.ts @ fa113e8a",
+   "current": "recallScoped/scopeCensus/hasScope (opt-in; default byte-frozen)",
+   "disposition": "ADAPTED(landed d0bb625)",
+   "reachability": "library",
+   "proof": "UNIT+dual-rail hash",
+   "degradation": "identity-corpus ingest owner-gated"
+  },
+  {
+   "n": 10,
+   "capability": "donor memory-category runtimes",
+   "donor": "episode/hypothesis/mdl/structural/ide/womb @ f32bcede…",
+   "current": null,
+   "disposition": "MISSING(scope-gated)",
+   "reachability": null,
+   "proof": null,
+   "degradation": "evidence-only source-labeled law"
+  },
+  {
+   "n": 11,
+   "capability": "reactive snapshot (derived, rebuildable)",
+   "donor": "in-Convex projections",
+   "current": "brainSnapshot + heartbeat recompute (corruption repaired)",
+   "disposition": "ADAPTED+proven rebuildable",
+   "reachability": "convex + door /snapshot + SSE",
+   "proof": "SIMULATED+LIVE",
+   "degradation": null
+  },
+  {
+   "n": 12,
+   "capability": "durable workflows / restart",
+   "donor": "durable recursion spec",
+   "current": "ConvexWorkflowStore OCC + crash reconciliation",
+   "disposition": "ADAPTED_BOUNDARY",
+   "reachability": "convex workflows + door",
+   "proof": "SIMULATED+LIVE restart transcript",
+   "degradation": null
+  },
+  {
+   "n": 13,
+   "capability": "supervisor lifecycle",
+   "donor": "CONVEX_CANONICAL_BRAIN_SPEC.md @ a3af164b + donor #71/#26",
+   "current": "organism-ctl.mjs + doorCustody.mjs",
+   "disposition": "ADAPTED(beyond atlas row)",
+   "reachability": "root entrypoint",
+   "proof": "LIVE(R39+R44 transcripts)",
+   "degradation": "voice sidecar absent(loud); local-ctl superseded-but-present"
+  },
+  {
+   "n": 14,
+   "capability": "mind-door token custody",
+   "donor": null,
+   "current": "supervisor mint -> env + 0600 file; seed adopted (77e2321)",
+   "disposition": "FIXED_CURRENT(cross-lane closed)",
+   "reachability": "supervisor -> mind door",
+   "proof": "LIVE(da4089e)",
+   "degradation": null
+  },
+  {
+   "n": 15,
+   "capability": "compose:live vs held door",
+   "donor": null,
+   "current": "assertComposeMayBindDoor refusal",
+   "disposition": "FIXED_CURRENT",
+   "reachability": "gated test preflight",
+   "proof": "UNIT",
+   "degradation": "direct scripts bypass; supervisor backstop"
+  },
+  {
+   "n": 16,
+   "capability": "provider truth / fail-closed selection",
+   "donor": "provider bridges",
+   "current": "providerPolicy + door /truth /fu",
+   "disposition": "ADAPTED",
+   "reachability": "door GET + barrel",
+   "proof": "UNIT+LIVE reads",
+   "degradation": null
+  },
+  {
+   "n": 17,
+   "capability": "bounded Nebius runtime",
+   "donor": "donor Nebius scripts",
+   "current": "nebiusProvider PARKED, zero-outbound proven",
+   "disposition": "PARKED(quarantine intact)",
+   "reachability": "barrel-imported, not invoked",
+   "proof": "UNIT+zero-outbound",
+   "degradation": "armed use owner-gated"
+  },
+  {
+   "n": 18,
+   "capability": "supervised generation envelope",
+   "donor": "gate law",
+   "current": "supervisedGeneration + offlineExecutor (fail-closed)",
+   "disposition": "ADAPTED",
+   "reachability": "barrel; executor test-only",
+   "proof": "UNIT",
+   "degradation": "no live generation (by design)"
+  },
+  {
+   "n": 19,
+   "capability": "keychain custody",
+   "donor": "env-key handling",
+   "current": "keychain/ opaque refs + revocation + broker contract 7142",
+   "disposition": "ADAPTED(stronger)",
+   "reachability": "barrel; broker not held yet",
+   "proof": "UNIT",
+   "degradation": "broker port reserved, not supervisor-held"
+  },
+  {
+   "n": 20,
+   "capability": "Fu/council seats",
+   "donor": "Fu canonical seats",
+   "current": "CANONICAL_SEATS on door /fu",
+   "disposition": "EXACT reuse",
+   "reachability": "door GET",
+   "proof": "LIVE read",
+   "degradation": "Fu transport hardening = Fu-lane row"
+  },
+  {
+   "n": 21,
+   "capability": "legacy migration bridge + gold ceremony",
+   "donor": "aukora_memory fields + donor rows",
+   "current": "memoryBridge + goldRegistry (content-free carry, AUMLOK-gated commit)",
+   "disposition": "ADAPTED_BOUNDARY",
+   "reachability": "library/test-only",
+   "proof": "UNIT",
+   "degradation": "real import never run — owner-gated"
+  },
+  {
+   "n": 22,
+   "capability": "mind organ (ARC-3 core)",
+   "donor": "spatial/app/arc3/* @ e5768a2f",
+   "current": "QUARANTINED (PR #72; R45 AMEND, 5 items)",
+   "disposition": "NOT_ADOPTED(by ruling)",
+   "reachability": "none: zero CODE imports on main; only R45 qualification artifacts reference packages/mind (untrusted-black-box treatment)",
+   "proof": "45 executed golden vectors (R45)",
+   "degradation": "adoption blocked on amend items"
+  }
+ ]
+}
