@@ -1,0 +1,76 @@
+{
+  "schema": "aukora-conformance-bundle-v1",
+  "coreHash": "0d3b29fa7d9a354e99db50b6779b5b18cc62bffc20e632b8deaa252438ccf184",
+  "core": {
+    "schema": "aukora-conformance-core-v1",
+    "cell": "e2-supervisor-lifecycle",
+    "title": "supervisor lifecycle: envelope closure, restart-safety, foreign-occupant + swap discipline",
+    "seed": 23567,
+    "worlds": 300,
+    "interfaces": [
+      "@aukora/supervisor:engine.mjs"
+    ],
+    "envelope": [
+      "start",
+      "probe",
+      "stop",
+      "isolate",
+      "swap",
+      "contract",
+      "rollback",
+      "status"
+    ],
+    "forbidden": [
+      "sign",
+      "promote",
+      "widen-authority",
+      "change-kernel-law",
+      "release-contraction-silently",
+      "execute-manifest-content",
+      "route-aumlok"
+    ],
+    "counters": {
+      "envelopeViolations": 0,
+      "forbiddenLeaks": 0,
+      "foreignUnsafe": 0,
+      "impure": 0
+    },
+    "scenario": {
+      "coldBootStartsMind": true,
+      "coldBootProbesExternalConvex": true,
+      "idempotentNoRestarts": true,
+      "recoverRestartsMind": true,
+      "recoverDoesNotRestartHealthy": true,
+      "squatterIsolated": true,
+      "squatterNeverKilled": true,
+      "swapBootsCandidate": true,
+      "verifiedSwapReleasesOld": true,
+      "failedSwapRollsBack": true,
+      "contractionReleaseRequiresOwner": true,
+      "statusNoAuthority": true
+    },
+    "verdict": {
+      "envelopeClosed": true,
+      "noForbiddenLeak": true,
+      "foreignOccupantSafe": true,
+      "pureRestartSafe": true,
+      "scenarioAllHold": true,
+      "pass": true
+    }
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "grantsAuthority": false,
+    "network": "none (pure engine)",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}
