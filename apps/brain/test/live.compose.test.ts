@@ -13,9 +13,13 @@
 import { describe, it, expect } from 'vitest';
 import { ConvexHttpClient } from 'convex/browser';
 import { anyApi } from 'convex/server';
+import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import {
   ConvexWorkflowStore, liveWorkflowIo, liveDoorBackend, startLocalDoor, assertLoopbackUrl, AUKORA_PORTS,
 } from '../src/index.js';
+// R44 LAW 2 — supervisor awareness: same custody module the supervisor itself uses (one owner, one path).
+import { assertComposeMayBindDoor } from '../scripts/doorCustody.mjs';
 import { DurableRecursion, validateWorkflowState, deriveWorkflowId, deriveIntentId, deriveDraftHash } from '../../seed/src/index.js';
 import { makeWorld, makeProposal, authFor } from '../../seed/test/support.js';
 import { buildMemoryRecord } from '@aukora/memory';
@@ -70,6 +74,10 @@ describe.skipIf(!LIVE)('LIVE composition — real machine over the real local ba
     // live receipts + cancellation through the DOOR on the NEW-AUKORA port
     const rehearsalKey = `door-${nonce}`;
     await http.mutation(anyApi.rehearsal.startRehearsal, { key: rehearsalKey, totalSteps: 8, authorityRef: 'a'.repeat(64) });
+    // R44 LAW 2: never collide with or bypass the supervisor-held door — refuse loudly if it is held.
+    const APP_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
+    // R47: also defer to the ONE lifecycle owner's recorded door pid (apps/supervisor/state).
+    assertComposeMayBindDoor(resolve(APP_DIR, '.local', 'organism'), resolve(APP_DIR, '..', '..'), undefined, resolve(APP_DIR, '..', 'supervisor', 'state'));
     const door = await startLocalDoor(liveDoorBackend(client), AUKORA_PORTS.brainDoor);
     try {
       const base = `http://127.0.0.1:${AUKORA_PORTS.brainDoor}`;

@@ -1,0 +1,173 @@
+── R44 INDEPENDENT LIVE-WIRE WITNESS · main d0bb625 · clean worktree ──
+[22:52:11Z] STEP 1 — reproduce current main behavior: organism:up (with the documented kernel-build preflight)
+
+> @aukora/brain@0.1.0 organism:up
+> node scripts/organism-ctl.mjs up
+
+[organism] deploying functions to the anonymous LOCAL deployment…
+[organism] convex: started (pid 20735)
+[organism] convex: healthy on 3210/3211
+[organism] door: started (pid 20909)
+[organism] door: HELD on 7141 (canonical brain projection/control door)
+[organism] mind: started (pid 20987)
+[organism] mind: healthy on 7097
+[organism] !! voice: optional, not present — DEGRADED(optional)
+[organism] spatial: started (pid 21042)
+[organism] spatial: healthy on 7096 (projections via the 7141 door)
+[organism] UP with 1 degradation(s):
+[organism] !!   DEGRADED — voice: optional; no standalone voice sidecar on this tree (client-side audio lives in the Spatial app)
+organism:up exit=0
+[22:52:59Z] STEP 1b — PIN THE FAILURE at the operator-token boundary: a chat POST via :7096 (the launcher proxy under organism-ctl, which passed no token)
+{"entries":[{"kind":"error","text":"refused: missing or bad local POST token"}],"mode":"refused","advisoryOnly":true,"grantsAuthority":false,"citations":[],"eventReceipt":"a7772b2b8bb4aec37d7cf03df4987f4208a4f03018f970d89760c8f138246110"}
+[22:52:59Z] PINNED: organism-ctl.mjs:162 spawns spatial with PORT only and captures no mind-door stdout — the one-time token is UNOBTAINABLE under organism-ctl; refusal is loud + receipted (token enforced, never disclosed)
+[22:52:59Z] STEP 2 — Sam 2 bounded fix: no fix branch/issue visible on origin at witness time (checked refs + issue list) — evidence stands independently
+[22:52:59Z] STEP 1c — bounded shutdown of the organism-ctl boot before the supervisor path (one lifecycle owner at a time)
+
+> @aukora/brain@0.1.0 organism:down
+> node scripts/organism-ctl.mjs down
+
+[organism] spatial: SIGTERM sent to owned pid group 21042
+[organism] mind: SIGTERM sent to owned pid group 20987
+[organism] door: SIGTERM sent to owned pid group 20909
+[organism] convex: SIGTERM sent to owned pid group 20735
+[organism] organism down; pidfiles + lock cleared
+[22:53:24Z] STEP 3 — LIVE WIRE assembly, no forged shortcut: convex via local-ctl (Sam 2 entry) → brain door via doorServerMain (Sam 2 entry) → mind+spatial via apps/supervisor (the token-handoff lifecycle owner) → the one gateway
+
+> @aukora/brain@0.1.0 local:up
+> node scripts/local-ctl.mjs up
+
+[local-ctl] deploying to the anonymous LOCAL deployment (convex dev --once)…
+[local-ctl] node 26.4.0 cannot run Convex "use node" actions — using the side-installed Node 22 at /opt/homebrew/opt/node@22/bin
+CONVEX_AGENT_MODE=anonymous mode is in beta, functionality may change in the future.
+▌ Developing against deployment:
+▌ [Local] Port 3210 • No Convex account (run npx convex login to link to a project)
+▌ └─ http://127.0.0.1:3210
+- Preparing Convex functions...
+
+Convex AI files are not installed. Run npx convex ai-files install to get started or npx convex ai-files disable to hide this message.
+✔ 16:53:27 Convex functions ready! (534.03ms)
+local:up exit=0
+[22:53:28Z] brain door :7141 up (x-aukora-source: live)
+
+> @aukora/supervisor@0.1.0 up
+> node src/supervisor.mjs up
+
+▸ up-requested
+▸ isolated · brain-door — port occupied by a foreign process — refusing to adopt or kill it :7141
+▸ started · mind-door :7097
+▸ ready · mind-door :7097
+▸ probed · mind-door :7097
+▸ started · voice-sidecar :7098
+node:events:487
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: spawn /Users/asd/AUKORA/r44-witness/apps/spatial/voice/.venv/bin/python ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:286:19)
+    at onErrorNT (node:internal/child_process:524:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on ChildProcess instance at:
+    at ChildProcess._handle.onexit (node:internal/child_process:292:12)
+    at onErrorNT (node:internal/child_process:524:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn /Users/asd/AUKORA/r44-witness/apps/spatial/voice/.venv/bin/python',
+  path: '/Users/asd/AUKORA/r44-witness/apps/spatial/voice/.venv/bin/python',
+  spawnargs: [ 'apps/spatial/voice/sidecar.py' ]
+}
+
+Node.js v26.4.0
+npm error Lifecycle script `up` failed with error:
+npm error code 1
+npm error path /Users/asd/AUKORA/r44-witness/apps/supervisor
+npm error workspace @aukora/supervisor@0.1.0
+npm error location /Users/asd/AUKORA/r44-witness/apps/supervisor
+npm error command failed
+npm error command sh -c node src/supervisor.mjs up
+[22:53:31Z] gateway :7100 up
+[22:53:56Z] STEP 4 — LIVE WIRE: door events BEFORE
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":false,"events":0,"grantsAuthority":false}
+[22:53:56Z] POST /api/propose via the gateway (:7100 → :7096 launcher/token → :7097 door) — legitimate 5-key proposal, lowercase nonce
+{"error":"undeclared interface","declared":["/","/app/*","/assets/*","/api/spatial/projection","/api/chat","/api/presence/stream","/api/lockdown","/api/door","/api/models","/api/graph","/aukora/status","/aukora/receipts"],"grantsAuthority":false}
+[22:53:56Z] POST /api/materialize — SAME proposal, NO candidateAuth (no owner signature exists; a loud refusal here is the expected remaining link)
+{"error":"undeclared interface","declared":["/","/app/*","/assets/*","/api/spatial/projection","/api/chat","/api/presence/stream","/api/lockdown","/api/door","/api/models","/api/graph","/aukora/status","/aukora/receipts"],"grantsAuthority":false}
+[22:53:56Z] door events AFTER (receipt ordering: every attempt receipted)
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":false,"events":0,"grantsAuthority":false}
+[22:53:56Z] CANDIDATE ISOLATION: no candidate worktree may exist after a refused materialize
+(no candidate dir — isolation held)
+[22:54:34Z] PINNED REMAINING LINK: /api/propose and /api/materialize are UNDECLARED at the one gateway (loud 404 + enumerated list; door events stayed 0 — the attempt never reached the door). The launcher proxies only chat/presence/lockdown. So under supervised boot the write-shaped door routes are reachable by NO running surface — the token lives only in the launcher env, and only a manual operator boot of the mind door exposes it for direct loopback use. Declaring propose at the gateway (or not) is an owner ruling: routing must not become authority.
+[22:54:34Z] STEP 4b — door-side TOKEN ENFORCEMENT without disclosure: direct loopback POST to :7097 with NO token
+{"error":"refused: missing or bad local POST token","reasonClass":"guard:missing-or-bad-token","eventReceipt":"716c360a47d5dc9c15127964f8ca4322442a50ca4c5ba23b1c17803b1fd723dc"}
+[22:54:34Z] door events after the guarded refusal (receipt BEFORE any effect; no candidate dir):
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":false,"events":1,"grantsAuthority":false}
+(still no candidate dir)
+[22:54:34Z] STEP 5 — projection reflects ACTUAL store state (door /snapshot vs :7096 projection)
+{"error":"backend unavailable","detail":"TypeError: fetch failed"}
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+[22:55:40Z] LIVE CATCH (my component): apps/supervisor crashes mid-plan when an OPTIONAL service's spawn path is absent (voice .venv not on this tree) — spawn 'error' event unhandled → process exit → spatial never started (receipts end at 'started voice-sidecar'). Minimal bounded fix + regression test applied in the SAME commit as the protected.sha256 re-pin, per PROTECTED.md §3.
+[22:56:04Z] STEP 3 (re-run, corrected assembly): local:HOLD keeps the Convex backend persistent (local:up deploys-then-exits — recorded as a demo-card correction), then the door, then supervisor up (fixed), then gateway
+[22:56:07Z] convex :3210 held
+[22:56:08Z] brain door :7141 live (backend ok:true)
+
+> @aukora/supervisor@0.1.0 up
+> node src/supervisor.mjs up
+
+▸ up-requested
+▸ probed · brain-door :7141
+▸ started · mind-door :7097
+▸ ready · mind-door :7097
+▸ probed · mind-door :7097
+▸ started · voice-sidecar :7098
+▸ not-ready · voice-sidecar :7098
+▸ probed · voice-sidecar :7098
+▸ started · spatial-shell :7096
+▸ ready · spatial-shell :7096
+▸ probed · spatial-shell :7096
+[22:56:22Z] gateway :7100 up · full wire: convex(HELD) → door(:7141) → mind(:7097, token in launcher env only) → spatial(:7096) → gateway(:7100)
+[22:56:41Z] STEP 4 (complete wire) — door events BEFORE:
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":false,"events":0,"grantsAuthority":false}
+[22:56:41Z] chat turn via gateway (proves token enforcement WITHOUT disclosure — the browser/gateway never hold it):
+{"entries":[{"kind":"info","text":"I have no memory matching that yet. (Advisory voice; I cannot read files or apply anything.)"}],"mode":"model-free-memory-fallback","advisoryOnly":true,"grantsAuthority":false,"citation
+[22:56:41Z] propose/materialize via gateway — the pinned undeclared-interface refusal (unchanged, correct):
+{"error":"undeclared interface","declared":["/","/app/*","/assets/*","/api/spatial/projection","/api/chat","/api/presenc
+[22:56:41Z] direct loopback :7097 propose WITHOUT token — the door's guard refusal (receipted; receipt BEFORE any effect):
+{"error":"refused: missing or bad local POST token","reasonClass":"guard:missing-or-bad-token","eventReceipt":"8340d65d1799e02b87190ddfb71de4d50f1bd6d1ad1b9b86aff99ffaea8fc142"}
+[22:56:41Z] door events AFTER (ordering + counts):
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":true,"events":2,"grantsAuthority":false}
+[22:56:41Z] CANDIDATE ISOLATION:
+(no candidate dir — nothing materialized, isolation held)
+[22:56:41Z] STEP 5 — projection reflects ACTUAL store state:
+{"_creationTime":1784242335027.892,"_id":"kd798wt4a2p00xfnmwg6fc55kd8ancns","chainLength":0,"forgottenCount":0,"headHash":null,"lastEventAt"
+projection: source=door degraded=[] chainLength=0
+[22:57:01Z] DONOR :7090 BEFORE SHUTDOWN:
+HTTP 200
+[22:57:01Z] STEP 6 — bounded shutdown: supervisor down (owned PIDs) → door → convex (local:down)
+
+> @aukora/supervisor@0.1.0 down
+> node src/supervisor.mjs down
+
+▸ down-requested
+▸ stopped · spatial-shell :7096
+▸ stopped · mind-door :7097
+
+> @aukora/brain@0.1.0 local:down
+> node scripts/local-ctl.mjs down
+
+[local-ctl] sent SIGTERM to owned pid group 22245
+[local-ctl] pidfile + lockfile cleared
+[22:57:03Z] POST-DOWN PORTS:
+:3210= :7096= :7097= :7100= :7141= 
+[22:57:04Z] DONOR :7090 AFTER SHUTDOWN:
+HTTP 200
+[22:57:04Z] TRANSCRIPT END

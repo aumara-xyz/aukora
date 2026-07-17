@@ -90,6 +90,10 @@ export class ReactiveMemoryStore {
   ingest(record: unknown): IngestVerdict {
     const r = validateMemoryRecord(record);
     if (r === null) return { ok: false, refusal: 'refused: malformed or authority-shaped memory' };
+    // NO RESURRECTION (R44): a governedly forgotten content id may not be re-admitted — re-ingesting the same
+    // plaintext would physically retain what the owner erased (the read rail would hide it, but RTBF demands the
+    // plaintext be GONE). Re-admission would be a distinct owner ceremony, which does not exist here.
+    if (this.forgotten.has(r.recordId)) return { ok: false, refusal: 'refused: recordId was governedly forgotten — re-ingest would resurrect erased plaintext (no resurrection)' };
     if (textHasSecret(r.content)) return { ok: false, refusal: 'refused: memory content carries a secret; not persisted in plaintext' };
     if (this.entries.length > 0 && !this.verifyChain().valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     const chainHash = this.appendEntry(memoryCommitment(r)); // content-free commitment

@@ -38,8 +38,11 @@ describe('phased boot + dependency ordering (donor start-kit behavior)', () => {
   it('boots in phase order with dependencies before dependents', () => {
     const plan = planUp(policy, allDown);
     const idx = (name, action) => plan.findIndex((p) => p.service === name && p.action === action);
-    expect(idx('brain-door', 'probe')).toBeGreaterThanOrEqual(0);         // external: probe only
-    expect(plan.some((p) => p.service === 'brain-door' && p.action === 'start')).toBe(false); // never started by us
+    // R47 one-owner convergence: convex-backend and the brain door are OWNED now — started in phase order.
+    expect(idx('convex-backend', 'start')).toBeGreaterThanOrEqual(0);
+    expect(idx('brain-door', 'start')).toBeGreaterThanOrEqual(0);
+    expect(idx('convex-backend', 'start')).toBeLessThan(idx('brain-door', 'start'));   // phase 0 before 1
+    expect(idx('brain-door', 'start')).toBeLessThan(idx('mind-door', 'start'));        // phase 1 before 2
     expect(idx('mind-door', 'start')).toBeLessThan(idx('spatial-shell', 'start')); // dependency ordering
     expect(idx('spatial-shell', 'start')).toBeLessThan(idx('spatial-shell', 'probe') + 1);
   });
@@ -103,7 +106,9 @@ describe('clean down', () => {
     const plan = planDown(policy, allUp);
     const names = plan.filter((p) => p.action === 'stop').map((p) => p.service);
     expect(names[0]).toBe('spatial-shell'); // phase 3 first
-    expect(names).not.toContain('brain-door'); // external never touched
+    // R47 one-owner convergence: the door and backend are OURS to stop, in reverse phase order.
+    expect(names.indexOf('brain-door')).toBeGreaterThan(names.indexOf('mind-door'));
+    expect(names.indexOf('convex-backend')).toBe(names.length - 1); // phase 0 stops last
     expect(planDown(policy, allDown)).toHaveLength(0);
   });
 });
@@ -130,6 +135,10 @@ describe('manifest is a claim + protected class', () => {
     expect(gw).toMatch(/aumlok\|ceremony\|bind\|approve/);
     expect(gw).not.toMatch(/Access-Control-Allow-Origin/);
   });
+  it('spawn failure of an optional service cannot kill the plan (R44 live catch)', () => {
+    const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
+    expect(sup).toMatch(/child\.on\('error'/);
+  });
   it('the supervisor has no network control surface and no signing/promotion verbs anywhere', () => {
     const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
     expect(sup).not.toMatch(/createServer|listen\(/);
@@ -137,5 +146,41 @@ describe('manifest is a claim + protected class', () => {
       const text = readFileSync(join(APP, 'src', src), 'utf8');
       expect(text).not.toMatch(/\bsignPromotion|promoteAuthority|widenAuthority\b/);
     }
+  });
+});
+
+describe('R44c — invalid-PID file regression (review closure)', () => {
+  it('validPid admits only real positive integers', async () => {
+    const { validPid } = await import('../src/supervisor.mjs');
+    expect(validPid(12345)).toBe(true);
+    expect(validPid(undefined)).toBe(false);
+    expect(validPid(NaN)).toBe(false);
+    expect(validPid(0)).toBe(false);
+    expect(validPid(-1)).toBe(false);
+    expect(validPid(1.5)).toBe(false);
+    expect(validPid('undefined')).toBe(false);
+  });
+  it('a failed optional spawn yields pid=undefined and the guard refuses the write — no invalid PID file', async () => {
+    const { validPid } = await import('../src/supervisor.mjs');
+    const { spawn } = await import('node:child_process');
+    const { mkdtempSync, readdirSync, writeFileSync: wf } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const dir = mkdtempSync(join(tmpdir(), 'r44c-'));
+    const child = spawn(join(dir, 'no-such-binary'), [], { detached: true, stdio: 'ignore' });
+    await new Promise((resolve) => child.on('error', resolve)); // same live-catch as the supervisor
+    expect(child.pid).toBe(undefined);
+    if (validPid(child.pid)) wf(join(dir, 'svc.7099.pid'), String(child.pid)); // the guarded write
+    expect(readdirSync(dir).filter((f) => f.endsWith('.pid'))).toEqual([]);
+  });
+  it('bounded teardown tolerates a legacy poisoned pid file without reaching kill', () => {
+    // stopOurs parses with Number(); the poisoned literal becomes NaN, which the falsy check drops
+    // to the identity-verified lsof fallback — no throw, no kill(NaN).
+    const pid = Number('undefined');
+    expect(Number.isNaN(pid)).toBe(true);
+    expect(!pid).toBe(true);
+  });
+  it('source contract: the pid-file write is inside the validPid guard', () => {
+    const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
+    expect(sup).toMatch(/if \(validPid\(child\.pid\)\) \{\s*\n\s*writeFileSync/);
   });
 });

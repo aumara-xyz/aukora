@@ -80,17 +80,19 @@ export const ingestValidated = internalMutation({
     if (r === null) return { ok: false, refusal: 'refused: malformed or authority-shaped memory' };
     const chain = await chainRows(ctx);
     if (chain.length > 0 && !chainVerdict(chain).valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
-    // IDEMPOTENT IMPULSE (R34): the same content-addressed record ingested twice is ONE memory. A live
-    // (non-forgotten) row with this recordId already carries the identical content commitment, so re-ingest
-    // returns the existing receipt instead of appending a duplicate — safe under retries.
+    // NO RESURRECTION (R44): a governedly forgotten content id may not be re-admitted. Without this gate, a
+    // re-ingest of erased plaintext would insert a fresh row CARRYING the plaintext again (recall would hide it,
+    // but the erased bytes would be physically back in the store). Fail-closed, like the bridge's tombstone law.
+    const forgotten = await ctx.db.query('forgotten').withIndex('by_record', (q: any) => q.eq('recordId', r.recordId)).first();
+    if (forgotten) return { ok: false, refusal: 'refused: recordId was governedly forgotten — re-ingest would resurrect erased plaintext (no resurrection)' };
+    // IDEMPOTENT IMPULSE (R34): the same content-addressed record ingested twice is ONE memory. A live row with
+    // this recordId already carries the identical content commitment, so re-ingest returns the existing receipt
+    // instead of appending a duplicate — safe under retries.
     const existingRows = await ctx.db.query('memoryChain').withIndex('by_record', (q: any) => q.eq('recordId', r.recordId)).collect();
     const liveExisting = existingRows.find((row: any) => row.kind === 'memory' && row.content !== undefined);
     if (liveExisting) {
-      const forgotten = await ctx.db.query('forgotten').withIndex('by_record', (q: any) => q.eq('recordId', r.recordId)).first();
-      if (!forgotten) {
-        const snapshot = await recompute(ctx);
-        return { ok: true, recordId: r.recordId, chainHash: liveExisting.chainHash, snapshot, idempotent: true };
-      }
+      const snapshot = await recompute(ctx);
+      return { ok: true, recordId: r.recordId, chainHash: liveExisting.chainHash, snapshot, idempotent: true };
     }
     const prevHash = chain.length ? chain[chain.length - 1].chainHash : null;
     // receipt-before-row: the receipt (chainHash) is computed BEFORE the row is written and stored ON it, so a
