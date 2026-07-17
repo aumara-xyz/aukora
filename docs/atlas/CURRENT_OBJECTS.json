@@ -1,0 +1,603 @@
+{
+  "schema": "aukora-current-objects-snapshot-v1",
+  "note": "Committed snapshot of the canonical aukora GitHub object sequence (issues+PRs) at the R51 head, so CI can prove Atlas current-object freshness without a network call. Refresh with scripts that capture gh state; the head SHA below pins when it was taken.",
+  "head_sha": "5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d",
+  "captured": "R51",
+  "aukora": {
+    "max_object": 110,
+    "count": 110,
+    "issues": 31,
+    "prs": 79,
+    "gaps": [],
+    "objects": [
+      {
+        "number": 1,
+        "type": "pr",
+        "state": "OPEN"
+      },
+      {
+        "number": 2,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 3,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 4,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 5,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 6,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 7,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 8,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 9,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 10,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 11,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 12,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 13,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 14,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 15,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 16,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 17,
+        "type": "pr",
+        "state": "OPEN"
+      },
+      {
+        "number": 18,
+        "type": "pr",
+        "state": "OPEN"
+      },
+      {
+        "number": 19,
+        "type": "pr",
+        "state": "OPEN"
+      },
+      {
+        "number": 20,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 21,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 22,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 23,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 24,
+        "type": "pr",
+        "state": "CLOSED"
+      },
+      {
+        "number": 25,
+        "type": "pr",
+        "state": "CLOSED"
+      },
+      {
+        "number": 26,
+        "type": "pr",
+        "state": "CLOSED"
+      },
+      {
+        "number": 27,
+        "type": "pr",
+        "state": "CLOSED"
+      },
+      {
+        "number": 28,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 29,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 30,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 31,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 32,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 33,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 34,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 35,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 36,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 37,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 38,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 39,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 40,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 41,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 42,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 43,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 44,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 45,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 46,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 47,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 48,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 49,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 50,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 51,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 52,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 53,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 54,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 55,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 56,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 57,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 58,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 59,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 60,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 61,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 62,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 63,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 64,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 65,
+        "type": "pr",
+        "state": "CLOSED"
+      },
+      {
+        "number": 66,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 67,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 68,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 69,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 70,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 71,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 72,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 73,
+        "type": "pr",
+        "state": "CLOSED"
+      },
+      {
+        "number": 74,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 75,
+        "type": "issue",
+        "state": "CLOSED"
+      },
+      {
+        "number": 76,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 77,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 78,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 79,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 80,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 81,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 82,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 83,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 84,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 85,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 86,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 87,
+        "type": "issue",
+        "state": "CLOSED"
+      },
+      {
+        "number": 88,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 89,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 90,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 91,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 92,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 93,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 94,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 95,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 96,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 97,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 98,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 99,
+        "type": "issue",
+        "state": "CLOSED"
+      },
+      {
+        "number": 100,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 101,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 102,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 103,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 104,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 105,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 106,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 107,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 108,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 109,
+        "type": "issue",
+        "state": "OPEN"
+      },
+      {
+        "number": 110,
+        "type": "pr",
+        "state": "MERGED"
+      }
+    ]
+  },
+  "historical_issue_sets": {
+    "aukora-symbiote": {
+      "count": 169,
+      "note": "settled by owner ratification; numbers held privately in the sanitized ledger (title:null, redacted:true)"
+    },
+    "aukora-kernel": {
+      "count": 13,
+      "numbers": [
+        2,
+        3,
+        4,
+        6,
+        7,
+        8,
+        9,
+        10,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "aukora-fu": {
+      "count": 9,
+      "numbers": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    }
+  }
+}

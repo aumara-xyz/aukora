@@ -3,7 +3,7 @@
   "canary": "first local+Nebius governed-recursion canary",
   "denominator": 11,
   "score": "10/11",
-  "generated_from": "npm run test:all (exit 0, 480 passing + 1 gated skip) + models/nebius/deployment.manifest.json (R34)",
+  "generated_from": "npm run test:all (exit 0, 869 passing at R51 head 5aae90d — count gated by scripts/verify-continuity.mjs) + models/nebius/inkling/inkling-nvfp4.serving.manifest.json (PARKED, enabled:false)",
   "overall": "SEED — constitutional core + governed organism + donor Spatial shell demonstrated locally; the single open canary step is the live (owner-authorized) local+Nebius governed-recursion run.",
   "subscores": [
     {

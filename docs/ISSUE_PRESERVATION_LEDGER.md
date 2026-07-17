@@ -3,6 +3,12 @@
 `docs/issue-preservation-ledger.json` (v2) is the machine-readable, cross-repository record of
 every open and closed **issue** (PRs excluded) in the source repos, so no capability is lost.
 
+**Canonical counts (gated by `scripts/verify-continuity.mjs`):** the ledger holds exactly **191**
+historical issues — **169** `aukora-symbiote` + **13** `aukora-kernel` + **9** `aukora-fu`. Zero
+missing, zero ledger-only. The kernel and fu number sets are proven byte-for-byte equal to the live
+GitHub sets (snapshot in `docs/atlas/CURRENT_OBJECTS.json`); the **169 Symbiote entries are settled by
+owner ratification** (their sensitive numbers/titles are held privately, `title:null, redacted:true`).
+
 **Status: COMPLETE (second sweep).** Every source issue carries exactly one **disposition** and
 exactly one **completion_status** — `present_tested`, `superseded`, `scheduled`, or
 `stays_in_product`. IMPLEMENTED items carry a `present_tested_evidence` pointer. The second sweep
@@ -13,7 +19,8 @@ no bodies are bulk-copied.
 - Private `aukora-symbiote` is **sanitized** here (number/state/url/family/disposition/
   completion_status only). The full **sensitive** ledger lives in a private draft PR in
   `aukora-symbiote`.
-- Dispositions/statuses are a first pass **pending owner ratification**.
+- The **169 Symbiote preservation entries are ratified/settled** (R51, #106 req 2). The kernel/fu
+  classification rationales remain recorded and open to owner refinement; the preservation *set* is fixed.
 
 ## Proofs
 
