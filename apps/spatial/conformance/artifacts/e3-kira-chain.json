@@ -1,0 +1,62 @@
+{
+  "schema": "aukora-conformance-bundle-v1",
+  "coreHash": "4b5416c5cf4ef8718e525abc3a0906619244b2d7cbfa3b18311ec0ee243836e0",
+  "core": {
+    "schema": "aukora-conformance-core-v1",
+    "cell": "e3-kira-chain",
+    "title": "KIRA content-free chain: growth, governed forgetting, no-resurrection, tamper detection",
+    "seed": 50202,
+    "records": 500,
+    "forgets": 60,
+    "interfaces": [
+      "@aukora/brain:ReactiveMemoryStore",
+      "@aukora/memory:buildMemoryRecord"
+    ],
+    "counters": {
+      "uniqueIngested": 500,
+      "growthViolations": 0,
+      "integrityViolations": 0,
+      "forgetPlaintextGone": 60,
+      "forgetUnrecallable": 60,
+      "forgetChainStillValid": 60,
+      "forgetTombstoned": 60,
+      "forgetRequiresOwner": 60
+    },
+    "finalSnapshot": {
+      "liveCount": 440,
+      "chainLength": 562,
+      "forgottenCount": 61,
+      "headHash": "144a47aff1b0a25573405a37eb1cea00cbf1130fc8492a095b8a71d7627bd60f",
+      "merkleRootHex": "ec60f425f48f6868494b5d4a37266bc09eebb6b01c95afb3fd3c7219ca2f602d"
+    },
+    "verdict": {
+      "growthMonotonic": true,
+      "integrityAfterEveryOp": true,
+      "forgetDeletesPlaintext": true,
+      "forgetUnrecallable": true,
+      "forgetKeepsChainValid": true,
+      "forgetAppendsTombstone": true,
+      "forgetRequiresOwner": true,
+      "noResurrection": true,
+      "secretFailClosed": true,
+      "tamperDetected": true,
+      "corruptStoreRefusesIngest": true,
+      "pass": true
+    }
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "grantsAuthority": false,
+    "network": "none (in-memory store)",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}
