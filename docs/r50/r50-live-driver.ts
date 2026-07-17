@@ -28,7 +28,7 @@ const CONVEX = 'http://127.0.0.1:3210';
 const TARGET = 'apps/seed/src/recursion.ts';
 const TOKEN_FILE = join(REPO, 'apps', 'brain', '.local', 'organism', 'mind-door.token');
 
-const token = (): string => readFileSync(TOKEN_FILE, 'utf8').trim();
+const readDoorToken = (): string => readFileSync(TOKEN_FILE, 'utf8').trim();
 const owner = new HybridOwnerAdapter('local-door-dev'); // the dev door's fixture test-owner (never printed)
 const pastIso = (): string => new Date(Date.now() - 10 * 60_000).toISOString();
 
@@ -46,7 +46,7 @@ function authFor(p: Proposal, nonce: string, forge = false): Record<string, unkn
 async function post(path: string, body: unknown, headers: Record<string, string> = {}, useToken = true): Promise<void> {
   const res = await fetch(`${DOOR}${path}`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json', ...(useToken ? { 'x-aukora-door-token': token() } : {}), ...headers },
+    headers: { 'content-type': 'application/json', ...(useToken ? { 'x-aukora-door-token': readDoorToken() } : {}), ...headers },
     body: JSON.stringify(body),
   });
   console.log(`POST ${path} → ${res.status} ${await res.text()}`);
