@@ -23,6 +23,7 @@ export * from './keychain/macKeychain.js';
 export * from './spatialContracts.js';
 export * from './convexWorkflowStore.js';
 export * from './effectEvent.js';
+export * from './effectEventLog.js';
 export * from './ports.js';
 export * from './localDoor.js';
 export * from './composeLive.js';
