@@ -15,7 +15,8 @@
     "@aukora/memory": "0.1.0",
     "@noble/hashes": "2.2.0",
     "@aukora/council": "0.1.0",
-    "@noble/post-quantum": "0.6.1"
+    "@noble/post-quantum": "0.6.1",
+    "@aukora/mind": "*"
   },
   "devDependencies": {
     "convex": "1.42.2",
