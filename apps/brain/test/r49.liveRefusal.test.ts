@@ -76,7 +76,7 @@ describe('R49 — exact live refusal: empty door-defaulted nonce vs validator ru
 
     // and the STORE distinguishes correctly — the mislabel is upstream in propose, not in any store:
     const store = new InMemoryWorkflowStore();
-    expect(store.save(suspect, 0)).toEqual({ ok: false, reason: 'refused' });
+    expect(store.save(suspect as never, 0)).toEqual({ ok: false, reason: 'refused' });
   });
 
   it('rule 83 boundaries: 1-char and 128-char nonces pass; 129-char refuses (still content-free)', () => {
