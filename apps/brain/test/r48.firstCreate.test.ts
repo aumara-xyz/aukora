@@ -52,7 +52,7 @@ describe('R48 — first-create handshake over the REAL store/machine/convex comp
     expect(out.state?.phase).toBe('awaiting-owner');
 
     const settled = await store.settle();          // durability point
-    expect(settled).toEqual({ ok: true, pushed: 1, divergence: [] });
+    expect(settled).toEqual({ ok: true, pushed: 1, divergence: [], unavailable: [] }); // R50: additive field
 
     const durable = await t.query(api.workflows.loadWorkflow, { workflowId: wfId });
     expect(durable?.version).toBe(1);              // exactly one durable row, v1
