@@ -32,6 +32,7 @@ export * from './durableRecursion.js';
 export * from './effectProtocol.js';
 export * from './hermeticRehearsal.js';
 export * from './refSnapshot.js';
+export * from './candidatePathIntegrity.js';
 export * from './fuStructuredAdapter.js';
 export * from './localCandidateStage.js';
 export * from './providerTransport.js';
