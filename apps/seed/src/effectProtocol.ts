@@ -66,7 +66,12 @@ export type EffectEvent =
 /** The projection persisted into Sam 2's trusted state. PROJECTION ONLY — no authorization/signature/key/content. */
 export interface PreparedEffect {
   readonly schema: 'aukora-prepared-effect-v1';
-  readonly effectId: string;                 // content-addressed from (intentId, draftHash, nonce); fixed for life
+  // NAMESPACE NOTE (R53 de-dup): this is a GOVERNED-RECURSION effect id — content-addressed from
+  // (intentId, draftHash, nonce); fixed for life. It is a DISTINCT keyspace from @aukora/brain's JOURNAL
+  // step-effect id (`deriveEffectId(rehearsalKey, step)`, domain `AUKORA-EFFECT/1`); the two must not be
+  // conflated. At runtime wiring, derive this from the canonical recursion identity (proposal.deriveIntentId
+  // + deriveDraftHash + nonce) rather than minting a second scheme.
+  readonly effectId: string;
   readonly phase: EffectPhase;
   readonly candidateBranch: string | null;   // fixed at PREPARED; the ONE candidate this effect may ever produce
   readonly consumedForExecution: boolean;     // the once-only PREPARED→EXECUTING marker
