@@ -88,6 +88,8 @@ export interface LocalCeremonyInvocation {
   readonly candidateAuth?: SignedPromotionV2;
   /** The owner has explicitly ARMED materialization (maps to the kernel's humanClearance). */
   readonly ownerArmed?: boolean;
+  /** R50 head binding: the exact HEAD this materialization was approved against; the stage refuses a moved head. */
+  readonly expectedHeadBefore?: string;
   readonly explanation?: string;
 }
 
@@ -155,6 +157,7 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
     candidateAuth: invocation.candidateAuth, // owner's signature over the candidate payload hash
     monitor,                                  // the ONE canonical kernel reference monitor
     ownerArmed: invocation.ownerArmed === true,
+    expectedHeadBefore: invocation.expectedHeadBefore,
     store: env.store,
     nowMs: env.nowMs,
     nowIso: env.nowIso,
