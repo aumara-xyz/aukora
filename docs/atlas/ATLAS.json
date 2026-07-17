@@ -34,7 +34,14 @@
       "NEBIUS_LATER": 20,
       "SUPERSEDED": 3,
       "BLOCKED_OWNER": 14
-    }
+    },
+    "executed_gate_reference": {
+      "pr": "https://github.com/aumara-xyz/aukora/pull/83",
+      "command": "npm ci && npm run test:all",
+      "result": "690 passing (+2 gated skips), exit 0",
+      "branch_head_at_reconcile": "ba52f7fd805a4d4fb9696191a2b70c9cb95e2343"
+    },
+    "note": "counts reconciled R46"
   },
   "privacy": "aukora-symbiote rows are PRIVATE_HOLD: number/state/url/family/disposition only; titles/bodies stay in the private repo.",
   "rows": [
@@ -1719,7 +1726,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1736,7 +1744,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1753,7 +1762,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1770,7 +1780,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1787,7 +1798,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1804,7 +1816,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1821,7 +1834,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1838,7 +1852,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1855,7 +1870,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1872,7 +1888,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1889,7 +1906,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1906,7 +1924,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1923,7 +1942,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1940,7 +1960,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1957,7 +1978,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1974,7 +1996,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -1991,7 +2014,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2008,7 +2032,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2025,7 +2050,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2042,7 +2068,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2059,7 +2086,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2076,7 +2104,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2093,7 +2122,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2110,7 +2140,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2127,7 +2158,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2144,7 +2176,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2161,7 +2194,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2195,7 +2229,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2212,7 +2247,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2229,7 +2265,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2280,7 +2317,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2620,7 +2658,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2654,7 +2693,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2875,7 +2915,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -2994,7 +3035,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3181,7 +3223,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3300,7 +3343,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3317,7 +3361,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3334,7 +3379,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3351,7 +3397,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3368,7 +3415,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3657,7 +3705,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3674,7 +3723,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3691,7 +3741,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3708,7 +3759,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3725,7 +3777,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3742,7 +3795,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3759,7 +3813,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3776,7 +3831,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3793,7 +3849,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3810,7 +3867,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3827,7 +3885,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3844,7 +3903,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3861,7 +3921,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3878,7 +3939,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3895,7 +3957,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3912,7 +3975,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3929,7 +3993,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3946,7 +4011,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3963,7 +4029,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3980,7 +4047,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -3997,7 +4065,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4014,7 +4083,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4031,7 +4101,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4048,7 +4119,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4065,7 +4137,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": "merged main b17a3f8",
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4082,7 +4155,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4099,7 +4173,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4116,7 +4191,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4150,7 +4226,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4252,7 +4329,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4269,7 +4347,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4286,7 +4365,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4303,7 +4383,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     },
     {
       "source": "aukora-symbiote",
@@ -4320,7 +4401,8 @@
       "donor_paths": "see private forensics + sensitive ledger",
       "current_paths": null,
       "dependencies": null,
-      "disagreement": null
+      "disagreement": null,
+      "family_status": "UNRESOLVED — R46 amend: prior value was a disposition alias, not a capability family; family assignment awaits an owner batch ruling. Disposition remains authoritative."
     }
   ],
   "checkpoints": [
@@ -4348,6 +4430,15 @@
       "checkpoint": "wave3",
       "action": "reconciled memory/identity appendices (Sam 2 A–I) + continuity-witness registers (Sam 4) into the canonical atlas as evidence refs; #65 amend verified (default recall shape preserved, recallScoped opt-in); Sam 3 candidate-write integrity CONSUMED (6/6 adversarial suite green)",
       "live_proof": "docs/wave3/SAM1_LIVE_PROOF_TRANSCRIPT.log — one-command boot (organism:up, all PIDs verified), receipt-chain state carried byte-identical across SIGKILL crash/restart (headHash f70e5b41…, chainLength 1→1, no dup), bounded shutdown, donor :7090 HTTP 200 after"
+    },
+    {
+      "checkpoint": "r46",
+      "action": "reconciled: 75 uncategorized rows familied+explained (0 unexplained remaining); anatomy.json v0 + executable verifier landed and wired into test:all; owner corrections encoded as distinct rows (aura-birth EXACT_HISTORICAL_PORT, ghp-organ present, lingwa-lessons present, lingwa-lane MISSING, duplex-voice RUNTIME_UNPROVEN, gaussian-palace RESEARCH_NEW); 17 spatial seams (7 live/10 donor-offline), launcher token gap, two-lifecycle-owner state recorded in anatomy.known_gaps"
+    },
+    {
+      "checkpoint": "r46-amend2",
+      "action": "owner hold closure: removed 75 disposition-alias capability values (label laundering) — rows returned to uncategorized with an explicit family_status; NO claim of complete family coverage"
     }
-  ]
+  ],
+  "laws": "R46: source_continuity is recorded separately from runtime_reachability — presence of bytes proves origin, never live behavior; anatomy.json carries both fields per entry."
 }

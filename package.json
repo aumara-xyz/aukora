@@ -32,9 +32,11 @@
     "test:console": "npm test --workspace @aukora/console",
     "fixture:console": "npm run build:kernel && npm run fixture --workspace @aukora/console && git diff --exit-code -- apps/console/public/fixture.json apps/console/public/fixture.js apps/console/docs/spatial-map.svg",
     "test:organism": "npm run test:memory && npm run test:brain && npm run test:seed && npm run test:console && npm run test:spatial",
-    "test:all": "npm run verify:provenance && npm run boundary && npm run test && npm run test:kernel && npm run test:organism && npm run fixture:console",
+    "test:all": "npm run verify:provenance && npm run verify:anatomy && npm run boundary && npm run test && npm run test:kernel && npm run test:organism && npm run fixture:console",
     "demo:organism": "npm run demo --workspace @aukora/seed",
-    "test:spatial": "npm test --workspace @aukora/spatial"
+    "test:spatial": "npm test --workspace @aukora/spatial",
+    "verify:anatomy": "node scripts/verify-anatomy.mjs",
+    "workbench:readiness": "node scripts/workbench-readiness.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

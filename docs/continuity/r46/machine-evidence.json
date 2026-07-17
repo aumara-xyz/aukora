@@ -1,0 +1,40 @@
+{
+  "schema": "aukora-r46-core-audit-evidence-v1",
+  "round": "R46",
+  "lane": "SAM 3",
+  "base_main": "f6130296",
+  "stance": "independent, evidence-only; a different conclusion is invited where runtime evidence supports it",
+  "suites_at_base": {
+    "apps/seed": "287/287",
+    "packages/council": "65/65",
+    "packages/council-node": "5/5",
+    "packages/kernel": "19/19",
+    "env": "AUKORA_* cleared; runs serialized"
+  },
+  "aura_birth_alarm": {
+    "path": "apps/spatial/assets/aura-birth.js",
+    "lines": 294,
+    "provenance": { "donorPath": "spatial/assets/aura-birth.js", "donorBlob": "846361640aecc90b9675d2921ef112a840b3fcd6", "sha256": "2c3bfc92be194e5f36212b36075cb4114dfd53c8ea3be7eb4147b7c263cc0f4e", "status": "VERBATIM" },
+    "what_it_proves_at_source": "a deterministic, phrase-blind, public-genesis-seeded VISUAL echo of identity — its own header (lines 12-16) declares 'the public key + signed receipt chain are the identity … never signs, never proves a person, and is not a machine-readable identifier'. It proves the DISPLAY layer exists and is byte-deterministic per seed; it proves NOTHING at the authority layer.",
+    "reachable_wired": "WIRED — apps/spatial/app/aura.js:21 imports mountAuraBirth; :115-116 mounts it on a canvas when a genesis ref is present (mode:'base').",
+    "tested": "NOT unit-tested — no aura-birth test exists; apps/spatial/test/transplant.test.mjs does not reference it. It is a WebGL/THREE.js visual (hard to unit-test); its guarantee is provenance (VERBATIM blob + sha256), not a behavioral vector.",
+    "re_port": "DO NOT re-port (exact donor blob, already VERBATIM). No action proposed."
+  },
+  "authority_predicate_scan": {
+    "geometry_ts": "classification GEOMETRY_ONLY, grantsAuthority:false; its `coherence` scalar encodes the ALREADY-decided verdict (geometry.ts:65), NOT the Fu glyph field",
+    "auraTrace_ts": "TRACE_ONLY; header line 10: 'there is no read path from this module into the recursion decision'",
+    "result": "zero authority predicate reads any AURA geometry/trace/display value — confirmed by grep over apps/seed/src"
+  },
+  "fu_glyph_fields": {
+    "present_engine_side": "packages/council/src/aukoraFuGlyph.ts — shearMagnitude, phaseLockStatus (open|decaying|stabilized), coherence, SHEAR_FLOOR permanent gap; assessPhaseLock + neutralReplayDrift in aukoraFuCouncil.ts",
+    "surfaced_into_seed_display": false,
+    "note": "the seed geometry.ts is a SEPARATE display scalar; the council's real shear/coherence field is NOT bridged to an AURA display — present-but-untracked as a display layer, absent as an authority input (correctly)"
+  },
+  "witnessed_receipt_drand_vouch": {
+    "present": "as forensics DOCS only (apps/spatial/docs/forensics/R42_CONTINUITY_WITNESS.md, R44_LIVEWIRE_WITNESS.md, r42-witness-atlas.jsonl)",
+    "as_wired_display_layer_in_seed": false,
+    "note": "no drand/vouch/witnessed-receipt DISPLAY module is wired in apps/seed; the witness material lives in the Spatial lane's docs — MISSING as a seed display layer, and correctly NEVER an authority input"
+  },
+  "fu_advisory_pin": "packages/council/src/aukoraFuCouncil.ts:723 (advisory:true, grantsAuthority:false) + :728 councilGrantsAuthority()===false",
+  "restart_receipts": "apps/seed/test/r35.durable.test.ts (13 tests): crash-during-review resume, crash-between-apply-and-save applied-exactly-once, never-auto-resume-after-restart, content-free receipt chain"
+}

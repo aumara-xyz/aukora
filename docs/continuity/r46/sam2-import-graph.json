@@ -1,0 +1,360 @@
+{
+ "schema": "sam2-import-graph-v1",
+ "base_main": "f6130296fad0",
+ "generated": "2026-07-17 R46 sweep (deterministic source scan; workspace aliases resolved)",
+ "file_count": 47,
+ "edges": {
+  "packages/memory/src/containment.ts": [],
+  "packages/memory/src/envelope.ts": [
+   "@aukora/kernel/canonical"
+  ],
+  "packages/memory/src/recall.ts": [
+   "packages/memory/src/envelope.ts",
+   "packages/memory/src/scope.ts"
+  ],
+  "packages/memory/src/scope.ts": [
+   "packages/memory/src/envelope.ts"
+  ],
+  "packages/memory/src/staleness.ts": [
+   "@aukora/kernel/staleness"
+  ],
+  "packages/memory/index.ts": [
+   "packages/memory/src/containment.ts",
+   "packages/memory/src/envelope.ts",
+   "packages/memory/src/recall.ts",
+   "packages/memory/src/scope.ts",
+   "packages/memory/src/staleness.ts"
+  ],
+  "apps/brain/src/brainProvider.ts": [
+   "@aukora/kernel/canonical"
+  ],
+  "apps/brain/src/brainRoles.ts": [
+   "apps/brain/src/brainProvider.ts"
+  ],
+  "apps/brain/src/composeLive.ts": [
+   "apps/brain/src/convexWorkflowStore.ts",
+   "apps/brain/src/localDoor.ts",
+   "apps/brain/src/spatialContracts.ts"
+  ],
+  "apps/brain/src/continuity/aukoraPqcSigner.ts": [
+   "@noble/hashes/utils.js",
+   "@noble/post-quantum/ml-dsa.js"
+  ],
+  "apps/brain/src/continuity/aukoraSignedHead.ts": [
+   "@noble/hashes/sha2.js",
+   "@noble/hashes/utils.js",
+   "apps/brain/src/continuity/aukoraPqcSigner.ts"
+  ],
+  "apps/brain/src/continuity/eraseAttestation.ts": [
+   "@aukora/kernel/canonical",
+   "@noble/hashes/sha2.js",
+   "@noble/hashes/utils.js",
+   "apps/brain/src/continuity/aukoraPqcSigner.ts",
+   "apps/brain/src/continuity/aukoraSignedHead.ts"
+  ],
+  "apps/brain/src/continuity/locations.ts": [
+   "node:crypto",
+   "node:fs",
+   "node:os",
+   "node:path"
+  ],
+  "apps/brain/src/convexWorkflowStore.ts": [],
+  "apps/brain/src/goldRegistry.ts": [
+   "@aukora/kernel/evidence",
+   "packages/memory/index.ts"
+  ],
+  "apps/brain/src/healthContract.ts": [
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/reactiveStore.ts"
+  ],
+  "apps/brain/src/index.ts": [
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/brainRoles.ts",
+   "apps/brain/src/composeLive.ts",
+   "apps/brain/src/continuity/aukoraPqcSigner.ts",
+   "apps/brain/src/continuity/aukoraSignedHead.ts",
+   "apps/brain/src/continuity/eraseAttestation.ts",
+   "apps/brain/src/continuity/locations.ts",
+   "apps/brain/src/convexWorkflowStore.ts",
+   "apps/brain/src/goldRegistry.ts",
+   "apps/brain/src/healthContract.ts",
+   "apps/brain/src/keychain/credentialStore.ts",
+   "apps/brain/src/keychain/macKeychain.ts",
+   "apps/brain/src/localDoor.ts",
+   "apps/brain/src/memoryBridge.ts",
+   "apps/brain/src/metabolismSimulator.ts",
+   "apps/brain/src/nebiusProvider.ts",
+   "apps/brain/src/nodePrint.ts",
+   "apps/brain/src/offlineExecutor.ts",
+   "apps/brain/src/perceptionProvider.ts",
+   "apps/brain/src/ports.ts",
+   "apps/brain/src/providerPolicy.ts",
+   "apps/brain/src/reactiveBrainAdapter.ts",
+   "apps/brain/src/reactiveStore.ts",
+   "apps/brain/src/spatialContracts.ts",
+   "apps/brain/src/supervisedGeneration.ts"
+  ],
+  "apps/brain/src/keychain/credentialStore.ts": [
+   "@aukora/evidence",
+   "@aukora/kernel/canonical"
+  ],
+  "apps/brain/src/keychain/macKeychain.ts": [
+   "apps/brain/src/keychain/credentialStore.ts",
+   "node:child_process"
+  ],
+  "apps/brain/src/localDoor.ts": [
+   "@aukora/council",
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/ports.ts",
+   "node:http"
+  ],
+  "apps/brain/src/memoryBridge.ts": [
+   "@aukora/evidence",
+   "@aukora/kernel/evidence",
+   "@noble/hashes/utils.js",
+   "apps/brain/src/reactiveStore.ts",
+   "packages/memory/index.ts"
+  ],
+  "apps/brain/src/metabolismSimulator.ts": [
+   "@aukora/kernel/canonical"
+  ],
+  "apps/brain/src/nebiusProvider.ts": [
+   "apps/brain/src/brainProvider.ts"
+  ],
+  "apps/brain/src/nodePrint.ts": [
+   "@aukora/evidence",
+   "@aukora/kernel/canonical",
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/nebiusProvider.ts"
+  ],
+  "apps/brain/src/offlineExecutor.ts": [
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/healthContract.ts",
+   "apps/brain/src/nebiusProvider.ts",
+   "apps/brain/src/nodePrint.ts",
+   "apps/brain/src/reactiveStore.ts",
+   "apps/brain/src/supervisedGeneration.ts",
+   "packages/memory/index.ts"
+  ],
+  "apps/brain/src/perceptionProvider.ts": [
+   "@aukora/kernel/canonical"
+  ],
+  "apps/brain/src/ports.ts": [],
+  "apps/brain/src/providerPolicy.ts": [
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/nebiusProvider.ts"
+  ],
+  "apps/brain/src/reactiveBrainAdapter.ts": [
+   "@aukora/kernel/evidence",
+   "apps/brain/src/reactiveStore.ts",
+   "packages/memory/index.ts"
+  ],
+  "apps/brain/src/reactiveStore.ts": [
+   "@aukora/evidence",
+   "@aukora/kernel/evidence",
+   "@aukora/kernel/merkle",
+   "@noble/hashes/utils.js",
+   "packages/memory/index.ts"
+  ],
+  "apps/brain/src/spatialContracts.ts": [
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/healthContract.ts",
+   "apps/brain/src/memoryBridge.ts",
+   "apps/brain/src/reactiveStore.ts",
+   "packages/memory/index.ts"
+  ],
+  "apps/brain/src/supervisedGeneration.ts": [
+   "apps/brain/src/brainProvider.ts",
+   "apps/brain/src/nebiusProvider.ts"
+  ],
+  "apps/brain/convex/crons.ts": [
+   "apps/brain/convex/_generated/api",
+   "convex/server"
+  ],
+  "apps/brain/convex/heads.ts": [
+   "@aukora/kernel/merkle",
+   "apps/brain/convex/_generated/server",
+   "apps/brain/src/continuity/aukoraSignedHead.ts",
+   "convex/values"
+  ],
+  "apps/brain/convex/ingest.ts": [
+   "@aukora/evidence",
+   "apps/brain/convex/_generated/api",
+   "apps/brain/convex/_generated/server",
+   "convex/values"
+  ],
+  "apps/brain/convex/memory.ts": [
+   "@aukora/kernel/evidence",
+   "@aukora/kernel/merkle",
+   "@noble/hashes/utils.js",
+   "apps/brain/convex/_generated/api",
+   "apps/brain/convex/_generated/server",
+   "apps/brain/convex/rehearsal.ts",
+   "apps/brain/src/continuity/eraseAttestation.ts",
+   "convex/values",
+   "packages/memory/index.ts"
+  ],
+  "apps/brain/convex/nerves.ts": [
+   "apps/brain/convex/_generated/server",
+   "convex/values"
+  ],
+  "apps/brain/convex/rehearsal.ts": [
+   "@aukora/kernel/evidence",
+   "apps/brain/convex/_generated/api",
+   "apps/brain/convex/_generated/server",
+   "convex/values"
+  ],
+  "apps/brain/convex/schema.ts": [
+   "convex/server",
+   "convex/values"
+  ],
+  "apps/brain/convex/workflows.ts": [
+   "apps/brain/convex/_generated/server",
+   "convex/values"
+  ],
+  "apps/brain/scripts/doorCustody.mjs": [
+   "node:crypto",
+   "node:fs",
+   "node:path"
+  ],
+  "apps/brain/scripts/doorServerMain.ts": [
+   "apps/brain/src/composeLive.ts",
+   "apps/brain/src/localDoor.ts",
+   "apps/brain/src/ports.ts",
+   "convex/browser",
+   "convex/server"
+  ],
+  "apps/brain/scripts/local-ctl.mjs": [
+   "node:child_process",
+   "node:fs",
+   "node:path",
+   "node:url"
+  ],
+  "apps/brain/scripts/organism-ctl.mjs": [
+   "apps/brain/scripts/doorCustody.mjs",
+   "node:child_process",
+   "node:fs",
+   "node:path",
+   "node:url"
+  ],
+  "apps/seed/scripts/mind-door-7097.ts": [
+   "apps/brain/src/index.ts",
+   "apps/seed/src/candidateReferenceMonitor.ts",
+   "apps/seed/src/durableRecursion.ts",
+   "apps/seed/src/ledger.ts",
+   "apps/seed/src/mindDoor.ts",
+   "apps/seed/src/ownerFixture.ts",
+   "node:fs",
+   "node:http",
+   "node:path"
+  ],
+  "apps/seed/src/mindDoor.ts": [
+   "@aukora/council",
+   "@aukora/kernel/schemas",
+   "apps/brain/src/index.ts",
+   "apps/seed/src/doorGuards.ts",
+   "apps/seed/src/fuStructuredAdapter.ts",
+   "apps/seed/src/localCeremonyRunner.ts",
+   "apps/seed/src/proposal.ts",
+   "packages/memory/index.ts"
+  ],
+  "apps/seed/src/doorGuards.ts": [
+   "@noble/hashes/utils.js"
+  ]
+ },
+ "reachability": {
+  "supervisor: organism-ctl up (7141 door + convex + mind + spatial lifecycle)": {
+   "count": 2,
+   "files": [
+    "apps/brain/scripts/doorCustody.mjs",
+    "apps/brain/scripts/organism-ctl.mjs"
+   ]
+  },
+  "brain door server 7141 (bundled + held by supervisor)": {
+   "count": 16,
+   "files": [
+    "apps/brain/scripts/doorServerMain.ts",
+    "apps/brain/src/brainProvider.ts",
+    "apps/brain/src/composeLive.ts",
+    "apps/brain/src/convexWorkflowStore.ts",
+    "apps/brain/src/healthContract.ts",
+    "apps/brain/src/localDoor.ts",
+    "apps/brain/src/memoryBridge.ts",
+    "apps/brain/src/ports.ts",
+    "apps/brain/src/reactiveStore.ts",
+    "apps/brain/src/spatialContracts.ts",
+    "packages/memory/index.ts",
+    "packages/memory/src/containment.ts",
+    "packages/memory/src/envelope.ts",
+    "packages/memory/src/recall.ts",
+    "packages/memory/src/scope.ts",
+    "packages/memory/src/staleness.ts"
+   ]
+  },
+  "local convex deployment (all functions)": {
+   "count": 17,
+   "files": [
+    "apps/brain/convex/crons.ts",
+    "apps/brain/convex/heads.ts",
+    "apps/brain/convex/ingest.ts",
+    "apps/brain/convex/memory.ts",
+    "apps/brain/convex/nerves.ts",
+    "apps/brain/convex/rehearsal.ts",
+    "apps/brain/convex/schema.ts",
+    "apps/brain/convex/workflows.ts",
+    "apps/brain/src/continuity/aukoraPqcSigner.ts",
+    "apps/brain/src/continuity/aukoraSignedHead.ts",
+    "apps/brain/src/continuity/eraseAttestation.ts",
+    "packages/memory/index.ts",
+    "packages/memory/src/containment.ts",
+    "packages/memory/src/envelope.ts",
+    "packages/memory/src/recall.ts",
+    "packages/memory/src/scope.ts",
+    "packages/memory/src/staleness.ts"
+   ]
+  },
+  "governed mind door 7097 (seed runner, supervisor-spawned)": {
+   "count": 35,
+   "files": [
+    "apps/brain/src/brainProvider.ts",
+    "apps/brain/src/brainRoles.ts",
+    "apps/brain/src/composeLive.ts",
+    "apps/brain/src/continuity/aukoraPqcSigner.ts",
+    "apps/brain/src/continuity/aukoraSignedHead.ts",
+    "apps/brain/src/continuity/eraseAttestation.ts",
+    "apps/brain/src/continuity/locations.ts",
+    "apps/brain/src/convexWorkflowStore.ts",
+    "apps/brain/src/goldRegistry.ts",
+    "apps/brain/src/healthContract.ts",
+    "apps/brain/src/index.ts",
+    "apps/brain/src/keychain/credentialStore.ts",
+    "apps/brain/src/keychain/macKeychain.ts",
+    "apps/brain/src/localDoor.ts",
+    "apps/brain/src/memoryBridge.ts",
+    "apps/brain/src/metabolismSimulator.ts",
+    "apps/brain/src/nebiusProvider.ts",
+    "apps/brain/src/nodePrint.ts",
+    "apps/brain/src/offlineExecutor.ts",
+    "apps/brain/src/perceptionProvider.ts",
+    "apps/brain/src/ports.ts",
+    "apps/brain/src/providerPolicy.ts",
+    "apps/brain/src/reactiveBrainAdapter.ts",
+    "apps/brain/src/reactiveStore.ts",
+    "apps/brain/src/spatialContracts.ts",
+    "apps/brain/src/supervisedGeneration.ts",
+    "apps/seed/scripts/mind-door-7097.ts",
+    "apps/seed/src/doorGuards.ts",
+    "apps/seed/src/mindDoor.ts",
+    "packages/memory/index.ts",
+    "packages/memory/src/containment.ts",
+    "packages/memory/src/envelope.ts",
+    "packages/memory/src/recall.ts",
+    "packages/memory/src/scope.ts",
+    "packages/memory/src/staleness.ts"
+   ]
+  }
+ },
+ "not_runtime_reachable": [
+  "apps/brain/scripts/local-ctl.mjs"
+ ]
+}
