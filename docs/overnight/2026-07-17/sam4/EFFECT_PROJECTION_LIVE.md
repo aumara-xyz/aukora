@@ -59,3 +59,14 @@ canary and the in-repo law can never drift.
 [4/4] live effect canary     → real SIGKILL (pid 78215) → survived (R2===R1) → rebuild (R3===R1) → ALL LIVE PROOFS PASS
 ```
 No orphan process. Proves the PUSHED work reproduces green from a clean checkout — the exact run a hostile evaluator performs.
+
+## Concurrent-delivery convergence (checkpoint 11, live — mission item 4)
+
+```
+PASS  24 SIMULTANEOUS identical appends → exactly ONE durable row
+PASS  the concurrent projection has exactly one canonical effect
+```
+Fired via `Promise.all` at the real backend on a separate workflow (the crash/rebuild proof above stays a clean
+3-effect projection). Convex serializes the idempotent `appendEventOnce` mutation, so concurrent at-least-once
+delivery converges to one canonical projection — the "duplicate AND concurrent delivery converge" acceptance,
+proven live.

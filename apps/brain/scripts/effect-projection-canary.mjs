@@ -94,6 +94,17 @@ async function main() {
     log(`effect-projection root R1 = ${R1.slice(0, 24)}…`);
     check('projection has 3 canonical effects', R1.length === 64);
 
+    // ── CONCURRENT delivery converges to ONE canonical row (mission item 4, live) ──
+    // A separate workflow, so the crash/rebuild proof above stays a clean 3-effect projection.
+    log('PROOF — concurrent delivery converges to one canonical row');
+    const WF2 = sha256('effect-workflow-concurrent');
+    const concId = sha256('e-concurrent');
+    await Promise.all(Array.from({ length: 24 }, () =>
+      http.mutation(api.nervous.appendEventOnce, { eventId: concId, workflowId: WF2, kind: 'concurrent-effect', at })));
+    const concRows = await http.query(api.nervous.events, { workflowId: WF2 });
+    check('24 SIMULTANEOUS identical appends → exactly ONE durable row', concRows.length === 1);
+    check('the concurrent projection has exactly one canonical effect', projectionRoot(toEffectRows(concRows, WF2)).length === 64 && concRows.length === 1);
+
     // ── real process death ──
     log('PROOF — actual process death (kill -9) then restart on the SAME storage');
     const deadPid = backend.pid;
