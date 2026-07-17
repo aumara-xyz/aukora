@@ -39,7 +39,8 @@
  * carries its own dedicated containment tests instead.
  */
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, existsSync, lstatSync, realpathSync, unlinkSync, openSync, writeSync, closeSync, constants as FS } from 'node:fs';
+import { mkdirSync, mkdtempSync, existsSync, lstatSync, realpathSync, unlinkSync, openSync, writeSync, closeSync, constants as FS } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, dirname, resolve, normalize, sep } from 'node:path';
 import type { ReactiveMemoryStore } from '@aukora/brain';
 import { buildMemoryRecord } from '@aukora/memory';
@@ -102,9 +103,64 @@ export interface MaterializeInput {
 /** The ONLY git subcommands this module may run. Everything outward-facing or history-mutating is absent. */
 const ALLOWED_GIT_SUBCOMMANDS: ReadonlySet<string> = new Set(['status', 'rev-parse', 'worktree', 'add', 'commit']);
 
+// ── Hardened Git cell (HARDEN GIT · #22) ────────────────────────────────────────────────────────────
+// Every git invocation runs the EXACT trusted binary in a MINIMAL, hostile-config-proof environment so a fake
+// `git` on PATH, a malicious ~/.gitconfig or system config, and repo `.git/hooks` can never influence or execute.
+
+// Resolve the trusted git against SYSTEM directories ONLY — never the ambient PATH, never the cwd — so a `git`
+// planted in a user-writable PATH entry or the working directory can never be selected. An explicit
+// AUKORA_TRUSTED_GIT override (an absolute path) is honored for non-standard hosts.
+const TRUSTED_GIT_DIRS = ['/usr/bin', '/bin', '/usr/local/bin', '/opt/homebrew/bin'] as const;
+function resolveTrustedGit(): string {
+  const override = process.env.AUKORA_TRUSTED_GIT;
+  if (typeof override === 'string' && override.startsWith('/') && existsSync(override)) return realpathSync(override);
+  for (const dir of TRUSTED_GIT_DIRS) {
+    const candidate = join(dir, 'git');
+    if (existsSync(candidate)) return candidate;
+  }
+  throw new Error('candidate-stage: no trusted git binary found in a system directory');
+}
+const TRUSTED_GIT = resolveTrustedGit();
+
+// One empty directory git sees as HOME/XDG so no user dotfiles (a hostile ~/.gitconfig) can ever load.
+let EMPTY_GIT_HOME: string | null = null;
+function emptyGitHome(): string {
+  if (EMPTY_GIT_HOME === null) EMPTY_GIT_HOME = mkdtempSync(join(tmpdir(), 'aukora-git-empty-home-'));
+  return EMPTY_GIT_HOME;
+}
+
+// A minimal, reconstructed-from-scratch environment (never `...process.env`): PATH holds ONLY the trusted git's
+// own directory (so no filter/helper/hook command resolves via PATH); HOME/XDG are empty; system + global config
+// are disabled outright; no terminal prompt; only the file protocol; deterministic C locale.
+function hardenedGitEnv(): NodeJS.ProcessEnv {
+  const home = emptyGitHome();
+  return {
+    PATH: dirname(TRUSTED_GIT),
+    HOME: home,
+    XDG_CONFIG_HOME: home,
+    GIT_CONFIG_GLOBAL: '/dev/null',
+    GIT_CONFIG_SYSTEM: '/dev/null',
+    GIT_CONFIG_NOSYSTEM: '1',
+    GIT_TERMINAL_PROMPT: '0',
+    GIT_ALLOW_PROTOCOL: 'file',
+    LANG: 'C',
+    LC_ALL: 'C',
+  };
+}
+
+// Safety `-c` flags injected on EVERY invocation: repo `.git/hooks` never run; no fsmonitor daemon shells out.
+const GIT_SAFETY_CONFIG: readonly string[] = ['-c', 'core.hooksPath=/dev/null', '-c', 'core.fsmonitor=false'];
+
+/** The one hardened argv runner (arrays only — never a shell string). All git in this module goes through here. */
+function runTrustedGit(cwd: string, argv: readonly string[]): string {
+  return execFileSync(TRUSTED_GIT, ['-C', cwd, ...GIT_SAFETY_CONFIG, ...argv], {
+    encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: hardenedGitEnv(),
+  });
+}
+
 function git(cwd: string, subcommand: string, args: readonly string[], config: readonly string[] = []): string {
   if (!ALLOWED_GIT_SUBCOMMANDS.has(subcommand)) throw new Error(`git subcommand '${subcommand}' is outside the candidate-stage allowlist`);
-  return execFileSync('git', ['-C', cwd, ...config, subcommand, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  return runTrustedGit(cwd, [...config, subcommand, ...args]);
 }
 
 function tryGit(cwd: string, subcommand: string, args: readonly string[]): string | null {
@@ -141,7 +197,9 @@ function unsafePathComponent(worktreeRoot: string, relPath: string): string | nu
  *  surface cannot widen. Best-effort: cleanup failure never masks the original refusal. */
 function cleanupFailedCandidate(repoRoot: string, worktreePath: string, branch: string): void {
   try { git(repoRoot, 'worktree', ['remove', '--force', worktreePath]); } catch { /* best-effort */ }
-  try { execFileSync('git', ['-C', repoRoot, 'branch', '-D', branch], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); } catch { /* best-effort */ }
+  // The ONE ref mutation this module may perform — hard-coded argv (not via the allowlist) so the general
+  // surface cannot widen, but still through the hardened trusted-git runner (env + safety flags).
+  try { runTrustedGit(repoRoot, ['branch', '-D', branch]); } catch { /* best-effort */ }
 }
 
 export function materializeCandidate(input: MaterializeInput): CandidateMaterialization {
