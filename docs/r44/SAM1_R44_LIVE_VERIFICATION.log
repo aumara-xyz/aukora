@@ -1,0 +1,45 @@
+=== boot ===
+
+> @aukora/brain@0.1.0 organism:up
+> node scripts/organism-ctl.mjs up
+
+[organism] deploying functions to the anonymous LOCAL deployment…
+[organism] convex: started (pid 47796)
+[organism] convex: healthy on 3210/3211
+[organism] door: started (pid 47981)
+[organism] door: HELD on 7141 (canonical brain projection/control door)
+[organism] mind: per-boot mind-door POST token: value is never printed/logged/committed; held only in env of the child and the 0600 token file
+[organism] mind: started (pid 48058)
+[organism] mind: healthy on 7097
+[organism] !! voice: optional, not present — DEGRADED(optional)
+[organism] spatial: started (pid 48110)
+[organism] spatial: healthy on 7096 (projections via the 7141 door)
+[organism] UP with 1 degradation(s):
+[organism] !!   DEGRADED — voice: optional; no standalone voice sidecar on this tree (client-side audio lives in the Spatial app)
+UP=0
+[organism] convex: pid=47796 (verified) · port 3210 listening=true
+[organism] door: pid=47981 (verified) · port 7141 listening=true
+[organism] mind: pid=48058 (verified) · port 7097 listening=true
+[organism] spatial: pid=48110 (verified) · port 7096 listening=true
+[organism] mind-token: held (0600)
+=== tokenless POST must refuse + receipt ===
+{"error":"refused: missing or bad local POST token","reasonClass":"guard:missing-or-bad-token","eventReceipt":"ee7638fea
+events "events":0 -> "events":1 (refusal receipted)
+=== tokened POST works (token from 0600 file, value not echoed) ===
+-rw-------@ mind-door.token
+"advisoryOnly":true
+"eventReceipt":"ff4f2d562330
+=== door log leak check: token value printed anywhere? ===
+grep of bundles for token value: no output above = clean
+=== shutdown + donor ===
+
+> @aukora/brain@0.1.0 organism:down
+> node scripts/organism-ctl.mjs down
+
+[organism] spatial: SIGTERM sent to owned pid group 48110
+[organism] mind: SIGTERM sent to owned pid group 48058
+[organism] door: SIGTERM sent to owned pid group 47981
+[organism] convex: SIGTERM sent to owned pid group 47796
+[organism] organism down; pidfiles + lock + per-boot mind token cleared
+DOWN=0
+donor :7090 HTTP 200
