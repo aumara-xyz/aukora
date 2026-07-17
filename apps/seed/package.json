@@ -11,11 +11,12 @@
     "./contracts": "./src/contracts.ts"
   },
   "dependencies": {
-    "@aukora/kernel": "0.1.0",
-    "@aukora/evidence": "0.1.0",
-    "@aukora/memory": "0.1.0",
-    "@aukora/council": "0.1.0",
     "@aukora/brain": "0.1.0",
+    "@aukora/council": "0.1.0",
+    "@aukora/evidence": "0.1.0",
+    "@aukora/kernel": "0.1.0",
+    "@aukora/kernel-node": "0.1.0",
+    "@aukora/memory": "0.1.0",
     "@noble/curves": "2.2.0",
     "@noble/hashes": "2.2.0",
     "@noble/post-quantum": "0.6.1",

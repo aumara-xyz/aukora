@@ -33,6 +33,7 @@ import { deriveIntentId, deriveDraftHash, type Proposal } from './proposal.js';
 import { reviewerFor } from './fuStructuredAdapter.js';
 import { materializeCandidate, type CandidateMaterialization } from './localCandidateStage.js';
 import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
+import { DurableCandidateReferenceMonitor } from './durableCandidateMonitor.js';
 import type { CouncilReviewer } from './mockCouncil.js';
 
 export type CeremonyRunPhase =
@@ -69,6 +70,13 @@ export interface LocalCeremonyEnv {
   readonly store: ReactiveMemoryStore;
   /** The canonical kernel reference monitor for the candidate effect (durable consumed-id state). Constructed if absent. */
   readonly monitor?: CandidateReferenceMonitor;
+  /**
+   * R54: protected trusted-state directory for the DURABLE reference monitor. When set (and no explicit `monitor`
+   * is injected), the ceremony consumes authority through `@aukora/kernel-node`'s crash-safe TrustedStateStore —
+   * the consumption + PREPARED descriptor are journalled BEFORE any git effect. MUST live outside the repo root
+   * and outside the disposable worktree base (it must survive candidate cleanup and process death).
+   */
+  readonly trustedStateDir?: string;
   /** For candidate materialization (effectful). Omit to keep the ceremony non-materializing. */
   readonly gitRepoRoot?: string;
   readonly worktreeBase?: string;
@@ -149,7 +157,11 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   if (!staged.ok) {
     return result({ ok: false, phase: 'refused-at-candidate', reasonClass: staged.refusal.reasonClass, text: staged.refusal.text, workflowId, workflowState: state, rehearsalReceiptHash });
   }
-  const monitor = env.monitor ?? new CandidateReferenceMonitor(env.ownerRoot);
+  // R54: prefer the DURABLE monitor whenever a protected state dir is configured — the consumption is then
+  // crash-safe on disk before the stage's first git mutation. An explicit injected monitor still wins (tests).
+  const monitor = env.monitor ?? (env.trustedStateDir !== undefined
+    ? new DurableCandidateReferenceMonitor(env.ownerRoot, env.trustedStateDir)
+    : new CandidateReferenceMonitor(env.ownerRoot));
   const materialization = materializeCandidate({
     repoRoot: env.gitRepoRoot,
     worktreeBase: env.worktreeBase,
