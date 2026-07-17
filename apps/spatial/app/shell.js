@@ -17,7 +17,8 @@ import { mountAumlok } from '/app/aumlok.js';
 import { mountAumaLive } from '/app/aumalive.js';
 import { mountGhp } from '/app/ghp.js';
 import { mountSettings } from '/app/settings.js';
-import { mountConsole } from '/app/console.js'; // NEW (ours): CONSOLE center-pane organ — not donor code
+// R50/#101 (owner direction): CONSOLE is removed from the visible roster. The file apps/spatial/app/console.js
+// is RETAINED (kept, not deleted) but no longer imported/mounted — so it is not surfaced as a selectable organ.
 import { materializeShellModel } from '/app/shell-registry.js';
 import { isChatOpen, closeChat } from '/app/chat.js';
 import '/app/operate.js'; // Auma's hands on the UI (advisory; self-installs window.aukoraOperate) — drives the shell, never crosses the gate
@@ -125,7 +126,7 @@ const ORGANS_BUILTIN = {
   'app-lab': { title: 'App Lab', sub: 'grow screens from chat · preview before signature', mount: mountCanvas },
   aumalive: { title: 'Auma · Live', sub: 'the direct channel — she answers out loud, in light', mount: mountAumaLive },
   ghp: { title: 'Golden Horizon', sub: 'the boundary research — proofs, nulls, and the machine that can’t flatter you', mount: mountGhp },
-  console: { title: 'Console', sub: 'the ten tested operator panels — read-only', mount: mountConsole },
+  // R50/#101: 'console' removed from the registry per owner direction (file retained, unmounted).
   settings: { title: 'Settings', sub: 'your OpenRouter key — stays on your machine', mount: mountSettings },
 };
 
@@ -139,14 +140,13 @@ const TABS_BUILTIN = {
     { organ: 'auma', label: 'Auma · Lingwa', gist: 'learn her language — a game she grew' },
   ],
   system: [
-    // R34 roster ■: AUMLOK, AURA, KIRA, SPATIAL MAP, GHP, CONSOLE, SETTINGS.
+    // R34 roster ■, minus CONSOLE (R50/#101, owner direction): AUMLOK, AURA, KIRA, SPATIAL MAP, GHP, SETTINGS.
     // #357: AUMLOK then AURA lead System — the identity gate, then the living figure it grows.
     { organ: 'aumlok', label: 'AUMLOK', gist: 'the gate — where your signature lands' },
     { organ: 'aura', label: 'AURA', gist: 'your coherence, taking shape — evidence, never authority' },
     { organ: 'kira', label: 'Kira Memory', gist: 'atoms · receipts · recall' },
     { organ: 'map', label: 'Spatial Map', gist: 'the codebase as a physics grid' },
     { organ: 'ghp', label: 'Golden Horizon', gist: 'the boundary research — honest experiments and scoreboard' },
-    { organ: 'console', label: 'Console', gist: 'the ten tested operator panels — read-only' },
     { organ: 'settings', label: 'Settings', gist: 'add your OpenRouter key — talk to Auma' },
   ],
   yours: [

@@ -1,0 +1,606 @@
+{
+  "schema": "aukora-arc3-dojo-bundle-v1",
+  "coreHash": "1e614cdaf3555ca3d13f0e886c8fcd3f85aaa3fe79d885a8a5da891c3c9b1cdb",
+  "core": {
+    "schema": "aukora-arc3-dojo-episode-v1",
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "donorCode": {
+      "branch": "fable/arc3-reasoning-engine-20260710",
+      "commit": "e5768a2fcf974a564ef842551a27bbb6287e6c8b",
+      "files": {
+        "engine.js": "7bf144617741700350b9750f68bf9104e84e5ffc",
+        "mock-arcade.js": "a609716a15a3d3ce75d3c63db470c1eb6a85e652"
+      }
+    },
+    "world": {
+      "gameId": "mk-ember-2a",
+      "winLevels": 2,
+      "version": "onboard-arcade-v1"
+    },
+    "seeds": {
+      "arcadeSeed": 42,
+      "policySeed": 7
+    },
+    "budget": {
+      "maxSteps": 400
+    },
+    "result": {
+      "terminal": "WIN",
+      "won": true,
+      "levelsCompleted": 2,
+      "steps": 34,
+      "exhaustedBudget": false,
+      "normalizeRejections": 0
+    },
+    "steps": [
+      {
+        "step": 0,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": -1,
+        "hashBefore": "7b2949cd",
+        "hashAfter": "49a8ff85",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 1,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "49a8ff85",
+        "hashAfter": "c62cd69d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 2,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "c62cd69d",
+        "hashAfter": "20d43905",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 3,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "20d43905",
+        "hashAfter": "56fcf54d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 4,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "56fcf54d",
+        "hashAfter": "a5d453d5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 5,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "a5d453d5",
+        "hashAfter": "48596b7d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 6,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "48596b7d",
+        "hashAfter": "54a5dc65",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 7,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "54a5dc65",
+        "hashAfter": "7a667d9d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 8,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "moving toward the one-of-a-kind island at (13,44) — ACTION4 is my left",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "7a667d9d",
+        "hashAfter": "bf32c4c5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 9,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "bf32c4c5",
+        "hashAfter": "a86386cd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 10,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "a86386cd",
+        "hashAfter": "050a7565",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 11,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "moving toward the one-of-a-kind island at (13,44) — ACTION4 is my left",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "050a7565",
+        "hashAfter": "c729221d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 12,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "c729221d",
+        "hashAfter": "0a397675",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 13,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "0a397675",
+        "hashAfter": "9b8c75ed",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 14,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "moving toward the one-of-a-kind island at (13,44) — ACTION4 is my left",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "9b8c75ed",
+        "hashAfter": "54860605",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 15,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "54860605",
+        "hashAfter": "98d49fcd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 16,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "98d49fcd",
+        "hashAfter": "0c9731a5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 17,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "moving toward the one-of-a-kind island at (13,44) — ACTION4 is my left",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "0c9731a5",
+        "hashAfter": "0d48609d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 18,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "0d48609d",
+        "hashAfter": "a252cd05",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 19,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "a252cd05",
+        "hashAfter": "94ea6b4d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 20,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "moving toward the one-of-a-kind island at (13,44) — ACTION4 is my left",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "94ea6b4d",
+        "hashAfter": "0a1e79f5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 21,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "holding my heading toward the goal — ACTION4 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "0a1e79f5",
+        "hashAfter": "2ea4c911",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 22,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (57,47) — ACTION3 is my right",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 783,
+        "hashBefore": "2ea4c911",
+        "hashAfter": "9cc519e9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 23,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "9cc519e9",
+        "hashAfter": "dd69f5e1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 24,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "dd69f5e1",
+        "hashAfter": "51bc5d49",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 25,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (57,47) — ACTION3 is my right",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "51bc5d49",
+        "hashAfter": "535a3491",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 26,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "535a3491",
+        "hashAfter": "fc9d2e39",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 27,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "fc9d2e39",
+        "hashAfter": "85044ac1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 28,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (57,47) — ACTION3 is my right",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "85044ac1",
+        "hashAfter": "94a1c0a9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 29,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "94a1c0a9",
+        "hashAfter": "8e8dfce1",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 30,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "holding my heading toward the goal — ACTION3 is my right",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "8e8dfce1",
+        "hashAfter": "7af1e909",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 31,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "moving toward the one-of-a-kind island at (57,47) — ACTION1 is my up",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "7af1e909",
+        "hashAfter": "22e931d9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 32,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "holding my heading toward the goal — ACTION1 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "22e931d9",
+        "hashAfter": "2e92c4f9",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 33,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "moving toward the one-of-a-kind island at (57,47) — ACTION3 is my right",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 17,
+        "hashBefore": "2e92c4f9",
+        "hashAfter": "3304697c",
+        "state": "WIN",
+        "levelsCompleted": 2
+      }
+    ],
+    "frameHashChain": [
+      "7b2949cd",
+      "49a8ff85",
+      "c62cd69d",
+      "20d43905",
+      "56fcf54d",
+      "a5d453d5",
+      "48596b7d",
+      "54a5dc65",
+      "7a667d9d",
+      "bf32c4c5",
+      "a86386cd",
+      "050a7565",
+      "c729221d",
+      "0a397675",
+      "9b8c75ed",
+      "54860605",
+      "98d49fcd",
+      "0c9731a5",
+      "0d48609d",
+      "a252cd05",
+      "94ea6b4d",
+      "0a1e79f5",
+      "2ea4c911",
+      "9cc519e9",
+      "dd69f5e1",
+      "51bc5d49",
+      "535a3491",
+      "fc9d2e39",
+      "85044ac1",
+      "94a1c0a9",
+      "8e8dfce1",
+      "7af1e909",
+      "22e931d9",
+      "2e92c4f9",
+      "3304697c"
+    ]
+  },
+  "session": {
+    "guidPresent": true,
+    "note": "donor Math.random session key — excluded from evidence"
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "officialArcAgi3": false,
+    "grantsAuthority": false,
+    "network": "none (in-process; onboard arcade, no key, no benchmark API)",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}

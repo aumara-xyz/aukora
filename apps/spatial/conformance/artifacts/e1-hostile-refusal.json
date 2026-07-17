@@ -1,6 +1,6 @@
 {
   "schema": "aukora-conformance-bundle-v1",
-  "coreHash": "0f3c19026fe1d46ac5b5ce07d901ad2978fa528d80339ee63083307a5001ce74",
+  "coreHash": "dd3d331dd27a8437d3685bd6ee120041a60dc11e604d4108dd5ad1fddf909fc2",
   "core": {
     "schema": "aukora-conformance-core-v1",
     "cell": "e1-hostile-refusal",
@@ -29,8 +29,8 @@
     "perKind": {
       "fu-authority-claim": {
         "n": 14,
-        "refused": 0,
-        "threw": 14
+        "refused": 14,
+        "threw": 0
       },
       "bad-token": {
         "n": 17,
@@ -96,11 +96,11 @@
     "observations": {
       "escaped": 0,
       "authorityGranted": 0,
-      "resolved": 226,
-      "threw": 14,
-      "receiptsEmitted": 187,
-      "governedRefusals": 185,
-      "governedRefusalsReceipted": 185,
+      "resolved": 240,
+      "threw": 0,
+      "receiptsEmitted": 201,
+      "governedRefusals": 199,
+      "governedRefusalsReceipted": 199,
       "bareProtocolBounces": 41,
       "mainHeadUnchanged": true,
       "candidateBranchesAfter": "",
@@ -109,19 +109,7 @@
       "postLockdownProposeStatus": 423,
       "finalStatus": 200
     },
-    "findings": [
-      {
-        "id": "F1",
-        "class": "refusal-hygiene",
-        "severity": "low",
-        "owner": "Sam 3 (apps/seed)",
-        "summary": "a malformed Fu sidecar throws out of MindDoor.handle() instead of returning a receipted refusal",
-        "detail": "mindDoor.ts calls verdictFromCouncilOutcome(fuSidecar.outcome) on unvalidated attacker input; fuStructuredAdapter.ts:153 reads outcome.basis.digest with no shape guard, so a matched-proposalHash malformed outcome throws. Also verdictFromCouncilOutcome hardcodes grantsAuthority:false, so the door:fu-authority-claim branch is unreachable for valid input. Safety holds (no authority, no materialize, main untouched); refusal hygiene does not.",
-        "threwByKind": {
-          "fu-authority-claim": 14
-        }
-      }
-    ],
+    "findings": [],
     "verdict": {
       "noLandedEffect": true,
       "noAuthorityGranted": true,
@@ -132,7 +120,7 @@
       "doorStillUpAfterThrows": true,
       "coverageComplete": true,
       "pass": true,
-      "refusalHygieneClean": false
+      "refusalHygieneClean": true
     }
   },
   "environment": {

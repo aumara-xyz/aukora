@@ -50,6 +50,9 @@ export interface SettleResult {
   readonly pushed: number;
   /** Workflow ids whose push lost an OCC race server-side; their cache entries were re-hydrated. */
   readonly divergence: readonly string[];
+  /** R50: workflow ids whose push could not REACH the backend (io threw). They REMAIN pending — a later
+   * settle() retries them; nothing is silently lost on a transient local-backend outage. */
+  readonly unavailable: readonly string[];
 }
 
 export class ConvexWorkflowStore {
@@ -90,10 +93,21 @@ export class ConvexWorkflowStore {
   /** Push queued saves through the authoritative OCC mutation. The durability point. */
   async settle(): Promise<SettleResult> {
     const divergence: string[] = [];
+    const unavailable: string[] = [];
     let pushed = 0;
     while (this.pending.length > 0) {
-      const { state, expectedVersion } = this.pending.shift()!;
-      const result = await this.io.save(state, expectedVersion);
+      // R50 fix (Fugu falsification): PEEK, don't shift — an io THROW (backend unreachable) must leave the
+      // item pending so a retry settle() pushes it. Before this fix the item was shifted first and a transient
+      // outage silently dropped the save (green cache, nothing durable).
+      const { state, expectedVersion } = this.pending[0];
+      let result: StoreSaveResult;
+      try {
+        result = await this.io.save(state, expectedVersion);
+      } catch {
+        unavailable.push(state.workflowId);
+        break; // stop the drain; order is preserved for the retry
+      }
+      this.pending.shift();
       if (result.ok) {
         pushed += 1;
         continue;
@@ -102,7 +116,7 @@ export class ConvexWorkflowStore {
       divergence.push(state.workflowId);
       await this.hydrate(state.workflowId);
     }
-    return { ok: divergence.length === 0, pushed, divergence };
+    return { ok: divergence.length === 0 && unavailable.length === 0, pushed, divergence, unavailable };
   }
 
   /** Unsettled saves lost on a crash — the machine's restart reconciliation handles these honestly. */

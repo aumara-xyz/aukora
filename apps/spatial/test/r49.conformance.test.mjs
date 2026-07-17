@@ -56,7 +56,10 @@ describe('R49 · E2 — supervisor lifecycle: envelope closure, restart-safety, 
 });
 
 describe('R49 · E3 — KIRA content-free chain: growth, governed forgetting, no-resurrection, tamper', () => {
-  it('grows monotonically, forgets under owner authority, refuses resurrection, and detects tamper', async () => {
+  // 30s budget: the R49-repair probe recalls by content around every governed forget (500 ingests ×
+  // 60 forgets), which crossed vitest's 5s default on slow CI runners (main run 2026-07-17T07:45Z,
+  // Node 20 job — 6.1s). Deterministic work, not a hang; the timeout only guards a real wedge.
+  it('grows monotonically, forgets under owner authority, refuses resurrection, and detects tamper', { timeout: 30_000 }, async () => {
     const { core, verdict } = await runCell(e3, { network: 'none (in-memory store)' });
     expect(verdict.growthMonotonic).toBe(true);
     expect(verdict.integrityAfterEveryOp).toBe(true);

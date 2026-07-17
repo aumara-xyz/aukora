@@ -176,7 +176,7 @@ describe('propose / materialize — explicit owner, fresh AUMLOK, plan-only on r
 
     const cp = candidatePayloadForProposals([p]);
     const candidateAuth = h.owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: 'd-2-cand', issuedAt: NOW_ISO, expiresAt: null });
-    const mat = await h.door.handle(post('/api/materialize', { proposalInput: p, nonce: 'd-2', auth: authFor(h.owner, p, { nonce: 'd-2' }), candidateAuth, ownerArmed: true, explanation: 'owner asked' }));
+    const mat = await h.door.handle(post('/api/materialize', { proposalInput: p, nonce: 'd-2', auth: authFor(h.owner, p, { nonce: 'd-2' }), candidateAuth, ownerArmed: true, headBefore, explanation: 'owner asked' }));
     expect(mat.status).toBe(200);
     expect(mat.json.phase).toBe('candidate-materialized');
     expect(String(mat.json.candidateBranch)).toMatch(/^candidate\//);
@@ -197,7 +197,8 @@ describe('propose / materialize — explicit owner, fresh AUMLOK, plan-only on r
     const p = makeProposal({ newContent: '// door bad-sig' });
     const good = authFor(owner, p, { nonce: 'd-3' });
     const bad = { ...good, signatures: { ...good.signatures, ed25519: 'ab'.repeat(64) } };
-    const res = await door.handle(post('/api/materialize', { proposalInput: p, nonce: 'd-3', auth: bad }));
+    const headNow = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+    const res = await door.handle(post('/api/materialize', { proposalInput: p, nonce: 'd-3', auth: bad, headBefore: headNow }));
     expect(res.status).toBe(409);
     expect(res.json.phase).toBe('refused-at-owner');
     expect(res.json.candidateBranch).toBeNull();

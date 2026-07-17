@@ -212,9 +212,9 @@
       "path": "apps/spatial/app/shell.js",
       "donorPath": "spatial/app/shell.js",
       "donorBlob": "4599340d34b1f8346660c29640d8ce049c84ab70",
-      "sha256": "be1a0f169670d571020701133cbff762672f234ebd57ea02418bb4f9d1ad1bb2",
+      "sha256": "53beef47f04b5beac3c82778e305751a7378c3ff6026edda7de238b43b5bad52",
       "status": "ADAPTED",
-      "note": "registry/menu subtracted to the roster + CONSOLE import + dead imports removed (R37); openrouter read same-origin (R39)"
+      "note": "registry/menu subtracted to the roster (R37); openrouter read same-origin (R39); R50/#101 owner direction: CONSOLE removed from the visible roster (registry+menu+import), console.js retained on disk"
     },
     {
       "path": "apps/spatial/app/style.css",
