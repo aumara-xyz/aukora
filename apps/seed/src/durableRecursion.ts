@@ -68,31 +68,46 @@ const STATE_KEYS = [
 ] as const;
 const PHASES: ReadonlySet<string> = new Set(['awaiting-owner', 'applied', 'refused', 'cancelled']);
 
-/** Exact-shape validation of a persisted state. Total; a malformed or authority-claiming state is refused. */
-export function validateWorkflowState(x: unknown): WorkflowStateV1 | null {
-  if (x === null || typeof x !== 'object' || Array.isArray(x)) return null;
+/** A named validation verdict: the FIELD label of the first failing check (labels only — never values). */
+export type WorkflowStateVerdict =
+  | { readonly ok: true; readonly state: WorkflowStateV1 }
+  | { readonly ok: false; readonly field: string };
+
+/**
+ * Exact-shape validation that NAMES the first failing check (#87 item b: "the refusal will name itself").
+ * Total; field labels are a closed content-free vocabulary — the refused value never leaves this function.
+ */
+export function explainWorkflowState(x: unknown): WorkflowStateVerdict {
+  const no = (field: string): WorkflowStateVerdict => ({ ok: false, field });
+  if (x === null || typeof x !== 'object' || Array.isArray(x)) return no('not-an-object');
   const r = x as Record<string, unknown>;
   const keys = Reflect.ownKeys(r);
-  if (keys.length !== STATE_KEYS.length || keys.some((k) => typeof k !== 'string' || !(STATE_KEYS as readonly string[]).includes(k))) return null;
-  if (r.schema !== 'aukora-recursion-workflow-v1') return null;
-  if (typeof r.workflowId !== 'string' || !isHex64(r.workflowId)) return null;
-  if (!Number.isSafeInteger(r.version) || (r.version as number) < 1) return null;
-  if (typeof r.phase !== 'string' || !PHASES.has(r.phase)) return null;
-  if (typeof r.intentId !== 'string' || !isHex64(r.intentId)) return null;
-  if (typeof r.draftHash !== 'string' || !isHex64(r.draftHash)) return null;
-  if (typeof r.nonce !== 'string' || r.nonce.length === 0 || r.nonce.length > 128) return null;
-  if (r.councilVerdict !== null && r.councilVerdict !== 'advisory-pass' && r.councilVerdict !== 'advisory-hold') return null;
-  if (r.councilEvidenceDigest !== null && (typeof r.councilEvidenceDigest !== 'string' || !isHex64(r.councilEvidenceDigest))) return null;
-  if (typeof r.stage !== 'string' || r.stage.length === 0 || r.stage.length > 64) return null;
-  if (!Array.isArray(r.refusals) || r.refusals.some((s) => typeof s !== 'string' || s.length > 256)) return null;
-  if (r.receiptHash !== null && (typeof r.receiptHash !== 'string' || !isHex64(r.receiptHash))) return null;
-  if (typeof r.ownerVerified !== 'boolean') return null;
-  if (typeof r.createdAtIso !== 'string' || typeof r.updatedAtIso !== 'string') return null;
-  if (r.advisoryOnly !== true || r.grantsAuthority !== false) return null;
+  if (keys.length !== STATE_KEYS.length || keys.some((k) => typeof k !== 'string' || !(STATE_KEYS as readonly string[]).includes(k))) return no('key-set');
+  if (r.schema !== 'aukora-recursion-workflow-v1') return no('schema');
+  if (typeof r.workflowId !== 'string' || !isHex64(r.workflowId)) return no('workflowId');
+  if (!Number.isSafeInteger(r.version) || (r.version as number) < 1) return no('version');
+  if (typeof r.phase !== 'string' || !PHASES.has(r.phase)) return no('phase');
+  if (typeof r.intentId !== 'string' || !isHex64(r.intentId)) return no('intentId');
+  if (typeof r.draftHash !== 'string' || !isHex64(r.draftHash)) return no('draftHash');
+  if (typeof r.nonce !== 'string' || r.nonce.length === 0 || r.nonce.length > 128) return no('nonce');
+  if (r.councilVerdict !== null && r.councilVerdict !== 'advisory-pass' && r.councilVerdict !== 'advisory-hold') return no('councilVerdict');
+  if (r.councilEvidenceDigest !== null && (typeof r.councilEvidenceDigest !== 'string' || !isHex64(r.councilEvidenceDigest))) return no('councilEvidenceDigest');
+  if (typeof r.stage !== 'string' || r.stage.length === 0 || r.stage.length > 64) return no('stage');
+  if (!Array.isArray(r.refusals) || r.refusals.some((s) => typeof s !== 'string' || s.length > 256)) return no('refusals');
+  if (r.receiptHash !== null && (typeof r.receiptHash !== 'string' || !isHex64(r.receiptHash))) return no('receiptHash');
+  if (typeof r.ownerVerified !== 'boolean') return no('ownerVerified');
+  if (typeof r.createdAtIso !== 'string' || typeof r.updatedAtIso !== 'string') return no('timestamps');
+  if (r.advisoryOnly !== true || r.grantsAuthority !== false) return no('authority-flags');
   // Free-text fence: stage + refusals can never carry secret/authority material into the store.
   const freeText = { stage: r.stage, refusals: r.refusals };
-  if (scanForbiddenKeys(freeText).length || scanForbiddenValues(freeText).length || scanForbiddenAuthorityClaims(freeText).length) return null;
-  return r as unknown as WorkflowStateV1;
+  if (scanForbiddenKeys(freeText).length || scanForbiddenValues(freeText).length || scanForbiddenAuthorityClaims(freeText).length) return no('free-text-fence');
+  return { ok: true, state: r as unknown as WorkflowStateV1 };
+}
+
+/** Exact-shape validation of a persisted state. Total; a malformed or authority-claiming state is refused. */
+export function validateWorkflowState(x: unknown): WorkflowStateV1 | null {
+  const verdict = explainWorkflowState(x);
+  return verdict.ok ? verdict.state : null;
 }
 
 export type SaveResult = { readonly ok: true } | { readonly ok: false; readonly reason: 'conflict' | 'refused' };
@@ -125,6 +140,7 @@ export class InMemoryWorkflowStore implements WorkflowStore {
   }
 }
 
+/** Plus the open family `workflow:state-refused:<field>` — a NAMED validation refusal (never a conflict). */
 export type DurableReasonClass =
   | 'workflow:ok'
   | 'workflow:malformed-state'
@@ -207,6 +223,14 @@ export class DurableRecursion {
       const winner = this.store.load(workflowId);
       const valid = winner === null ? null : validateWorkflowState(winner);
       if (valid !== null) return this.outcome('workflow:ok', 'resumed concurrently-created workflow', valid, null, true);
+      // #87: a validator REFUSAL is never a conflict — with no stored row, an OCC conflict is impossible here.
+      // Name the exact failing field; if OUR validator passes the state the store refused, the divergence is the
+      // store's own validator ('store-validator').
+      if (saved.reason === 'refused') {
+        const verdict = explainWorkflowState(state);
+        const field = verdict.ok ? 'store-validator' : verdict.field;
+        return this.outcome(`workflow:state-refused:${field}`, `refused: workflow state failed validation before persist (${field})`, null);
+      }
       return this.outcome('workflow:store-conflict', 'refused: store conflict on create', null);
     }
     return this.outcome(pass ? 'workflow:ok' : stage, pass ? 'awaiting owner authorization' : 'refused at advisory review (receipted)', state, null, pass);
@@ -269,6 +293,12 @@ export class DurableRecursion {
       const winner = this.store.load(prev.workflowId);
       const valid = winner === null ? null : validateWorkflowState(winner);
       if (valid !== null && valid.phase !== 'awaiting-owner') return this.outcome('workflow:already-terminal', 'no-op: a concurrent writer terminalized first', valid, gate, true);
+      // #87 symmetry: a refused save on update is a validation refusal (named field), never an OCC conflict.
+      if (saved.reason === 'refused') {
+        const verdict = explainWorkflowState(next);
+        const field = verdict.ok ? 'store-validator' : verdict.field;
+        return this.outcome(`workflow:state-refused:${field}`, `refused: workflow state failed validation before persist (${field})`, valid, gate);
+      }
       return this.outcome('workflow:store-conflict', 'refused: optimistic-concurrency conflict — reload and retry', valid, gate);
     }
     const ok = next.phase === 'applied' || (next.phase === 'awaiting-owner');
