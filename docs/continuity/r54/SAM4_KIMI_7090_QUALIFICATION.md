@@ -100,3 +100,34 @@ Until such a packet exists, no 7090 row can be classified — I will not qualify
 3. **Keep the README's "substrate/organism" claims out of public README/CLAIMS** until that evidence exists
    (the branch's own audit already declines to promote them — hold that line).
 4. **Block the 7090 row** pending an exact handoff packet (spec above).
+
+---
+
+## AMENDMENT — R54 research-evidence reconciliation (docs only)
+
+The owner's tree inspection (and my independent re-check) find **no `stress.test.ts` or `deep.test.ts` under
+`convergence/`** — the only executable evidence in the public branch is `convergence/convergence.run.ts`
+(169 inline assertion-shaped calls; no import of any stress/deep suite). The claimed "617/617 passing
+(156 convergence + 164 stress + 297 deep)" therefore splits as follows:
+
+| evidence class | count | reproducible from the public branch? | disposition |
+|---|---|---|---|
+| **Committed / reproducible** | **156** (≈169 inline asserts in `convergence.run.ts`) | **YES** — run `tsx convergence/convergence.run.ts` | internal-consistency self-tests only; not superiority, not donor continuity |
+| **Externally reported, ABSENT** | **461** (164 stress + 297 deep) | **NO** — no `stress.test.ts`/`deep.test.ts` blob exists in `convergence/kimi-overnight` | uncorroborated; **do not credit** until the source files are committed and re-run first-hand |
+| **New φ / index / swarm / ARC benchmarks** | — | **NO** — no benchmark harness, dataset, or verifier in the tree | **external lab evidence, pending source + dataset + verifier import**; perf claims (O(1) vs O(n), "faster", "self-optimizing") remain asserted, unmeasured |
+| **Canonical/donor duplicates (already established)** | — | n/a | `council` SUPERSEDED by `packages/council`; `decay` `tilde`/`decayShear` already canonical in `aukoraFuGlyph.ts` (see matrix above) |
+| **Branch compile / import gaps** | — | n/a | dangling imports (`./envelope.js`, `../../memory/src/`) — the bundle does not compile against the canonical package layout (see Import boundaries above) |
+
+**Net:** at most **156/617** of the advertised assertions are reproducible from the public branch, and even those
+prove only internal consistency. **461/617 are absent** and the benchmark superiority claims are external evidence
+with no importable source/dataset/verifier. Nothing here changes the disposition: **REJECT canonical adoption;
+RESEARCH_CANDIDATE for an offline Nebius lab** where the 461 absent tests + the benchmarks would have to be
+supplied and re-run first-hand.
+
+## 7090 (item D) — tracked at Symbiote #405, still BLOCKED
+
+The 7090 donor lane is now tracked at `aumara-xyz/aukora-symbiote#405` ("[R54 SKUNKWORKS] 7090 memory/Spatial
+donor lane + governed local-mind handoff"). As of this amendment it is **OPEN with no packet posted** — so no
+7090 delta can be qualified yet. Per the directive, I will qualify **only the sanitized delta from #405's exact
+branch/commit/blob/test/secret-free packet** when it appears; **nothing from the local `:7090` donor lane enters
+canonical Aukora by summary or chat alone.** The required packet contents are the six items specified above.
