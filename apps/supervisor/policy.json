@@ -15,14 +15,26 @@
   },
   "services": [
     {
+      "name": "convex-backend",
+      "phase": 0,
+      "port": 3210,
+      "workspaceCmd": ["node", "apps/brain/scripts/convexHold.mjs"],
+      "probePath": "/",
+      "identityMarker": "",
+      "dependsOn": [],
+      "gracefulStopMs": 3000,
+      "note": "R47 convergence: the anonymous LOCAL self-hosted Convex backend, owned here (previously organism-ctl's). Empty identityMarker = any HTTP response on 3210 counts as alive (the backend serves no stable marker); squat defense still applies on stop (recorded PID only)."
+    },
+    {
       "name": "brain-door",
       "phase": 1,
       "port": 7141,
-      "workspaceCmd": null,
-      "external": true,
+      "workspaceCmd": ["node", "apps/brain/scripts/doorHold.mjs"],
       "probePath": "/health",
       "identityMarker": "door",
-      "note": "Sam 2's canonical brain door — supervised as a DEPENDENCY probe only (external:true = never started/stopped by this supervisor); its Convex backend is its own lifecycle"
+      "dependsOn": ["convex-backend"],
+      "gracefulStopMs": 2000,
+      "note": "R47 convergence: Sam 2's canonical brain door, now OWNED by this supervisor (previously external:true + organism-ctl-started). Bind-first resilience law unchanged."
     },
     {
       "name": "mind-door",

@@ -18,9 +18,14 @@
 //   :3210/:3211 the local Convex backend behind that door (dev-only, loopback).
 // The donor stack stays untouched and independently usable.
 import { createServer } from "node:http";
+import { makeReadSpine } from "./readSpine.mjs"; // R47: donor GET/HEAD-only workbench read spine
 import { readFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
-import { dirname, join, normalize, extname } from "node:path";
+import { dirname, join, normalize, extname, resolve, sep } from "node:path";
+
+const execFileP = promisify(execFile);
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const HOST = process.env.HOST || "127.0.0.1";
@@ -136,9 +141,55 @@ async function composeProjection() {
 
 const JSON_HEAD = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" };
 
+// ── R47 WORKBENCH SEAMS ────────────────────────────────────────────────────────────────────────────
+// The donor shell already knows how to render the inside-out loop (aumlok-signing-assistant-v1,
+// /api/kira, /api/status). These seams feed those EXACT donor contracts from the new organism's real
+// doors. The launcher keeps a DISPLAY-ONLY ledger of proposals it has proxied (a projection of traffic,
+// never authority): rows carry plan fields and hard-false literals only — no key bytes, no signatures.
+const REPO_ROOT = resolve(ROOT, "..", "..");
+const proposalLedger = new Map(); // proposalHash → display row + the proposalInput needed to re-submit
+
+async function git(...args) {
+  try { const { stdout } = await execFileP("git", args, { cwd: REPO_ROOT, timeout: 4000 }); return stdout.trim(); }
+  catch { return null; }
+}
+
+// Repo read/search fence (donor #44 law): repo-scoped, no traversal/symlink escape, deny secret-shaped
+// paths, bounded output, GET-only. A refused read is loud, never silent.
+const REPO_DENY = /(^|\/)\.(env|git)|\.pem$|\.key$|secrets?|\.venv|node_modules/i;
+function fencedRepoPath(rel) {
+  if (typeof rel !== "string" || rel.length === 0 || rel.length > 512) return null;
+  const abs = resolve(REPO_ROOT, rel);
+  if (!abs.startsWith(REPO_ROOT + sep)) return null;      // traversal escape
+  if (REPO_DENY.test(rel) || REPO_DENY.test(abs)) return null; // secret-shaped
+  return abs;
+}
+
+function ledgerRow(p) {
+  // display-only projection — refreshable, restart-lossy (the ledger mirrors proxied traffic, not truth;
+  // durable truth stays in door receipts/workflows).
+  return {
+    proposalHash: p.proposalHash,
+    goal: p.goal,
+    files: p.files,
+    valid: p.valid,
+    riskHint: p.riskHint,
+    invalidReason: p.invalidReason,
+    anyShrinkWarning: false,
+    preview: p.preview,
+    signCommand: p.signCommand,
+    applyHint: p.applyHint,
+  };
+}
+
 function makeServer() {
+  // R47: the donor read spine — GET/HEAD-only projections (fingerprint, confined repo sight, loop, KIRA
+  // recall with citations, workflow/receipt/event proxies). It never reads AUKORA_DOOR_TOKEN.
+  const spine = makeReadSpine({ repoRoot: join(ROOT, "..", ".."), doorBase: BRAIN_DOOR });
   return createServer(async (req, res) => {
-    let pathname = decodeURIComponent(new URL(req.url, `http://${req.headers.host}`).pathname);
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    let pathname = decodeURIComponent(parsedUrl.pathname);
+    if (spine.canHandle(pathname)) return spine.handle(req, res, parsedUrl);
     // Tie an AbortController to client disconnect: a browser barge-in that aborts its fetch closes this
     // socket, which aborts req.signal, which cancels the upstream mind-door fetch (work/billing stops).
     const ac = new AbortController();
@@ -190,6 +241,63 @@ function makeServer() {
         }
         return res.end();
       }
+      // R47: /api/propose — proxied to the governed door WITH the token; the response's PLAN fields are
+      // captured into the display ledger so the donor AUMLOK surface can show the pending intent.
+      if (pathname === "/api/propose") {
+        try {
+          const body = await readJsonBody(req);
+          const { status, json } = await postMind("/api/propose", body, clientSignal);
+          const pi = body && body.proposalInput && typeof body.proposalInput === "object" ? body.proposalInput : null;
+          if (json && typeof json.proposalHash === "string" && pi) {
+            proposalLedger.set(json.proposalHash, {
+              proposalInput: pi, nonce: typeof body.nonce === "string" ? body.nonce : "",
+              row: ledgerRow({
+                proposalHash: json.proposalHash,
+                goal: String(pi.id ?? "(intent)"),
+                files: [String(pi.targetPath ?? "?")],
+                valid: json.ok === true,
+                riskHint: "phase " + String(json.phase ?? "?") + " · " + String(json.reasonClass ?? "")
+                  + (body.fuSidecar && body.fuSidecar.outcome ? " · Fu: advisory (bound " + String(json.proposalHash).slice(0, 8) + "…)" : " · Fu: none supplied"),
+                invalidReason: json.ok === true ? null : String(json.text ?? json.error ?? "refused"),
+                preview: [
+                  "workflow " + String(json.workflowId ?? "—"),
+                  "rehearsal receipt " + String(json.rehearsalReceiptPrefix ?? "—") + "…",
+                  "tests/rehearsal: " + (json.ok === true ? "rehearsed green (phase " + String(json.phase) + ")" : "refused: " + String(json.reasonClass)),
+                  "signed:false pushed:false touchedMain:false",
+                ],
+                signCommand: "# produce the owner authorization OUT of the browser (terminal, key never here):\nnpx tsx apps/seed/scripts/owner-authorize.ts --proposal " + String(json.proposalHash),
+                applyHint: "then paste the authorization JSON into this card's approve box (submits to /api/aumlok/approve → door /api/materialize)",
+              }),
+            });
+          }
+          res.writeHead(status, JSON_HEAD);
+          return res.end(JSON.stringify(json));
+        } catch (e) {
+          res.writeHead(502, JSON_HEAD);
+          return res.end(JSON.stringify({ error: "door unreachable", detail: String(e && e.message ? e.message : e).slice(0, 120) }));
+        }
+      }
+      // R47: /api/aumlok/approve — the UI submits ALREADY-PRODUCED owner authorization (candidateAuth
+      // JSON from the terminal ceremony). The launcher reconstitutes the ledger's proposalInput and
+      // relays to the door's explicit materialize route. It never creates, holds, or logs key material.
+      if (pathname === "/api/aumlok/approve") {
+        try {
+          const body = await readJsonBody(req);
+          const entry = typeof body.proposalHash === "string" ? proposalLedger.get(body.proposalHash) : null;
+          if (!entry) { res.writeHead(404, JSON_HEAD); return res.end(JSON.stringify({ error: "unknown proposalHash (the display ledger is per-boot; re-propose first)", grantsAuthority: false })); }
+          if (!body.candidateAuth || typeof body.candidateAuth !== "object") { res.writeHead(400, JSON_HEAD); return res.end(JSON.stringify({ error: "candidateAuth (owner-produced authorization JSON) required — this surface never creates it", grantsAuthority: false })); }
+          const { status, json } = await postMind("/api/materialize", {
+            proposalInput: entry.proposalInput, nonce: entry.nonce || "r47-approve-" + String(body.proposalHash).slice(0, 8),
+            candidateAuth: body.candidateAuth, ownerArmed: body.ownerArmed === true,
+          }, clientSignal);
+          if (json && json.ok === true) proposalLedger.delete(body.proposalHash);
+          res.writeHead(status, JSON_HEAD);
+          return res.end(JSON.stringify(json));
+        } catch (e) {
+          res.writeHead(502, JSON_HEAD);
+          return res.end(JSON.stringify({ error: "door unreachable", detail: String(e && e.message ? e.message : e).slice(0, 120) }));
+        }
+      }
       // /api/lockdown — owner-text intercept. Proxy so the UI can engage lockdown and re-read state at once.
       if (pathname === "/api/lockdown") {
         try { const { status, json } = await postMind("/api/lockdown", await readJsonBody(req), clientSignal); res.writeHead(status, JSON_HEAD); return res.end(JSON.stringify(json)); }
@@ -222,6 +330,71 @@ function makeServer() {
     if (pathname === "/api/models") {
       res.writeHead(200, JSON_HEAD);
       return res.end(JSON.stringify({ models: [{ id: "memory-fallback", label: "Model-free · KIRA memory", mode: "model-free-memory-fallback" }], default: "memory-fallback", mode: "model-free-memory-fallback", grantsAuthority: false }));
+    }
+    // R47: /api/aumlok — the donor signing-assistant contract, fed from the display ledger + live door
+    // status. Never key bytes; keyId is a FINGERPRINT slot the new organism does not fill yet (absent →
+    // the organ's own honest '—'). The donor organ falls back to its labelled mock if this errors.
+    if (pathname === "/api/aumlok") {
+      let doorUp = false, events = 0;
+      try { const d = await fetch(`${MIND_DOOR}/api/door`, { signal: AbortSignal.timeout(1500) }).then((x) => x.json()); doorUp = d.enabled === true; events = Number(d.events ?? 0); } catch { /* down */ }
+      res.writeHead(200, JSON_HEAD);
+      return res.end(JSON.stringify({
+        schema: "aumlok-signing-assistant-v1",
+        status: {
+          keyPresent: false, // truthful: the NEW organism holds no owner key anywhere near this surface
+          keyId: "custody: owner terminal (never here)",
+          publicRootPinned: doorUp,
+          signerVerifierSplitIntact: true,
+          appliedProposalCount: 0,
+          rehearsalReceiptCount: events,
+        },
+        pending: [...proposalLedger.values()].map((e) => e.row),
+        grantsAuthority: false,
+        note: "display ledger of proposals proxied this boot; durable truth = door receipts/workflows",
+      }));
+    }
+    // R47: /api/kira — the donor KIRA-organ contract from the canonical brain door (live reads only).
+    if (pathname === "/api/kira") {
+      try {
+        const [snap, health] = await Promise.all([getDoor("/snapshot"), getDoor("/health")]);
+        const h = (health && health.backend) || {};
+        res.writeHead(200, JSON_HEAD);
+        return res.end(JSON.stringify({
+          present: true, schema: "aukora-brain-door-live",
+          updatedAt: new Date().toISOString(),
+          atomCount: snap && (snap.liveCount ?? 0), receiptCount: snap && (snap.chainLength ?? h.chainLength ?? 0),
+          chainLinked: h.ok === true, grantsAuthority: false,
+        }));
+      } catch { res.writeHead(200, JSON_HEAD); return res.end(JSON.stringify({ present: false, note: "brain door :7141 unreachable — start it and reload" })); }
+    }
+    // R47: /api/status — repo fingerprint TRUTH (read-only git), in the donor status-card shape.
+    if (pathname === "/api/status") {
+      const [head, branch, dirty] = await Promise.all([git("rev-parse", "HEAD"), git("rev-parse", "--abbrev-ref", "HEAD"), git("status", "--porcelain")]);
+      const dirtyCount = dirty === null ? null : (dirty === "" ? 0 : dirty.split("\n").length);
+      const ready = head !== null;
+      const text = "STATE: " + (ready ? "REPO-SIGHT (read-only fingerprint)" : "GIT-UNAVAILABLE")
+        + "\n- head: " + String(head) + "\n- branch: " + String(branch) + "\n- dirty files: " + String(dirtyCount)
+        + "\n- NOT promotion-ready: this surface is a fingerprint, not a gate; signing stays in the owner terminal";
+      res.writeHead(200, JSON_HEAD);
+      return res.end(JSON.stringify({ ready, state: ready ? "SIGHTED" : "OFFLINE", text, generatedAt: new Date().toISOString(), head, branch, dirtyCount, grantsAuthority: false }));
+    }
+    // R47: /api/repo/read + /api/repo/search — owner-triggered, read-only, repo-fenced (donor #44 law).
+    if (pathname === "/api/repo/read") {
+      const abs = fencedRepoPath(new URL(req.url, "http://x").searchParams.get("path") ?? "");
+      if (!abs) { res.writeHead(403, JSON_HEAD); return res.end(JSON.stringify({ refused: true, law: "repo-scoped read only: no traversal, no secret-shaped paths (donor #44)" })); }
+      try {
+        const data = await readFile(abs, "utf8");
+        res.writeHead(200, JSON_HEAD);
+        return res.end(JSON.stringify({ path: abs.slice(REPO_ROOT.length + 1), bytes: data.length, truncated: data.length > 40000, content: data.slice(0, 40000), advisory: true, grantsAuthority: false }));
+      } catch { res.writeHead(404, JSON_HEAD); return res.end(JSON.stringify({ error: "not found" })); }
+    }
+    if (pathname === "/api/repo/search") {
+      const q = (new URL(req.url, "http://x").searchParams.get("q") ?? "").slice(0, 120);
+      if (q.length < 2) { res.writeHead(400, JSON_HEAD); return res.end(JSON.stringify({ error: "q too short" })); }
+      const out = await git("grep", "-n", "--max-depth", "8", "-I", "--", q).catch(() => null);
+      const hits = (out ?? "").split("\n").filter(Boolean).filter((l) => !REPO_DENY.test(l)).slice(0, 40);
+      res.writeHead(200, JSON_HEAD);
+      return res.end(JSON.stringify({ q, hits, bounded: true, advisory: true, grantsAuthority: false }));
     }
     // /api/graph — heal ENGINE UNREACHABLE on a healthy boot (R39).
     if (pathname === "/api/graph") {

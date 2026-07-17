@@ -1,0 +1,53 @@
+=== services listening ===
+bun 27284 127.0.0.1:7090
+node 53312 127.0.0.1:7141
+convex-lo 53443 *:3210
+node 53557 127.0.0.1:7097
+node 53976 127.0.0.1:7096
+=== SLICE step: Spatial workbench read spine — repo fingerprint + loop truth ===
+{"head":"237b55c05f2425951966d5bee9f9fead025cba49","branch":"sam/r47-integration","dirty":false,"grantsAuthority":false}
+{"pending":[],"rehearsalReceipts":[],"grantsAuthority":false}
+=== CONTROL: tokenless propose must refuse + receipt ===
+{"error":"refused: missing or bad local POST token","reasonClass":"guard:missing-or-bad-token","eventReceipt":"9fd7affdd7f3c7319771e148c911f9487c90ae45295f79d6b
+=== CONTROL: cross-origin must refuse ===
+{"error":"refused: origin http://evil.example is not in the door allowlist","reasonClass":"guard:origin-not-allowed","eventReceipt":"d01f13282f2dab41e2e1ccecf6f
+=== SLICE: a REAL pending proposal (tokened, loopback) ===
+{"error":"shape: key-count mismatch (extra/hidden keys)","reasonClass":"door:proposal-shape","eventReceipt":"3b7469f59336dc9bd99dd86c79b17bd1fa143051ae73cf3d10290546ad615c70"}
+=== door state: did the receipt chain advance? ===
+{"schema":"aukora-door-status-v1","enabled":true,"lockedDown":false,"booted":true,"events":3,"grantsAuthority":false}
+=== CONTROL: materialize WITHOUT owner auth must NOT touch main ===
+{"error":"shape: key-count mismatch (extra/hidden keys)","reasonClass":"door:proposal-shape","eventReceipt":"2a4372c144f2cb729343ba0fff5c14adf8a2a77477623aa0e43edd9eaaddb851"}
+=== SLICE: a WELL-FORMED real proposal (exact 5-key shape) → pending/verdict ===
+{"schema":"aukora-door-plan-v1","ok":false,"phase":"refused-at-proposal","reasonClass":"workflow:store-conflict","text":"refused: store conflict on create","proposalHash":"a4e3921c9c50883b1ee1853eee8d077576c7dc35dcc389acad37e32b15e1fce2","workflowId":"n/a","rehearsalReceiptPrefix":null,"candidateBranch":null,"candidateCommitPrefix":null,"signed":false,"pushed":false,"touchedMain":false,"grantsAuthority":false,"eventReceipt":"4264195c607371683e0be48740458bdf1b90fd4a48814ddbdf45dc6a01382a14"}
+=== /api/loop now shows the pending intent + rehearsal receipt? ===
+{"pending":[],"rehearsalReceipts":[],"grantsAuthority":false}
+=== CONTROL: replay the SAME materialize twice — second must be inert ===
+{"schema":"aukora-door-plan-v1","ok":false,"phase":"refused-at-proposal","reasonClass":"workflow:store-conflict","text":"refused: store conflict on create","proposalHash":"a4e3921c9c50883b1ee1853eee8d077576c7dc35dcc389ac
+=== BYTE-UNCHANGED PROOF: HEAD + working tree vs before ===
+before: 237b55c05f2425951966d5bee9f9fead025cba49
+after:  237b55c05f2425951966d5bee9f9fead025cba49
+working tree CLEAN — main byte-unchanged ✓
+=== fresh unique proposal id=r47-1784261856-3185 ===
+phase: refused-at-proposal | reason: workflow:store-conflict | touchedMain: False | rehearsalReceipt: None | candidateBranch: None
+=== is the store-conflict a leftover-row artifact? check convex health chainLength ===
+backend: {'breakIndex': None, 'chainLength': 0, 'headHash': None, 'ok': True}
+=== TEARDOWN (one command) ===
+
+> @aukora/brain@0.1.0 organism:down
+> node scripts/organism-ctl.mjs down
+
+[organism] delegating "down" to the ONE lifecycle owner: apps/supervisor (R47 convergence)
+▸ down-requested
+▸ stopped · spatial-shell :7096
+▸ stopped · mind-door :7097
+▸ stopped · brain-door :7141
+▸ stopped · convex-backend :3210
+▸ token-cleared
+DOWN=0
+ports after:
+convex-lo 53443  asd   18u  IPv4 0x4f60aab191e65c04      0t0  TCP *:3210 (LISTEN)
+donor :7090:
+HTTP 200
+=== FINAL byte-unchanged: HEAD + tree ===
+before 237b55c05f2425951966d5bee9f9fead025cba49 / after 237b55c05f2425951966d5bee9f9fead025cba49
+CLEAN — no main/tree mutation across the whole slice ✓

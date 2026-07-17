@@ -10,8 +10,10 @@ design for the NEW organism.
 - `src/engine.mjs` — the PURE engine: closed envelope (`start/probe/stop/isolate/swap/contract/rollback/status`),
   phased boot, dependency ordering, #71 probe-before-swap/rollback, port-squat defense, idempotent + restart-safe plans.
 - `src/supervisor.mjs` — owner-CLI adapter (NO network control surface): observes, executes, receipts
-  (`state/receipts.jsonl`, content-free). Captures the mind door's one-time token in process memory only
-  and hands it to the shell launcher's env — never a file, never a receipt.
+  (`state/receipts.jsonl`, content-free). R47: the supervisor is the ONE lifecycle owner — it also owns the
+  local Convex backend (3210) and the brain door (7141), and MINTS the per-boot mind-door token (R44 law:
+  child env + one 0600 file under the gitignored `apps/brain/.local/organism/`; value never logged, never in
+  a receipt, never served; stdout capture kept only as a pre-R44b fallback). `organism-ctl` now delegates here.
 - `src/gateway.mjs` — the one external origin: declared interfaces only, same-origin preserved, **AUMLOK
   never fronted**, `/aukora/status` + `/aukora/receipts` read-only.
 - `docs/CONSENT_SURFACES.md` — every ambient context that can trigger billed/governed work + its gates.
