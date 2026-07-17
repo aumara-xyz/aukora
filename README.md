@@ -17,18 +17,18 @@ memory, reasoning, homeostasis, evidence, and bounded adaptation. It is not a co
 > **The governing law:** intelligence may propose; evidence may advise; only the owner authorizes.
 
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-81d4b4)](LICENSE)
-[![Tests: 774 passing](https://img.shields.io/badge/tests-774%20passing-96b4ff)](CLAIMS.md)
+[![Tests: 900 passing](https://img.shields.io/badge/tests-900%20passing-96b4ff)](CLAIMS.md)
 [![Authority: owner gated](https://img.shields.io/badge/authority-owner%20gated-d7b36a)](packages/kernel)
 [![Convex: local only](https://img.shields.io/badge/Convex-local%20%2F%20self--hosted-c4aaff)](apps/brain)
 
-## The loop that exists in code
+## The governed loop
 
 ```text
 Spatial perception + bounded repository sight
         ↓
-KIRA memory context + AURA evidence
+typed proposal → local/self-hosted Convex durable state
         ↓
-@aukora/mind reasoning + Fu advisory review
+KIRA context + @aukora/mind reasoning + Fu advice
         ↓
 immutable pending intent + hostile-input qualification
         ↓
@@ -38,16 +38,36 @@ isolated candidate worktree/branch
         ↓
 tests + content-free receipts + lineage
         ↓
-local Convex reactive state → visible return to Spatial
+content-free receipt → Convex projection → visible return to Spatial
 ```
 
 The model never receives the owner secret. Fu, AURA, KIRA, Convex, and `@aukora/mind` all
 structurally grant **zero authority**. The candidate stage cannot push, merge, deploy, or touch
 `main`. A stale approval or changed byte sequence refuses.
 
-The mechanics are implemented and tested. The current live HTTP first-create handshake has one
-honestly recorded fail-closed gap: [issue #87](https://github.com/aumara-xyz/aukora/issues/87).
-It does not bypass authority or touch `main`; the active round is closing that final link.
+The constitutional mechanics are implemented and tested. The production loopback door now persists
+workflow state to local Convex, survives a real listener `SIGKILL`, rehydrates the same settled row,
+halts for fresh owner authorization, and materializes only an isolated candidate. The pure
+`@aukora/mind`, KIRA, and Fu organs are not yet one continuous primary chat/proposal path; that exact
+integration gap remains public as [issue #109](https://github.com/aumara-xyz/aukora/issues/109).
+
+## What is proven now
+
+| Layer | Exact status |
+| --- | --- |
+| Authority | **PROVEN:** hybrid Ed25519 + ML-DSA-65 verification, staleness, replay consumption, exact-byte and repository-head binding. |
+| Durable workflow | **LIVE LOCAL PROOF:** production mind-door → self-hosted Convex; actual process death → byte-identical recovery; no managed Convex. |
+| Effects | **PROVEN ISOLATED:** a fresh owner-approved proposal can create one disposable Git candidate; it cannot push, merge, deploy, or touch `main`. |
+| Memory | **PROVEN LAW:** consent-scoped content addressing, recall, and content-free governed forgetting; complete primary-runtime integration remains active work. |
+| Reasoning | **PROVEN PACKAGE / PARTIAL RUNTIME:** `@aukora/mind` drives the deterministic onboard ARC-compatible dojo, but not yet the primary Auma chat path. |
+| Spatial | **DONOR-PINNED / INCOMPLETE:** 46 selected files are byte-identical to the donor; full owner-ready parity, duplex voice, and real-time Lingwa remain open. |
+| Frontier cells | **PARKED:** Nebius, Inkling, and Tinker have no canonical live deployment claim. |
+
+The evidence and limitations are maintained in
+[`docs/DILIGENCE_STATUS.md`](docs/DILIGENCE_STATUS.md). R51 adds a real-backend Convex
+canary (10 duplicate submissions → one canonical effect, reactive projection, hard kill, same-SQLite
+restart; reproduction requires an official local backend binary) and protected lifecycle custody (actual listener/process-group ownership, zero owned-port
+residue, foreign processes left untouched).
 
 ## The organs
 
@@ -81,6 +101,15 @@ Convex does not sign. The browser never receives owner key material.
 
 See the falsifiable capability table in [CLAIMS.md](CLAIMS.md), the dependency law in
 [ARCHITECTURE.md](ARCHITECTURE.md), and the threat boundary in [SECURITY.md](SECURITY.md).
+
+## Skunkworks: publish the experiment, not the exaggeration
+
+External labs are part of the construction record, but they do not silently become canonical
+runtime claims. The current memory/index and constitutional-evolution experiments are published with
+their actual status—external simulation, reproduction pending—and their limitations in
+[`docs/r51/EXTERNAL_SKUNKWORKS.md`](docs/r51/EXTERNAL_SKUNKWORKS.md). A bundle hash proves artifact
+identity, not correctness. Fugu Ultra is not Inkling. A hardcoded refusal invariant is stress-tested,
+not “mathematically unbreakable.”
 
 ## The frontier: Inkling × Tinker × Nebius
 

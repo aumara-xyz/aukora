@@ -1,6 +1,6 @@
 {
   "schema": "aukora-issue-preservation-ledger-v2",
-  "status": "COMPLETE second sweep. Every source issue has exactly one disposition AND one completion_status (present_tested | superseded | scheduled | stays_in_product). IMPLEMENTED items carry present/tested evidence. Symbiote is sanitized (no titles/bodies). First pass, pending owner ratification.",
+  "status": "COMPLETE second sweep. Every source issue has exactly one disposition AND one completion_status (present_tested | superseded | scheduled | stays_in_product). IMPLEMENTED items carry present/tested evidence. Symbiote is sanitized (no titles/bodies). R51/#106: the 169 Symbiote preservation entries are RATIFIED/SETTLED by the owner; the kernel (13) and fu (9) number sets are proven equal to live GitHub (docs/atlas/CURRENT_OBJECTS.json); classification rationales for kernel/fu remain open to owner refinement. Set-equality gated by scripts/verify-continuity.mjs.",
   "taxonomy": [
     "IMPLEMENTED",
     "PORT",

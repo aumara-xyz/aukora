@@ -1,65 +1,65 @@
 {
-  "schema": "aukora-readiness-meter-canary-v1",
-  "canary": "first local+Nebius governed-recursion canary",
+  "schema": "aukora-readiness-meter-v2",
+  "head_basis": "R51 integration candidate from main 5aae90d6 + exact PR heads #111/#112/#113; 900 canonical passing tests including protected supervisor",
   "denominator": 11,
-  "score": "10/11",
-  "generated_from": "npm run test:all (exit 0, 480 passing + 1 gated skip) + models/nebius/deployment.manifest.json (R34)",
-  "overall": "SEED — constitutional core + governed organism + donor Spatial shell demonstrated locally; the single open canary step is the live (owner-authorized) local+Nebius governed-recursion run.",
+  "score": "8/11",
+  "score_law": "Each row is a named integration milestone, not a percentage of organism completion. A row passes only with canonical source, executable evidence, and honest runtime reachability.",
+  "overall": "CORE IN CONVERGENCE — authority, isolated effects, local durability, lifecycle custody, portable memory/reasoning/council law, and donor Spatial transplantation are evidenced. The primary governed mind bridge, owner-ready Spatial parity, and a reproducible Nebius cell remain open.",
   "subscores": [
     {
-      "name": "AUMLOK owner-gate present+tested",
+      "name": "Hybrid AUMLOK authority boundary",
       "pass": true,
-      "evidence": "kernel 19 + seed 165 tests (gate, ceremony contract, staleness, memory constitution)"
+      "evidence": "packages/kernel + apps/seed: Ed25519/ML-DSA-65 verification, staleness, consumed authority, exact-byte/head binding, hostile-refusal tests"
     },
     {
-      "name": "AURA trace/receipt law present+tested",
+      "name": "AURA evidence and receipt law",
       "pass": true,
-      "evidence": "apps/seed AURA trace + receipt-before-row (in seed 147)"
+      "evidence": "packages/evidence + seed receipt-before-effect paths; advisoryOnly and grantsAuthority:false"
     },
     {
-      "name": "KIRA memory + governed forgetting",
+      "name": "KIRA portable memory and governed forgetting law",
       "pass": true,
-      "evidence": "memory 7 + brain 91 (+KIRA classes; keychain broker contracts with gated OS smoke)"
+      "evidence": "packages/memory: content addressing, consent scope, deterministic recall, content-free tombstones; primary-runtime integration remains narrower than the full law"
     },
     {
-      "name": "Reactive brain (SIMULATED Convex)",
+      "name": "Local/self-hosted Convex durability",
       "pass": true,
-      "evidence": "apps/brain convex-test suite (91 passing); local-only Convex this phase; NOT live cloud"
+      "evidence": "R50 production mind-door persistence and R51 real-backend canary: duplicate idempotency, reactive projection, actual SIGKILL, same-SQLite restart; never managed Convex"
     },
     {
-      "name": "Governed recursion sandbox-only apply",
+      "name": "Governed isolated candidate materialization",
       "pass": true,
-      "evidence": "apps/seed sandbox-only apply + refusals + IDE session loop (165)"
+      "evidence": "apps/seed: proposal qualification, fresh AUMLOK halt, disposable Git worktree/branch, exact staging, receipts; cannot push/merge/deploy/touch main"
     },
     {
-      "name": "Advisory council (mock, no live providers)",
+      "name": "Portable advisory mind and Fu law",
       "pass": true,
-      "evidence": "@aukora/council in root 145; runner boundary refuses embedded transport/credentials"
+      "evidence": "packages/mind + packages/council are pure, bounded, tested, and grant no authority; this row does not claim primary-runtime integration"
     },
     {
-      "name": "Nebius PREFLIGHT present (bounded, parked)",
+      "name": "Protected lifecycle custody",
       "pass": true,
-      "evidence": "apps/brain Nebius preflight tested; manifest enabled=false (PARKED) — preflight ready, not live"
+      "evidence": "R51 supervisor owns actual listener/process groups, verifies empty owned ports, and leaves foreign listeners untouched"
     },
     {
-      "name": "Local-dev brain path (one command)",
+      "name": "Donor Spatial transplant",
       "pass": true,
-      "evidence": "Sam 2 R33: LOCAL_DEV path + local Convex proof + dry-run memory bridge (brain suite, simulated — no cloud)"
+      "evidence": "46 selected files byte-identical to the pinned donor plus named boundary adaptations; this row does not claim owner-ready parity"
     },
     {
-      "name": "Live Nebius governed-recursion canary run",
+      "name": "Primary governed mind/KIRA/Fu runtime spine",
       "pass": false,
-      "evidence": "NOT RUN — no cloud mutation, no paid calls this lane"
+      "evidence": "Issue #109: @aukora/mind drives the offline dojo but is not yet the primary Auma chat/proposal runtime"
     },
     {
-      "name": "Spatial donor transplant (exact code)",
-      "pass": true,
-      "evidence": "apps/spatial IS the donor app (91 VERBATIM blobs, provenance-pinned + tested); side-by-side screenshots committed; remaining gap = live engine doors run donor offline states"
+      "name": "Owner-ready Spatial, duplex voice, and real-time Lingwa",
+      "pass": false,
+      "evidence": "Spatial is donor-pinned; full owner parity remains open, duplex voice is RUNTIME_UNPROVEN, and real-time Lingwa is MISSING"
     },
     {
-      "name": "Round-close merge law (green rounds land on protected main)",
-      "pass": true,
-      "evidence": "R34 standing owner law: integrate green lane results and merge via protected PR each round (R33 head merged by owner; R34 merged under this law)"
+      "name": "Reproducible Nebius evolution cell",
+      "pass": false,
+      "evidence": "PARKED/UNARMED: no canonical model deployment, hardware transcript, exact-image/model pins, or local-to-cell replay proof"
     }
   ]
 }

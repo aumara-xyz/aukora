@@ -102,3 +102,20 @@ never imports Convex — enforced by `test/boundary.test.ts`. Porting to another
 re-implementing the two seams; the chain, commitments, recall, forgetting, staleness, and truth gates move
 unchanged. The LOCAL_DEV and convex-test twins (same functions, different host) are the standing proof the
 seam holds.
+
+## 8. R51 update — real-backend proof + official-component facts (issue #108)
+
+Two claims from §1 are now updated with evidence, not prose:
+
+- **Workflow/Workpool are components, pre-1.0.** Inspected read-only (R51): `@convex-dev/workflow@0.4.4` and
+  `@convex-dev/workpool@0.4.8` are both **Apache-2.0** (safe to depend on), but **components, not core**, and
+  **0.x** (API may change). Neither is installed. Decision: NOT adopted tonight — the current custom
+  `ConvexWorkflowStore` is smaller and already durable-proven, so the official Workflow component is not the
+  "genuinely smaller" replacement the bar requires. Adoption seam recorded in `docs/r51/R51_CONVEX_CORE_TRUTH.md`.
+- **Durability is now proven on a REAL backend, not only convex-test.** `apps/brain/scripts/r51-canary.mjs`
+  boots the official `convex-local-backend` binary, `kill -9`s it, and restarts on the same on-disk SQLite;
+  the append-only-events + atomic-snapshot pilot (`apps/brain/canary/convex`) holds accept-once, 10→one-canonical-
+  effect, crash-durable, restart-idempotent, and reactive-projection-change (transcript:
+  `docs/r51/R51_REAL_BACKEND_TRANSCRIPT.md`, exit 0). The mutation/scheduled-function/reactive-query role claims
+  in §1 are therefore backed by a real-runtime witness, not simulation alone. `convex-test` remains the fast CI
+  twin; it is explicitly NOT the durability proof.

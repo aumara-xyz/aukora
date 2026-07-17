@@ -3,12 +3,16 @@
 /**
  * WAVE 2 supervisor laws (donor #71/#26 restoration) — every law tested on the PURE engine, no sockets.
  */
-import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync, writeFileSync, rmSync, existsSync, mkdtempSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
+import { createServer } from 'node:net';
+import { spawn } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { planUp, planDown, planSwap, planContract, deriveStatus, classifyService, ENVELOPE, FORBIDDEN } from '../src/engine.mjs';
+import { pgidOf, listenerPidOnPort, isAlive, killGroup, groupAlive, readPidRecord, validPid } from '../src/supervisor.mjs';
 
 const APP = join(dirname(fileURLToPath(import.meta.url)), '..');
 const policy = JSON.parse(readFileSync(join(APP, 'policy.json'), 'utf8'));
@@ -182,5 +186,117 @@ describe('R44c — invalid-PID file regression (review closure)', () => {
   it('source contract: the pid-file write is inside the validPid guard', () => {
     const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
     expect(sup).toMatch(/if \(validPid\(child\.pid\)\) \{\s*\n\s*writeFileSync/);
+  });
+});
+
+// ── R51 · issue #107 — the supervisor owns the process GROUP, not merely the wrapper ────────────────
+describe('R51 · process-group custody (the actual mechanic, real processes)', () => {
+  const spawned = [];
+  afterEach(() => { for (const pid of spawned.splice(0)) { try { process.kill(-pid, 'SIGKILL'); } catch { /* gone */ } try { process.kill(pid, 'SIGKILL'); } catch { /* gone */ } } });
+
+  /** Spawn a detached group-leader "wrapper" that itself spawns a child "listener"; both self-destruct in 8s
+   *  (leak-proof). Returns { wrapperPid (== pgid), childPid }. */
+  const spawnTree = async () => {
+    const cf = join(mkdtempSync(join(tmpdir(), 'r51-')), 'child.pid');
+    const code = `const fs=require('fs');const {spawn}=require('child_process');` +
+      `const c=spawn(process.execPath,['-e','setTimeout(()=>process.exit(0),8000);setInterval(()=>{},1e9)'],{stdio:'ignore'});` +
+      `fs.writeFileSync(process.env.CF,String(c.pid));setTimeout(()=>process.exit(0),8000);setInterval(()=>{},1e9)`;
+    const parent = spawn(process.execPath, ['-e', code], { detached: true, stdio: 'ignore', env: { ...process.env, CF: cf } });
+    parent.unref();
+    spawned.push(parent.pid);
+    for (let i = 0; i < 100 && !existsSync(cf); i++) await new Promise((r) => setTimeout(r, 20));
+    const childPid = Number(readFileSync(cf, 'utf8').trim());
+    return { wrapperPid: parent.pid, childPid };
+  };
+
+  it('the child listener inherits the wrapper’s process group (pgid === wrapper pid)', async () => {
+    const { wrapperPid, childPid } = await spawnTree();
+    expect(validPid(childPid)).toBe(true);
+    expect(isAlive(wrapperPid)).toBe(true);
+    expect(isAlive(childPid)).toBe(true);
+    expect(pgidOf(childPid)).toBe(wrapperPid); // the whole tree is one owned group
+  });
+
+  it('THE BUG: a single-process kill of the wrapper LEAVES the listener alive; THE FIX: group-kill reaps it', async () => {
+    const { wrapperPid, childPid } = await spawnTree();
+    // R50's twice-witnessed finding: killing only the wrapper orphans a still-serving child
+    process.kill(wrapperPid, 'SIGKILL');
+    await new Promise((r) => setTimeout(r, 250));
+    expect(isAlive(wrapperPid)).toBe(false);
+    expect(isAlive(childPid)).toBe(true); // ← the orphaned listener (the whole point of #107)
+    // R51 fix: signalling the GROUP reaps the escaped child too
+    expect(killGroup(wrapperPid, 'SIGKILL')).toBe(true);
+    await new Promise((r) => setTimeout(r, 250));
+    expect(isAlive(childPid)).toBe(false);
+    expect(groupAlive(wrapperPid)).toBe(false);
+  });
+});
+
+describe('R51 · lifecycle primitives + pid record', () => {
+  it('listenerPidOnPort finds THIS process for a bound loopback port and null for a free one', async () => {
+    const srv = createServer(() => {});
+    await new Promise((res) => srv.listen(0, '127.0.0.1', res));
+    const port = srv.address().port;
+    expect(listenerPidOnPort(port)).toBe(process.pid);
+    await new Promise((res) => srv.close(res));
+    // after close the port is free again
+    let cleared = false;
+    for (let i = 0; i < 25 && !cleared; i++) { if (listenerPidOnPort(port) === null) cleared = true; else await new Promise((r) => setTimeout(r, 20)); }
+    expect(cleared).toBe(true);
+  });
+
+  it('isAlive: true for self, false for an impossible/invalid pid', () => {
+    expect(isAlive(process.pid)).toBe(true);
+    expect(isAlive(2 ** 30)).toBe(false); // no such process
+    expect(isAlive(undefined)).toBe(false);
+    expect(isAlive(-1)).toBe(false);
+  });
+
+  it('readPidRecord parses the v1 group record AND tolerates a legacy bare-integer file (R44c) without throwing', () => {
+    const dir = join(APP, 'state');
+    const p = join(dir, 'r51probe.65533.pid');
+    try {
+      writeFileSync(p, JSON.stringify({ schema: 'aukora-supervisor-pidrec-v1', name: 'r51probe', port: 65533, wrapperPid: 4242, pgid: 4242, listenerPid: 4343 }));
+      const rec = readPidRecord('r51probe', 65533);
+      expect(rec.pgid).toBe(4242);
+      expect(rec.listenerPid).toBe(4343);
+      writeFileSync(p, '  5150 \n'); // legacy poisoned/bare-integer file
+      const legacy = readPidRecord('r51probe', 65533);
+      expect(legacy.wrapperPid).toBe(5150);
+      expect(legacy.pgid).toBe(5150);
+      writeFileSync(p, 'undefined'); // the R44c poison
+      expect(readPidRecord('r51probe', 65533)).toBe(null);
+    } finally { try { rmSync(p); } catch { /* fine */ } }
+  });
+});
+
+describe('R51 · source contracts — group teardown, foreign safety, owned-port verification', () => {
+  const sup = readFileSync(join(APP, 'src', 'supervisor.mjs'), 'utf8');
+  it('teardown signals the GROUP (kill(-pgid)) with SIGTERM then SIGKILL, not a bare-process kill', () => {
+    expect(sup).toMatch(/process\.kill\(-pgid, signal\)/);   // killGroup targets the negative pgid
+    expect(sup).toMatch(/killGroup\(pgid, 'SIGTERM'\)/);
+    expect(sup).toMatch(/killGroup\(pgid, 'SIGKILL'\)/);
+  });
+  it('the port belt kills an escaped listener ONLY when provably ours; a foreign listener is reported, never killed', () => {
+    expect(sup).toMatch(/oursByGroup \|\| oursByRecord/);
+    expect(sup).toMatch(/residueForeign = true/);
+    // the foreign branch has NO kill call — the only kills are inside the `ours` branch
+    const beltForeign = sup.slice(sup.indexOf('residueForeign = true'), sup.indexOf('residueForeign = true') + 200);
+    expect(beltForeign).not.toMatch(/process\.kill/);
+  });
+  it('down verifies every owned port is empty and fails LOUD (exit code) on our-owned residue', () => {
+    expect(sup).toMatch(/verifyOwnedPortsEmpty\(pol, obs\)/);
+    expect(sup).toMatch(/teardown-verified|teardown-residue/);
+    expect(sup).toMatch(/process\.exitCode = 4/);
+  });
+  it('the pid record is a process-GROUP record (wrapperPid + pgid + listenerPid), still guarded by validPid', () => {
+    expect(sup).toMatch(/pgid: child\.pid/);
+    expect(sup).toMatch(/wrapperPid: child\.pid/);
+    expect(sup).toMatch(/if \(validPid\(child\.pid\)\) \{\s*\n\s*writeFileSync/);
+  });
+  it('no authority/signer/owner-key verb entered the supervisor with the lifecycle change', () => {
+    // precise: the lifecycle work must not smuggle in signing/promotion/key material (note: SIGNAL/SIGTERM
+    // legitimately contain the substring "sign" — match whole forbidden verbs only).
+    expect(sup).not.toMatch(/signPromotion|promoteAuthority|widenAuthority|ownerKey|secretKey|privateKey|signature/i);
   });
 });

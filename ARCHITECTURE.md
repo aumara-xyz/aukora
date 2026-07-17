@@ -8,12 +8,14 @@ governance (verify authority, don't mint it) baked into the shape rather than bo
 ## Two layers
 
 ```
-  external products (elsewhere: aukora-symbiote, aukora-fu, product UI/games, cloud)
+  external systems (donor Symbiote, model providers, private evolution cells)
         │  import ▼
   apps/ (in-repo governed adapters — own the I/O, demos, and fixtures)
-    brain/    reactive receipt-chained memory over a SIMULATED Convex backend (convex-test)
-    seed/     sandbox-only governed recursion + real hybrid AUMLOK owner-gate
-    console/  read-only operator view; renders a deterministic DEMO_FIXTURE
+    brain/      deterministic convex-test coverage + real local/self-hosted Convex adapters/canary
+    seed/       governed recursion + real hybrid AUMLOK gate + isolated Git candidates
+    spatial/    provenance-pinned donor body and loopback client
+    supervisor/ protected lifecycle/token custody for local services
+    console/    retained read-only fixture app; removed from the visible Spatial roster
         │  import ▼
   packages/ (pure, portable, dependency-light — never import an app)
     kernel/       AUMLOK: authority verification, policy law, Merkle, canonical hashing
@@ -51,18 +53,22 @@ except the sanctioned ledger file.
 - **AURA — advisory, not authority.** Evidence stays `advisoryOnly` / `grantsAuthority:false`.
 - **KIRA — consent + governed forgetting.** Memory carries consent scope and provenance;
   forgetting is a content-free tombstone that removes plaintext from recall while retaining an
-  audit trail. `apps/brain` demonstrates this over a **simulated** Convex backend, not live cloud.
+  audit trail. Deterministic tests use `convex-test`; the production mind-door uses a **local,
+  self-hosted** Convex store whose process-death recovery has been exercised against a real backend.
+  Managed Convex is not used.
 - **Fu — advice only.** The council produces a verdict with quorum geometry; it never signs,
-  applies, or authorizes. In `apps/seed` the review is **mock/deterministic** — no live providers.
+  applies, or authorizes. Canonical tests are deterministic/offline. External live-model experiments
+  remain separately labelled evidence until reproduced through the canonical runtime.
 - **Mind — advisory reasoning, never authority.** `@aukora/mind` is the pure
   observe→hypothesize→act→verify loop; its only outlet is the caller-supplied `Env.act` port and
   every trace payload stays `advisoryOnly` / `grantsAuthority:false`. `@aukora/mind` (the pure
   reasoning-loop package) is distinct from the seed's mind DOOR — the governed HTTP surface in
   `apps/seed`.
-- **Recursion — sandbox-only.** Change is proposed, grounded against real files, rehearsed in a
-  sandbox, advisorily reviewed, refused on stale/secret/authority, owner-gated via AUMLOK, and
-  applied only into an isolated sandbox with receipt + lineage. **No live-repo mutation.**
-- **Console — read-only.** It renders a fixture and grants nothing; it signs/applies/deploys nothing.
+- **Recursion — isolated candidate only.** Change is proposed, grounded against real files,
+  rehearsed, advisorily reviewed, refused on stale/secret/authority, owner-gated via AUMLOK, and
+  materialized only into a disposable Git worktree/branch with receipt + lineage. It cannot push,
+  merge, deploy, or modify `main`.
+- **Console — retained read-only fixture.** It grants nothing and is not in the visible Spatial roster.
 
 ## Provenance without imported history
 
@@ -78,7 +84,9 @@ pinned by donor git-blob object hash (see [docs/PROVENANCE.md](docs/PROVENANCE.m
 - `@aukora/evidence`, `@aukora/council`, `@aukora/council-node` and the repo-level boundary/export
   smoke tests run under the root `vitest.config.ts` (`npm test`).
 - The organism suites run per-workspace under `npm run test:organism`: `@aukora/memory`,
-  `@aukora/mind`, `@aukora/brain` (including the `convex-test` simulated backend), `@aukora/seed`,
-  `@aukora/console`.
-- `npm run test:all` runs provenance + boundary + root + kernel + organism. No test count is
+  `@aukora/mind`, `@aukora/brain` (including deterministic `convex-test` coverage), `@aukora/seed`,
+  `@aukora/console`, and `@aukora/spatial`. The separate R51 canary owns a real local Convex backend,
+  kills it, and restarts it on the same SQLite state.
+- `npm run test:all` runs provenance + continuity + anatomy + boundary + root + kernel + organism.
+  No test count is
   borrowed from any external product suite.

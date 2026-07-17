@@ -32,13 +32,13 @@ overclaiming. These are governed demonstrations, not live production systems.
 
 | Capability | Source | Tests | Honesty caveat |
 | --- | --- | --- | --- |
-| Reactive, receipt-chained, growing memory with governed forgetting (content-free chain); corrupt-store fail-closed + reproducible runtime manifest; node print, supervised generation, offline executor, health contract, Nebius preflight | `apps/brain/src`, `apps/brain/convex` | `apps/brain/test` (148; +2 gated smokes) | Deterministic tests use `convex-test`; the separately proven live path is local/self-hosted Convex, never managed cloud |
+| Reactive, receipt-chained, growing memory with governed forgetting (content-free chain); corrupt-store fail-closed + reproducible runtime manifest; node print, supervised generation, offline executor, health contract, Nebius preflight | `apps/brain/src`, `apps/brain/convex` | `apps/brain/test` (171; +2 gated smokes) | Deterministic tests use `convex-test`. Convex truth: the live path is **local/self-hosted** Convex, never managed cloud. R50 (#99 closed, PR #105/#110) landed production mind-door → local Convex persistence with a **real process-death acceptance**; durable-workflow hardening continues as #108. |
 | Provider-neutral brain attachment incl. a Nebius provider path + fail-closed provider selection policy | `apps/brain/src/nebiusProvider.ts`, `apps/brain/src/providerPolicy.ts` | `apps/brain/test/{nebiusProvider,providerPolicy}.test.ts` | **Bounded and parked**: no live model calls, no weights, no endpoint/job IDs |
-| Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory review → refuse(stale/secret/authority) → hybrid AUMLOK owner-gate → isolated candidate → receipt/lineage; AURA trace law + receipt-before-row; governed AUMLOK–AURA ceremony contract | `apps/seed/src` | `apps/seed/test` (298) | Effects stop at an isolated local candidate worktree/branch; never direct `main`, push, or merge |
+| Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory review → refuse(stale/secret/authority) → hybrid AUMLOK owner-gate → isolated candidate → receipt/lineage; AURA trace law + receipt-before-row; governed AUMLOK–AURA ceremony contract | `apps/seed/src` | `apps/seed/test` (338) | Effects stop at an isolated local candidate worktree/branch; never direct `main`, push, or merge |
 | Read-only operator console over authority/memory/proposal/verdict/provider-truth/budget/forgetting | `apps/console/public`, `apps/console/tooling` | `apps/console/test` (44) | Renders a deterministic `DEMO_FIXTURE`; **signs, applies, deploys, and arms nothing** |
-| Donor Spatial shell transplanted subtractively (46 VERBATIM donor blobs, provenance-pinned + tested; registry subtraction; port law :7096 with donor doors 7090–7095 reserved) | `apps/spatial` | `apps/spatial/test` (38) | Donor code, not a recreation; local doors are supervisor-owned and fail honestly when unavailable; custody/signing stays out of the browser and launcher |
+| Donor Spatial shell transplanted subtractively (46 VERBATIM donor blobs, provenance-pinned + tested; registry subtraction; port law :7096 with donor doors 7090–7095 reserved); R50/#101 removed the CONSOLE organ from the visible roster per owner direction (`console.js` retained on disk, unmounted); R50/#102 added the replayable ARC-3 **onboard-compatible** dojo | `apps/spatial` | `apps/spatial/test` (57) | Donor code, not a recreation; local doors are supervisor-owned and fail honestly when unavailable; custody/signing stays out of the browser and launcher; the ARC-3 dojo runs the donor's **onboard** worlds and is **never** an official ARC-AGI-3 result |
 
-Test totals: 156 (root) + 21 (kernel) + 17 (memory) + 51 (mind) + 148 (brain; +2 gated smokes) + 298 (seed) + 44 (console) + 38 (spatial) + 1 (fixture-regeneration guard) = **774 passing**, none borrowed from any external product suite.
+Test totals: 169 (root) + 21 (kernel) + 17 (memory) + 51 (mind) + 171 (brain; +2 gated smokes) + 338 (seed) + 44 (console) + 57 (spatial) + 31 (supervisor) + 1 (fixture-regeneration guard) = **900 passing**, none borrowed from any external product suite. (Counts gated by `test:all`; the continuity guard `scripts/verify-continuity.mjs` keeps this total honest.)
 
 ## Deliberately NOT in this repository
 
@@ -48,9 +48,10 @@ These are excluded on purpose and are **not** claimed as shipped capabilities an
   into this public tree; included `apps/*` and `packages/*` are real in-repo working surfaces.
 - Quarantined material and research corpora.
 - Private planning, handoffs, continuity notes, strategy, or patent drafts.
-- Any "digital metabolism", biological-isomorphism, consciousness, or "aliveness" claim. Such
-  material, where it exists at all, is research/design in other repositories and is **not**
-  implemented capability. It does not appear here as a claim.
+- Any biological-isomorphism, consciousness, or "aliveness" claim. `apps/seed/src/metabolism.ts`
+  implements only a small contraction-only resource signal: it may add a refusal but can never
+  grant authority, widen capability, sign, or release an existing refusal. Larger digital-metabolism
+  models remain research and are not claimed as runtime biology.
 - Owner signing secrets and key material. The kernel verifies authority; models never mint it.
 
 If a future capability is designed but not built, it belongs in a private issue or a

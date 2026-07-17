@@ -15,6 +15,14 @@
     {
       "glob": "apps/supervisor/src",
       "note": "protected deterministic core — full file coverage enforced"
+    },
+    {
+      "glob": "packages/mind/src",
+      "note": "R51 expansion — the pure reasoning-loop organ; every src file maps to mind-organ (LIVE, ADAPTED_BOUNDARY, 51 tests)"
+    },
+    {
+      "glob": "packages/kernel/src",
+      "note": "R51 expansion — the canonical kernel; every src file maps to kernel-canonical (EXACT_PORT, LIVE in-gate; byte-identity gated by verify-provenance.mjs)"
     }
   ],
   "entries": [
@@ -47,7 +55,18 @@
       "disposition": "EXACT_PORT",
       "source_continuity": "donor aukora-kernel@b441edc4d17d, 10 blob-pinned sources",
       "runtime_reachability": "LIVE (in-gate, Edge/Bun/browser)",
-      "files": [],
+      "files": [
+        { "path": "packages/kernel/src/authority.ts" },
+        { "path": "packages/kernel/src/canonical.ts" },
+        { "path": "packages/kernel/src/errors.ts" },
+        { "path": "packages/kernel/src/evidence.ts" },
+        { "path": "packages/kernel/src/index.ts" },
+        { "path": "packages/kernel/src/merkle.ts" },
+        { "path": "packages/kernel/src/reducer.ts" },
+        { "path": "packages/kernel/src/registry.ts" },
+        { "path": "packages/kernel/src/schema.ts" },
+        { "path": "packages/kernel/src/staleness.ts" }
+      ],
       "tests": [
         "packages/kernel/test/reducer.test.ts"
       ],
@@ -209,7 +228,7 @@
     "evidence": "docs/continuity/r46/SAM4_EMBODIMENT_REACHABILITY_AUDIT.md"
   },
   "known_gaps": {
-    "live_workflow_first_create": "R47 live HTTP vertical slice refuses fail-closed with workflow:store-conflict on first create; issue #87",
+    "live_workflow_first_create": "R47 first-create refusal was diagnosed as a NONCE MISLABEL and closed as #87 for that cause ONLY. Production first-create DURABILITY is the separate track: opened as #99 (R50 P0, landed — production mind-door → local Convex persistence + process-death) and continued as #108 (R51 BRAIN — self-hosted Convex durable workflows). Do not read #87-closed as durability-proven.",
     "lingwa_lane_realtime": "donor real-time translation lane has no current runtime counterpart",
     "duplex_voice_runtime": "duplex voice files exist, but default supervised runtime reachability remains unproven"
   }

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
   <title id="title">Aukora governed digital organism architecture</title>
-  <desc id="desc">A bounded loop from perception through memory, reasoning, advisory review, owner authorization, isolated candidate materialization, tests, receipts, and reactive state, with Inkling and Tinker shown as a future evolution laboratory.</desc>
+  <desc id="desc">A target bounded loop from perception through memory, reasoning, advisory review, owner authorization, isolated candidate materialization, tests, receipts, and reactive state. The primary mind bridge is open work; Inkling and Tinker are shown as parked future research.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#050812"/>
@@ -57,8 +57,8 @@
     <rect width="225" height="150" rx="24" class="box" stroke="#96b4ff"/>
     <text x="113" y="44" text-anchor="middle" class="sans organTitle">MIND + FU</text>
     <text x="113" y="72" text-anchor="middle" class="sans organSub">reason + simulate</text>
-    <text x="113" y="99" text-anchor="middle" class="sans organSub">advisory council review</text>
-    <text x="113" y="128" text-anchor="middle" class="mono micro">PROPOSE</text>
+    <text x="113" y="99" text-anchor="middle" class="sans organSub">pure + dojo proven</text>
+    <text x="113" y="128" text-anchor="middle" class="mono micro">PRIMARY BRIDGE OPEN</text>
   </g>
   <g transform="translate(1075 245)">
     <rect width="225" height="170" rx="30" fill="#171326" stroke="#d7b36a" stroke-width="2.5"/>
@@ -93,7 +93,7 @@
   <path d="M355 542H155V405" class="line"/>
 
   <rect x="72" y="690" width="1456" height="140" rx="28" fill="#100d1d" stroke="#715aa8" stroke-width="1.5" stroke-dasharray="9 8"/>
-  <text x="110" y="726" class="sans micro">ACTIVE FRONTIER · ISOLATED EVOLUTION LAB</text>
+  <text x="110" y="726" class="sans micro">PARKED FRONTIER · ISOLATED EVOLUTION LAB · NOT DEPLOYED</text>
   <text x="110" y="770" class="sans organTitle">INKLING ON NEBIUS</text>
   <text x="110" y="800" class="sans future">multimodal frontier teacher + proposer · no keys · no authority · checksum-bound outputs</text>
   <path d="M565 760H760" class="dash"/>

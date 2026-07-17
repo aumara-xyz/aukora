@@ -34,6 +34,7 @@
     "local:status": "node scripts/local-ctl.mjs status",
     "organism:up": "node scripts/organism-ctl.mjs up",
     "organism:status": "node scripts/organism-ctl.mjs status",
-    "organism:down": "node scripts/organism-ctl.mjs down"
+    "organism:down": "node scripts/organism-ctl.mjs down",
+    "canary:r51": "node scripts/r51-canary.mjs"
   }
 }
