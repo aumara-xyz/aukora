@@ -44,17 +44,30 @@ export function classifyService(svc, obs) {
 /** Phased boot plan. Idempotent: services observed UP-OURS plan only a probe (a no-op start). */
 export function planUp(policy, observations) {
   const plan = [];
+  const clsOf = (name) => classifyService(policy.services.find((s) => s.name === name), observations[name] ?? { portOpen: false, identityOk: null });
   const phases = [...new Set(policy.services.map((s) => s.phase))].sort((a, b) => a - b);
+  // BLOCKED set: a service is blocked if any (transitive) dependency is OCCUPIED-FOREIGN. The engine's law is
+  // that a foreign-held port is never touched — so we neither start onto it NOR start a dependent that could
+  // only come up behind it. Computed in phase order so the block propagates down a dependency chain.
+  const blocked = new Set();
   for (const phase of phases) {
     for (const svc of policy.services.filter((s) => s.phase === phase)) {
-      const cls = classifyService(svc, observations[svc.name] ?? { portOpen: false, identityOk: null });
+      for (const dep of svc.dependsOn ?? []) if (clsOf(dep) === 'OCCUPIED-FOREIGN' || blocked.has(dep)) blocked.add(svc.name);
+    }
+  }
+  for (const phase of phases) {
+    for (const svc of policy.services.filter((s) => s.phase === phase)) {
+      const cls = clsOf(svc.name);
       if (cls === 'OCCUPIED-FOREIGN') { plan.push(step('isolate', svc.name, { reason: 'port occupied by a foreign process — refusing to adopt or kill it', port: svc.port })); continue; }
       if (svc.external) { plan.push(step('probe', svc.name, { external: true, port: svc.port })); continue; }
-      // dependency ordering within the plan: deps must be UP-OURS or planned earlier
+      // A dependency is squatted by a foreign process — refuse to start behind it (visible, never a silent no-op).
+      if (blocked.has(svc.name)) { plan.push(step('status', svc.name, { blocked: true, reason: 'a dependency is occupied by a foreign process — refusing to start behind a squatted port', port: svc.port })); continue; }
+      // dependency ordering within the plan: deps must be UP-OURS or planned earlier. A foreign dep is NEVER
+      // planned as a start (that would touch the squatted port) — it is isolated in its own phase and blocks above.
       for (const dep of svc.dependsOn ?? []) {
-        const depCls = classifyService(policy.services.find((s) => s.name === dep), observations[dep] ?? { portOpen: false, identityOk: null });
+        const depCls = clsOf(dep);
         const depPlanned = plan.some((p) => p.service === dep && p.action === 'start');
-        if (depCls !== 'UP-OURS' && !depPlanned) plan.push(step('start', dep, { reason: `dependency of ${svc.name}` }));
+        if (depCls !== 'UP-OURS' && depCls !== 'OCCUPIED-FOREIGN' && !depPlanned) plan.push(step('start', dep, { reason: `dependency of ${svc.name}` }));
       }
       if (cls === 'UP-OURS') plan.push(step('probe', svc.name, { alreadyUp: true, port: svc.port }));
       else plan.push(step('start', svc.name, { port: svc.port }), step('probe', svc.name, { port: svc.port }));

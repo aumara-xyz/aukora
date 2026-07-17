@@ -366,9 +366,9 @@
     {
       "path": "apps/spatial/scripts/launch.mjs",
       "source": "ours (launcher/tooling)",
-      "sha256": "6cd37eb5768e559cc3f4a3eafa43b6e5e45514a17ab0e3576f4dade1490cf7c0",
+      "sha256": "213c15fc92d6b244d7667e6ce1ad6018500582b13f9ba59a9cef3d2d2c35e2f4",
       "status": "NEW",
-      "note": "R47: mounts the GET/HEAD-only read spine (readSpine.mjs) + workbench seams; pin = merged file"
+      "note": "R47: mounts the GET/HEAD-only read spine (readSpine.mjs) + workbench seams; R49: relands orphaned 665b1a3 (realpath symlink re-fence + honest signCommand); pin = merged file; R49 repair: separator-normalized deny test (Windows backslash bypass) + basename in symlinked-missing-file fallback"
     },
     {
       "path": "apps/spatial/scripts/verify-provenance.mjs",

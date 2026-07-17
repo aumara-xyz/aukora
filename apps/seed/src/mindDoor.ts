@@ -230,7 +230,17 @@ export class MindDoor {
       }
     }
 
+    // #87 exact-field fix: a missing/empty nonce used to be coerced to '' here, fail the workflow-state validator
+    // downstream, and surface as a misleading `workflow:store-conflict`. Refuse it AT THE DOOR with its own name.
     const nonce = typeof body.nonce === 'string' ? body.nonce : '';
+    if (nonce.length === 0) {
+      const ev = this.receipt('refused', materialize ? '/api/materialize' : '/api/propose', 'door:nonce-missing');
+      return this.respond(400, { error: 'refused: body.nonce (1..128 chars) is required for replay protection', reasonClass: 'door:nonce-missing', eventReceipt: ev.receiptHash });
+    }
+    if (nonce.length > 128) {
+      const ev = this.receipt('refused', materialize ? '/api/materialize' : '/api/propose', 'door:nonce-too-long');
+      return this.respond(400, { error: 'refused: body.nonce exceeds 128 chars', reasonClass: 'door:nonce-too-long', eventReceipt: ev.receiptHash });
+    }
     const result: CeremonyRunResult = runLocalRecursionCeremony(driver.ceremonyEnv, {
       proposalInput: body.proposalInput,
       nonce,

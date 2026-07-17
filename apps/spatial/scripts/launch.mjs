@@ -20,10 +20,11 @@
 import { createServer } from "node:http";
 import { makeReadSpine } from "./readSpine.mjs"; // R47: donor GET/HEAD-only workbench read spine
 import { readFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
-import { dirname, join, normalize, extname, resolve, sep } from "node:path";
+import { basename, dirname, join, normalize, extname, resolve, sep } from "node:path";
 
 const execFileP = promisify(execFile);
 
@@ -157,12 +158,22 @@ async function git(...args) {
 // Repo read/search fence (donor #44 law): repo-scoped, no traversal/symlink escape, deny secret-shaped
 // paths, bounded output, GET-only. A refused read is loud, never silent.
 const REPO_DENY = /(^|\/)\.(env|git)|\.pem$|\.key$|secrets?|\.venv|node_modules/i;
+// The deny regex anchors on '/'; Windows paths use '\', so normalize separators BEFORE testing or a
+// request like `dir\..\.env` slips past the boundary anchors on that platform.
+const denyHit = (p) => REPO_DENY.test(String(p).replace(/\\/g, "/"));
+const REPO_REAL = (() => { try { return realpathSync(REPO_ROOT); } catch { return REPO_ROOT; } })();
 function fencedRepoPath(rel) {
   if (typeof rel !== "string" || rel.length === 0 || rel.length > 512) return null;
   const abs = resolve(REPO_ROOT, rel);
-  if (!abs.startsWith(REPO_ROOT + sep)) return null;      // traversal escape
-  if (REPO_DENY.test(rel) || REPO_DENY.test(abs)) return null; // secret-shaped
-  return abs;
+  if (!abs.startsWith(REPO_ROOT + sep)) return null;      // '../' traversal escape (lexical)
+  if (denyHit(rel) || denyHit(abs)) return null;           // secret-shaped
+  // SYMLINK escape: a link INSIDE the repo can point outside it, and resolve() does not follow links.
+  // Re-check the REAL path (and its parent, so a symlinked missing file is still fenced) is under the repo.
+  let real;
+  try { real = realpathSync(abs); } catch { try { real = join(realpathSync(dirname(abs)), basename(abs)); } catch { return null; } }
+  if (real !== REPO_REAL && !real.startsWith(REPO_REAL + sep)) return null;
+  if (denyHit(real)) return null;
+  return real;
 }
 
 function ledgerRow(p) {
@@ -265,7 +276,7 @@ function makeServer() {
                   "tests/rehearsal: " + (json.ok === true ? "rehearsed green (phase " + String(json.phase) + ")" : "refused: " + String(json.reasonClass)),
                   "signed:false pushed:false touchedMain:false",
                 ],
-                signCommand: "# produce the owner authorization OUT of the browser (terminal, key never here):\nnpx tsx apps/seed/scripts/owner-authorize.ts --proposal " + String(json.proposalHash),
+                signCommand: "# produce the owner authorization OUT of the browser (your local AUMLOK terminal ceremony;\n# the Ed25519+ML-DSA-65 key never touches this page). It yields a SignedPromotionV2 over proposalHash " + String(json.proposalHash).slice(0, 12) + "…\n# (no owner CLI ships yet — the authorizer is apps/seed/src/ownerFixture.ts#authorize; a terminal wrapper is owner-lane work)",
                 applyHint: "then paste the authorization JSON into this card's approve box (submits to /api/aumlok/approve → door /api/materialize)",
               }),
             });

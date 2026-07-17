@@ -1,0 +1,153 @@
+{
+  "schema": "aukora-conformance-bundle-v1",
+  "coreHash": "0f3c19026fe1d46ac5b5ce07d901ad2978fa528d80339ee63083307a5001ce74",
+  "core": {
+    "schema": "aukora-conformance-core-v1",
+    "cell": "e1-hostile-refusal",
+    "title": "hostile proposal / refusal chaos over the governed mind door",
+    "seed": 20932,
+    "count": 240,
+    "interfaces": [
+      "@aukora/seed:MindDoor",
+      "@aukora/brain:ReactiveMemoryStore"
+    ],
+    "attackKinds": [
+      "authority-shaped",
+      "bad-token",
+      "cross-origin",
+      "forged-signature",
+      "fu-authority-claim",
+      "fu-mismatch",
+      "injection-target",
+      "malformed-proposal",
+      "missing-body",
+      "no-token",
+      "oversized-field",
+      "referer-attack",
+      "wrong-method"
+    ],
+    "perKind": {
+      "fu-authority-claim": {
+        "n": 14,
+        "refused": 0,
+        "threw": 14
+      },
+      "bad-token": {
+        "n": 17,
+        "refused": 17,
+        "threw": 0
+      },
+      "oversized-field": {
+        "n": 18,
+        "refused": 18,
+        "threw": 0
+      },
+      "missing-body": {
+        "n": 25,
+        "refused": 25,
+        "threw": 0
+      },
+      "fu-mismatch": {
+        "n": 25,
+        "refused": 25,
+        "threw": 0
+      },
+      "injection-target": {
+        "n": 21,
+        "refused": 21,
+        "threw": 0
+      },
+      "wrong-method": {
+        "n": 16,
+        "refused": 16,
+        "threw": 0
+      },
+      "no-token": {
+        "n": 15,
+        "refused": 15,
+        "threw": 0
+      },
+      "authority-shaped": {
+        "n": 17,
+        "refused": 17,
+        "threw": 0
+      },
+      "malformed-proposal": {
+        "n": 17,
+        "refused": 17,
+        "threw": 0
+      },
+      "referer-attack": {
+        "n": 23,
+        "refused": 23,
+        "threw": 0
+      },
+      "forged-signature": {
+        "n": 13,
+        "refused": 13,
+        "threw": 0
+      },
+      "cross-origin": {
+        "n": 19,
+        "refused": 19,
+        "threw": 0
+      }
+    },
+    "observations": {
+      "escaped": 0,
+      "authorityGranted": 0,
+      "resolved": 226,
+      "threw": 14,
+      "receiptsEmitted": 187,
+      "governedRefusals": 185,
+      "governedRefusalsReceipted": 185,
+      "bareProtocolBounces": 41,
+      "mainHeadUnchanged": true,
+      "candidateBranchesAfter": "",
+      "porcelainClean": true,
+      "lockStatus": 200,
+      "postLockdownProposeStatus": 423,
+      "finalStatus": 200
+    },
+    "findings": [
+      {
+        "id": "F1",
+        "class": "refusal-hygiene",
+        "severity": "low",
+        "owner": "Sam 3 (apps/seed)",
+        "summary": "a malformed Fu sidecar throws out of MindDoor.handle() instead of returning a receipted refusal",
+        "detail": "mindDoor.ts calls verdictFromCouncilOutcome(fuSidecar.outcome) on unvalidated attacker input; fuStructuredAdapter.ts:153 reads outcome.basis.digest with no shape guard, so a matched-proposalHash malformed outcome throws. Also verdictFromCouncilOutcome hardcodes grantsAuthority:false, so the door:fu-authority-claim branch is unreachable for valid input. Safety holds (no authority, no materialize, main untouched); refusal hygiene does not.",
+        "threwByKind": {
+          "fu-authority-claim": 14
+        }
+      }
+    ],
+    "verdict": {
+      "noLandedEffect": true,
+      "noAuthorityGranted": true,
+      "everyGovernedRefusalReceipted": true,
+      "mainUntouched": true,
+      "lockdownEngaged": true,
+      "statusReadableUnderLockdown": true,
+      "doorStillUpAfterThrows": true,
+      "coverageComplete": true,
+      "pass": true,
+      "refusalHygieneClean": false
+    }
+  },
+  "environment": {
+    "node": "v22.23.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "grantsAuthority": false,
+    "network": "none (in-process door handle())",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}
