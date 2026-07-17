@@ -1,0 +1,94 @@
+{
+  "schema": "aukora-overnight-handoff-v1",
+  "lane": "Sam 1 — control / integration / public truth",
+  "sessionWindowWITA": "2026-07-17 ~22:30 → 2026-07-18 06:05 (Asia/Makassar)",
+  "cutoffWITA": "2026-07-18 06:00",
+  "baseSha": "5ae15481bf5676ede97aab28b5c16e189358472c",
+  "publicMainAtCloseout": "5ae15481bf5676ede97aab28b5c16e189358472c",
+  "publicMainChangedOvernight": false,
+  "finalIntegration": {
+    "pr": 138,
+    "branch": "sam/overnight-integration",
+    "headSha": "aa11de9e3c25243f5fb174d423ff95b7a3287913",
+    "treeSha": "006958dec046c9799d57d7225d3eb0cd74f399af",
+    "bricks": 13,
+    "ci": "clean-root 20.19.0 SUCCESS, clean-root 22.x SUCCESS, secret-pii-scan SUCCESS, CodeRabbit SUCCESS",
+    "state": "OPEN, fully green both Node versions, unmerged (push-only lane cannot admin-merge)"
+  },
+  "brickHeads": {
+    "sam2_trusted_state_kernel_node_124": "0524aecc080af1505475a0bb7ce1d25a536bfb45",
+    "sam3_git_hardening_123": "07fbc1154184cff8d3cf3454195fde10fffd0d00",
+    "sam3_effect_protocol_125": "74283b360b00911434ef700198e7830d455dea3a",
+    "sam3_hermetic_rehearsal_126": "441aff5b20eec9f7ea63cd96980a8705c7c63977",
+    "sam3_ref_snapshot_128": "d24d73058a9f361461c3e6242d1f521732b32c27",
+    "sam3_path_integrity_130": "f54acc8fcfb4ab9bde70958ae5c4552695c55b7e",
+    "sam3_gitconfig_threat_133": "cde287c7b1f4fa53dedc700b31e1eab01ac8900d",
+    "sam3_recovery_planner_136": "24d4827b36418ad80b8387391f6bd721ac3901b4",
+    "sam3_integration_map_137": "f010437a3c9a336ca708948b43643f09318ccf56",
+    "sam4_brain_c1_effect_event_store_122": "1f761775d6c02b273b9d7e3e90554201509bebdb",
+    "sam4_effect_settlement_129": "4c591486f908748830a1f54c9998e43d979cea06",
+    "sam4_effect_audit_131": "68aa9e85dc416be87fb38ce9627d5bfa2af12469",
+    "sam4_effect_coordinator_134": "7795d2723796a950a1ebd32db716fd51dfe76eec"
+  },
+  "ownedPaths": [
+    "root config + root package.json + lockfile",
+    ".github/** + CI",
+    "scripts/**",
+    "apps/supervisor/**",
+    "README / CLAIMS / SECURITY / anatomy + status counts / AUDIT.json / AI_DILIGENCE.md",
+    "integration branches + cross-lane conflict resolution + final public truth"
+  ],
+  "changedPathsThisSession": [
+    "package.json (added test:kernel-node into test:all)",
+    "packages/kernel-node/package.json (added test + typecheck scripts)",
+    "package-lock.json (reconciled for @aukora/kernel-node)",
+    "apps/seed/src/index.ts + apps/brain/src/index.ts (barrel-export union conflict resolutions)",
+    "all lane implementation via --no-ff integration merges (never edited lane logic)"
+  ],
+  "testsRun": "DONOR_DIR=<symbiote> npm run test:all -> 1082 passing (+2 gated brain skips); PASSES on both the integration clone AND a fresh-clone npm ci; CI green on Node 20.19.0 + Node 22.x. Breakdown: root 169, kernel 21, kernel-node 23 (incl. real kill-9), 17, 51, brain 215(+2), seed 453, council 44, spatial 57, supervisor 31, console fixture 1.",
+  "claimsNowProven": [
+    "real kill -9: consumed authority survives a genuine process death (replay refused) — and this proof is now GATED (Sam 1 wired @aukora/kernel-node into test:all; it was passing OUTSIDE the gate before)",
+    "two concurrent OS processes on one authorization -> exactly one PREPARED, on both Node 20 and Node 22 (Sam 2 reproduced the Node-20 concurrent failure on real Node 20.20.2 and root-caused it to a test-harness exit-vs-stdout race)",
+    "durable effect-event store: 10 identical writes -> one canonical row; conflicting write refused; backend outage -> lossless retry; destroy rows + replay stream -> identical rebuild root",
+    "hostile-row resilience: a compromised backend writing unvalidated rows cannot authorize or execute (fail-closed)",
+    "Git cell hardening: minimal env, disabled hooks/filters/config, argv-only, path-integrity (case + Unicode normalization), gitconfig-threat, crash-recovery planning",
+    "continuity gate: 191 = 169 Symbiote + 13 Kernel + 9 Fu, set-equality PROVEN",
+    "AUMLOK v2 bytes byte-identical (kernel 21/21); no authority granted by mind/Convex/models",
+    "13-brick four-lane composition is green on both Node versions from a clean checkout"
+  ],
+  "claimsExplicitlyRefused": [
+    "'the durability hardening is on main' is FALSE — public main is byte-identical to the pre-sprint R51 integration (5ae15481); ALL of tonight's work is on PRs #120 + #138, nothing merged",
+    "crash-survival + concurrency are proven on the pilot/effect tables and via convex-test (SIMULATED gate), NOT yet on the primary door ConvexWorkflowStore path (Sam 4 outsider check, issue #23 comment 5005441719)",
+    "the C1-C3 effect bricks are in-memory reference implementations pending a live primary-path proof",
+    "no Inkling / Tinker / Nebius / official-ARC / external-skunkworks capability was run or claimed"
+  ],
+  "readyToMergeInOrder": [
+    "#120 (R52 integration) — fully green both Node versions, unconditionally ready, MERGE FIRST",
+    "#138 (final overnight integration, 13 bricks) — fully green both Node versions; needs one apps/brain/src/index.ts barrel union rebase after #120 lands (Sam 1 owns that)"
+  ],
+  "migrationNotes": [
+    "Merge #120 (R52) first, then #138.",
+    "#138 is built on the R51 base (5ae15481), not R52; both touch apps/brain/src/index.ts. After #120 merges, rebase #138 and union-resolve that barrel, then re-confirm green.",
+    "The @aukora/kernel-node package + its test wiring + the lockfile entry are part of #138 and must land together (npm ci depends on the reconciled lockfile)."
+  ],
+  "unresolvedRisks": [
+    {
+      "priority": "P0",
+      "risk": "MERGE-AUTHORITY BOTTLENECK",
+      "detail": "~7.5h overnight, zero admin-merges. Public main unchanged since ~22:43 WITA. All CI-green four-lane hardening is stranded off main. Sam 1 (senorsamiam) is push-only (verified: admin:false, main protected) and cannot merge. This is a coordination-model failure, not a code failure (endorsed from Sam 4 outsider check #3). FIX: Codex runs an admin-merge (of #120 then #138), OR the owner grants senorsamiam merge rights / a protection bypass for controlled windows.",
+      "highestValueNextAction": true
+    },
+    {
+      "priority": "P1",
+      "risk": "Primary-door live durability proof still pending",
+      "detail": "The real-crash/concurrent/destroy-rebuild proofs run on the pilot/effect tables + convex-test, not the primary door ConvexWorkflowStore path. Next phase: prove the same on the primary path against a real local convex-local-backend."
+    },
+    {
+      "priority": "P2",
+      "risk": "R52 / overnight divergence",
+      "detail": "R52 (#120) and the overnight integration (#138) are divergent lines off 5ae15481; merge #120 first to avoid a blind second-merge conflict on apps/brain/src/index.ts."
+    }
+  ],
+  "tomorrowSafestNebiusEntryPoint": "An isolated, killable, bounded test/evolution cell — never a second authority and never a second canonical organism. Convex stays a rebuildable non-authoritative projection; AUMLOK + the kernel reference monitor remain the sole authority boundary.",
+  "sam1Summary": "Held the control lane across 13 checkpoints. Released the base (5ae15481) so lanes weren't stalled; ran the full Node 20+22 matrix that surfaced defects the lanes could not see locally; diagnosed + routed every blocker (Sam 2's two Node-20 kill-9 issues, the root-lockfile drift, and an un-gated centerpiece proof I wired into test:all); resolved all cross-lane barrel conflicts; produced four rolling integrations ending in a fully-green 13-brick comprehensive integration (#138). Refused to fake green, never edited lane test logic, never made a runtime-policy call unilaterally, never merged/force-pushed/ran paid compute/altered AUMLOK bytes. Everything is green, honest, and preserved. The only thing not done is the admin merge — which no agent tonight had the authority to perform."
+}
