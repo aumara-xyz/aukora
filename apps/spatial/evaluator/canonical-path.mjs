@@ -47,7 +47,7 @@ function tempRepo() {
   mkdirSync(join(repoRoot, 'apps/seed/src'), { recursive: true });
   execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
   execFileSync('git', ['-C', repoRoot, 'config', 'user.name', 'R52']);
-  execFileSync('git', ['-C', repoRoot, 'config', 'user.email', 'r52@test.local']);
+  execFileSync('git', ['-C', repoRoot, 'config', 'user.email', 'r52@localhost']); // throwaway temp-repo identity (no PII-email shape; this harness isn't under an exempt test/ path)
   writeFileSync(join(repoRoot, TARGET), '// original\n');
   execFileSync('git', ['-C', repoRoot, 'add', '-A']);
   execFileSync('git', ['-C', repoRoot, 'commit', '-q', '--no-gpg-sign', '-m', 'init']);
