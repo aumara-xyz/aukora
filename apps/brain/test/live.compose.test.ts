@@ -76,7 +76,8 @@ describe.skipIf(!LIVE)('LIVE composition — real machine over the real local ba
     await http.mutation(anyApi.rehearsal.startRehearsal, { key: rehearsalKey, totalSteps: 8, authorityRef: 'a'.repeat(64) });
     // R44 LAW 2: never collide with or bypass the supervisor-held door — refuse loudly if it is held.
     const APP_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
-    assertComposeMayBindDoor(resolve(APP_DIR, '.local', 'organism'), resolve(APP_DIR, '..', '..'));
+    // R47: also defer to the ONE lifecycle owner's recorded door pid (apps/supervisor/state).
+    assertComposeMayBindDoor(resolve(APP_DIR, '.local', 'organism'), resolve(APP_DIR, '..', '..'), undefined, resolve(APP_DIR, '..', 'supervisor', 'state'));
     const door = await startLocalDoor(liveDoorBackend(client), AUKORA_PORTS.brainDoor);
     try {
       const base = `http://127.0.0.1:${AUKORA_PORTS.brainDoor}`;

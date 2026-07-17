@@ -366,8 +366,9 @@
     {
       "path": "apps/spatial/scripts/launch.mjs",
       "source": "ours (launcher/tooling)",
-      "sha256": "2c6d82933d9dc00ed8ee2f85d0a1a30194c98bc58f31fed54fb5fec5da901924",
-      "status": "NEW"
+      "sha256": "a6c7c7632873329d8e40019a2356bc5b7e605fbbb02025908292da9af206adfc",
+      "status": "NEW",
+      "note": "R47: mounts the GET/HEAD-only read spine (readSpine.mjs)"
     },
     {
       "path": "apps/spatial/scripts/verify-provenance.mjs",
@@ -808,6 +809,12 @@
       "sha256": "03540112c80234204652d4195e726fbe1e4ba716918cad77def41a71d29268b0",
       "status": "EXCLUDED",
       "note": "unreachable from the selected roster roots (R37 reachability subtraction) — not shipped; donor blob recorded"
+    },
+    {
+      "path": "apps/spatial/scripts/readSpine.mjs",
+      "source": "ours (R47 nervous-system lane) — ported/adapted from donor spatial/serve.ts GET/HEAD projection law",
+      "sha256": "34e55c3623d357b8a079cd7fdfec2a4a687352eb50853ce4d7336b4f15c27d3b",
+      "status": "NEW"
     }
   ]
 }

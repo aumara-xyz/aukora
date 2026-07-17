@@ -27,14 +27,22 @@ import { DOOR_TOKEN_ENV } from '../scripts/doorCustody.mjs';
 const APP_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const seedRunner = () => readFileSync(resolve(APP_DIR, '..', 'seed', 'scripts', 'mind-door-7097.ts'), 'utf8');
 const ctl = () => readFileSync(resolve(APP_DIR, 'scripts', 'organism-ctl.mjs'), 'utf8');
+const supervisor = () => readFileSync(resolve(APP_DIR, '..', 'supervisor', 'src', 'supervisor.mjs'), 'utf8');
 
 describe('R44 mind-door token lifecycle — acceptance at the lane boundary', () => {
-  it('SUPERVISOR side (this lane) is complete: mint → 0600 hold → env hand-off to the mind child', () => {
+  it('the ONE lifecycle owner (apps/supervisor, R47) carries the custody law: mint → 0600 hold → env → clear', () => {
+    const src = supervisor();
+    expect(src).toMatch(/mintDoorToken\(\)/);                     // the owner mints
+    expect(src).toMatch(/writeTokenFile\(BRAIN_ORG_DIR/);          // one 0600 file under the gitignored dir
+    expect(src).toMatch(/capturedEnv\[DOOR_TOKEN_ENV\]/);         // env hand-off to mind-door AND shell children
+    expect(src).toMatch(/clearTokenFile\(BRAIN_ORG_DIR\)/);       // the token dies with the boot (down)
+  });
+
+  it('organism-ctl DELEGATES to the one owner (R47 convergence) — it starts nothing itself', () => {
     const src = ctl();
-    expect(src).toMatch(/mintDoorToken\(\)/);                    // supervisor mints
-    expect(src).toMatch(/writeTokenFile\(ORG_DIR, token\)/);     // one 0600 file under the gitignored dir
-    expect(src).toMatch(/\[DOOR_TOKEN_ENV\]: token/);            // env hand-off to the child
-    expect(src).toMatch(/clearTokenFile\(ORG_DIR\)/);            // the token dies with the boot
+    expect(src).toMatch(/apps\/supervisor\/src\/supervisor\.mjs|'supervisor', 'src', 'supervisor\.mjs'/); // delegation target
+    expect(src).not.toMatch(/startDetached|spawn\((?!Sync)/);      // no service spawning of its own
+    expect(src).toMatch(/nodePath\(\)/);                          // keeps the R39 Node preflight
   });
 
   // HANDOFF → Sam 3 (apps/seed): honor the supervisor-minted token. LANDED in R44b — the seed runner now adopts
@@ -44,9 +52,8 @@ describe('R44 mind-door token lifecycle — acceptance at the lane boundary', ()
     expect(seedRunner()).toContain(DOOR_TOKEN_ENV);
   });
 
-  it('gap evidence: today the seed runner PRINTS its self-minted token, which a supervised boot discards', () => {
-    const src = seedRunner();
-    expect(src).toMatch(/console\.log\(.*localPostToken/);       // printed to stdout…
-    expect(ctl()).toMatch(/stdio: 'ignore'/);                    // …which the supervisor discards ⇒ unreachable POST
+  it('the supervisor-minted token always wins: stdout capture stays FALLBACK-only', () => {
+    const src = supervisor();
+    expect(src).toMatch(/if \(!capturedEnv\[DOOR_TOKEN_ENV\]\) capturedEnv\[DOOR_TOKEN_ENV\] = m\[1\]/);
   });
 });

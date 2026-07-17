@@ -18,6 +18,11 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { planUp, planDown, planSwap, deriveStatus } from './engine.mjs';
+// R47 convergence: the ONE custody module (R44 law) — the lifecycle owner MINTS the per-boot mind-door token
+// and preserves it in exactly two places: the child env and ONE 0600 file under the gitignored organism dir.
+import {
+  DOOR_TOKEN_ENV, TOKEN_LOG_LAW, mintDoorToken, writeTokenFile, clearTokenFile,
+} from '../../brain/scripts/doorCustody.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const APP = join(HERE, '..');
@@ -77,9 +82,12 @@ async function observeAll(pol) {
 }
 
 // ── execution of the bounded plan ──────────────────────────────────────────────────────────────────
-// The mind door prints a one-time POST token to ITS stdout. As lifecycle owner we capture it in
-// process memory only (never a file, never a receipt) and hand it to the shell launcher's env — the
-// same custody path as the manual flow, with zero disk exposure.
+// R47 (R44 law): the lifecycle owner MINTS the per-boot token BEFORE the mind door starts and hands it to
+// the mind-door child AND the shell launcher via env (`AUKORA_DOOR_TOKEN`), plus ONE 0600 file under the
+// gitignored apps/brain/.local/organism dir for local operator tools. The value is never logged, never in a
+// receipt, never served. Stdout capture below remains only as a FALLBACK for a pre-R44b runner that mints
+// its own token and prints it.
+const BRAIN_ORG_DIR = join(REPO, 'apps', 'brain', '.local', 'organism');
 const capturedEnv = {};
 function startService(svc, port) {
   const [cmd, ...args] = svc.workspaceCmd;
@@ -97,7 +105,8 @@ function startService(svc, port) {
     child.stdout.on('data', (c) => {
       buf += c.toString();
       const m = buf.match(/local POST token[^:]*:\s*([0-9a-f]{32,})/);
-      if (m) { capturedEnv.AUKORA_DOOR_TOKEN = m[1]; child.stdout.destroy(); }
+      // FALLBACK only (pre-R44b runner): the supervisor-minted token always wins; never overwrite it.
+      if (m) { if (!capturedEnv[DOOR_TOKEN_ENV]) capturedEnv[DOOR_TOKEN_ENV] = m[1]; child.stdout.destroy(); }
     });
   }
   child.unref();
@@ -190,8 +199,24 @@ async function main() {
     receipt('status-read', { services: status.services.map((s) => s.name + '=' + s.state).join(' ') });
     return;
   }
-  if (cmd === 'up') { receipt('up-requested', {}); await executePlan(planUp(pol, obs), obs); writeGatewayState(); return; }
-  if (cmd === 'down') { receipt('down-requested', {}); await executePlan(planDown(pol, obs), obs); return; }
+  if (cmd === 'up') {
+    receipt('up-requested', {});
+    // R47 (R44 law): mint the per-boot token FIRST — env for the mind-door + shell children, one 0600 file
+    // under the gitignored organism dir. The receipt names the LAW, never the value.
+    capturedEnv[DOOR_TOKEN_ENV] = mintDoorToken();
+    writeTokenFile(BRAIN_ORG_DIR, capturedEnv[DOOR_TOKEN_ENV]);
+    receipt('token-custody', { law: TOKEN_LOG_LAW });
+    await executePlan(planUp(pol, obs), obs);
+    writeGatewayState();
+    return;
+  }
+  if (cmd === 'down') {
+    receipt('down-requested', {});
+    await executePlan(planDown(pol, obs), obs);
+    clearTokenFile(BRAIN_ORG_DIR); // the per-boot token dies with the boot (R44)
+    receipt('token-cleared', {});
+    return;
+  }
   if (cmd === 'swap') {
     const name = process.argv[3];
     receipt('swap-requested', { service: name });

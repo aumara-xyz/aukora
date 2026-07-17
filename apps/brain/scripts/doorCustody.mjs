@@ -18,7 +18,7 @@
  *   bypass. `assertComposeMayBindDoor` refuses LOUDLY in that case — one owner, one path.
  */
 import { randomBytes } from 'node:crypto';
-import { chmodSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 /** The env var the supervisor sets on the mind-door child. The seed runner honors it (R44 handoff). */
@@ -92,25 +92,45 @@ export function readDoorPid(orgDir) {
 
 const pidAlive = (pid) => { try { process.kill(pid, 0); return true; } catch { return false; } };
 
-/**
- * Does the organism supervisor currently HOLD the brain door for this checkout?
- * Held iff: the lockfile names `checkout` AND a door pid is recorded AND that pid is alive.
- * `isAlive` is injectable for tests; defaults to a real signal-0 probe.
- */
-export function supervisorHoldsDoor(orgDir, checkout, isAlive = pidAlive) {
-  const lock = readOrganismLock(orgDir);
-  if (lock === null || lock !== checkout) return { held: false, pid: null };
-  const pid = readDoorPid(orgDir);
-  if (pid === null || !isAlive(pid)) return { held: false, pid };
-  return { held: true, pid };
+/** R47: the ONE lifecycle owner (apps/supervisor) records door pids as `brain-door.<port>.pid` in its state dir. */
+export function readSupervisorDoorPid(stateDir) {
+  let names = [];
+  try { names = readdirSync(stateDir); } catch { return null; }
+  for (const n of names) {
+    if (!/^brain-door\.\d+\.pid$/.test(n)) continue;
+    const pid = Number(readFileSync(join(stateDir, n), 'utf8').trim());
+    if (Number.isInteger(pid) && pid > 1) return pid;
+  }
+  return null;
 }
 
 /**
- * compose:live preflight — REFUSES loudly when the supervisor holds the door (LAW 2). A refusal names the
- * one owner and the two legitimate paths; it never kills, never rebinds, never bypasses.
+ * Does a lifecycle owner currently HOLD the brain door for this checkout?
+ * Held iff: (legacy ctl era) the lockfile names `checkout` AND a door pid is recorded AND alive; OR
+ * (R47 one-owner era) `supStateDir` holds a live `brain-door.<port>.pid` (the state dir is checkout-scoped
+ * by path, so no lockfile is needed on that arm). `isAlive` is injectable for tests.
  */
-export function assertComposeMayBindDoor(orgDir, checkout, isAlive = pidAlive) {
-  const v = supervisorHoldsDoor(orgDir, checkout, isAlive);
+export function supervisorHoldsDoor(orgDir, checkout, isAlive = pidAlive, supStateDir = null) {
+  const lock = readOrganismLock(orgDir);
+  if (lock !== null && lock === checkout) {
+    const pid = readDoorPid(orgDir);
+    if (pid !== null && isAlive(pid)) return { held: true, pid };
+  }
+  if (supStateDir) {
+    const pid = readSupervisorDoorPid(supStateDir);
+    if (pid !== null && isAlive(pid)) return { held: true, pid };
+    return { held: false, pid };
+  }
+  const pid = readDoorPid(orgDir);
+  return { held: false, pid };
+}
+
+/**
+ * compose:live preflight — REFUSES loudly when the lifecycle owner holds the door (LAW 2). A refusal names
+ * the one owner and the two legitimate paths; it never kills, never rebinds, never bypasses.
+ */
+export function assertComposeMayBindDoor(orgDir, checkout, isAlive = pidAlive, supStateDir = null) {
+  const v = supervisorHoldsDoor(orgDir, checkout, isAlive, supStateDir);
   if (v.held) {
     throw new Error(
       `compose:live REFUSED: the organism supervisor already holds the brain door for this checkout (door pid ${v.pid}). ` +

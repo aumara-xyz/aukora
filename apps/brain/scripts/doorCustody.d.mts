@@ -13,8 +13,9 @@ export declare function describeTokenPresence(orgDir: string): { present: boolea
 export declare function readOrganismLock(orgDir: string): string | null;
 export declare function readDoorPid(orgDir: string): number | null;
 export declare function supervisorHoldsDoor(
-  orgDir: string, checkout: string, isAlive?: (pid: number) => boolean,
+  orgDir: string, checkout: string, isAlive?: (pid: number) => boolean, supStateDir?: string | null,
 ): { held: boolean; pid: number | null };
 export declare function assertComposeMayBindDoor(
-  orgDir: string, checkout: string, isAlive?: (pid: number) => boolean,
+  orgDir: string, checkout: string, isAlive?: (pid: number) => boolean, supStateDir?: string | null,
 ): true;
+export declare function readSupervisorDoorPid(stateDir: string): number | null;

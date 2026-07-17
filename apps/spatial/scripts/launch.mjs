@@ -18,6 +18,7 @@
 //   :3210/:3211 the local Convex backend behind that door (dev-only, loopback).
 // The donor stack stays untouched and independently usable.
 import { createServer } from "node:http";
+import { makeReadSpine } from "./readSpine.mjs"; // R47: donor GET/HEAD-only workbench read spine
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join, normalize, extname } from "node:path";
@@ -137,8 +138,13 @@ async function composeProjection() {
 const JSON_HEAD = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" };
 
 function makeServer() {
+  // R47: the donor read spine — GET/HEAD-only projections (fingerprint, confined repo sight, loop, KIRA
+  // recall with citations, workflow/receipt/event proxies). It never reads AUKORA_DOOR_TOKEN.
+  const spine = makeReadSpine({ repoRoot: join(ROOT, "..", ".."), doorBase: BRAIN_DOOR });
   return createServer(async (req, res) => {
-    let pathname = decodeURIComponent(new URL(req.url, `http://${req.headers.host}`).pathname);
+    const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    let pathname = decodeURIComponent(parsedUrl.pathname);
+    if (spine.canHandle(pathname)) return spine.handle(req, res, parsedUrl);
     // Tie an AbortController to client disconnect: a browser barge-in that aborts its fetch closes this
     // socket, which aborts req.signal, which cancels the upstream mind-door fetch (work/billing stops).
     const ac = new AbortController();
