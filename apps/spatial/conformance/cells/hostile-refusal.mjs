@@ -162,8 +162,10 @@ export async function run({ seed = 0x51c4, count = 240 } = {}) {
     // eventReceipt. Bare-protocol bounces (405 wrong-method, 400 missing-body, 404 route) carry neither — they
     // never entered governance, so they are counted apart and not held to the receipt law.
     let governedRefusals = 0, governedRefusalsReceipted = 0, bareProtocolBounces = 0;
+    // EXACT receipt counter: every response that carried a truthy eventReceipt, counted at the wire.
+    // (recall() is bounded, so counting recall hits under-reports on large sweeps.)
+    let receiptsEmitted = 0;
     const threwByKind = {};
-    const receiptsBefore = store.recall({ text: 'door-event' }).length;
 
     // Phase 1: hostile chaos against the live write surface. Each call is wrapped so a THROW becomes evidence,
     // never a crash of the cell — we still fold it into the safety accounting below.
@@ -185,6 +187,7 @@ export async function run({ seed = 0x51c4, count = 240 } = {}) {
       if (refused) perKind[v.kind].refused++;
       // Audit accounting: governed refusals (reasonClass present) must carry an eventReceipt.
       const j = res.json ?? {};
+      if (typeof j.eventReceipt === 'string' && j.eventReceipt.length > 0) receiptsEmitted++;
       if (j.reasonClass !== undefined) {
         governedRefusals++;
         if (typeof j.eventReceipt === 'string' && j.eventReceipt.length > 0) governedRefusalsReceipted++;
@@ -199,9 +202,11 @@ export async function run({ seed = 0x51c4, count = 240 } = {}) {
     const postLockdownPropose = await door.handle(post('/api/propose', { proposalInput: lockedProposal, nonce: rng.token() }));
     const postLockdownStatus = await door.handle({ method: 'GET', path: '/api/door', headers: {} });
 
-    // Observations after the whole storm.
-    const receiptsAfter = store.recall({ text: 'door-event' }).length;
-    const receipted = receiptsAfter - receiptsBefore;
+    // Observations after the whole storm (lockdown-phase responses fold into the exact counter too).
+    for (const r of [lock, postLockdownPropose]) {
+      const rj = r.json ?? {};
+      if (typeof rj.eventReceipt === 'string' && rj.eventReceipt.length > 0) receiptsEmitted++;
+    }
     const headAfter = gitHead(repoRoot);
     const branchesAfter = gitCandidateBranches(repoRoot);
     const porcelain = gitPorcelain(repoRoot);
@@ -243,7 +248,7 @@ export async function run({ seed = 0x51c4, count = 240 } = {}) {
       attackKinds: kinds,
       perKind,
       observations: {
-        escaped, authorityGranted, resolved, threw, receiptsEmitted: receipted,
+        escaped, authorityGranted, resolved, threw, receiptsEmitted,
         governedRefusals, governedRefusalsReceipted, bareProtocolBounces,
         // The temp-repo HEAD SHA is time/environment-specific (a fresh commit gets a new timestamp), so only the
         // INVARIANT is folded into the reproducible core — not the SHA itself (which would break replay hashing).

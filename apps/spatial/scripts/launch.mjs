@@ -24,7 +24,7 @@ import { realpathSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { fileURLToPath } from "node:url";
-import { dirname, join, normalize, extname, resolve, sep } from "node:path";
+import { basename, dirname, join, normalize, extname, resolve, sep } from "node:path";
 
 const execFileP = promisify(execFile);
 
@@ -158,18 +158,21 @@ async function git(...args) {
 // Repo read/search fence (donor #44 law): repo-scoped, no traversal/symlink escape, deny secret-shaped
 // paths, bounded output, GET-only. A refused read is loud, never silent.
 const REPO_DENY = /(^|\/)\.(env|git)|\.pem$|\.key$|secrets?|\.venv|node_modules/i;
+// The deny regex anchors on '/'; Windows paths use '\', so normalize separators BEFORE testing or a
+// request like `dir\..\.env` slips past the boundary anchors on that platform.
+const denyHit = (p) => REPO_DENY.test(String(p).replace(/\\/g, "/"));
 const REPO_REAL = (() => { try { return realpathSync(REPO_ROOT); } catch { return REPO_ROOT; } })();
 function fencedRepoPath(rel) {
   if (typeof rel !== "string" || rel.length === 0 || rel.length > 512) return null;
   const abs = resolve(REPO_ROOT, rel);
   if (!abs.startsWith(REPO_ROOT + sep)) return null;      // '../' traversal escape (lexical)
-  if (REPO_DENY.test(rel) || REPO_DENY.test(abs)) return null; // secret-shaped
+  if (denyHit(rel) || denyHit(abs)) return null;           // secret-shaped
   // SYMLINK escape: a link INSIDE the repo can point outside it, and resolve() does not follow links.
   // Re-check the REAL path (and its parent, so a symlinked missing file is still fenced) is under the repo.
   let real;
-  try { real = realpathSync(abs); } catch { try { real = join(realpathSync(dirname(abs)), "" + abs.slice(dirname(abs).length + 1)); } catch { return null; } }
+  try { real = realpathSync(abs); } catch { try { real = join(realpathSync(dirname(abs)), basename(abs)); } catch { return null; } }
   if (real !== REPO_REAL && !real.startsWith(REPO_REAL + sep)) return null;
-  if (REPO_DENY.test(real)) return null;
+  if (denyHit(real)) return null;
   return real;
 }
 

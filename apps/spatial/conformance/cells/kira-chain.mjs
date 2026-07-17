@@ -37,15 +37,19 @@ export async function run({ seed = 0xc41a, records = 500, forgets = 60 } = {}) {
   let prevLive = 0, prevChain = 0;
   const ingestedIds = [];
 
-  // Phase 1: stress ingest — growth + integrity after every op.
+  // Phase 1: stress ingest — growth + integrity after every op. Content retained per id so the
+  // forget probe can prove PRE-forget recallability (a probe that never matched proves nothing).
+  const contentById = new Map();
   for (let i = 0; i < records; i++) {
-    const rec = buildMemoryRecord({ content: phrase(rng), createdAt: NOW_ISO, kind: 'observation' });
+    const content = phrase(rng);
+    const rec = buildMemoryRecord({ content, createdAt: NOW_ISO, kind: 'observation' });
     const v = store.ingest(rec);
     if (!v.ok) {
       // A collision on an identical seeded phrase is legitimate (content-addressed id already live); skip it.
       continue;
     }
     ingestedIds.push(v.recordId);
+    contentById.set(v.recordId, content);
     const snap = v.snapshot;
     if (snap.liveCount <= prevLive || snap.chainLength <= prevChain) growthViolations++;
     if (!store.verifyChain().valid) integrityViolations++;
@@ -62,13 +66,17 @@ export async function run({ seed = 0xc41a, records = 500, forgets = 60 } = {}) {
 
   for (const id of toForget) {
     const chainBefore = store.snapshot().chainLength;
+    // Non-vacuous unrecallable probe: the record must be recallable BY ITS OWN CONTENT before the
+    // forget, and that same query must no longer surface it afterward.
+    const content = contentById.get(id);
+    const recallableBefore = store.recall({ text: content }).some((h) => h.recordId === id);
     // 5. forgetting with a FAILING owner check is refused; plaintext survives.
     const refusedForget = store.forget(id, () => false, NOW_ISO);
     if (!refusedForget.ok && store.plaintextRetained(id)) forgetRequiresOwner++;
     // 3. governed forget with a valid owner check.
     const f = store.forget(id, okOwner, NOW_ISO);
     if (f.ok && !store.plaintextRetained(id)) forgetPlaintextGone++;
-    if (store.recall({ text: id }).every((h) => h.recordId !== id)) forgetUnrecallable++;
+    if (recallableBefore && store.recall({ text: content }).every((h) => h.recordId !== id)) forgetUnrecallable++;
     if (store.verifyChain().valid) forgetChainStillValid++;
     if (store.snapshot().chainLength === chainBefore + 1) forgetTombstoned++; // content-free tombstone appended
   }

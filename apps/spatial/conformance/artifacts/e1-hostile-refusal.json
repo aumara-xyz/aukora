@@ -1,6 +1,6 @@
 {
   "schema": "aukora-conformance-bundle-v1",
-  "coreHash": "ecc741c4cd73b697796d4dd50c5b43f05b0055b9288ff8525303bc74b62ffc7f",
+  "coreHash": "0f3c19026fe1d46ac5b5ce07d901ad2978fa528d80339ee63083307a5001ce74",
   "core": {
     "schema": "aukora-conformance-core-v1",
     "cell": "e1-hostile-refusal",
@@ -98,7 +98,7 @@
       "authorityGranted": 0,
       "resolved": 226,
       "threw": 14,
-      "receiptsEmitted": 20,
+      "receiptsEmitted": 187,
       "governedRefusals": 185,
       "governedRefusalsReceipted": 185,
       "bareProtocolBounces": 41,
@@ -136,7 +136,7 @@
     }
   },
   "environment": {
-    "node": "v26.4.0",
+    "node": "v22.23.1",
     "platform": "darwin",
     "arch": "arm64"
   },

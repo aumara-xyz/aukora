@@ -202,6 +202,13 @@ describe('R49 · the complete live loopback ceremony (real 127.0.0.1 socket)', (
     expect(res.json.eventReceipt).toBeTruthy(); // refusal receipted
   });
 
+  it('an OVERSIZED nonce (129 chars) refuses with its own distinct class: door:nonce-too-long', async () => {
+    const res = await post('/api/propose', { proposalInput: p1, nonce: 'a'.repeat(129) });
+    expect(res.status).toBe(400);
+    expect(res.json.reasonClass).toBe('door:nonce-too-long'); // not conflated with door:nonce-missing
+    expect(res.json.eventReceipt).toBeTruthy(); // refusal receipted
+  });
+
   it('tokened /api/propose (no authorization yet) → the workflow is DURABLY awaiting-owner', async () => {
     const res = await post('/api/propose', { proposalInput: p1, nonce: N1 });
     expect(res.status).toBe(409);

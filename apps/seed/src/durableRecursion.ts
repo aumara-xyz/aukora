@@ -93,7 +93,11 @@ export function explainWorkflowState(x: unknown): WorkflowStateVerdict {
   if (r.councilVerdict !== null && r.councilVerdict !== 'advisory-pass' && r.councilVerdict !== 'advisory-hold') return no('councilVerdict');
   if (r.councilEvidenceDigest !== null && (typeof r.councilEvidenceDigest !== 'string' || !isHex64(r.councilEvidenceDigest))) return no('councilEvidenceDigest');
   if (typeof r.stage !== 'string' || r.stage.length === 0 || r.stage.length > 64) return no('stage');
-  if (!Array.isArray(r.refusals) || r.refusals.some((s) => typeof s !== 'string' || s.length > 256)) return no('refusals');
+  if (
+    !Array.isArray(r.refusals)
+    || Reflect.ownKeys(r.refusals).length !== r.refusals.length + 1 // dense, index-only + 'length' — a sparse Array(1) would pass some() and serialize as [null]
+    || r.refusals.some((s) => typeof s !== 'string' || s.length > 256)
+  ) return no('refusals');
   if (r.receiptHash !== null && (typeof r.receiptHash !== 'string' || !isHex64(r.receiptHash))) return no('receiptHash');
   if (typeof r.ownerVerified !== 'boolean') return no('ownerVerified');
   if (typeof r.createdAtIso !== 'string' || typeof r.updatedAtIso !== 'string') return no('timestamps');

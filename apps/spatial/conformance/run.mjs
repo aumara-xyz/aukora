@@ -38,7 +38,7 @@ export async function runAll() {
 }
 
 // Direct-run entrypoint.
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.filename === process.argv[1]) {
   runAll().then((m) => {
     for (const row of m) console.log(`${row.pass ? 'PASS' : 'FAIL'}  ${row.cell}  core=${row.coreHash.slice(0, 16)}…`);
     if (m.some((r) => !r.pass)) process.exit(1);
