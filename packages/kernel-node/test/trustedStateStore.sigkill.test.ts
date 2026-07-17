@@ -8,10 +8,14 @@
  * authorization → REPLAY REFUSAL. And a child that crashes BEFORE the atomic rename commits NOTHING, so the
  * authorization is still usable exactly once. LIVE.
  *
- * RUNTIME: the child is esbuild-bundled to plain ESM once in beforeAll, then spawned with a bare `node` (no
- * experimental TS flags), so the kill-9 proof holds on Node 20 AND Node 22 CI — not just the box's Node 22.
- * (Earlier this used `node --experimental-transform-types`, which is Node ≥22.6 only → the child never started on
- * Node 20 CI and the LIVE tests failed with "child exited with no output". Bundling removes the runtime coupling.)
+ * RUNTIME (two Node-20 fixes, both verified on a real Node 20.20.2): (1) the child is esbuild-bundled to plain
+ * ESM once in beforeAll, then spawned with a bare `node` (no experimental TS flags) — earlier it used
+ * `node --experimental-transform-types`, Node ≥22.6 only, so the child never started on Node 20 ("child exited
+ * with no output"). (2) The parent resolves each child on the **`close`** event, not `exit`: `exit` can fire
+ * before the child's final stdout `data` is delivered, and under vitest's console interception on Node 20 that
+ * raced the concurrent test to an empty buffer (0 prepares observed). `close` fires only after all stdio has
+ * flushed. Children also emit via synchronous `writeSync(1,…)` (see child-consume.ts) so a line is never lost to
+ * a `process.exit()` flush race. With both, all 3 LIVE tests pass on Node 20 and Node 22.
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { spawn } from 'node:child_process';
@@ -50,7 +54,9 @@ function spawnChild(dir: string, cid: string, mode: string): Promise<{ proc: Ret
   return new Promise((resolve, reject) => {
     let buf = '';
     proc.stdout!.on('data', (d) => { buf += d.toString(); const nl = buf.indexOf('\n'); if (nl >= 0) resolve({ proc, line: buf.slice(0, nl).trim() }); });
-    proc.on('exit', () => { if (buf.trim()) resolve({ proc, line: buf.trim() }); else reject(new Error('child exited with no output')); });
+    // 'close' (not 'exit'): 'exit' can fire before the child's final stdout 'data' reaches the parent — under
+    // vitest's console interception on Node 20 that left buf empty. 'close' fires after all stdio has flushed.
+    proc.on('close', () => { if (buf.trim()) resolve({ proc, line: buf.trim() }); else reject(new Error('child exited with no output')); });
     proc.on('error', reject);
   });
 }
@@ -81,8 +87,12 @@ describe('[LIVE] consumed authority survives a REAL kill -9', () => {
       // both race for the single-writer lock (child has a bounded lock-retry); the winner consumes, the loser
       // then attaches to the durable state and sees the id already consumed → replay. Never two prepares.
       const runToEnd = (m: string) => new Promise<string>((resolve) => {
-        const p = spawn(process.execPath, ['--experimental-transform-types', '--no-warnings', CHILD, dir, 'auth-race', m], { stdio: ['ignore', 'pipe', 'ignore'] });
-        let buf = ''; p.stdout!.on('data', (d) => { buf += d.toString(); }); p.on('exit', () => resolve(buf.trim()));
+        const p = spawn(process.execPath, [CHILD, dir, 'auth-race', m], { stdio: ['ignore', 'pipe', 'ignore'] });
+        let buf = ''; p.stdout!.on('data', (d) => { buf += d.toString(); });
+        // resolve on 'close', NOT 'exit' — 'exit' can fire before the final stdout 'data' is delivered to the
+        // parent; under vitest's console interception on Node 20 that raced empty (0 prepares observed). 'close'
+        // fires only after every stdio stream has flushed and closed, so buf is complete on all Node versions.
+        p.on('close', () => resolve(buf.trim()));
       });
       const [a, b] = await Promise.all([runToEnd('commit-exit'), runToEnd('commit-exit')]);
       const outcomes = [a, b].sort();

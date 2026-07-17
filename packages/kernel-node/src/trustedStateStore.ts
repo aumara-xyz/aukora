@@ -91,11 +91,15 @@ export class TrustedStateStore {
         return;
       } catch (err) {
         if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err;
-        const holder = Number(readFileSync(lock, 'utf8').trim());
+        const raw = readFileSync(lock, 'utf8').trim();
+        const holder = Number(raw);
         // Single-writer: a lock held by ANY LIVE pid (including another instance in this same process) refuses.
-        // Only a lock whose holder pid is DEAD (a crashed writer) is reclaimed.
-        if (Number.isInteger(holder) && this.pidAlive(holder)) {
-          throw new WriterLockedError(`trusted store locked by live pid ${holder}`);
+        // Only a lock whose holder is a POSITIVE integer pid that is provably DEAD (a crashed writer) is reclaimed.
+        // An empty/partial/non-positive lock is a writer that has O_EXCL-created the file but not yet fsync'd its
+        // pid — a LIVE contended lock, NOT stale. Treat it as held (refuse + let the caller's retry loop wait for
+        // the holder to finish and release), never delete it — that TOCTOU would admit two writers.
+        if (raw === '' || !Number.isInteger(holder) || holder <= 0 || this.pidAlive(holder)) {
+          throw new WriterLockedError(`trusted store locked (holder ${raw || 'in-progress'})`);
         }
         rmSync(lock, { force: true }); // stale lock (dead pid) — reclaim, then retry once
       }
