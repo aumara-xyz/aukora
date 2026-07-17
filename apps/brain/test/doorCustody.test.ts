@@ -75,12 +75,13 @@ describe('LAW 1 — per-boot token custody', () => {
     expect(gitignore.split('\n')).toContain('.local/');
   });
 
-  it('NEVER PRINTED: the supervisor source logs the law, not the value (no token interpolation in logs)', () => {
-    const ctl = readFileSync(resolve(APP_DIR, 'scripts', 'organism-ctl.mjs'), 'utf8');
-    expect(ctl).toContain('TOKEN_LOG_LAW');                              // the law is what gets logged
-    expect(ctl).toContain(`[${'DOOR_TOKEN_ENV'}]: token`);               // env hand-off to the child
-    for (const line of ctl.split('\n')) {
-      if (/\b(log|loud)\(/.test(line)) expect(line, `log line leaks the token: ${line}`).not.toMatch(/\$\{token\}/);
+  it('NEVER PRINTED: the ONE owner (apps/supervisor) logs the law, not the value (R47)', () => {
+    const sup = readFileSync(resolve(APP_DIR, '..', 'supervisor', 'src', 'supervisor.mjs'), 'utf8');
+    expect(sup).toContain('TOKEN_LOG_LAW');                              // the law is what gets receipted
+    expect(sup).toMatch(/capturedEnv\[DOOR_TOKEN_ENV\] = mintDoorToken\(\)/); // owner mints
+    for (const line of sup.split('\n')) {
+      // no receipt/log line may interpolate the captured token value
+      if (/receipt\(|console\.log\(/.test(line)) expect(line, `line leaks the token: ${line}`).not.toMatch(/capturedEnv\[DOOR_TOKEN_ENV\]|\$\{token\}/);
     }
     expect(TOKEN_LOG_LAW).toMatch(/never printed/);
   });
@@ -118,6 +119,15 @@ describe('LAW 2 — compose:live supervisor awareness (no collision, no bypass)'
     expect(supervisorHoldsDoor(orgDir, CHECKOUT, () => true)).toEqual({ held: true, pid: 4242 });
     expect(() => assertComposeMayBindDoor(orgDir, CHECKOUT, () => true))
       .toThrow(/REFUSED.*supervisor already holds the brain door.*pid 4242.*organism:down/s);
+  });
+
+  it('R47 one-owner arm: a LIVE brain-door pid in the supervisor state dir also holds the door', () => {
+    const supDir = join(orgDir, 'sup-state');
+    require('node:fs').mkdirSync(supDir, { recursive: true });
+    writeFileSync(join(supDir, 'brain-door.7141.pid'), '5151');
+    expect(supervisorHoldsDoor(orgDir, CHECKOUT, () => true, supDir)).toEqual({ held: true, pid: 5151 });
+    expect(supervisorHoldsDoor(orgDir, CHECKOUT, () => false, supDir).held).toBe(false); // dead pid: bindable
+    expect(() => assertComposeMayBindDoor(orgDir, CHECKOUT, () => true, supDir)).toThrow(/REFUSED/);
   });
 
   it('parsers are fail-closed: absent/blank lock and absent/garbage pid read as null', () => {

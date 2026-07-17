@@ -38,8 +38,11 @@ describe('phased boot + dependency ordering (donor start-kit behavior)', () => {
   it('boots in phase order with dependencies before dependents', () => {
     const plan = planUp(policy, allDown);
     const idx = (name, action) => plan.findIndex((p) => p.service === name && p.action === action);
-    expect(idx('brain-door', 'probe')).toBeGreaterThanOrEqual(0);         // external: probe only
-    expect(plan.some((p) => p.service === 'brain-door' && p.action === 'start')).toBe(false); // never started by us
+    // R47 one-owner convergence: convex-backend and the brain door are OWNED now — started in phase order.
+    expect(idx('convex-backend', 'start')).toBeGreaterThanOrEqual(0);
+    expect(idx('brain-door', 'start')).toBeGreaterThanOrEqual(0);
+    expect(idx('convex-backend', 'start')).toBeLessThan(idx('brain-door', 'start'));   // phase 0 before 1
+    expect(idx('brain-door', 'start')).toBeLessThan(idx('mind-door', 'start'));        // phase 1 before 2
     expect(idx('mind-door', 'start')).toBeLessThan(idx('spatial-shell', 'start')); // dependency ordering
     expect(idx('spatial-shell', 'start')).toBeLessThan(idx('spatial-shell', 'probe') + 1);
   });
@@ -103,7 +106,9 @@ describe('clean down', () => {
     const plan = planDown(policy, allUp);
     const names = plan.filter((p) => p.action === 'stop').map((p) => p.service);
     expect(names[0]).toBe('spatial-shell'); // phase 3 first
-    expect(names).not.toContain('brain-door'); // external never touched
+    // R47 one-owner convergence: the door and backend are OURS to stop, in reverse phase order.
+    expect(names.indexOf('brain-door')).toBeGreaterThan(names.indexOf('mind-door'));
+    expect(names.indexOf('convex-backend')).toBe(names.length - 1); // phase 0 stops last
     expect(planDown(policy, allDown)).toHaveLength(0);
   });
 });
