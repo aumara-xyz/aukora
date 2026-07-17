@@ -1,0 +1,57 @@
+{
+  "schema": "aukora-nebius-runtime-v1",
+  "description": "Inkling-NVFP4 vLLM SERVING manifest — PREPARED, PARKED (enabled:false). Conforms to validateNebiusManifest (parked-with-unbound-digests is valid). Every reproducibility binding below is a REQUIRED-AT-PIN slot: it MUST be filled from the OFFICIAL Thinking Machines checkpoint + OFFICIAL vLLM recipe at bring-up. Empty '' here is NOT a fabricated value — it is an explicit unbound pin that keeps the cell inert until a real launch pins it. No hashes are invented in this file.",
+  "imageSha256": "",
+  "codeSha256": "",
+  "modelChecksumSha256": "",
+  "ceilings": {
+    "maxOutputTokens": 512,
+    "maxWallClockMs": 60000,
+    "maxCostUsd": 0.5,
+    "maxCallsPerSession": 8
+  },
+  "credentials": "env",
+  "outputContract": "pr-only",
+  "runtime": {
+    "entrypoint": "aukora-inkling-nvfp4-vllm",
+    "reproducible": true,
+    "networkPolicy": "pinned-only"
+  },
+  "enabled": false,
+  "autonomousMerge": false,
+  "grantsAuthority": false,
+  "inkling": {
+    "note": "Extension block. All REQUIRED_AT_PIN fields are empty by design; a bring-up fills them from the official sources and flips enabled:true ONLY when imageSha256/codeSha256/modelChecksumSha256 are real 64-hex bindings (validateNebiusManifest enforces this).",
+    "model": {
+      "source": "official Thinking Machines Inkling checkpoint (NVFP4)",
+      "huggingFaceRepo": "REQUIRED_AT_PIN",
+      "revision": "REQUIRED_AT_PIN (exact commit, never a floating branch/tag)",
+      "quantization": "nvfp4",
+      "modelChecksumSha256": "REQUIRED_AT_PIN (mirror of top-level modelChecksumSha256)"
+    },
+    "serving": {
+      "engine": "vllm (official recipe)",
+      "vllmImageDigest": "REQUIRED_AT_PIN (container image @sha256, not a tag)",
+      "vllmVersion": "REQUIRED_AT_PIN",
+      "packagePins": { "note": "REQUIRED_AT_PIN — exact pip freeze / lock digest for vllm + deps" },
+      "launchArgs": {
+        "note": "REQUIRED_AT_PIN — copy verbatim from the official vLLM NVFP4 recipe; do not improvise",
+        "example_shape_only": ["--model <repo@revision>", "--quantization modelopt_fp4", "--tensor-parallel-size <N>", "--max-model-len <L>", "--gpu-memory-utilization <U>"]
+      }
+    },
+    "hardware": {
+      "preference": "private B200/GB200-compatible topology supported by the official recipe",
+      "quotaSource": "Peter's Nebius account (NOT inspected this round — no credentials in this lane)",
+      "hardwareFingerprint": "REQUIRED_AT_PIN (GPU model/count/driver/CUDA/nvfp4-capability, captured at bring-up)"
+    },
+    "isolation": {
+      "aumlokPhraseOrKey": "NONE — the cell never receives phrase/key material",
+      "ownerCredentials": "NONE",
+      "githubWrite": "NONE — outputs are pr-only candidates via the owner path",
+      "mainWrite": "NONE",
+      "publicEndpoint": "NONE — no public unauthenticated endpoint; loopback/private topology only",
+      "input": "bounded read-only snapshot ONLY (see SNAPSHOT_AND_EVIDENCE_CONTRACT.md)",
+      "output": "receipted candidate/evidence directory ONLY"
+    }
+  }
+}
