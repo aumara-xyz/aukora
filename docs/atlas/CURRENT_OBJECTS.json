@@ -1,6 +1,6 @@
 {
   "schema": "aukora-current-objects-snapshot-v1",
-  "note": "Committed snapshot of the canonical aukora GitHub object sequence (issues+PRs) at the R51 head, so CI can prove Atlas current-object freshness without a network call. Refresh with scripts that capture gh state; the head SHA below pins when it was taken.",
+  "note": "Committed snapshot of the canonical aukora GitHub object sequence (issues+PRs) at the R51 input base, so CI can prove exactly which public objects the Atlas reconciled without a network call. This is a capture anchor, not a claim that no later PR exists. Refresh at the next truth-freeze capture.",
   "head_sha": "5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d",
   "captured": "R51",
   "aukora": {

@@ -28,8 +28,11 @@ settle-after and fail-closed durability. R51 does not change it; it (a) proves i
 `apps/brain/scripts/r51-canary.mjs` owns the whole backend lifecycle: it boots the official
 `convex-local-backend` binary (loopback 3310/3311, temp SQLite), deploys the pilot, runs the five laws, then
 `process.kill(pid,'SIGKILL')` — a genuine crash — and restarts on the **same on-disk SQLite**. Transcript +
-exit code 0 in [`R51_REAL_BACKEND_TRANSCRIPT.md`](R51_REAL_BACKEND_TRANSCRIPT.md). Reproduce:
-`npm run canary:r51 --workspace @aukora/brain` (Node 22). Proven laws:
+exit code 0 in [`R51_REAL_BACKEND_TRANSCRIPT.md`](R51_REAL_BACKEND_TRANSCRIPT.md). Reproduce on
+Node 22 after an official local Convex backend has been cached, or set
+`CONVEX_LOCAL_BACKEND_BINARY=/absolute/path/to/convex-local-backend`, then run
+`npm run canary:r51 --workspace @aukora/brain`. The script discovers cached `precompiled-*`
+versions rather than depending on the capture machine's cache path. Proven laws:
 
 1. typed event accepted once (seq 0, one durable row);
 2. **10 identical submissions → one canonical effect** (9/10 dedup by content address; log stays 1 row);

@@ -4,7 +4,7 @@
  * R51 continuity guards (issue #106) — the truth-compiler asserted as tests.
  *
  * These prove the three continuity views stay reconciled: the 191-row preservation ledger, the Atlas
- * (refreshed through the merged head), executable anatomy, and the committed GitHub object snapshot. A
+ * (refreshed through the captured input base), executable anatomy, and the committed GitHub object snapshot. A
  * regression in any count, a stale Atlas, a laundered anatomy scope, or a leaked private title fails here.
  */
 import { describe, it, expect } from 'vitest';

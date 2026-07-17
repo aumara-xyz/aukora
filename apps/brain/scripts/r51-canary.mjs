@@ -19,11 +19,24 @@
  */
 import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir, homedir } from 'node:os';
 import { join } from 'node:path';
 
-const BIN = join(homedir(), '.cache/convex/binaries/precompiled-2026-07-06-44f7aa7/convex-local-backend');
+function resolveBackendBinary() {
+  const explicit = process.env.CONVEX_LOCAL_BACKEND_BINARY;
+  if (explicit) return explicit;
+  const root = join(homedir(), '.cache/convex/binaries');
+  if (!existsSync(root)) return null;
+  const candidates = readdirSync(root)
+    .filter((name) => name.startsWith('precompiled-'))
+    .sort()
+    .reverse()
+    .map((name) => join(root, name, 'convex-local-backend'));
+  return candidates.find((candidate) => existsSync(candidate)) ?? null;
+}
+
+const BIN = resolveBackendBinary();
 const CANARY = new URL('../canary', import.meta.url).pathname;
 const CONVEX_CLI = new URL('../../../node_modules/.bin/convex', import.meta.url).pathname;
 const PORT = 3310, SITE = 3311;
@@ -38,6 +51,7 @@ let failed = false;
 const check = (label, cond) => { console.log(`  ${cond ? 'PASS' : 'FAIL'}  ${label}`); if (!cond) failed = true; };
 
 function adminKey() {
+  if (!BIN) throw new Error('convex-local-backend unavailable');
   return execFileSync(BIN, ['keygen', 'admin-key', '--instance-name', NAME, '--instance-secret', SECRET], { encoding: 'utf8' }).trim();
 }
 function portListening(port) {
@@ -47,6 +61,7 @@ function portListening(port) {
 async function waitPort(port, tries = 60) { for (let i = 0; i < tries; i++) { if (portListening(port)) return true; await sleep(500); } return false; }
 
 function bootBackend(sqlitePath, storageDir) {
+  if (!BIN) throw new Error('convex-local-backend unavailable');
   const child = spawn(BIN, [
     '--port', String(PORT), '--site-proxy-port', String(SITE),
     '--instance-name', NAME, '--instance-secret', SECRET,
@@ -57,7 +72,11 @@ function bootBackend(sqlitePath, storageDir) {
 }
 
 async function main() {
-  if (!existsSync(BIN)) { log(`FATAL: local backend binary not found at ${BIN}`); process.exit(2); }
+  if (!BIN || !existsSync(BIN)) {
+    log('FATAL: convex-local-backend is not installed in the Convex cache.');
+    log('Prime a local Convex deployment first, or set CONVEX_LOCAL_BACKEND_BINARY to an official binary.');
+    process.exit(2);
+  }
   const work = mkdtempSync(join(tmpdir(), 'r51-canary-'));
   const sqlitePath = join(work, 'r51.sqlite3');
   const storageDir = join(work, 'storage');

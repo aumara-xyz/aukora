@@ -7,7 +7,7 @@
  *   - the 191-row preservation ledger (docs/issue-preservation-ledger.json) — lossless historical inventory;
  *   - the Atlas (docs/atlas/ATLAS.json) — donor-restoration + evidence queue, refreshed through the merged head;
  *   - executable anatomy (anatomy.json) — the current runtime/genome gate;
- *   - a committed GitHub object snapshot (docs/atlas/CURRENT_OBJECTS.json) so freshness is provable offline.
+ *   - a committed GitHub object snapshot (docs/atlas/CURRENT_OBJECTS.json) so the capture basis is provable offline.
  *
  * Proves (all fail-closed, no network):
  *   1. Ledger integrity: exactly 191 entries = 169 aukora-symbiote + 13 aukora-kernel + 9 aukora-fu; no duplicate
@@ -16,8 +16,8 @@
  *   2. Set equality: the ledger's kernel & fu number sets EQUAL the committed historical GitHub sets (settled by
  *      live re-verification at capture); symbiote is 169, settled by owner ratification (numbers held privately).
  *   3. Atlas ↔ ledger: every historical Atlas row's issue-number is in the ledger's set for that repo (no orphans).
- *   4. Atlas current-object freshness: every current aukora object in the snapshot has an Atlas row through the head;
- *      Atlas.base_main equals the recorded head; the sequence has no gap up to the recorded max object.
+ *   4. Atlas capture completeness: every Aukora object in the committed snapshot has an Atlas row through the
+ *      captured input base; Atlas.base_main equals that recorded base; the capture has no sequence gap.
  *   5. Atlas well-formedness: every row's disposition is in the Atlas vocabulary and carries source/number/capability.
  *   6. Anatomy: at least the R51-expanded set of enforced coverage scopes (beyond supervisor-only).
  *   7. Derived Markdown: the canonical counts embedded in ISSUE_PRESERVATION_LEDGER.md equal the ledger JSON.
@@ -77,7 +77,7 @@ export function runContinuity() {
     ok(set && set.includes(row.number), `atlas orphan: ${row.source}#${row.number} not in the ledger set`);
   }
 
-  // ---- 4. Atlas current-object freshness ----
+  // ---- 4. Atlas committed-capture completeness ----
   ok(atlas.base_main === snap.head_sha, `atlas.base_main (${atlas.base_main}) != snapshot head (${snap.head_sha})`);
   const atlasCurrent = new Set(atlas.rows.filter((r) => r.source === 'aukora').map((r) => r.number));
   for (const o of snap.aukora.objects) ok(atlasCurrent.has(o.number), `atlas freshness: current object #${o.number} has no Atlas row`);

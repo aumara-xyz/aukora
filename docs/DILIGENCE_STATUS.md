@@ -1,9 +1,10 @@
 # DILIGENCE STATUS — public diligence projection (R51 / #106)
 
-The maximum safe **sanitized** projection of where Aukora actually stands, at head
-`5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d`. Every claim here is backed by an in-repo artifact and a
-gate; a Markdown document is never treated as proof. Sensitive titles, notes, paths, rationales, and
-owner material stay in the private Symbiote ledger and are **not** reproduced here.
+The maximum safe **sanitized** projection of the R51 integration tree, assembled from base
+`5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d` and the exact reviewed R51 lane heads recorded in Git
+ancestry. Every claim here is backed by an in-repo artifact and a gate; a Markdown document is never
+treated as proof. Sensitive titles, notes, paths, rationales, and owner material stay in the private
+Symbiote ledger and are **not** reproduced here.
 
 Four labels:
 
@@ -33,7 +34,7 @@ Four labels:
 | Governed inward-out recursion: propose → ground → rehearse → advisory review → refuse → hybrid AUMLOK gate → isolated candidate | `apps/seed` | seed (338) | effects stop at an isolated local candidate branch; never direct `main`, push, or merge |
 | Read-only operator console (`apps/console`) over authority/memory/proposal/verdict/budget | `apps/console` | console (44) | renders a deterministic `DEMO_FIXTURE`; signs/applies/deploys/arms nothing |
 | Donor Spatial shell (subtractive transplant, 46 VERBATIM blobs); R50/#101 CONSOLE organ removed from the visible roster (file retained) | `apps/spatial` | spatial (57) | donor code, not a recreation; doors are supervisor-owned and fail honestly offline |
-| Supervisor lifecycle owner (envelope-closed, restart-safe, foreign-occupant safe) | `apps/supervisor` | supervisor (21) | protected-class; owns worker PIDs (**#107** hardening) |
+| Supervisor lifecycle owner (process-group owned, restart-safe, foreign-occupant safe) | `apps/supervisor` | supervisor (31) | protected-class; records actual listeners, reaps owned trees, verifies empty owned ports, leaves foreign processes untouched |
 | **ARC-3 dojo** — replayable reasoning proof over the donor's **onboard** worlds through `@aukora/mind` | `apps/spatial/arc3-dojo` | in spatial (57) | **ONBOARD_ARC3_COMPATIBLE only — never an official ARC-AGI-3 win.** Deterministic replay; mutating one action/frame/terminal breaks it |
 
 ## PARKED (prepared, deliberately inert)
@@ -66,7 +67,7 @@ Four labels:
 - **#87 vs #99/#108:** #87 was closed for the **nonce mislabel only**. Production first-create
   **durability** is the separate track #99 (landed) → #108 (open). #87-closed ≠ durability-proven.
 - **Nebius:** every Nebius surface is **PARKED / UNARMED**. No spend, no live inference, no managed cloud.
-- **Test total:** **869 passing** at this head (was stated 774) — gated by `verify-continuity.mjs`.
+- **Test total:** **900 passing** in the R51 integration gate (including 31 protected-supervisor tests; was stated 774) — gated by `test:all` plus `verify-continuity.mjs`.
 
 ## Set-equality result (#106 req 1–2)
 
