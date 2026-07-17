@@ -1,0 +1,98 @@
+{
+  "schema": "aukora-arc3-dojo-bundle-v1",
+  "coreHash": "320427e37919c1090671440ab223112a6bba040e66a69b45164e1f90bb7e15ea",
+  "core": {
+    "schema": "aukora-arc3-dojo-episode-v1",
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "donorCode": {
+      "branch": "fable/arc3-reasoning-engine-20260710",
+      "commit": "e5768a2fcf974a564ef842551a27bbb6287e6c8b",
+      "files": {
+        "engine.js": "7bf144617741700350b9750f68bf9104e84e5ffc",
+        "mock-arcade.js": "a609716a15a3d3ce75d3c63db470c1eb6a85e652"
+      }
+    },
+    "world": {
+      "gameId": "mk-oddball-2a",
+      "winLevels": 2,
+      "version": "onboard-arcade-v1"
+    },
+    "seeds": {
+      "arcadeSeed": 42,
+      "policySeed": 7
+    },
+    "budget": {
+      "maxSteps": 400
+    },
+    "result": {
+      "terminal": "WIN",
+      "won": true,
+      "levelsCompleted": 2,
+      "steps": 2,
+      "exhaustedBudget": false,
+      "normalizeRejections": 0
+    },
+    "steps": [
+      {
+        "step": 0,
+        "action": {
+          "name": "ACTION6",
+          "x": 39,
+          "y": 27
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 11 look-alikes at (39,27)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": -1,
+        "hashBefore": "b67cce49",
+        "hashAfter": "d429fe49",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 1,
+        "action": {
+          "name": "ACTION6",
+          "x": 39,
+          "y": 13
+        },
+        "reason": "clicking the odd one out — a color-11 piece among 11 look-alikes at (39,13)",
+        "tag": "click",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 200,
+        "hashBefore": "d429fe49",
+        "hashAfter": "d429fe49",
+        "state": "WIN",
+        "levelsCompleted": 2
+      }
+    ],
+    "frameHashChain": [
+      "b67cce49",
+      "d429fe49",
+      "d429fe49"
+    ]
+  },
+  "session": {
+    "guidPresent": true,
+    "note": "donor Math.random session key — excluded from evidence"
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "officialArcAgi3": false,
+    "grantsAuthority": false,
+    "network": "none (in-process; onboard arcade, no key, no benchmark API)",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}

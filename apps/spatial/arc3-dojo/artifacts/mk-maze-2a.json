@@ -1,0 +1,1390 @@
+{
+  "schema": "aukora-arc3-dojo-bundle-v1",
+  "coreHash": "c11db54fbd52583bdc67bc1dc3c31e0b1f9b0efe4b5fca0464b3bb6df5b12e7b",
+  "core": {
+    "schema": "aukora-arc3-dojo-episode-v1",
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "donorCode": {
+      "branch": "fable/arc3-reasoning-engine-20260710",
+      "commit": "e5768a2fcf974a564ef842551a27bbb6287e6c8b",
+      "files": {
+        "engine.js": "7bf144617741700350b9750f68bf9104e84e5ffc",
+        "mock-arcade.js": "a609716a15a3d3ce75d3c63db470c1eb6a85e652"
+      }
+    },
+    "world": {
+      "gameId": "mk-maze-2a",
+      "winLevels": 3,
+      "version": "onboard-arcade-v1"
+    },
+    "seeds": {
+      "arcadeSeed": 42,
+      "policySeed": 7
+    },
+    "budget": {
+      "maxSteps": 400
+    },
+    "result": {
+      "terminal": "WIN",
+      "won": true,
+      "levelsCompleted": 3,
+      "steps": 83,
+      "exhaustedBudget": false,
+      "normalizeRejections": 0
+    },
+    "steps": [
+      {
+        "step": 0,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": -1,
+        "hashBefore": "b4e65085",
+        "hashAfter": "300fd085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 1,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 16,
+        "hashBefore": "300fd085",
+        "hashAfter": "300fd085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 2,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "300fd085",
+        "hashAfter": "d821b085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 3,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "d821b085",
+        "hashAfter": "d6243085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 4,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "trying ACTION1 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "d6243085",
+        "hashAfter": "d821b085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 5,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "trying ACTION2 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "d821b085",
+        "hashAfter": "300fd085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 6,
+        "action": {
+          "name": "ACTION3"
+        },
+        "reason": "trying ACTION3 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "300fd085",
+        "hashAfter": "d821b085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 7,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "trying ACTION4 to learn what it does",
+        "tag": "calibrate",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "d821b085",
+        "hashAfter": "d6243085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 8,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "moving toward the one-of-a-kind island at (18,12) — ACTION2 is my left",
+        "tag": "seek",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "d6243085",
+        "hashAfter": "b4e65085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 9,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "holding my heading toward the goal — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 16,
+        "hashBefore": "b4e65085",
+        "hashAfter": "b4e65085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 10,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "pressing again — some worlds turn before they step — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": false,
+        "changedCells": 0,
+        "hashBefore": "b4e65085",
+        "hashAfter": "b4e65085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 11,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "I can see a 29-step route to the one-of-a-kind island, around the color-2 walls",
+        "tag": "route",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 0,
+        "hashBefore": "b4e65085",
+        "hashAfter": "e98fd085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 12,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "e98fd085",
+        "hashAfter": "58665085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 13,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "58665085",
+        "hashAfter": "a30fd085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 14,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "a30fd085",
+        "hashAfter": "fbe65085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 15,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "fbe65085",
+        "hashAfter": "c5eb1e4d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 16,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "c5eb1e4d",
+        "hashAfter": "16356395",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 17,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "16356395",
+        "hashAfter": "75288395",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 18,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "75288395",
+        "hashAfter": "645ba395",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 19,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "645ba395",
+        "hashAfter": "4f019c75",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 20,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "4f019c75",
+        "hashAfter": "d9d5fc75",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 21,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "d9d5fc75",
+        "hashAfter": "1ac8d595",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 22,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "1ac8d595",
+        "hashAfter": "c6a57595",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 23,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "c6a57595",
+        "hashAfter": "7914f29d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 24,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "7914f29d",
+        "hashAfter": "d56ec085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 25,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "d56ec085",
+        "hashAfter": "8e168085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 26,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "8e168085",
+        "hashAfter": "f0aec085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 27,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "f0aec085",
+        "hashAfter": "60568085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 28,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "60568085",
+        "hashAfter": "0beec085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 29,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "0beec085",
+        "hashAfter": "67c9c085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 30,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "67c9c085",
+        "hashAfter": "bf9aa085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 31,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "bf9aa085",
+        "hashAfter": "b6fc2085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 32,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "b6fc2085",
+        "hashAfter": "12288085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 33,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "12288085",
+        "hashAfter": "7b2b0085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 34,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "7b2b0085",
+        "hashAfter": "a5d9e085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 35,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "a5d9e085",
+        "hashAfter": "1832e085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 36,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "1832e085",
+        "hashAfter": "7022c085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 37,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "7022c085",
+        "hashAfter": "f8bdc085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 38,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "f8bdc085",
+        "hashAfter": "f686a085",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 0
+      },
+      {
+        "step": 39,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "f686a085",
+        "hashAfter": "48d00bc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 40,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "I can see a 23-step route to the one-of-a-kind island, around the color-2 walls",
+        "tag": "route",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 798,
+        "hashBefore": "48d00bc5",
+        "hashAfter": "fa6a6bc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 41,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "fa6a6bc5",
+        "hashAfter": "aec4cbc5",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 42,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "aec4cbc5",
+        "hashAfter": "6351362d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 43,
+        "action": {
+          "name": "ACTION4"
+        },
+        "reason": "walking the route I read off the board — ACTION4 is my up",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "6351362d",
+        "hashAfter": "0afb3115",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 44,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "0afb3115",
+        "hashAfter": "ccc70395",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 45,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "ccc70395",
+        "hashAfter": "317d8795",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 46,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "317d8795",
+        "hashAfter": "ecc4f915",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 47,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "ecc4f915",
+        "hashAfter": "b5d4d295",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 48,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "b5d4d295",
+        "hashAfter": "7c0a7a95",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 49,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "7c0a7a95",
+        "hashAfter": "ed680515",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 50,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "ed680515",
+        "hashAfter": "a4907115",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 51,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "a4907115",
+        "hashAfter": "4353f115",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 52,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "4353f115",
+        "hashAfter": "cc796395",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 53,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "cc796395",
+        "hashAfter": "f9d8e795",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 54,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "f9d8e795",
+        "hashAfter": "271fb915",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 55,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "271fb915",
+        "hashAfter": "9118f295",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 56,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "9118f295",
+        "hashAfter": "dc089a95",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 57,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "dc089a95",
+        "hashAfter": "609dc515",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 58,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "609dc515",
+        "hashAfter": "ccb93115",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 59,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "ccb93115",
+        "hashAfter": "e35cb115",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 60,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "e35cb115",
+        "hashAfter": "6d83c395",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 61,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "6d83c395",
+        "hashAfter": "5fcc4795",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 1
+      },
+      {
+        "step": 62,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "5fcc4795",
+        "hashAfter": "e66b8bdd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 63,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "I can see a 20-step route to the one-of-a-kind island, around the color-2 walls",
+        "tag": "route",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 726,
+        "hashBefore": "e66b8bdd",
+        "hashAfter": "44ee0bdd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 64,
+        "action": {
+          "name": "ACTION1"
+        },
+        "reason": "walking the route I read off the board — ACTION1 is my down",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "44ee0bdd",
+        "hashAfter": "b800c5bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 65,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "b800c5bd",
+        "hashAfter": "572c259d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 66,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "572c259d",
+        "hashAfter": "036ebebd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 67,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "036ebebd",
+        "hashAfter": "8bababfd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 68,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "8bababfd",
+        "hashAfter": "50ec38fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 69,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "50ec38fd",
+        "hashAfter": "7b8ccedd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 70,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "7b8ccedd",
+        "hashAfter": "8d7b69fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 71,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "8d7b69fd",
+        "hashAfter": "a08aa6fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 72,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "a08aa6fd",
+        "hashAfter": "0622fdbd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 73,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "0622fdbd",
+        "hashAfter": "0b76159d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 74,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "0b76159d",
+        "hashAfter": "888136bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 75,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "888136bd",
+        "hashAfter": "6633f3fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 76,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "6633f3fd",
+        "hashAfter": "6231c0fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 77,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "6231c0fd",
+        "hashAfter": "87b38edd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 78,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "87b38edd",
+        "hashAfter": "e46f31fd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 79,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "e46f31fd",
+        "hashAfter": "2747aefd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 80,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "2747aefd",
+        "hashAfter": "254335bd",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 81,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "254335bd",
+        "hashAfter": "ae1c059d",
+        "state": "NOT_FINISHED",
+        "levelsCompleted": 2
+      },
+      {
+        "step": 82,
+        "action": {
+          "name": "ACTION2"
+        },
+        "reason": "walking the route I read off the board — ACTION2 is my left",
+        "tag": "plan",
+        "expectation": "changed",
+        "expectationMet": true,
+        "changedCells": 16,
+        "hashBefore": "ae1c059d",
+        "hashAfter": "0796d235",
+        "state": "WIN",
+        "levelsCompleted": 3
+      }
+    ],
+    "frameHashChain": [
+      "b4e65085",
+      "300fd085",
+      "300fd085",
+      "d821b085",
+      "d6243085",
+      "d821b085",
+      "300fd085",
+      "d821b085",
+      "d6243085",
+      "b4e65085",
+      "b4e65085",
+      "b4e65085",
+      "e98fd085",
+      "58665085",
+      "a30fd085",
+      "fbe65085",
+      "c5eb1e4d",
+      "16356395",
+      "75288395",
+      "645ba395",
+      "4f019c75",
+      "d9d5fc75",
+      "1ac8d595",
+      "c6a57595",
+      "7914f29d",
+      "d56ec085",
+      "8e168085",
+      "f0aec085",
+      "60568085",
+      "0beec085",
+      "67c9c085",
+      "bf9aa085",
+      "b6fc2085",
+      "12288085",
+      "7b2b0085",
+      "a5d9e085",
+      "1832e085",
+      "7022c085",
+      "f8bdc085",
+      "f686a085",
+      "48d00bc5",
+      "fa6a6bc5",
+      "aec4cbc5",
+      "6351362d",
+      "0afb3115",
+      "ccc70395",
+      "317d8795",
+      "ecc4f915",
+      "b5d4d295",
+      "7c0a7a95",
+      "ed680515",
+      "a4907115",
+      "4353f115",
+      "cc796395",
+      "f9d8e795",
+      "271fb915",
+      "9118f295",
+      "dc089a95",
+      "609dc515",
+      "ccb93115",
+      "e35cb115",
+      "6d83c395",
+      "5fcc4795",
+      "e66b8bdd",
+      "44ee0bdd",
+      "b800c5bd",
+      "572c259d",
+      "036ebebd",
+      "8bababfd",
+      "50ec38fd",
+      "7b8ccedd",
+      "8d7b69fd",
+      "a08aa6fd",
+      "0622fdbd",
+      "0b76159d",
+      "888136bd",
+      "6633f3fd",
+      "6231c0fd",
+      "87b38edd",
+      "e46f31fd",
+      "2747aefd",
+      "254335bd",
+      "ae1c059d",
+      "0796d235"
+    ]
+  },
+  "session": {
+    "guidPresent": true,
+    "note": "donor Math.random session key — excluded from evidence"
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "execution": {
+    "firstHand": true,
+    "mode": "in-process"
+  },
+  "surface": {
+    "label": "ONBOARD_ARC3_COMPATIBLE",
+    "officialArcAgi3": false,
+    "grantsAuthority": false,
+    "network": "none (in-process; onboard arcade, no key, no benchmark API)",
+    "secretsTouched": "none",
+    "mutatesMain": false
+  }
+}

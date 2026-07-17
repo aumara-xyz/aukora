@@ -120,12 +120,13 @@ describe('registry — exact roster', () => {
   const tabsBlock = /const TABS_BUILTIN = \{([\s\S]*?)\n\};/.exec(shellJs)?.[1] ?? '';
   it('keeps exactly the roster organs', () => {
     const keys = [...organsBlock.matchAll(/^  '?([a-z0-9-]+)'?:/gm)].map((m) => m[1]).sort();
-    expect(keys).toEqual(['app-lab', 'auma', 'aumalive', 'aumlok', 'aura', 'console', 'ghp', 'kira', 'map', 'settings']);
+    // R50/#101: CONSOLE removed from the visible roster (registry) per owner direction; console.js is retained on disk.
+    expect(keys).toEqual(['app-lab', 'auma', 'aumalive', 'aumlok', 'aura', 'ghp', 'kira', 'map', 'settings']);
   });
   it('menu tabs carry the roster', () => {
     const rows = (tab) => [...(new RegExp(tab + ':\\s*\\[([\\s\\S]*?)\\]', 'm').exec(tabsBlock)?.[1] ?? '').matchAll(/organ: '([a-z0-9-]+)'/g)].map((m) => m[1]);
     expect(rows('organs')).toEqual(['aumalive', 'auma']);
-    expect(rows('system')).toEqual(['aumlok', 'aura', 'kira', 'map', 'ghp', 'console', 'settings']);
+    expect(rows('system')).toEqual(['aumlok', 'aura', 'kira', 'map', 'ghp', 'settings']);
     expect(rows('yours')).toEqual(['app-lab']);
   });
   it('donor state machine, corners, and chat lane are untouched', () => {
