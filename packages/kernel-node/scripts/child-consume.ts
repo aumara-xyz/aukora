@@ -3,7 +3,8 @@
 /**
  * Overnight brick 2 harness child — a SEPARATE OS process that consumes an authorization against the real
  * TrustedStateStore, so the parent test can `kill -9` it and prove the consumption survives REAL process death.
- * Run by the test via `node --experimental-transform-types child-consume.ts <dir> <consumptionId> <mode>`.
+ * The test esbuild-bundles this to plain ESM and runs it with a bare `node child.mjs <dir> <consumptionId> <mode>`
+ * (Node 20 + 22 compatible — no --experimental-transform-types, which is Node ≥22.6 only).
  * `mode`: `commit-hang` (commit, print marker, then wait to be SIGKILLed) · `commit-exit` (commit then exit 0) ·
  * `crash-before-rename` (throw at the rename step — nothing is committed). Self-contained: an inline stub decide
  * that faithfully mirrors the kernel reducer's persistence-relevant law (replay + consume + head advance).

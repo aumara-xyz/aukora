@@ -3,13 +3,19 @@
 /**
  * Overnight brick 2 — the ACCEPTANCE BAR, proven with REAL process death (not in-process crash injection).
  *
- * A separate OS process (scripts/child-consume.ts, run under `node --experimental-transform-types`) consumes an
- * authorization against the real TrustedStateStore and fsync-commits it; the parent then `kill -9`s it. A FRESH
- * process reopens the store and reusing the same authorization → REPLAY REFUSAL. And a child that crashes BEFORE
- * the atomic rename commits NOTHING, so the authorization is still usable exactly once. LIVE.
+ * A separate OS process (scripts/child-consume.ts) consumes an authorization against the real TrustedStateStore
+ * and fsync-commits it; the parent then `kill -9`s it. A FRESH process reopens the store and reusing the same
+ * authorization → REPLAY REFUSAL. And a child that crashes BEFORE the atomic rename commits NOTHING, so the
+ * authorization is still usable exactly once. LIVE.
+ *
+ * RUNTIME: the child is esbuild-bundled to plain ESM once in beforeAll, then spawned with a bare `node` (no
+ * experimental TS flags), so the kill-9 proof holds on Node 20 AND Node 22 CI — not just the box's Node 22.
+ * (Earlier this used `node --experimental-transform-types`, which is Node ≥22.6 only → the child never started on
+ * Node 20 CI and the LIVE tests failed with "child exited with no output". Bundling removes the runtime coupling.)
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { spawn } from 'node:child_process';
+import { buildSync } from 'esbuild';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -17,7 +23,19 @@ import { fileURLToPath } from 'node:url';
 import { TrustedStateStore, type CrashHook } from '../src/trustedStateStore.js';
 import type { TrustedStateV1, KernelRequestV1, KernelResultV1 } from '@aukora/kernel';
 
-const CHILD = fileURLToPath(new URL('../scripts/child-consume.ts', import.meta.url));
+// The child is bundled once to a self-contained plain-ESM file (inlines @aukora/kernel + the store), so it runs on
+// any modern Node with a bare `node child.mjs` — no --experimental-transform-types, no tsx, no version coupling.
+let CHILD = '';
+let bundleDir = '';
+beforeAll(() => {
+  bundleDir = mkdtempSync(join(tmpdir(), 'aukora-childbundle-'));
+  CHILD = join(bundleDir, 'child-consume.mjs');
+  buildSync({
+    entryPoints: [fileURLToPath(new URL('../scripts/child-consume.ts', import.meta.url))],
+    outfile: CHILD, bundle: true, platform: 'node', format: 'esm', target: 'node18',
+  });
+});
+afterAll(() => { if (bundleDir) rmSync(bundleDir, { recursive: true, force: true }); });
 const genesis = (): TrustedStateV1 => ({ schema: 'aukora-trusted-state-v1', salama: { active: false, reason: null }, trustedRoots: [], consumedIds: [], receiptHead: { count: 0, headHash: null } });
 const stub = ((request: KernelRequestV1, state: TrustedStateV1): KernelResultV1 => {
   const cid = request.consumptionId;
@@ -28,7 +46,7 @@ const stub = ((request: KernelRequestV1, state: TrustedStateV1): KernelResultV1 
 
 /** Spawn the child; resolve with { proc, firstLine } once the child prints its first stdout line. */
 function spawnChild(dir: string, cid: string, mode: string): Promise<{ proc: ReturnType<typeof spawn>; line: string }> {
-  const proc = spawn(process.execPath, ['--experimental-transform-types', '--no-warnings', CHILD, dir, cid, mode], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const proc = spawn(process.execPath, [CHILD, dir, cid, mode], { stdio: ['ignore', 'pipe', 'pipe'] });
   return new Promise((resolve, reject) => {
     let buf = '';
     proc.stdout!.on('data', (d) => { buf += d.toString(); const nl = buf.indexOf('\n'); if (nl >= 0) resolve({ proc, line: buf.slice(0, nl).trim() }); });
