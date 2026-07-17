@@ -45,3 +45,4 @@ export * from './bondCeremony.js';
 export * from './approveDoor.js';
 export * from './proposerQualification.js';
 export * from './governedCrossing.js';
+export * from './modelCellAdapter.js';

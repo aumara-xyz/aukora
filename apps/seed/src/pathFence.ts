@@ -93,9 +93,10 @@ const SELF_PROTECTING: readonly RegExp[] = Object.freeze([
   /(^|\/)approveChallenge\.ts$/,
   /(^|\/)ownerCustody\.ts$/,
   /(^|\/)bondCeremony\.ts$/,
-  // R45/R47 — the proposer containment surface (a mind/crossing must never propose edits to its own gate)
+  // R45/R47/R48 — the proposer containment surface (a mind/crossing/model-cell must never edit its own gate)
   /(^|\/)proposerQualification\.ts$/,
   /(^|\/)governedCrossing\.ts$/,
+  /(^|\/)modelCellAdapter\.ts$/,
   // the kernel authority core
   /^packages\/kernel\/src\/(authority|reducer|schema|registry|canonical|evidence|merkle)\.ts$/,
   /(^|\/)kernel\/(dist|conformance)\//,
