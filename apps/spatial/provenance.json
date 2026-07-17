@@ -366,7 +366,7 @@
     {
       "path": "apps/spatial/scripts/launch.mjs",
       "source": "ours (launcher/tooling)",
-      "sha256": "2c6d82933d9dc00ed8ee2f85d0a1a30194c98bc58f31fed54fb5fec5da901924",
+      "sha256": "dc07612a711df4f624424561707d344cf63d9902f8f3030102b866c032fac184",
       "status": "NEW"
     },
     {
