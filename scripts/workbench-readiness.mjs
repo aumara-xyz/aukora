@@ -21,6 +21,7 @@ const items = [
   ['tests/receipts/diff projection', has('apps/brain/src/localDoor.ts') ? 'PARTIAL — receipt chain + door projection live (R44); diff projection surface not yet a first-class seam' : 'BLOCKED'],
 ];
 const profile = { schema: 'aukora-workbench-readiness-v0', derived_from: 'file/test/pin existence on this tree — see each line', items: Object.fromEntries(items) };
+// stdout carries ONLY the JSON profile (machine-consumable); the human summary goes to stderr.
 console.log(JSON.stringify(profile, null, 2));
 const blocked = items.filter(([, s]) => s.startsWith('BLOCKED')).length;
-console.log(`\nworkbench readiness: ${items.length - blocked}/${items.length} READY-or-PARTIAL · ${blocked} BLOCKED`);
+console.error(`workbench readiness: ${items.length - blocked}/${items.length} READY-or-PARTIAL · ${blocked} BLOCKED`);

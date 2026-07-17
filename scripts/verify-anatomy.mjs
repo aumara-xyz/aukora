@@ -10,6 +10,13 @@ import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
+// Pure membership laws — exported so the test suite can prove them directly.
+export const norm = (p) => p.split('\\').join('/').replace(/\/+$/, '');
+export const inScope = (p, scope) => p === scope || p.startsWith(scope + '/');
+
+import { pathToFileURL } from 'node:url';
+
+export function runVerifier() {
 const anatomy = JSON.parse(readFileSync('anatomy.json', 'utf8'));
 const errors = [];
 const blockers = [];
@@ -39,18 +46,21 @@ for (const e of anatomy.entries) {
   }
 }
 
-// 2. declared-scope coverage: every file under each scope maps to exactly one entry
+// 2. declared-scope coverage: every file under each scope maps to exactly one entry.
+// Boundary-aware membership via norm/inScope above: the exact scope path, or a descendant under
+// `scope + "/"` — never a bare prefix match (`apps/supervisor/src2` is NOT inside `…/src`).
 for (const scope of anatomy.coverage_scopes ?? []) {
+  const scopePath = norm(scope.glob);
   const owned = new Map();
   for (const e of anatomy.entries) for (const f of e.files ?? [])
-    if (f.path.startsWith(scope.glob)) owned.set(f.path, (owned.get(f.path) ?? 0) + 1);
+    if (inScope(norm(f.path), scopePath)) owned.set(norm(f.path), (owned.get(norm(f.path)) ?? 0) + 1);
   // anatomy paths are always forward-slash; normalize walked paths so prefix matching is
   // correct on every platform (join() emits backslashes on Windows).
   const walk = (d) => readdirSync(d).flatMap((n) => {
     const p = join(d, n).split('\\').join('/');
     return statSync(p).isDirectory() ? walk(p) : [p];
   });
-  for (const p of walk(scope.glob)) {
+  for (const p of walk(scopePath)) {
     const n = owned.get(p) ?? 0;
     if (n === 0) errors.push(`coverage: ${p} (scope ${scope.glob}) maps to NO anatomy entry`);
     if (n > 1) errors.push(`coverage: ${p} maps to ${n} entries (must be exactly one)`);
@@ -67,3 +77,6 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(`anatomy: verified — ${anatomy.entries.length} entries, ${anatomy.coverage_scopes.length} coverage scope(s), schema/coverage/tests/dispositions/blob-identity all legal`);
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) runVerifier();
