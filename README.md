@@ -1,91 +1,169 @@
-# Aukora
+<p align="center">
+  <img src="docs/assets/aukora-organism-map.svg" alt="Aukora governed digital organism architecture" width="100%" />
+</p>
 
-A **governed recursive digital-organism seed**. Its constitutional spine is the **AUMLOK
-authority kernel** — authority is *verified, never minted*; evidence is advisory, never
-authority; memory grows under consent and governed forgetting; self-change is proposed,
-rehearsed, reviewed, and owner-gated before it ever touches anything real.
+# AUKORA
 
-This repository is a **seed** and says so honestly. The pure constitutional packages are
-production library code; the organism adapters (memory brain, recursion seed, spatial operator
-console) are **demonstrated in-repo with tests and explicit honesty labels** — where a surface is
-simulated, mock, sandbox-only, fixture-fed, or parked, [CLAIMS.md](CLAIMS.md) says exactly that.
-Product applications, research corpora, and cloud deployments live in other repositories and
-consume these packages — never the other way around.
+### A digital organism with a constitution.
 
-## Live development
+Aukora is an open, governed recursive-AI architecture: a portable **genome**, a local reactive
+**nervous system**, consent-scoped **memory**, an advisory **mind**, cryptographic owner authority,
+and a self-change loop that terminates in an isolated Git candidate—not an invisible mutation.
 
-`main` is the protected release line. Active organism work is published continuously through
-reviewed draft pull requests and the four durable round feeds:
+That language is intentionally biological, but it is not hand-waving. Every organ below maps to
+source, tests, an export, and a refusal boundary. “Organism” describes the architecture—sensing,
+memory, reasoning, homeostasis, evidence, and bounded adaptation. It is not a consciousness claim.
 
-- [Control / integration](https://github.com/aumara-xyz/aukora/issues/20)
-- [Brain / Convex / Nebius](https://github.com/aumara-xyz/aukora/issues/21)
-- [Recursion / AUMLOK–AURA](https://github.com/aumara-xyz/aukora/issues/22)
-- [Spatial shell / Auma](https://github.com/aumara-xyz/aukora/issues/23)
+> **The governing law:** intelligence may propose; evidence may advise; only the owner authorizes.
 
-Feature branches may update ahead of `main`; that means the work is under verification, not
-absent. Only an exact, tested, independently reviewed integration head is promoted to `main`.
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-81d4b4)](LICENSE)
+[![Tests: 774 passing](https://img.shields.io/badge/tests-774%20passing-96b4ff)](CLAIMS.md)
+[![Authority: owner gated](https://img.shields.io/badge/authority-owner%20gated-d7b36a)](packages/kernel)
+[![Convex: local only](https://img.shields.io/badge/Convex-local%20%2F%20self--hosted-c4aaff)](apps/brain)
 
-## Pure packages (portable, dependency-light)
+## The loop that exists in code
 
-| Package | What it is | Purity |
-| --- | --- | --- |
-| [`@aukora/kernel`](packages/kernel) | AUMLOK: deterministic authority verifier + reducer, canonical encoding, Merkle, registries, staleness law, conformance vectors, SBOM. Edge/Bun/browser. | pure (`@noble/*`) |
-| [`@aukora/evidence`](packages/evidence) | AURA: EvidencePack closed-schema validation, JCS-aligned canonical JSON, domain-separated digest, confusable-resistant secret projections. | pure, offline |
-| [`@aukora/council`](packages/council) | Fu: advisory multi-model council — seat verification, glyph parsing, quorum, spend estimation. **Grants no authority.** | pure, offline |
-| [`@aukora/council-node`](packages/council-node) | The one Node fs adapter: a persistent daily spend ledger, kept out of the pure council. | Node fs adapter |
-| [`@aukora/memory`](packages/memory) | KIRA: consent-scoped content-addressed memory envelope, deterministic recall, governed forgetting, staleness, advisory containment. | pure |
-| [`@aukora/mind`](packages/mind) | The pure observe→hypothesize→act→verify reasoning loop (advisory; authors proposals, grants nothing): governor rules, frame rendering, reply parsing, plan verification, parity-safe turn window, rollout over an injected simulator. | pure, offline |
-
-`@aukora/mind` (the pure reasoning-loop package) is distinct from the seed's mind DOOR — the
-governed HTTP surface in [`apps/seed`](apps/seed): the door owns I/O and composes governance,
-while the package is the portable reasoning law.
-
-## Organism adapters (in-repo, demonstrated with honesty labels)
-
-| Adapter | What it demonstrates | Honesty label |
-| --- | --- | --- |
-| [`apps/brain`](apps/brain) | Reactive, receipt-chained, growing memory with content-free forgetting; KIRA memory classes; reactive brain adapter; local-dev path. | **Simulated** Convex backend via `convex-test` (headless, in-process) — **not** a live cloud deploy. The Nebius provider path is **bounded and parked**; no live model calls. |
-| [`apps/seed`](apps/seed) | Governed inward-out recursion: propose → ground → sandbox-rehearse → advisory Fu → refuse(stale/secret/authority) → **real hybrid AUMLOK owner-gate** → sandbox-only apply → receipt + lineage; memory constitution (ROOT/UNITE/RISE/GOLD); council-runner boundary. | Council review is **mock/deterministic** (no live providers; no transport embedded); apply is **sandbox-only** — never mutates a live repository. |
-| [`apps/spatial`](apps/spatial) | The donor Symbiote Spatial shell, transplanted **subtractively** (91 donor files byte-identical, provenance-pinned): donor Chats/Auma lane, thirds/corners geometry, tokens, animations, mobile law; roster ▲ AUMA LIVE / LINGWA · ■ AUMLOK / AURA / KIRA / SPATIAL MAP / GHP / CONSOLE / SETTINGS · ● KNVS. | Static local launcher on `127.0.0.1:7096` (donor `:7090` untouched; donor governed doors stay local). Live engine endpoints are **not** bundled — organs render their donor **offline states** until the local doors run; nothing simulated is labelled live. |
-| [`apps/console`](apps/console) | Read-only operator panels; the CONSOLE center-pane organ inside the Spatial shell derives from this work (evidence/reference). | Panels are **fixture-fed** and labelled FIXTURE where no live adapter is injected; signs/applies/deploys/arms nothing. |
-
-Every arrow points inward: adapters consume packages; packages consume only Node built-ins and
-`@noble/*`. See [ARCHITECTURE.md](ARCHITECTURE.md).
-
-## Use
-
-```bash
-npm install
-npm run test:all      # provenance + boundary + package suites + kernel gate + organism suites
+```text
+Spatial perception + bounded repository sight
+        ↓
+KIRA memory context + AURA evidence
+        ↓
+@aukora/mind reasoning + Fu advisory review
+        ↓
+immutable pending intent + hostile-input qualification
+        ↓
+fresh AUMLOK owner authorization over exact bytes + current HEAD
+        ↓
+isolated candidate worktree/branch
+        ↓
+tests + content-free receipts + lineage
+        ↓
+local Convex reactive state → visible return to Spatial
 ```
 
-Individual gates:
+The model never receives the owner secret. Fu, AURA, KIRA, Convex, and `@aukora/mind` all
+structurally grant **zero authority**. The candidate stage cannot push, merge, deploy, or touch
+`main`. A stale approval or changed byte sequence refuses.
 
-```bash
-npm run verify:provenance   # canonical sources byte-identical to the reviewed donor
-npm run boundary            # evidence/council/council-node/mind import no fs/network/authority
-npm test                    # evidence + council + council-node + export/boundary smoke
-npm run test:kernel         # kernel: boundary, typecheck, tests, build, compat, SBOM, runtimes, package
-npm run test:organism       # memory + mind + brain + seed + console + spatial
+The mechanics are implemented and tested. The current live HTTP first-create handshake has one
+honestly recorded fail-closed gap: [issue #87](https://github.com/aumara-xyz/aukora/issues/87).
+It does not bypass authority or touch `main`; the active round is closing that final link.
+
+## The organs
+
+| Organ | Concrete implementation | Constitutional role |
+| --- | --- | --- |
+| **AUMLOK · authority** | [`@aukora/kernel`](packages/kernel), [`apps/seed/src/ceremony.ts`](apps/seed/src/ceremony.ts) | Hybrid Ed25519 + ML-DSA-65 owner verification. Verifies authority; never mints it. |
+| **AURA · evidence** | [`@aukora/evidence`](packages/evidence), [`apps/seed/src/geometry.ts`](apps/seed/src/geometry.ts) | Canonical evidence, digests, receipts, and visible geometry. Advisory; never authority. |
+| **KIRA · memory** | [`@aukora/memory`](packages/memory), [`apps/brain`](apps/brain) | Consent-scoped, content-addressed memory; cited recall; content-free governed forgetting. |
+| **Fu · council** | [`@aukora/council`](packages/council) | Multi-model advisory review, seat verification, quorum geometry, and spend accounting. Grants nothing. |
+| **Mind · reasoning** | [`@aukora/mind`](packages/mind) | Pure observe → hypothesize → act → verify loop, bounded plans, expectation checks, and simulated rollout. |
+| **Reactive brain** | [`ConvexWorkflowStore`](apps/brain/src/convexWorkflowStore.ts) | Local/self-hosted Convex persistence, subscriptions, workflow recovery, and receipt projections. Reacts; never rules. |
+| **Recursion** | [`governedCrossing.ts`](apps/seed/src/governedCrossing.ts), [`localCandidateStage.ts`](apps/seed/src/localCandidateStage.ts) | Immutable proposal crossing, fresh owner halt, and exact isolated candidate materialization. |
+| **Body** | [`apps/spatial`](apps/spatial) | Provenance-pinned donor Spatial shell: perception, voice, memory, evidence, authority, and creative organs. |
+| **Lifecycle** | [`apps/supervisor`](apps/supervisor) | One protected local supervisor owns process lifecycle and per-boot token custody. |
+
+Packages point inward and remain portable. I/O lives in adapters. Models do not import authority.
+Convex does not sign. The browser never receives owner key material.
+
+## Why this is difficult to fake
+
+- **Consumed authority:** successful authority is consumed, so replay refuses.
+- **Byte-bound approval:** the owner authorizes the exact draft hash and repository head, not a prose promise.
+- **Receipt before effect:** governed paths produce evidence before materialization.
+- **Content-free forgetting:** KIRA removes remembered plaintext while preserving auditable tombstone continuity.
+- **Adversarial path containment:** traversal, symlinks, unrelated staging, stale heads, malformed envelopes,
+  secret-shaped content, and authority-shaped model output are tested refusal classes.
+- **Executable anatomy:** [`anatomy.json`](anatomy.json) is checked by
+  [`verify-anatomy.mjs`](scripts/verify-anatomy.mjs); the map must agree with the tree.
+- **Pinned provenance:** reviewed donor sources are verified by Git blob identity, not trusted prose.
+- **Honest incompleteness:** known gaps remain visible instead of being renamed “live.”
+
+See the falsifiable capability table in [CLAIMS.md](CLAIMS.md), the dependency law in
+[ARCHITECTURE.md](ARCHITECTURE.md), and the threat boundary in [SECURITY.md](SECURITY.md).
+
+## The frontier: Inkling × Tinker × Nebius
+
+The next evolutionary chamber is active R&D, **not yet claimed as deployed capability**.
+
+[`thinkingmachines/Inkling`](https://huggingface.co/thinkingmachines/Inkling) is an Apache-2.0
+open-weight multimodal MoE: 975B total parameters, 41B active, and text/image/audio input. The
+target role is a frontier teacher, proposer, and evaluator running on private
+Nebius Blackwell metal—not a new authority.
+
+[`Tinker`](https://thinkingmachines.ai/tinker/) is a training API for LoRA fine-tuning and
+researcher-defined evaluation/RL experiments. Aukora keeps the curriculum, rewards, receipts,
+evaluations, and promotion law. Tinker-trained adapters are exported,
+checksum-bound, replayed locally, and return through the same fresh AUMLOK owner gate.
+
+```text
+bounded Aukora snapshot
+    → Inkling/Nebius isolated evolution cell
+    → unsigned proposals + measurable experiments
+    → Tinker LoRA/RL where explicitly armed
+    → exported checksum-bound adapter
+    → local replay + tests + receipts
+    → fresh AUMLOK owner decision
 ```
 
-## Provenance and honesty
+Inkling may eventually serve as a frontier cortex. A smaller verified Auma model may remain the
+local voice/router and offline fallback. Cognition can scale; permission never migrates into the
+model. Follow the live evidence in [Nebius issue #15](https://github.com/aumara-xyz/aukora/issues/15).
 
-Fresh root history — no donor commits imported. The canonical primitive sources are copied
-byte-identical from the frozen public donor
-[`aukora-kernel`](https://github.com/aumara-xyz/aukora-kernel) and pinned by donor git-blob hash
-in [docs/PROVENANCE.md](docs/PROVENANCE.md); `npm run verify:provenance` fails on drift. Every
-capability the docs call implemented has source, tests that exercise it, and an export — and
-every simulated, mock, sandbox-only, fixture-fed, or parked surface is labelled as such in
-[CLAIMS.md](CLAIMS.md). Nothing unbuilt is described as if it exists.
+## Make the repository prove itself
+
+```bash
+git clone https://github.com/aumara-xyz/aukora.git
+cd aukora
+npm ci
+npm run test:all
+```
+
+The full gate runs provenance, executable anatomy, package boundaries, root tests, kernel
+typecheck/build/compatibility/SBOM/runtime/package verification, every organism suite, and the
+fixture-regeneration guard.
+
+Individual immune-system gates:
+
+```bash
+npm run verify:provenance
+npm run verify:anatomy
+npm run boundary
+npm run test:kernel
+npm run test:organism
+```
+
+### A diligence prompt for another AI
+
+```text
+Do not trust the README. Inspect the exact main SHA. Run npm ci && npm run test:all.
+Trace every grantsAuthority field, the hybrid AUMLOK verification path, consumed-authority
+replay handling, KIRA forgetting, Convex workflow persistence, governedCrossing, and
+localCandidateStage. Compare README.md against CLAIMS.md and anatomy.json. Report anything
+described as live that lacks executable source, tests, reachability evidence, or a public export.
+```
+
+If the system survives that prompt, the claim is earned.
+
+## Live construction record
+
+`main` is the continuously updated source of truth. The organism is assembled in public through
+four durable feeds:
+
+- [Control, convergence, and round-close](https://github.com/aumara-xyz/aukora/issues/20)
+- [Brain, local Convex, providers, and Nebius](https://github.com/aumara-xyz/aukora/issues/21)
+- [Recursion, AUMLOK, AURA, and containment](https://github.com/aumara-xyz/aukora/issues/22)
+- [Spatial body and inside-out experience](https://github.com/aumara-xyz/aukora/issues/23)
+
+Safe experimental work is published and fixed forward. A round is held only for a concrete
+security/publication failure, with the blocker and evidence named.
 
 ## License
 
-Copyright (c) 2026 Aumara LLC. Licensed under **GNU AGPL-3.0-or-later** — see the complete,
-unmodified [LICENSE](LICENSE) text and [NOTICE](NOTICE). Separate commercial terms may be
-available under [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md) (which itself grants no license).
-Contribution and CLA policy: [CONTRIBUTING.md](CONTRIBUTING.md).
+Copyright © 2026 Aumara LLC. Aukora is licensed under
+**[GNU AGPL-3.0-or-later](LICENSE)**. See [NOTICE](NOTICE), [CONTRIBUTING.md](CONTRIBUTING.md),
+[COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md), and [SECURITY.md](SECURITY.md).
 
-## Security
+---
 
-See [SECURITY.md](SECURITY.md).
+**The ambition is science fiction. The invariants are ordinary files you can inspect.**

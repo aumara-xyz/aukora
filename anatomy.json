@@ -150,9 +150,54 @@
     },
     {
       "id": "mind-organ",
-      "disposition": "OWNER_EXCLUDED",
-      "source_continuity": "PR #72 quarantined; R45 disposition AMEND (5 items) — adoption blocked until issue #75 gates green",
-      "runtime_reachability": "absent from tree (verified)",
+      "disposition": "ADAPTED_BOUNDARY",
+      "source_continuity": "re-authored from aukora-symbiote branch fable/arc3-reasoning-engine-20260710 @ e5768a2f; adopted from PR #72 after R45/R46 qualification and merged to main @ d4d63d4",
+      "runtime_reachability": "LIVE as the pure exported @aukora/mind package; model/KIRA/Fu/candidate runtime bridges remain separately governed adapters",
+      "files": [
+        {
+          "path": "packages/mind/index.ts"
+        },
+        {
+          "path": "packages/mind/src/governor.ts"
+        },
+        {
+          "path": "packages/mind/src/grid.ts"
+        },
+        {
+          "path": "packages/mind/src/plan.ts"
+        },
+        {
+          "path": "packages/mind/src/ports.ts"
+        },
+        {
+          "path": "packages/mind/src/reply.ts"
+        },
+        {
+          "path": "packages/mind/src/rollout.ts"
+        },
+        {
+          "path": "packages/mind/src/trace.ts"
+        },
+        {
+          "path": "packages/mind/src/window.ts"
+        }
+      ],
+      "tests": [
+        "packages/mind/test/governor.test.ts",
+        "packages/mind/test/grid.test.ts",
+        "packages/mind/test/plan.test.ts",
+        "packages/mind/test/reply.test.ts",
+        "packages/mind/test/rollout.test.ts",
+        "packages/mind/test/trace.test.ts",
+        "packages/mind/test/window.test.ts"
+      ],
+      "checked_by": "npm run test:mind + package export/boundary gates"
+    },
+    {
+      "id": "inkling-tinker-evolution-cell",
+      "disposition": "RESEARCH_NEW",
+      "source_continuity": "external frontier research: thinkingmachines/Inkling and Tinker; no third-party source imported into Aukora",
+      "runtime_reachability": "NOT DEPLOYED — proposed isolated Nebius teacher/evaluator and post-training path; issue #15",
       "files": [],
       "tests": []
     }
@@ -164,7 +209,8 @@
     "evidence": "docs/continuity/r46/SAM4_EMBODIMENT_REACHABILITY_AUDIT.md"
   },
   "known_gaps": {
-    "launcher_token_handoff": "spatial launcher path lacks the supervisor token handoff (R46 Sam 4)",
-    "two_lifecycle_owners": "organism-ctl (apps/brain) and apps/supervisor both own lifecycles — must converge to ONE owner"
+    "live_workflow_first_create": "R47 live HTTP vertical slice refuses fail-closed with workflow:store-conflict on first create; issue #87",
+    "lingwa_lane_realtime": "donor real-time translation lane has no current runtime counterpart",
+    "duplex_voice_runtime": "duplex voice files exist, but default supervised runtime reachability remains unproven"
   }
 }
