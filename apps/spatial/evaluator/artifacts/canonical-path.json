@@ -1,0 +1,173 @@
+{
+  "schema": "aukora-canonical-path-bundle-v1",
+  "coreHash": "f55b065d4fb1f4ce32b91f7be0aa0c24f0d48a453d4fe2f2046795445aedf4f0",
+  "core": {
+    "schema": "aukora-canonical-path-evidence-v1",
+    "path": "typed input → local Convex settle → governed unsigned proposal → fresh AUMLOK halt → isolated candidate → receipt → reactive projection",
+    "productionAdapters": [
+      "@aukora/brain:ReactiveMemoryStore",
+      "@aukora/seed:MindDoor",
+      "@aukora/seed:HybridOwnerAdapter",
+      "@aukora/memory:buildMemoryRecord"
+    ],
+    "providerArmed": false,
+    "stages": [
+      {
+        "id": "1-typed-input",
+        "label": "PROVEN",
+        "phase": null
+      },
+      {
+        "id": "2-local-convex-settle",
+        "label": "LIVE_LOCAL",
+        "phase": null
+      },
+      {
+        "id": "3-governed-unsigned-proposal",
+        "label": "PROVEN",
+        "phase": "refused-at-owner"
+      },
+      {
+        "id": "4-fresh-aumlok-halt",
+        "label": "PROVEN",
+        "phase": null
+      },
+      {
+        "id": "5-isolated-candidate",
+        "label": "TEST_ONLY",
+        "phase": "candidate-materialized"
+      },
+      {
+        "id": "6-receipt",
+        "label": "PROVEN",
+        "phase": null
+      },
+      {
+        "id": "7-reactive-projection",
+        "label": "LIVE_LOCAL",
+        "phase": null
+      }
+    ],
+    "safety": {
+      "unsignedHalted": true,
+      "candidateIsolated": true,
+      "nothingSigned": true,
+      "noRemoteWrite": true,
+      "realMainByteIdentical": true
+    }
+  },
+  "stages": [
+    {
+      "id": "1-typed-input",
+      "label": "PROVEN",
+      "detail": "typed input ingested through @aukora/brain ReactiveMemoryStore",
+      "evidence": {
+        "ok": true,
+        "chainHash": "49612cee51672addaf6877783a25a507ae6e317be158203f3231b007dbc5dd0b",
+        "liveCount": 1
+      }
+    },
+    {
+      "id": "2-local-convex-settle",
+      "label": "LIVE_LOCAL",
+      "detail": "official local convex-local-backend present; the real durable settle + atomic snapshot is proven by the delegated canary",
+      "evidence": {
+        "durable": true,
+        "backend": "convex-local-backend (official, local, self-hosted)",
+        "delegatedProof": "npm run canary:r51 --workspace @aukora/brain"
+      }
+    },
+    {
+      "id": "3-governed-unsigned-proposal",
+      "label": "PROVEN",
+      "detail": "/api/propose (no signature): grounded then owner-gated — unsigned yields no plan, no candidate, no signature",
+      "evidence": {
+        "status": 409,
+        "phase": "refused-at-owner",
+        "signed": false,
+        "candidateBranch": null,
+        "proposalHash": "4ac84bf07eb32aeecb7094a98c6cdb4ce85a1844849f18f49a956ce57bd7237d"
+      }
+    },
+    {
+      "id": "4-fresh-aumlok-halt",
+      "label": "PROVEN",
+      "detail": "unsigned /api/materialize HALTS at the hybrid AUMLOK owner gate — fail-closed",
+      "evidence": {
+        "status": 400,
+        "reasonClass": "door:head-missing",
+        "candidateBranch": null,
+        "signed": false,
+        "halted": true
+      }
+    },
+    {
+      "id": "5-isolated-candidate",
+      "label": "TEST_ONLY",
+      "detail": "deterministic TEST owner signs → isolated candidate branch; real main never touched",
+      "evidence": {
+        "status": 200,
+        "phase": "candidate-materialized",
+        "candidateBranch": "candidate/8b7f95ce03e1",
+        "touchedMain": false,
+        "pushed": false,
+        "signed": false
+      }
+    },
+    {
+      "id": "6-receipt",
+      "label": "PROVEN",
+      "detail": "content-free receipt chain verifies; every door event carries a receipt",
+      "evidence": {
+        "chainValid": true,
+        "doorEvents": 3,
+        "chainLength": 8
+      }
+    },
+    {
+      "id": "7-reactive-projection",
+      "label": "LIVE_LOCAL",
+      "detail": "the same reactive projection the shell reads (api.nervous.snapshot / api.memory.snapshot) over the live local backend",
+      "evidence": {
+        "liveCount": 8,
+        "chainLength": 8,
+        "source": "local-convex-door",
+        "grantsAuthority": false
+      }
+    }
+  ],
+  "safety": {
+    "unsignedHalted": true,
+    "candidateIsolated": true,
+    "tempMainUntouched": true,
+    "realMainByteIdentical": true,
+    "noRemoteWrite": true,
+    "nothingSigned": true,
+    "candidateBranchesInTemp": "+ candidate/8b7f95ce03e1"
+  },
+  "convex": {
+    "available": true,
+    "settleLabel": "LIVE_LOCAL",
+    "projectionLabel": "LIVE_LOCAL",
+    "processDeath": {
+      "label": "LIVE_LOCAL",
+      "detail": "REAL process death: the canary `kill -9`s the running convex-local-backend and restarts it on the SAME on-disk SQLite; settled state survives, no duplicate effect. This is a genuine crash, NOT an in-process simulation.",
+      "delegatedCommand": "npm run canary:r51 --workspace @aukora/brain"
+    },
+    "prerequisite": "The OFFICIAL local Convex backend (FSL-1.1 binary, run as a dev runtime — use, not source incorporation) is required for LIVE_LOCAL. Fresh clone: `export CONVEX_AGENT_MODE=anonymous` then `npm run dev:local --workspace @aukora/brain` once primes `~/.cache/convex/binaries/*/convex-local-backend`, or set CONVEX_LOCAL_BACKEND_BINARY to an official binary. Node 18/20/22/24 must be on PATH for `\"use node\"` convex actions (on Node 26: `brew install node@22`). Then the real proof (real kill -9 + restart on the same SQLite): `npm run canary:r51 --workspace @aukora/brain`.",
+    "binaryPresent": true
+  },
+  "environment": {
+    "node": "v26.4.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "reproduction": "AUKORA_EVAL_WRITE=1 npm run evaluate --workspace @aukora/spatial",
+  "surface": {
+    "grantsAuthority": false,
+    "providerArmed": false,
+    "remoteWrite": false,
+    "realMainTouched": false,
+    "secretsTouched": "none"
+  }
+}
