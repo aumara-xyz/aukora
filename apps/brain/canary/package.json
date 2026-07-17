@@ -1,0 +1,9 @@
+{
+  "name": "@aukora/r51-canary",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-or-later",
+  "description": "R51 CORE TRUTH FREEZE — minimal real-backend nervous-system pilot (append-only events + atomic snapshot). Not the production store; a verified adoption-seam pilot for issue #108.",
+  "dependencies": { "convex": "1.42.2" }
+}
