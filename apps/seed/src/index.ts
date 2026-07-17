@@ -36,6 +36,7 @@ export * from './candidatePathIntegrity.js';
 export * from './gitConfigThreat.js';
 export * from './effectSettlement.js';
 export * from './effectAudit.js';
+export * from './effectCoordinator.js';
 export * from './fuStructuredAdapter.js';
 export * from './localCandidateStage.js';
 export * from './providerTransport.js';
