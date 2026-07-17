@@ -71,6 +71,8 @@ export class EffectEventStore {
 export class InMemoryEffectIo implements EffectIo {
   private readonly rows = new Map<string, EffectEventV1>();
   private readonly payloadHashes = new Map<string, string>();
+  /** Rows a COMPROMISED backend wrote directly, bypassing the store's validating `write()`. */
+  private readonly injected: unknown[] = [];
   private outage = false;
 
   setOutage(on: boolean): void { this.outage = on; }
@@ -84,9 +86,18 @@ export class InMemoryEffectIo implements EffectIo {
   }
 
   async list(): Promise<readonly unknown[]> {
-    return [...this.rows.values()];
+    // The store re-validates every row on rebuild, so an injected hostile row is present in the raw stream but
+    // can never enter the canonical projection — modelling exactly a compromised/tampered backend table.
+    return [...this.rows.values(), ...this.injected];
   }
 
+  /**
+   * ADVERSARY hook: write an ARBITRARY, UNVALIDATED row straight into the durable set, bypassing `write()` —
+   * modelling a compromised backend, a malformed migration, or a tampered SQLite row. `rebuild()` must fail
+   * closed: `projectEffectEvents` re-validates, so a hostile row is refused and never mints authority.
+   */
+  injectRaw(row: unknown): void { this.injected.push(row); }
+
   /** Test/ops helper: destroy the durable projection rows (the event stream is what gets replayed to rebuild). */
-  destroyRows(): void { this.rows.clear(); this.payloadHashes.clear(); }
+  destroyRows(): void { this.rows.clear(); this.payloadHashes.clear(); this.injected.length = 0; }
 }
