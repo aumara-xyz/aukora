@@ -1,0 +1,46 @@
+{
+  "schema": "aukora-overnight-handoff-v1",
+  "lane": "Sam 3 — effect broker / Git cell / real rehearsal",
+  "ownership": "apps/seed/** only; never merge main; report on issue #22",
+  "base": "5ae15481bf5676ede97aab28b5c16e189358472c",
+  "baseNeverBumped": true,
+  "cutoff": { "witaLocal": "2026-07-18T06:00:00+08:00", "utc": "2026-07-17T22:00:00Z" },
+  "stoppedAtUtc": "2026-07-17T22:02:00Z",
+  "status": "MISSION SUBSTANTIVELY COMPLETE — the 10 code bricks fully specify the crash-recoverable effect protocol + its recovery table; 1 integration-map doc consolidates them. The single remaining brick (concrete EffectOps wiring into the live ceremony) was not startable because the base never bumped.",
+  "grantsAuthority": false,
+  "durabilityClaim": "NONE end-to-end. Sam 2's durable trusted-state/PREPARED contract is in the comprehensive integration (#135), not on main, so every durable seam here is an injected interface + test double by design.",
+  "mission": "Turn the direct ceremony-to-Git path into an explicit crash-recoverable effect protocol (PROPOSED->QUALIFIED->POLICY_REHEARSAL_PASSED->HERMETIC_REHEARSAL_PASSED->AWAITING_OWNER->PREPARED->EXECUTING->OBSERVED->COMMITTED + REFUSED/REHEARSAL_FAILED/CANCELLED_BEFORE_PREPARE/RECONCILE_REQUIRED/QUARANTINED/COMPENSATED), harden the Git isolation cell, and add the hostile-test matrix.",
+  "bricks": [
+    { "pr": 123, "branch": "sam/overnight-git-hardening", "head": "07fbc1154184cff8d3cf3454195fde10fffd0d00", "module": "apps/seed/src/localCandidateStage.ts", "summary": "HARDEN GIT — exact trusted binary (system dirs only), minimal env (empty HOME/XDG, system+global config off, hooksPath=/dev/null, no terminal prompt, file-protocol only), argv-only.", "tests": "seed 343 (+5 hostile: fake git in PATH / malicious hook / hostile GIT_CONFIG_GLOBAL / hostile HOME / all-at-once)" },
+    { "pr": 125, "branch": "sam/overnight-effect-protocol", "head": "74283b360b00911434ef700198e7830d455dea3a", "module": "apps/seed/src/effectProtocol.ts", "summary": "The pure crash-recoverable state machine: advance()/reconcile(); 15 first-class phases; four invariants (git only after consuming PREPARED; observe-not-re-execute; no null-completion COMMITTED; no second candidate). PreparedEffectStore interface + InMemory double.", "tests": "seed 356 (+18)" },
+    { "pr": 126, "branch": "sam/overnight-hermetic-rehearsal", "head": "441aff5b20eec9f7ea63cd96980a8705c7c63977", "module": "apps/seed/src/hermeticRehearsal.ts", "summary": "Map-only policy/binding simulation (executes nothing) distinct from a hermetic rehearsal (fixed digest-bound plan in a no-secret/no-network cell, or honest unavailable). A caller names an approved plan id — never a shell command.", "tests": "seed 347 (+9)" },
+    { "pr": 128, "branch": "sam/overnight-ref-snapshot", "head": "d24d73058a9f361461c3e6242d1f521732b32c27", "module": "apps/seed/src/refSnapshot.ts", "summary": "Protected-ref + tree isolation snapshots before/after; verifyIsolation is byte-exact fail-closed; any moved/added/removed ref or tree change quarantines.", "tests": "seed 346 (+8)" },
+    { "pr": 129, "branch": "sam/overnight-effect-settlement", "head": "4c591486f908748830a1f54c9998e43d979cea06", "module": "apps/seed/src/effectSettlement.ts", "summary": "Post-effect settlement is projection-only: validateSettlement is total + fail-closed, refuses any authority-shaped key / extra key / content / a COMMITTED without a durable completion reference.", "tests": "seed 345 (+7)" },
+    { "pr": 130, "branch": "sam/overnight-path-integrity", "head": "f54acc8fcfb4ab9bde70958ae5c4552695c55b7e", "module": "apps/seed/src/candidatePathIntegrity.ts", "summary": "Candidate path collision integrity — APFS-equivalence key (NFC + case fold) detects Unicode-normalization AND case-fold collisions the existing case-fold-only check missed.", "tests": "seed 348 (+10)" },
+    { "pr": 131, "branch": "sam/overnight-effect-audit", "head": "68aa9e85dc416be87fb38ce9627d5bfa2af12469", "module": "apps/seed/src/effectAudit.ts", "summary": "Append-only content-free audit ledger enforcing the closing invariant over a whole effect life: no second EXECUTING per effect; no COMMITTED without a completion bit; verifyAuditLog re-proves both over a rehydrated log.", "tests": "seed 346 (+8)" },
+    { "pr": 133, "branch": "sam/overnight-gitconfig-threat", "head": "cde287c7b1f4fa53dedc700b31e1eab01ac8900d", "module": "apps/seed/src/gitConfigThreat.ts", "summary": "Git config threat classifier — detects command-executing/redirecting directives (filter/textconv drivers, hooksPath, fsmonitor, ssh/editor/pager, shell aliases, submodule/remote urls, insteadOf, credential helper). Complements the env-disabling in #123.", "tests": "seed 357 (+19)" },
+    { "pr": 134, "branch": "sam/overnight-effect-coordinator", "head": "7795d2723796a950a1ebd32db716fd51dfe76eec", "module": "apps/seed/src/effectCoordinator.ts", "summary": "The conductor: driveEffect(ops) owns the canonical crash-recoverable ORDER over an injected EffectOps bundle. Proven over a double: the one committed path + every halt/quarantine branch.", "tests": "seed 347 (+9)" },
+    { "pr": 136, "branch": "sam/overnight-recovery-planner", "head": "24d4827b36418ad80b8387391f6bd721ac3901b4", "module": "apps/seed/src/recoveryPlanner.ts", "summary": "Crash-at-every-phase recovery table: planRecovery(phase, consumed) chooses the safe action under two laws (never blindly re-execute; never create a second candidate). Exhaustive over all 15 phases x the consume marker.", "tests": "seed 360 (+22)" },
+    { "pr": 137, "branch": "sam/overnight-integration-map", "head": "f010437a3c9a336ca708948b43643f09318ccf56", "module": "docs/overnight/2026-07-17/sam3/EFFECT_PROTOCOL_MAP.md", "summary": "Docs-only integration guide: mission requirement -> brick, the driveEffect composition order + recovery table, proven-vs-remaining, and the seven held invariants.", "tests": "docs-only" }
+  ],
+  "invariantsHeld": [
+    "Git begins only after consuming a durable PREPARED effect.",
+    "After a crash in EXECUTING, observe reality before acting; never blindly re-execute.",
+    "No clean success carries a null completion receipt.",
+    "No crash creates a second candidate.",
+    "Post-effect settlement is a projection only — no authority, signature, key, or content crosses into the store.",
+    "Every ambiguous outcome is quarantined, never silently accepted.",
+    "Nothing in this lane signs, pushes, merges, or mutates main; nothing grants authority."
+  ],
+  "remaining": {
+    "brick": "Concrete EffectOps wiring — supply advance/reconcile (state machine), runHermeticRehearsal, snapshotProtected/verifyIsolation, validateSettlement + Sam 2 store, EffectAuditLedger, and the hardened localCandidateStage.materializeCandidate; delegate the live candidate-stage ceremony to driveEffect.",
+    "gatedOn": "The base bump after the comprehensive integration #135 (and R52 #120) merge to main. Not startable until the primitives are co-resident on main with Sam 2's durable store.",
+    "noNewAuthorityPath": "The owner gate and the kernel reference monitor remain the sole authorities."
+  },
+  "blocker": "The admin-merge gate. #120 (R52) and #135 (comprehensive overnight, 11 bricks) are both green on Node 20 + 22 all night; main was never merged (Codex admin-merge required; Sam 1 is push-only). The base never advanced from 5ae15481, so no lane could complete end-to-end wiring.",
+  "prsAllOpenDraftNeverMerged": true,
+  "newSeedTestsAcrossBricks": 115,
+  "paidCalls": 0,
+  "cloudOrNebiusCalls": 0,
+  "attributionNote": "In Sam 1's integration ledger, heads 4c591486 (effect-settlement #129) and 68aa9e85 (effect-audit #131) are Sam 3, not Sam 4 — both are in #135 correctly; flagged for an accurate per-lane record."
+}
