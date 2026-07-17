@@ -49,3 +49,13 @@ canary and the in-repo law can never drift.
   the protected event stream — not duplicated. Authority stays entirely outside Convex; every projected row is
   `grantsAuthority:false`.
 - This is a **local self-hosted** backend only — no managed Convex, no external cloud.
+
+## Fresh-clone reproduction (checkpoint 10, clean checkout of the pushed head `118e44b`)
+
+```
+[1/4] npm ci                 → ok
+[2/4] build kernel           → ok
+[3/4] brain suite            → 215 passed / 2 skipped
+[4/4] live effect canary     → real SIGKILL (pid 78215) → survived (R2===R1) → rebuild (R3===R1) → ALL LIVE PROOFS PASS
+```
+No orphan process. Proves the PUSHED work reproduces green from a clean checkout — the exact run a hostile evaluator performs.
