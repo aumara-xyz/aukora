@@ -45,7 +45,11 @@ function failingFields(goodState: Record<string, unknown>, suspectState: Record<
 }
 
 describe('R49 — exact live refusal: empty door-defaulted nonce vs validator rule 83', () => {
-  it('REPRODUCES the live symptom: nonce "" (the door default for a missing body.nonce) → workflow:store-conflict on a FRESH backend', async () => {
+  // R49 integration note (Sam 1): on base 26da3754 this input reproduced the live symptom
+  // (`workflow:store-conflict`). Sam 3's R49 head (caa11c5, PR #95) fixes the conflation, so the
+  // SAME input now names the failing field. The assertion pins the corrected label; the refusal
+  // itself (ok:false, nothing persisted) is unchanged.
+  it('the live-symptom input (nonce "" — the door default for a missing body.nonce) is now NAMED: workflow:state-refused:nonce on a FRESH backend', async () => {
     const t = convexTest(schema, modules);
     const w = makeWorld();
     const store = liveStyleStore(t);
@@ -58,7 +62,7 @@ describe('R49 — exact live refusal: empty door-defaulted nonce vs validator ru
     const out = machine.propose(p, liveDerivedNonce);
 
     expect(out.ok).toBe(false);
-    expect(out.reasonClass).toBe('workflow:store-conflict');   // the EXACT live label — for a VALIDATION refusal
+    expect(out.reasonClass).toBe('workflow:state-refused:nonce'); // post-fix: the validation refusal names its field
     expect(store.load(wfId)).toBeNull();                        // nothing persisted (matches chainLength-0 live repro)
     expect((await t.query(api.workflows.loadWorkflow, { workflowId: wfId }))).toBeNull(); // durable side empty too
   });
