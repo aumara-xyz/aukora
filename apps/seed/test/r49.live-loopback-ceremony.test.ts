@@ -78,6 +78,12 @@ describe('R49 · #87 — validation refusals name their exact field; conflicts s
     expect(explainWorkflowState({ ...good, signature: 'deadbeef' })).toEqual({ ok: false, field: 'key-set' }); // smuggled key
     expect(explainWorkflowState({ ...good, grantsAuthority: true })).toEqual({ ok: false, field: 'authority-flags' });
     expect(explainWorkflowState({ ...good, updatedAtIso: 7 })).toEqual({ ok: false, field: 'timestamps' });
+
+    // Key-count checks alone do not prove density: `length` + `extra` can replace
+    // the missing index while Array#some/every silently skips the hole.
+    const sparseRefusals = Array<string>(1);
+    (sparseRefusals as string[] & { extra: string }).extra = 'benign';
+    expect(explainWorkflowState({ ...good, refusals: sparseRefusals })).toEqual({ ok: false, field: 'refusals' });
   });
 });
 
