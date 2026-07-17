@@ -89,8 +89,9 @@ export interface EffectProjection {
   readonly quarantined: readonly { readonly effectId: string; readonly reason: 'conflict' }[];
 }
 
-/** Canonical hash of an event's PAYLOAD under its fixed id — the conflict discriminator. */
-function payloadHash(e: EffectEventV1): string {
+/** Canonical hash of an event's PAYLOAD under its fixed id — the conflict discriminator (same id + same hash
+ *  = an idempotent redelivery; same id + different hash = a conflict). Exported for the durable store adapter. */
+export function effectPayloadHash(e: EffectEventV1): string {
   return canonicalHash({ domain: 'AUKORA-EFFECT-PAYLOAD/1', effectId: e.effectId, effect: e.effect, createdAtIso: e.createdAtIso });
 }
 
@@ -111,7 +112,7 @@ export function projectEffectEvents(deliveries: readonly unknown[]): EffectProje
   for (const d of deliveries) {
     const e = validateEffectEvent(d);
     if (e === null) { refused++; continue; }
-    const h = payloadHash(e);
+    const h = effectPayloadHash(e);
     const prior = hashes.get(e.effectId);
     if (prior === undefined) { canonical.set(e.effectId, e); hashes.set(e.effectId, h); accepted++; }
     else if (prior === h) { deduplicated++; }
@@ -123,7 +124,7 @@ export function projectEffectEvents(deliveries: readonly unknown[]): EffectProje
 /** A stable root over the canonical projection — identical iff the canonical SET is identical (rebuild proof). */
 export function effectProjectionRoot(p: EffectProjection): string {
   const rows = [...p.canonical.values()]
-    .map((e) => ({ effectId: e.effectId, payload: payloadHash(e) }))
+    .map((e) => ({ effectId: e.effectId, payload: effectPayloadHash(e) }))
     .sort((a, b) => (a.effectId < b.effectId ? -1 : a.effectId > b.effectId ? 1 : 0));
   return canonicalHash({ domain: 'AUKORA-EFFECT-ROOT/1', rows });
 }
