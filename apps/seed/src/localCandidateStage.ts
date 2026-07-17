@@ -63,6 +63,7 @@ export type CandidateReasonClass =
   | 'candidate:isolation-violated'
   | 'candidate:unsafe-write-path'
   | 'candidate:staging-mismatch'
+  | 'candidate:stale-head'
   | 'candidate:git-error';
 
 export interface CandidateMaterialization {
@@ -91,6 +92,8 @@ export interface MaterializeInput {
   readonly monitor: CandidateReferenceMonitor;
   /** The owner has explicitly ARMED this materialization (maps to the kernel's humanClearance for self-modify). */
   readonly ownerArmed: boolean;
+  /** R50 head binding: the exact HEAD (40-hex) the approval was made against; a moved head refuses (stale-head). */
+  readonly expectedHeadBefore?: string;
   readonly store: ReactiveMemoryStore;
   readonly nowMs: number;
   readonly nowIso: string;
@@ -219,6 +222,10 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
 
   const headBefore = tryGit(repoRoot, 'rev-parse', ['HEAD']);
   if (headBefore === null) return refuse('candidate:git-error', 'refused: repo has no HEAD commit');
+  // R50 head binding — checked BEFORE the reference monitor so a stale head never consumes the authorization.
+  if (input.expectedHeadBefore !== undefined && input.expectedHeadBefore !== headBefore) {
+    return refuse('candidate:stale-head', 'refused: repo HEAD moved since this materialization was approved — re-approve against the current head');
+  }
   const mainBefore = tryGit(repoRoot, 'rev-parse', ['--verify', '--quiet', 'refs/heads/main']);
 
   // 4b. CANONICAL AUTHORIZATION — the ONE reference monitor (kernel decide()): owner-armed self-modify, hybrid

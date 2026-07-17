@@ -28,7 +28,7 @@ import type { CouncilOutcome } from '@aukora/council';
 import { buildMemoryRecord } from '@aukora/memory';
 import { checkDoorGuard, headerReader, loopbackOrigins, newDoorToken, type DoorGuardReason } from './doorGuards.js';
 import { validateProposalShape, deriveIntentId } from './proposal.js';
-import { runLocalRecursionCeremony, type LocalCeremonyEnv, type CeremonyRunResult } from './localCeremonyRunner.js';
+import { runLocalRecursionCeremony, ceremonyWorkflowId, type LocalCeremonyEnv, type CeremonyRunResult } from './localCeremonyRunner.js';
 import { verdictFromCouncilOutcome } from './fuStructuredAdapter.js';
 
 export const DOOR_PORT = 7097;
@@ -55,9 +55,20 @@ export interface DoorEvent {
   readonly receiptHash: string | null;
 }
 
+/**
+ * R50 durability hooks — present when the workflow store persists OUTSIDE this process (the local Convex
+ * adapter's hydrate/settle contract). The door pulls the durable row into the cache BEFORE the ceremony and
+ * pushes accepted saves through the authoritative OCC mutation AFTER it. Absent for a purely in-process store.
+ */
+export interface DoorDurability {
+  hydrate(workflowId: string): Promise<unknown>;
+  settle(): Promise<{ readonly ok: boolean; readonly pushed: number; readonly divergence: readonly string[] }>;
+}
+
 /** Injected lazy driver: the heavy composition modules. A throwing loader models a compile/import break. */
 export interface DoorDriver {
   readonly ceremonyEnv: LocalCeremonyEnv;
+  readonly durability?: DoorDurability;
 }
 export type DoorDriverLoader = () => Promise<DoorDriver>;
 
@@ -85,6 +96,8 @@ interface ProposeBody {
   readonly candidateAuth?: SignedPromotionV2;
   /** Owner explicitly ARMED materialization (kernel humanClearance). */
   readonly ownerArmed?: boolean;
+  /** R50: the exact repo HEAD (40-hex) this materialization was approved against — REQUIRED to materialize. */
+  readonly headBefore?: string;
   readonly explanation?: string;
 }
 
@@ -205,12 +218,13 @@ export class MindDoor {
    * ceremony re-verifies AUMLOK in process; a restart re-reads durable state and emits the PLAN only (never
    * auto-resumes an effect). The Fu sidecar must bind to THIS proposal by proposalHash.
    */
-  private proposeOrMaterialize(body: ProposeBody | undefined, driver: DoorDriver, materialize: boolean): DoorResponse {
+  private async proposeOrMaterialize(body: ProposeBody | undefined, driver: DoorDriver, materialize: boolean): Promise<DoorResponse> {
+    const route = materialize ? '/api/materialize' : '/api/propose';
     if (body === undefined || body === null) return this.respond(400, { error: 'missing body' });
 
     const shape = validateProposalShape(body.proposalInput);
     if (!shape.ok) {
-      const ev = this.receipt('refused', materialize ? '/api/materialize' : '/api/propose', 'door:proposal-shape');
+      const ev = this.receipt('refused', route, 'door:proposal-shape');
       return this.respond(400, { error: shape.reason, reasonClass: 'door:proposal-shape', eventReceipt: ev.receiptHash });
     }
     const intentId = deriveIntentId(shape.proposal);
@@ -219,14 +233,24 @@ export class MindDoor {
     let fuOutcome: CouncilOutcome | undefined;
     if (body.fuSidecar) {
       if (body.fuSidecar.proposalHash !== intentId) {
-        const ev = this.receipt('refused', materialize ? '/api/materialize' : '/api/propose', 'door:fu-sidecar-mismatch');
+        const ev = this.receipt('refused', route, 'door:fu-sidecar-mismatch');
         return this.respond(400, { error: 'Fu advisory sidecar does not bind to this proposal (proposalHash mismatch)', reasonClass: 'door:fu-sidecar-mismatch', eventReceipt: ev.receiptHash });
       }
       fuOutcome = body.fuSidecar.outcome;
       // Fu is advisory, never authority: we consume the outcome only as evidence; the owner gate still decides.
-      if (fuOutcome && verdictFromCouncilOutcome(fuOutcome).grantsAuthority !== false) {
-        const ev = this.receipt('refused', '/api/propose', 'door:fu-authority-claim');
-        return this.respond(400, { error: 'Fu can never be authority', reasonClass: 'door:fu-authority-claim', eventReceipt: ev.receiptHash });
+      // R50 F1: a MALFORMED matched-hash outcome must be a stable receipted refusal, never a throw out of handle().
+      if (fuOutcome !== undefined) {
+        let fuClaimsAuthority: boolean;
+        try {
+          fuClaimsAuthority = verdictFromCouncilOutcome(fuOutcome).grantsAuthority !== false;
+        } catch {
+          const ev = this.receipt('refused', route, 'door:fu-sidecar-malformed');
+          return this.respond(400, { error: 'refused: Fu advisory sidecar outcome is malformed (advisory evidence must be a well-formed council outcome)', reasonClass: 'door:fu-sidecar-malformed', eventReceipt: ev.receiptHash });
+        }
+        if (fuClaimsAuthority) {
+          const ev = this.receipt('refused', route, 'door:fu-authority-claim');
+          return this.respond(400, { error: 'Fu can never be authority', reasonClass: 'door:fu-authority-claim', eventReceipt: ev.receiptHash });
+        }
       }
     }
 
@@ -234,25 +258,74 @@ export class MindDoor {
     // downstream, and surface as a misleading `workflow:store-conflict`. Refuse it AT THE DOOR with its own name.
     const nonce = typeof body.nonce === 'string' ? body.nonce : '';
     if (nonce.length === 0) {
-      const ev = this.receipt('refused', materialize ? '/api/materialize' : '/api/propose', 'door:nonce-missing');
+      const ev = this.receipt('refused', route, 'door:nonce-missing');
       return this.respond(400, { error: 'refused: body.nonce (1..128 chars) is required for replay protection', reasonClass: 'door:nonce-missing', eventReceipt: ev.receiptHash });
     }
     if (nonce.length > 128) {
-      const ev = this.receipt('refused', materialize ? '/api/materialize' : '/api/propose', 'door:nonce-too-long');
+      const ev = this.receipt('refused', route, 'door:nonce-too-long');
       return this.respond(400, { error: 'refused: body.nonce exceeds 128 chars', reasonClass: 'door:nonce-too-long', eventReceipt: ev.receiptHash });
     }
-    const result: CeremonyRunResult = runLocalRecursionCeremony(driver.ceremonyEnv, {
-      proposalInput: body.proposalInput,
-      nonce,
-      auth: body.auth as SignedPromotionV2,
-      fuOutcome,
-      materialize, // materialization only on the explicit /api/materialize route
-      candidateAuth: body.candidateAuth,
-      ownerArmed: body.ownerArmed === true,
-      explanation: typeof body.explanation === 'string' ? body.explanation.slice(0, MAX_BODY_FIELD) : undefined,
-    });
 
-    const ev = this.receipt(result.ok ? (materialize ? 'materialized' : 'proposed') : 'refused', materialize ? '/api/materialize' : '/api/propose', result.reasonClass);
+    // R50 head binding: materialization must name the exact HEAD it was approved against; the candidate stage
+    // re-verifies it in-process (candidate:stale-head) so a moved head can never receive a pre-approved effect.
+    const headBefore = typeof body.headBefore === 'string' ? body.headBefore : '';
+    if (materialize && !/^[0-9a-f]{40}$/.test(headBefore)) {
+      const ev = this.receipt('refused', route, 'door:head-missing');
+      return this.respond(400, { error: 'refused: body.headBefore (40-hex repo HEAD the approval binds to) is required to materialize', reasonClass: 'door:head-missing', eventReceipt: ev.receiptHash });
+    }
+
+    // R50 durability: pull the durable projection into the cache BEFORE the ceremony (distinct, content-free
+    // failure classes: a bad durable row vs an unreachable store are different facts).
+    const workflowId = ceremonyWorkflowId(shape.proposal, nonce);
+    if (driver.durability) {
+      try {
+        await driver.durability.hydrate(workflowId);
+      } catch (e) {
+        const failedValidation = e instanceof Error && e.message.includes('failed validation');
+        const cls = failedValidation ? 'door:hydration-failed' : 'door:store-unavailable';
+        const ev = this.receipt('refused', route, cls);
+        return this.respond(failedValidation ? 409 : 503, { error: failedValidation ? 'refused: durable workflow row failed exact-shape validation (fail-closed; no effects run)' : 'refused: durable store unreachable (fail-closed; retry when the backend is up)', reasonClass: cls, eventReceipt: ev.receiptHash });
+      }
+    }
+
+    // R50 F1 belt: NOTHING escapes handle() as a throw — an uncaught ceremony error fails THIS request,
+    // receipted, and the door stays up (the same law as the lazy-boot driver failure).
+    let result: CeremonyRunResult;
+    try {
+      result = runLocalRecursionCeremony(driver.ceremonyEnv, {
+        proposalInput: body.proposalInput,
+        nonce,
+        auth: body.auth as SignedPromotionV2,
+        fuOutcome,
+        materialize, // materialization only on the explicit /api/materialize route
+        candidateAuth: body.candidateAuth,
+        ownerArmed: body.ownerArmed === true,
+        expectedHeadBefore: materialize ? headBefore : undefined,
+        explanation: typeof body.explanation === 'string' ? body.explanation.slice(0, MAX_BODY_FIELD) : undefined,
+      });
+    } catch (e) {
+      const ev = this.receipt('refused', route, 'door:ceremony-uncaught');
+      return this.respond(500, { error: `refused: ceremony error (door stays up): ${e instanceof Error ? e.message.slice(0, 160) : 'unknown'}`, reasonClass: 'door:ceremony-uncaught', eventReceipt: ev.receiptHash });
+    }
+
+    // R50 durability: push accepted saves through the authoritative OCC mutation AFTER the ceremony. A lost
+    // race (divergence) or an unreachable durability point FAILS CLOSED — the durable truth wins, and the
+    // machine's restart reconciliation handles any unsettled projection honestly.
+    if (driver.durability) {
+      let settled: { readonly ok: boolean; readonly pushed: number; readonly divergence: readonly string[] };
+      try {
+        settled = await driver.durability.settle();
+      } catch {
+        const ev = this.receipt('refused', route, 'door:store-unavailable');
+        return this.respond(503, { error: 'refused: durable store unreachable at the durability point (fail-closed; the projection is unsettled and reconciles on restart)', reasonClass: 'door:store-unavailable', eventReceipt: ev.receiptHash });
+      }
+      if (!settled.ok) {
+        const ev = this.receipt('refused', route, 'door:settle-divergence');
+        return this.respond(409, { error: 'refused: a concurrent writer won the durable OCC race — deferred to the durable truth (re-read and retry)', reasonClass: 'door:settle-divergence', divergentWorkflowPrefixes: settled.divergence.map((d) => d.slice(0, 12)), eventReceipt: ev.receiptHash });
+      }
+    }
+
+    const ev = this.receipt(result.ok ? (materialize ? 'materialized' : 'proposed') : 'refused', route, result.reasonClass);
     return this.respond(result.ok ? 200 : 409, {
       schema: 'aukora-door-plan-v1',
       ok: result.ok,

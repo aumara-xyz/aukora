@@ -241,7 +241,7 @@ describe('R49 · the complete live loopback ceremony (real 127.0.0.1 socket)', (
     const cp = candidatePayloadForProposals([p1]);
     const candidateAuth = owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: `${N1}-cand`, issuedAt: NOW_ISO, expiresAt: null });
     sensitiveHex.push(candidateAuth.signatures.ed25519, candidateAuth.signatures.mlDsa65);
-    materializeBody = { proposalInput: p1, nonce: N1, auth: mkAuth(p1, { nonce: N1 }), candidateAuth, ownerArmed: true, explanation: 'r49 live loopback ceremony' };
+    materializeBody = { proposalInput: p1, nonce: N1, auth: mkAuth(p1, { nonce: N1 }), candidateAuth, ownerArmed: true, headBefore, explanation: 'r49 live loopback ceremony' };
     const res = await post('/api/materialize', materializeBody);
     expect(res.status).toBe(200);
     expect(res.json.phase).toBe('candidate-materialized');
@@ -280,7 +280,7 @@ describe('R49 · the complete live loopback ceremony (real 127.0.0.1 socket)', (
     const good = mkAuth(p2, { nonce: 'r49-live-nonce-2' });
     const sig = good.signatures.ed25519;
     const forged = { ...good, signatures: { ...good.signatures, ed25519: (sig[0] === 'a' ? 'b' : 'a') + sig.slice(1) } };
-    const res = await post('/api/materialize', { proposalInput: p2, nonce: 'r49-live-nonce-2', auth: forged, ownerArmed: true });
+    const res = await post('/api/materialize', { proposalInput: p2, nonce: 'r49-live-nonce-2', auth: forged, ownerArmed: true, headBefore });
     expect(res.status).toBe(409);
     expect(res.json.phase).toBe('refused-at-owner');
     expect(res.json.candidateBranch).toBeNull();
