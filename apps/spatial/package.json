@@ -9,6 +9,7 @@
   "scripts": {
     "launch": "node scripts/launch.mjs",
     "test": "vitest run",
+    "evaluate": "AUKORA_EVAL_WRITE=1 vitest run test/r52.evaluator.test.mjs --reporter=verbose",
     "verify:provenance": "node scripts/verify-provenance.mjs"
   },
   "devDependencies": {}

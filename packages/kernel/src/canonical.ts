@@ -20,6 +20,13 @@ export function assertCanonicalValue(value: unknown, path = "$"): asserts value 
     return;
   }
   if (Array.isArray(value)) {
+    // Hostile-input hardening (R52/#116): reject a SPARSE array (a hole is `undefined`, not a canonical
+    // value, yet `forEach`/`map` skip holes) and an array carrying any non-index own property (a named
+    // property is silently dropped by `canonicalJson`, so `[1]` and `[1]` + a hidden `.foo` would collide to
+    // the same bytes — an injectivity break). A dense, index-only array's own keys are exactly the indices
+    // 0..length-1 plus `length`; any other own key (a hole's absence, a named string key, a symbol key)
+    // changes this count. Valid dense arrays are unaffected, so no existing canonical encoding changes.
+    if (Reflect.ownKeys(value).length !== value.length + 1) throw new KernelInputError(`canonical_array_shape:${path}`);
     value.forEach((entry, index) => assertCanonicalValue(entry, `${path}[${index}]`));
     return;
   }
