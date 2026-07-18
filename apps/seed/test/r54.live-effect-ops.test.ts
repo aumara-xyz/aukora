@@ -22,9 +22,9 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ReactiveMemoryStore } from '@aukora/brain';
 import {
-  runLiveCandidateEffect, liveEffectOpsGrantsAuthority,
+  runLiveCandidateEffect, liveEffectOpsGrantsAuthority, liveEffectOps, driveEffect, EffectAuditLedger, verifyIsolation,
   candidatePayloadHash, HybridOwnerAdapter, deriveDraftHash, deriveIntentId, candidateBranchName,
-  type BranchCandidate, type LiveEffectInput,
+  type BranchCandidate, type LiveEffectInput, type EffectOps, type ProtectedSnapshot,
 } from '../src/index.js';
 // Protected primary-door module — deliberately NOT in the barrel; imported directly (as localCeremonyRunner does).
 import { DurableCandidateReferenceMonitor } from '../src/durableCandidateMonitor.js';
@@ -125,31 +125,52 @@ describe('R54 live EffectOps — restart observes reality, never blindly re-exec
 });
 
 describe('R54 live EffectOps — GENUINE cross-process concurrency → exactly one candidate', () => {
-  it('two SEPARATE OS processes race the FULL live-effect path over one shared trusted-state dir → one COMMITTED, one refused, one branch, one consumed, main unchanged', async () => {
+  it('two SEPARATE OS processes, released TOGETHER by a real barrier, race the FULL live-effect path → one COMMITTED, one replay/lock-derived loser, one branch, one consumed, main unchanged', async () => {
     const stateDir = join(base, 'state-concurrent');
     const headBefore = g(repoRoot, ['rev-parse', 'HEAD']);
-    // GENUINE concurrency: both children run in PARALLEL (async spawn), contending at the durable single-writer
-    // decide — the loser is refused by the O_EXCL lock (or a replay if it lands just after).
-    interface ChildOutcome { phase: string; code: number | null; signal: string | null; err: string }
+    // DETERMINISTIC RENDEZVOUS (R54 v6): each child finishes ALL setup, prints READY, and blocks on the release
+    // file. The parent creates it only after BOTH are ready, so both children genuinely CONTEND at the durable
+    // single-writer decide — the loser loses by lock/replay, never by setup timing.
+    const releasePath = join(base, 'release-concurrent');
+    interface ChildOutcome { phase: string; stage: string; code: number | null; signal: string | null; err: string }
+    const readiness: Array<() => void> = [];
+    const bothReady = new Promise<void>((res) => { let n = 0; readiness.push(() => { n += 1; if (n === 2) res(); }); });
     const runChild = (): Promise<ChildOutcome> => new Promise((resolveOutcome) => {
-      const c = spawn(process.execPath, [CHILD, repoRoot, wtBase, stateDir, 'r54-live-owner', 'xproc'], { stdio: ['ignore', 'pipe', 'pipe'] });
-      let out = ''; let err = '';
-      c.stdout.on('data', (d) => { out += d.toString(); });
+      const c = spawn(process.execPath, [CHILD, repoRoot, wtBase, stateDir, 'r54-live-owner', 'xproc', releasePath], { stdio: ['ignore', 'pipe', 'pipe'] });
+      let out = ''; let err = ''; let announced = false;
+      c.stdout.on('data', (d) => {
+        out += d.toString();
+        if (!announced && out.includes('READY')) { announced = true; readiness[0](); }
+      });
       c.stderr.on('data', (d) => { err += d.toString(); });
-      c.on('close', (code, signal) => resolveOutcome({ phase: out.match(/PHASE:(\S+)/)?.[1] ?? '', code, signal, err: err.slice(0, 200) }));
+      c.on('close', (code, signal) => resolveOutcome({
+        phase: out.match(/PHASE:(\S+)/)?.[1] ?? '', stage: out.match(/STAGE:(\S+)/)?.[1] ?? '', code, signal, err: err.slice(0, 200),
+      }));
     });
-    const outcomes = await Promise.all([runChild(), runChild()]); // both in flight simultaneously
+    const racing = Promise.all([runChild(), runChild()]);
+    await bothReady;                       // both children are set up and BLOCKED on the barrier
+    writeFileSync(releasePath, 'go');      // ← the release: both cross into the governed effect path together
+    const outcomes = await racing;
     // NEITHER child may crash or exit abnormally, and BOTH must emit an explicit governed phase.
-    const GOVERNED = new Set(['COMMITTED', 'RECONCILE_REQUIRED', 'QUARANTINED', 'REFUSED_AT_OWNER', 'REHEARSAL_FAILED']);
     for (const o of outcomes) {
       expect(o.signal, `child killed by signal · err=${o.err}`).toBeNull();
       expect(o.code, `child exit code · err=${o.err}`).toBe(0);
-      expect(GOVERNED.has(o.phase), `child phase='${o.phase}' err=${o.err}`).toBe(true); // no missing/ungoverned phase
     }
     const phases = outcomes.map((o) => o.phase);
-    // exactly one COMMITTED; the other is a GOVERNED loser (reconcile/quarantine/refused — never a 2nd commit)
+    // exactly one COMMITTED; the LOSER must be a REPLAY/LOCK-derived reconcile — with the rendezvous in place a
+    // loser can NEVER be an owner/rehearsal failure (both signed the same valid head-bound approval and both
+    // passed rehearsal BEFORE the barrier released them).
     expect(phases.filter((p) => p === 'COMMITTED'), `phases=${JSON.stringify(phases)}`).toHaveLength(1);
-    expect(phases.filter((p) => p !== 'COMMITTED')).toHaveLength(1);
+    const loser = outcomes.find((o) => o.phase !== 'COMMITTED')!;
+    // The loser's terminal is fail-closed and OBSERVATION-derived: RECONCILE_REQUIRED when it observed the
+    // winner's completed branch, QUARANTINED(absent) when it observed while the winner was still mid-effect.
+    // NEVER an owner/rehearsal failure — both children signed the same valid head-bound approval and passed
+    // rehearsal BEFORE the barrier released them, so only the lock/replay contention can decide the loser.
+    expect(['RECONCILE_REQUIRED', 'QUARANTINED'], `loser=${JSON.stringify(loser)}`).toContain(loser.phase);
+    expect(['REFUSED_AT_OWNER', 'REHEARSAL_FAILED']).not.toContain(loser.phase);
+    // the loser's EXACT stage refusal must be lock/replay-derived: the O_EXCL single-writer lock / the durably
+    // consumed nonce (reference-monitor-refused), or the winner's branch landing first (already-materialized).
+    expect(['candidate:reference-monitor-refused', 'candidate:already-materialized'], `loser stage=${loser.stage}`).toContain(loser.stage);
     // exactly ONE candidate branch FOR THIS candidate id (the repo is shared across tests), one durable consume
     const xprocBranch = candidateBranchName(makeCandidate('xproc'));
     expect(g(repoRoot, ['branch', '--list', xprocBranch]).split('\n').filter((l) => l.trim().length > 0)).toHaveLength(1);
@@ -168,6 +189,70 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
     expect(r.reasonClass).toBe('coordinator:settlement-unaccepted');
     // the effect really happened (candidate + durable consume) — projection failure did not erase it
     expect(tryG(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${r.candidateBranch}`])).not.toBeNull();
+    expect(inp.monitor.consumed().length).toBe(1);
+  });
+
+  it('a projection sink that THROWS after the durable consume → exact RECONCILE_REQUIRED, never an escaped exception', () => {
+    const inp = inputFor('projthrow', { project: () => { throw new Error('projection sink down'); } });
+    const r = runLiveCandidateEffect(inp);          // must NOT throw — the sink outage is a governed unsettle
+    expect(r.ok).toBe(false);
+    expect(r.phase).toBe('RECONCILE_REQUIRED');
+    expect(r.reasonClass).toBe('coordinator:settlement-unaccepted');
+    // the durable consume + candidate stand; only the projection is unsettled (reconcile, never erased/absent)
+    expect(tryG(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${r.candidateBranch}`])).not.toBeNull();
+    expect(inp.monitor.consumed().length).toBe(1);
+    expect(r.auditTrail.map((a) => a.toPhase)).toContain('RECONCILE_REQUIRED'); // audited terminal, not an exception
+  });
+
+  it('the checkout-truth snapshot SEES uncommitted worktree bytes, index staging, and untracked files — HEAD^{tree} alone is blind to all three', () => {
+    const inp = inputFor('snaptruth');
+    const ops = liveEffectOps(inp, new EffectAuditLedger(), { storeFault: null, stageRefusal: null });
+    const snap = () => ops.snapshotBefore() as ProtectedSnapshot;
+    const clean = snap();
+    const target = join(repoRoot, 'apps/seed/src/notes.ts');
+    const orig = readFileSync(target, 'utf8');
+    const planted = join(repoRoot, 'PLANTED.txt');
+    try {
+      writeFileSync(target, '// UNCOMMITTED worktree mutation\n');    // HEAD^{tree} unchanged — bytes differ
+      expect(verifyIsolation(clean, snap()).ok).toBe(false);
+      g(repoRoot, ['add', '--', 'apps/seed/src/notes.ts']);           // staged: an INDEX mutation
+      expect(verifyIsolation(clean, snap()).ok).toBe(false);
+      g(repoRoot, ['reset', '-q', '--', 'apps/seed/src/notes.ts']);
+      writeFileSync(target, orig);
+      writeFileSync(planted, 'untracked payload\n');                  // a planted UNTRACKED file
+      expect(verifyIsolation(clean, snap()).ok).toBe(false);
+      rmSync(planted);
+      expect(verifyIsolation(clean, snap()).ok).toBe(true);           // fully restored ⇒ digest byte-identical again
+    } finally {
+      writeFileSync(target, orig); rmSync(planted, { force: true }); g(repoRoot, ['reset', '-q']);
+    }
+  });
+
+  it('an UNCOMMITTED primary mutation landing DURING the effect → isolation violation → QUARANTINED, never COMMITTED', () => {
+    const inp = inputFor('mutmid');
+    const audit = new EffectAuditLedger();
+    const ops = liveEffectOps(inp, audit, { storeFault: null, stageRefusal: null });
+    const target = join(repoRoot, 'apps/seed/src/notes.ts');
+    const orig = readFileSync(target, 'utf8');
+    // The real effect runs clean (branch + durable consume), then an uncommitted primary mutation lands BEFORE the
+    // after-snapshot — the honest recapture must catch it and the run must NEVER be credited COMMITTED.
+    const hostile: EffectOps = {
+      ...ops,
+      runGitEffect: (id) => {
+        const o = ops.runGitEffect(id);
+        writeFileSync(target, '// PLANTED mid-effect, never committed\n');
+        return { ...o, snapshotAfter: ops.snapshotBefore() };
+      },
+    };
+    try {
+      const r = driveEffect(hostile);
+      expect(r.ok).toBe(false);
+      expect(r.phase).toBe('QUARANTINED');
+      expect(r.reasonClass).toBe('coordinator:isolation-violated');
+    } finally {
+      writeFileSync(target, orig);
+    }
+    // the durable consume DID happen (the effect ran) — quarantine hands it to the owner, it never reports clean
     expect(inp.monitor.consumed().length).toBe(1);
   });
 

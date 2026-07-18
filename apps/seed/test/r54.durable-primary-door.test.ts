@@ -75,12 +75,15 @@ function ceremonyEnv(stateDir: string, over: Partial<LocalCeremonyEnv> = {}): { 
   return { env, w };
 }
 
-/** One owner-armed materializing invocation: proposal auth + candidate auth from the same deterministic owner. */
+/** One owner-armed materializing invocation: proposal auth + candidate auth from the same deterministic owner.
+ *  R54 v6: the ACTIVE door is mandatorily head-bound — the candidate auth signs the head-bound payload and the
+ *  invocation carries the same approved base. */
 function invocationFor(w: ReturnType<typeof makeWorld>, nonce: string, candNonce: string, over: Partial<LocalCeremonyInvocation> = {}): LocalCeremonyInvocation {
   const proposal = makeProposal({ newContent: `// r54 governed refinement (${nonce})` });
-  const { payloadHash } = candidatePayloadForProposals([proposal]);
+  const approvedHead = g(repoRoot, ['rev-parse', 'HEAD']);
+  const { payloadHash } = candidatePayloadForProposals([proposal], approvedHead);
   const candidateAuth = w.owner.authorize({ proposalHash: payloadHash, draftHash: payloadHash, nonce: candNonce, issuedAt: NOW_ISO, expiresAt: null });
-  return { proposalInput: proposal, nonce, auth: authFor(w.owner, proposal, { nonce: `${nonce}-owner` }), materialize: true, candidateAuth, ownerArmed: true, ...over };
+  return { proposalInput: proposal, nonce, auth: authFor(w.owner, proposal, { nonce: `${nonce}-owner` }), materialize: true, candidateAuth, ownerArmed: true, expectedHeadBefore: approvedHead, ...over };
 }
 
 const readState = (dir: string) => JSON.parse(readFileSync(join(dir, 'trusted-state.json'), 'utf8'));

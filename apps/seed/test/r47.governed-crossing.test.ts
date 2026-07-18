@@ -132,7 +132,7 @@ describe('R47 · crossing terminates only at the existing candidate machinery', 
     if (!t.ok) throw new Error('translate failed');
     const proposal = { id: 'p', targetPath: TARGET, newContent: content, createdAt: NOW_ISO, supersedes: null };
     const auth = authFor(w.owner, proposal, { nonce: 'cross-1' });
-    const { payloadHash } = candidatePayloadForProposals([proposal]);
+    const { payloadHash } = candidatePayloadForProposals([proposal], headSha()); // R54 v6: head-bound approval
     const candidateAuth = w.owner.authorize({ proposalHash: payloadHash, draftHash: payloadHash, nonce: 'cross-cand-1', issuedAt: NOW_ISO, expiresAt: null });
 
     const headBefore = headSha();

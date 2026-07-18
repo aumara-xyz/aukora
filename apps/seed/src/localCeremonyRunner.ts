@@ -92,11 +92,16 @@ export interface LocalCeremonyInvocation {
   readonly fuOutcome?: CouncilOutcome;
   /** Explicit owner intent to materialize a candidate this invocation. Never inferred from durable state. */
   readonly materialize?: boolean;
-  /** The owner's authorization over the candidate PAYLOAD hash (required to materialize; verified by the monitor). */
+  /** The owner's authorization over the HEAD-BOUND candidate payload hash (required to materialize; verified by
+   *  the monitor). R54 v6: it MUST be signed over `candidatePayloadHash(candidate, expectedHeadBefore)` — the
+   *  head-free `/1` payload no longer authorizes a materialization through this ACTIVE door. */
   readonly candidateAuth?: SignedPromotionV2;
   /** The owner has explicitly ARMED materialization (maps to the kernel's humanClearance). */
   readonly ownerArmed?: boolean;
-  /** R50 head binding: the exact HEAD this materialization was approved against; the stage refuses a moved head. */
+  /** The exact HEAD this materialization was approved against — REQUIRED to materialize (R54 v6): it is enforced
+   *  against the ACTUAL repo head before the durable consume (R50 stale-head), AND it is bound inside the SIGNED
+   *  candidate payload, so an approval for base A can never be replayed while claiming a later base B. A missing
+   *  value refuses before the durable consume. */
   readonly expectedHeadBefore?: string;
   readonly explanation?: string;
 }
@@ -172,14 +177,20 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   const monitor = env.monitor ?? (env.trustedStateDir !== undefined
     ? new DurableCandidateReferenceMonitor(env.ownerRoot, env.trustedStateDir)
     : new CandidateReferenceMonitor(env.ownerRoot));
+  // R54 v6 — the ACTIVE door is MANDATORILY head-bound: the stage verifies the owner's signature over the
+  // head-bound payload (`AUKORA-CANDIDATE-PAYLOAD/2` with expectedHeadBefore). A missing expectedHeadBefore
+  // refuses inside the stage BEFORE the durable consume (its head-bound precondition), and a head-free or
+  // wrong-base signature refuses `authority_invalid` at the ONE consuming decide(). No unbound approval can
+  // materialize through this door.
   const materialization = materializeCandidate({
     repoRoot: env.gitRepoRoot,
     worktreeBase: env.worktreeBase,
     candidate: staged.candidate,
-    candidateAuth: invocation.candidateAuth, // owner's signature over the candidate payload hash
+    candidateAuth: invocation.candidateAuth, // owner's signature over the HEAD-BOUND candidate payload hash
     monitor,                                  // the ONE canonical kernel reference monitor
     ownerArmed: invocation.ownerArmed === true,
     expectedHeadBefore: invocation.expectedHeadBefore,
+    authBindsHead: true,
     store: env.store,
     nowMs: env.nowMs,
     nowIso: env.nowIso,

@@ -174,7 +174,7 @@ describe('propose / materialize — explicit owner, fresh AUMLOK, plan-only on r
     const p = makeProposal({ newContent: '// door materialize' });
     const headBefore = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 
-    const cp = candidatePayloadForProposals([p]);
+    const cp = candidatePayloadForProposals([p], headBefore); // R54 v6: the ACTIVE door is head-bound
     const candidateAuth = h.owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: 'd-2-cand', issuedAt: NOW_ISO, expiresAt: null });
     const mat = await h.door.handle(post('/api/materialize', { proposalInput: p, nonce: 'd-2', auth: authFor(h.owner, p, { nonce: 'd-2' }), candidateAuth, ownerArmed: true, headBefore, explanation: 'owner asked' }));
     expect(mat.status).toBe(200);

@@ -25,6 +25,7 @@
  * violated). Grants no authority; the ONE authority remains the kernel `decide()` inside the durable monitor.
  */
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import type { ReactiveMemoryStore } from '@aukora/brain';
 import type { SignedPromotionV2, AumlokAuthorityRootV2 } from '@aukora/kernel/schemas';
 import { driveEffect, type EffectOps, type EffectRunResult, type EffectRunPhase } from './effectCoordinator.js';
@@ -39,7 +40,8 @@ import type { BranchCandidate } from './ideEnvelope.js';
 /** The protected refs an isolated candidate must never move. */
 const PROTECTED_REFS = ['HEAD', 'refs/heads/main'] as const;
 
-/** Observation-only git reader (rev-parse) over the repo root — never mutates, never runs the effect. */
+/** Observation-only git reader (rev-parse + status/diff reads) over the repo root — never mutates, never runs the
+ *  effect. `readTreeHash` is the CHECKOUT-TRUTH digest, not just the committed tree (see below). */
 function gitRefReader(repoRoot: string): RefReader {
   const rev = (ref: string): string | null => {
     try {
@@ -47,9 +49,33 @@ function gitRefReader(repoRoot: string): RefReader {
       return out.length > 0 ? out : null;
     } catch { return null; }
   };
+  const raw = (args: readonly string[], fallback: string): string => {
+    try {
+      return execFileSync('git', ['-C', repoRoot, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    } catch { return fallback; }
+  };
+  // CHECKOUT TRUTH (R54 v6): `HEAD^{tree}` alone is blind to UNCOMMITTED primary mutation — a file edited, staged,
+  // or planted in the primary checkout mid-effect leaves the committed tree hash unchanged. The digest therefore
+  // covers, deterministically: the committed tree, the porcelain status (index + worktree state incl. every
+  // untracked path, NUL-delimited), BOTH diffs (staged and unstaged — the actual changed BYTES of tracked files),
+  // and the content hash of every untracked file (`hash-object` WITHOUT -w computes and writes nothing). Any
+  // uncommitted index/working-tree mutation between the before/after snapshots changes this digest → isolation
+  // violation → the effect can never still report COMMITTED. Read failures fold in as distinct sentinels
+  // (fail-closed: an unreadable checkout never digests equal to a healthy one by accident).
+  const checkoutTruth = (): string => {
+    const tree = rev('HEAD^{tree}') ?? 'no-head';
+    const status = raw(['status', '--porcelain=v1', '-uall', '-z'], '\x00status-unreadable');
+    const stagedDiff = raw(['diff', '--cached', '--no-color', '--no-renames'], '\x00staged-diff-unreadable');
+    const unstagedDiff = raw(['diff', '--no-color', '--no-renames'], '\x00unstaged-diff-unreadable');
+    const untracked = status.split('\x00').filter((e) => e.startsWith('?? ')).map((e) => e.slice(3)).sort();
+    const untrackedHashes = untracked.map((p) => `${p}\x00${raw(['hash-object', '--', p], 'unhashable').trim()}`);
+    const h = createHash('sha256');
+    for (const part of [tree, status, stagedDiff, unstagedDiff, ...untrackedHashes]) h.update(part).update('\x00\x00');
+    return h.digest('hex');
+  };
   return {
     readRef: (name) => rev(name),
-    readTreeHash: () => rev('HEAD^{tree}') ?? 'no-head',
+    readTreeHash: checkoutTruth,
   };
 }
 
@@ -209,7 +235,15 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, 
         updatedAtIso: nowIso, advisoryOnly: true as const, grantsAuthority: false as const,
       };
       if (!validateSettlement(settlement).ok) return { ok: false };
-      const projected = input.project ? input.project(settlement) : true;
+      // A projection sink that THROWS is an outage exactly like one that returns false: it must surface as
+      // unsettled (→ RECONCILE_REQUIRED, audited by the coordinator) — never escape as an exception AFTER the
+      // durable consume + git effect, which would leave the run's terminal state unreported.
+      let projected: boolean;
+      try {
+        projected = input.project ? input.project(settlement) : true;
+      } catch {
+        projected = false;
+      }
       return { ok: projected };
     },
     audit: (effectId, toPhase, hasCompletionRef) => ({ ok: audit.append({ effectId: effectId ?? candidate.candidateId, fromPhase: null, toPhase, hasCompletionRef, at: nowIso }).ok }),

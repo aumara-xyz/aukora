@@ -199,7 +199,9 @@ describe('R50 · durable ceremony over the real ConvexWorkflowStore + process de
     expect(applied.json.phase).toBe('awaiting-explicit-materialize');
     expect(io.rows.get(workflowId)?.phase).toBe('applied'); // durably applied
 
-    const cp = candidatePayloadForProposals([p1]);
+    // R54 v6: the ACTIVE door is mandatorily head-bound — the owner signs over the HEAD-BOUND payload (/2).
+    const approvedHead = headOf();
+    const cp = candidatePayloadForProposals([p1], approvedHead);
     const candidateAuth = owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: `${N1}-cand`, issuedAt: NOW_ISO, expiresAt: null });
     const bodyBase = { proposalInput: p1, nonce: N1, auth: authFor(owner, p1, { nonce: N1 }), candidateAuth, ownerArmed: true };
 
@@ -224,6 +226,51 @@ describe('R50 · durable ceremony over the real ConvexWorkflowStore + process de
     const worktrees = execFileSync('git', ['-C', repoRoot, 'worktree', 'list', '--porcelain'], { encoding: 'utf8' })
       .split('\n').filter((l) => l.startsWith('worktree ')).map((l) => l.slice('worktree '.length)).filter((w) => w.startsWith(wtBase));
     expect(worktrees.length).toBe(1); // exactly one
+  });
+
+  it('A→B BYPASS (R54 v6): approval SIGNED at HEAD A; main advances to unrelated B; the SAME auth claiming B refuses at the consuming monitor — zero consume, zero Git', async () => {
+    const pB = makeProposal({ newContent: '// r54v6 active-door bypass\n' });
+    const NB = 'r50-nonce-bypass';
+    const h = bootProcess(io, { owner });
+    await h.door.handle(post('/api/propose', { proposalInput: pB, nonce: NB }));
+    const applied = await h.door.handle(post('/api/propose', { proposalInput: pB, nonce: NB, auth: authFor(owner, pB, { nonce: NB }) }));
+    expect(applied.status).toBe(200);
+
+    // the owner approves AT base A: the signed candidate payload BINDS headA
+    const headA = headOf();
+    const cpB = candidatePayloadForProposals([pB], headA);
+    const candidateAuth = owner.authorize({ proposalHash: cpB.payloadHash, draftHash: cpB.payloadHash, nonce: `${NB}-cand`, issuedAt: NOW_ISO, expiresAt: null });
+
+    // main/HEAD advances to an unrelated B AFTER the approval was signed
+    writeFileSync(join(repoRoot, 'advanced-after-approval.txt'), '// unrelated later work\n');
+    execFileSync('git', ['-C', repoRoot, 'add', '-A']);
+    execFileSync('git', ['-C', repoRoot, 'commit', '-q', '--no-gpg-sign', '-m', 'unrelated B']);
+    const headB = headOf();
+    expect(headB).not.toBe(headA);
+    const branchesBefore = execFileSync('git', ['-C', repoRoot, 'branch', '--list', 'candidate/*'], { encoding: 'utf8' }).trim();
+
+    try {
+      // THE BYPASS ATTEMPT: same signed auth, CLAIMING the current head B. The stage's stale-head check passes
+      // (claim == actual), but the SIGNED bytes bind A → the ONE consuming decide() refuses authority_invalid
+      // BEFORE any durable consume or git mutation. The old unbound-/1 acceptance is gone: this exact request
+      // materialized on the pre-v6 door.
+      const bypass = await h.door.handle(post('/api/materialize', { proposalInput: pB, nonce: NB, auth: authFor(owner, pB, { nonce: NB }), candidateAuth, ownerArmed: true, headBefore: headB }));
+      expect(bypass.json.ok).toBe(false);
+      expect(bypass.json.reasonClass).toBe('candidate:reference-monitor-refused');
+      // zero Git: no new candidate branch, HEAD still B, tree clean
+      expect(execFileSync('git', ['-C', repoRoot, 'branch', '--list', 'candidate/*'], { encoding: 'utf8' }).trim()).toBe(branchesBefore);
+      expect(headOf()).toBe(headB);
+      expect(execFileSync('git', ['-C', repoRoot, 'status', '--porcelain'], { encoding: 'utf8' }).trim()).toBe('');
+    } finally {
+      execFileSync('git', ['-C', repoRoot, 'reset', '-q', '--hard', headA]); // restore base A for later tests
+    }
+
+    // ZERO CONSUME, proven behaviorally: back at base A, the SAME authorization still materializes — the refused
+    // bypass burned nothing. (A consumed nonce would replay-refuse here.)
+    const honest = await h.door.handle(post('/api/materialize', { proposalInput: pB, nonce: NB, auth: authFor(owner, pB, { nonce: NB }), candidateAuth, ownerArmed: true, headBefore: headA }));
+    expect(honest.status).toBe(200);
+    expect(honest.json.phase).toBe('candidate-materialized');
+    expect(headOf()).toBe(headA); // main untouched by the isolated effect
   });
 
   it('SETTLE DIVERGENCE: a racing writer landing between hydrate and settle fails closed as a receipted door:settle-divergence', async () => {
