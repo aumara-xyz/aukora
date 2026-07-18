@@ -47,7 +47,7 @@ async function main(): Promise<void> {
   // AUKORA_OWNER_FIXTURE=1 flag. The default (neither set) REFUSES to boot — fail closed, content-free reason.
   const boundary = resolveOwnerBootAuthority(process.env, (p) => readFileSync(p, 'utf8'), Date.now());
   if (boundary.mode === 'refused') {
-    console.error(`[mind-door] BOOT REFUSED (${boundary.reasonClass}): inject the owner's PUBLIC authority root via AUKORA_OWNER_ROOT_FILE, or set AUKORA_OWNER_FIXTURE=1 for an explicit dev-only fixture boot.`);
+    console.error(`[mind-door] BOOT REFUSED (${boundary.reasonClass}): inject the owner's PROVISIONED public root envelope (aukora-provisioned-owner-root-v1, minted offline via provisionOwnerRoot) via AUKORA_OWNER_ROOT_FILE, or set AUKORA_OWNER_FIXTURE=1 for an explicit dev-only fixture boot.`);
     process.exit(1);
   }
   if (boundary.mode === 'fixture') {
