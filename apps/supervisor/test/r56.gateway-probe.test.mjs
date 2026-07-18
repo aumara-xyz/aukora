@@ -11,7 +11,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { createServer } from 'node:http';
-import { resolveUpstreamShellPort } from '../src/gateway.mjs';
+import { resolveUpstreamShellPort, upstreamStillOwned } from '../src/gateway.mjs';
 
 const POLICY = {
   services: [{ name: 'spatial-shell', port: 7096, candidatePort: 7099, probePath: '/api/models', identityMarker: 'model-free-memory-fallback' }],
@@ -29,6 +29,7 @@ function deps(over = {}) {
     listenerPidOnPort: () => OWNED_PID,
     isAlive: () => true,
     pgidOf: () => OWNED_PGID,
+    groupAlive: () => true,
     probe: async () => ({ portOpen: true, identityOk: true }),
     ...over,
   };
@@ -36,7 +37,7 @@ function deps(over = {}) {
 
 describe('R56 · gateway upstream verification — trusts probes + owned identity, not the state file', () => {
   it('HAPPY: a supervisor-owned, in-policy, live, identity-probed shell VERIFIES', async () => {
-    expect(await resolveUpstreamShellPort(deps())).toEqual({ ok: true, port: 7096 });
+    expect(await resolveUpstreamShellPort(deps())).toMatchObject({ ok: true, port: 7096 });
   });
 
   it('a post-swap CANDIDATE port (in policy) also verifies', async () => {
@@ -44,7 +45,7 @@ describe('R56 · gateway upstream verification — trusts probes + owned identit
       readState: () => ({ services: { 'spatial-shell': { activePort: 7099 } } }),
       readPidRecord: () => ({ schema: 'aukora-supervisor-pidrec-v1', name: 'spatial-shell', port: 7099, wrapperPid: OWNED_PID, pgid: OWNED_PGID, listenerPid: OWNED_PID }),
     }));
-    expect(r).toEqual({ ok: true, port: 7099 });
+    expect(r).toMatchObject({ ok: true, port: 7099 });
   });
 
   it('MALFORMED claim → refused (a null/absent claim legitimately falls back to the policy default instead)', async () => {
@@ -54,7 +55,7 @@ describe('R56 · gateway upstream verification — trusts probes + owned identit
     }
     // an absent/null activePort is NOT malformed — it means "no swap; use the policy default port"
     const dflt = await resolveUpstreamShellPort(deps({ readState: () => ({ services: { 'spatial-shell': { activePort: null } } }) }));
-    expect(dflt).toEqual({ ok: true, port: 7096 });
+    expect(dflt).toMatchObject({ ok: true, port: 7096 });
   });
 
   it('a REFUSED/AUMLOK port (7094/7095) is never fronted', async () => {
@@ -87,7 +88,7 @@ describe('R56 · gateway upstream verification — trusts probes + owned identit
   it('a listener adopted into the OWNED process group (child of the wrapper) is accepted', async () => {
     // the true listener pid differs from the recorded wrapper, but shares the owned pgid → ours
     const r = await resolveUpstreamShellPort(deps({ listenerPidOnPort: () => 5555, pgidOf: () => OWNED_PGID }));
-    expect(r).toEqual({ ok: true, port: 7096 });
+    expect(r).toMatchObject({ ok: true, port: 7096 });
   });
 
   it('a DEAD owner is refused (stale)', async () => {
@@ -124,7 +125,7 @@ describe('R56 · gateway upstream verification — trusts probes + owned identit
         readPidRecord: () => ({ schema: 'aukora-supervisor-pidrec-v1', name: 'spatial-shell', port: goodPort, wrapperPid: OWNED_PID, pgid: OWNED_PGID, listenerPid: OWNED_PID }),
         probe: realProbe('model-free-memory-fallback'),
       }));
-      expect(verified).toEqual({ ok: true, port: goodPort });
+      expect(verified).toMatchObject({ ok: true, port: goodPort });
       const wrong = await resolveUpstreamShellPort(deps({
         policy: { ...POLICY, services: [{ ...POLICY.services[0], port: goodPort }] },
         readState: () => ({ services: { 'spatial-shell': { activePort: goodPort } } }),
@@ -135,5 +136,34 @@ describe('R56 · gateway upstream verification — trusts probes + owned identit
     } finally {
       await new Promise((r) => good.close(r));
     }
+  });
+
+  // R56 review repair (finding: stale PID records can authenticate a reused process identity).
+  it('a STALE owner record (recorded group DEAD) with a live foreign listener is refused — pid reuse cannot authenticate', async () => {
+    // the recorded owner group has exited (groupAlive=false), but a foreign process is live and listening on
+    // the port having recycled the pid NUMBER. The recorded-group liveness gate refuses it before the probe.
+    const r = await resolveUpstreamShellPort(deps({ groupAlive: () => false, listenerPidOnPort: () => OWNED_PID, isAlive: () => true }));
+    expect(r).toEqual({ ok: false, reason: 'gateway:upstream-owner-dead' });
+  });
+
+  it('a record with NO owned group (pgid missing) is refused as unowned', async () => {
+    const r = await resolveUpstreamShellPort(deps({ readPidRecord: () => ({ schema: 'aukora-supervisor-pidrec-v1', name: 'spatial-shell', port: 7096, wrapperPid: OWNED_PID, pgid: null, listenerPid: OWNED_PID }) }));
+    expect(r).toEqual({ ok: false, reason: 'gateway:upstream-unowned' });
+  });
+
+  // R56 review repair (finding: revalidate ownership before each proxy — a cached port alone allows takeover).
+  it('upstreamStillOwned re-validates the cached identity cheaply: same owned pid → true; takeover/exit → false', async () => {
+    const verdict = await resolveUpstreamShellPort(deps());
+    expect(verdict).toMatchObject({ ok: true, port: 7096, listenerPid: OWNED_PID, pgid: OWNED_PGID });
+    // still the same owned listener → cache stays valid
+    expect(upstreamStillOwned(verdict, deps())).toBe(true);
+    // the verified shell exited and a FOREIGN process bound the freed port (different pid) → stale
+    expect(upstreamStillOwned(verdict, deps({ listenerPidOnPort: () => 8888, pgidOf: () => 8888 }))).toBe(false);
+    // the owned pid is no longer alive → stale
+    expect(upstreamStillOwned(verdict, deps({ isAlive: () => false }))).toBe(false);
+    // the owned group is gone → stale
+    expect(upstreamStillOwned(verdict, deps({ groupAlive: () => false }))).toBe(false);
+    // a refused verdict is never "still owned"
+    expect(upstreamStillOwned({ ok: false, reason: 'x' }, deps())).toBe(false);
   });
 });

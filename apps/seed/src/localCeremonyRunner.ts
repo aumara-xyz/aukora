@@ -208,16 +208,21 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   if (live.phase === 'COMMITTED') {
     return result({ ok: true, phase: 'candidate-materialized', reasonClass: 'candidate:ok', text: materialization?.text ?? 'candidate materialized', workflowId, workflowState: state, rehearsalReceiptHash, candidate: staged.candidate, materialization });
   }
-  // Any non-COMMITTED coordinator verdict is a refused ceremony. Preserve the EXACT stage reason when the effect
-  // actually ran (candidate:stale-head / candidate:reference-monitor-refused / candidate:already-materialized /
-  // isolation…); when the owner gate refused a bad candidate authorization before the effect, that is the same
-  // root cause the stage's decide() would have named → `candidate:reference-monitor-refused`.
-  const reasonClass = materialization !== null
+  // Any non-COMMITTED coordinator verdict is a refused ceremony. Use the EXACT stage reason ONLY when the stage
+  // itself REFUSED (`!materialization.ok` → candidate:stale-head / candidate:reference-monitor-refused /
+  // candidate:already-materialized …). When the stage SUCCEEDED but the coordinator then failed the run
+  // (isolation violated, candidate absent on re-read, null completion, settlement unaccepted), the underlying
+  // `materialization.reasonClass` is still `candidate:ok` — reporting that with `ok:false` would be a
+  // success-reason on a failure. In that case (and when the owner gate refused before the stage ran) use the
+  // COORDINATOR's failure reason instead; a bad candidate authorization the owner gate caught maps to the same
+  // root cause the stage's decide() would have named.
+  const stageRefused = materialization !== null && !materialization.ok;
+  const reasonClass = stageRefused
     ? materialization.reasonClass
     : live.phase === 'REFUSED_AT_OWNER'
       ? 'candidate:reference-monitor-refused'
       : live.reasonClass;
-  const text = materialization?.text ?? `refused at the governed effect (${live.phase.toLowerCase()})`;
+  const text = stageRefused ? materialization.text : `refused at the governed effect (${reasonClass})`;
   return result({ ok: false, phase: 'refused-at-candidate', reasonClass, text, workflowId, workflowState: state, rehearsalReceiptHash, candidate: staged.candidate, materialization });
 }
 
