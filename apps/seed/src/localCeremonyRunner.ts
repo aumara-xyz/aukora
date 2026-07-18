@@ -23,6 +23,8 @@
  * This runner composes; it never signs. AURA stays display-only (the runner emits geometry/trace but reads nothing
  * back into a decision). Every terminal is receipted with a stable reason class.
  */
+import { realpathSync } from 'node:fs';
+import { resolve, dirname, basename, sep } from 'node:path';
 import type { ReactiveMemoryStore } from '@aukora/brain';
 import type { AumlokAuthorityRootV2, SignedPromotionV2 } from '@aukora/kernel/schemas';
 import type { CouncilOutcome } from '@aukora/council';
@@ -101,6 +103,26 @@ export interface LocalCeremonyInvocation {
   readonly explanation?: string;
 }
 
+/**
+ * Canonicalize a path for the isolation fence: lexical resolve, then realpath the NEAREST EXISTING ancestor and
+ * re-append the not-yet-created suffix. This resolves every symlink an attacker can pre-plant (a symlinked
+ * parent routing "outside" back inside the repo) while still working for dirs the store/stage will mkdir later.
+ */
+function canonicalizePath(p: string): string {
+  let existing = resolve(p);
+  const suffix: string[] = [];
+  for (;;) {
+    try {
+      return suffix.length === 0 ? realpathSync(existing) : resolve(realpathSync(existing), ...suffix.reverse());
+    } catch {
+      const parent = dirname(existing);
+      if (parent === existing) return resolve(p); // no existing ancestor at all — lexical resolution is final
+      suffix.push(basename(existing));
+      existing = parent;
+    }
+  }
+}
+
 function result(over: Partial<CeremonyRunResult> & Pick<CeremonyRunResult, 'ok' | 'phase' | 'reasonClass' | 'text' | 'workflowId'>): CeremonyRunResult {
   return {
     workflowState: null, rehearsalReceiptHash: null, candidate: null, materialization: null,
@@ -159,6 +181,19 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   }
   // R54: prefer the DURABLE monitor whenever a protected state dir is configured — the consumption is then
   // crash-safe on disk before the stage's first git mutation. An explicit injected monitor still wins (tests).
+  // RUNTIME ISOLATION (R54 review repair): the trusted-state dir must sit OUTSIDE the repo working tree and
+  // OUTSIDE the disposable worktree base, checked AFTER canonical/symlink resolution — a docstring is not a
+  // fence. Inside the repo it could ride a candidate/commit or be swept by git clean; inside the worktree base
+  // it would be disposed with a failed candidate — either way consumed authority could be erased or exfiltrated.
+  if (env.monitor === undefined && env.trustedStateDir !== undefined) {
+    const stateReal = canonicalizePath(env.trustedStateDir);
+    for (const fence of [env.gitRepoRoot, env.worktreeBase]) {
+      const fenceReal = canonicalizePath(fence);
+      if (stateReal === fenceReal || stateReal.startsWith(fenceReal + sep)) {
+        return result({ ok: false, phase: 'refused-at-candidate', reasonClass: 'candidate:trusted-state-inside-repo', text: 'refused: trustedStateDir resolves inside the repo or the disposable worktree base — the durable authority store must live outside both', workflowId, workflowState: state, rehearsalReceiptHash });
+      }
+    }
+  }
   const monitor = env.monitor ?? (env.trustedStateDir !== undefined
     ? new DurableCandidateReferenceMonitor(env.ownerRoot, env.trustedStateDir)
     : new CandidateReferenceMonitor(env.ownerRoot));

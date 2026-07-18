@@ -41,7 +41,10 @@ for (let i = 0; i < 40 && !decision.allowed && decision.code === 'trusted_state_
 }
 emit(decision.allowed ? `COMMITTED:${monitor.consumed().length}` : `REFUSED:${decision.code}`);
 
-if (mode === 'commit-hang') {
+// R54 review repair: hang ONLY on an allowed (durably committed) decision — the whole point of commit-hang is
+// letting the parent SIGKILL a process whose consume is already on disk. A REFUSED decision emits and exits;
+// hanging on a refusal would orphan the child if the parent ever skipped the kill on a non-COMMITTED line.
+if (mode === 'commit-hang' && decision.allowed) {
   setInterval(() => {}, 1000); // stay alive so the parent can SIGKILL us AFTER the commit is durable
 } else {
   process.exit(0);

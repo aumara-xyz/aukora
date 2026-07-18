@@ -227,6 +227,67 @@ describe('R54 · 2+5 LIVE: real process death + concurrent OS processes (bare-no
   }, 30_000);
 });
 
+describe('R54 review repair · trusted-state path isolation is ENFORCED at runtime (not just documented)', () => {
+  const hostile: readonly { name: string; dir: () => string }[] = [
+    { name: 'INSIDE the repo working tree', dir: () => join(repoRoot, '.aukora-trusted') },
+    { name: 'EQUAL to the repo root', dir: () => repoRoot },
+    { name: 'INSIDE the disposable worktree base', dir: () => join(wtBase, 'trusted') },
+  ];
+  for (const h of hostile) {
+    it(`refuses a trustedStateDir ${h.name} — nothing durable, no git effect`, () => {
+      const { env, w } = ceremonyEnv(h.dir());
+      const res = runLocalRecursionCeremony(env, invocationFor(w, `r54-iso-${h.name.slice(0, 3).toLowerCase().replace(/\W/g, 'x')}`, `r54-cand-iso-${h.name.slice(0, 3).toLowerCase().replace(/\W/g, 'x')}`));
+      expect(res.phase).toBe('refused-at-candidate');
+      expect(res.reasonClass).toBe('candidate:trusted-state-inside-repo');
+      expect(existsSync(join(h.dir(), 'trusted-state.json'))).toBe(false); // the store was never even opened
+      expect(g(repoRoot, ['branch', '--list', 'candidate/*'])).toBe('');
+    });
+  }
+
+  it('a SYMLINKED "outside" path that resolves inside the repo is refused after canonicalization', () => {
+    const linkParent = join(base, 'link-parent');
+    mkdirSync(linkParent, { recursive: true });
+    const link = join(linkParent, 'looks-outside');
+    execFileSync('ln', ['-s', repoRoot, link]); // looks-outside → repoRoot
+    const evasive = join(link, 'trusted'); // lexically outside base/repo…; canonically INSIDE the repo
+    const { env, w } = ceremonyEnv(evasive);
+    const res = runLocalRecursionCeremony(env, invocationFor(w, 'r54-iso-sym', 'r54-cand-iso-sym'));
+    expect(res.phase).toBe('refused-at-candidate');
+    expect(res.reasonClass).toBe('candidate:trusted-state-inside-repo');
+    expect(g(repoRoot, ['branch', '--list', 'candidate/*'])).toBe('');
+  });
+
+  it('a valid OUTSIDE path still materializes (the fence refuses containment, not distance)', () => {
+    const stateDir = join(base, 'state-outside-ok');
+    const { env, w } = ceremonyEnv(stateDir);
+    const res = runLocalRecursionCeremony(env, invocationFor(w, 'r54-iso-ok', 'r54-cand-iso-ok'));
+    expect(res.phase).toBe('candidate-materialized');
+    cleanupCandidate(res.materialization!.branch!, res.materialization!.worktreePath!);
+  });
+});
+
+describe('R54 review repair · a REFUSED child decision exits — never orphans/hangs', () => {
+  it('[LIVE] commit-hang on a replayed (refused) authorization emits REFUSED and exits promptly', async () => {
+    const stateDir = join(base, 'state-refusal-exit');
+    // consume once (commit-exit) so the second child’s decision is a durable replay REFUSAL
+    const first = await new Promise<string>((resolve) => {
+      const p = spawn(process.execPath, [CHILD, stateDir, 'auth-hangtest', 'commit-exit'], { stdio: ['ignore', 'pipe', 'ignore'] });
+      let buf = ''; p.stdout!.on('data', (d) => { buf += d.toString(); }); p.on('close', () => resolve(buf.trim()));
+    });
+    expect(first).toBe('COMMITTED:1');
+    // commit-hang mode + refused decision ⇒ MUST exit on its own (no SIGKILL sent here)
+    const child = spawn(process.execPath, [CHILD, stateDir, 'auth-hangtest', 'commit-hang'], { stdio: ['ignore', 'pipe', 'ignore'] });
+    let out = ''; child.stdout!.on('data', (d) => { out += d.toString(); });
+    const exited = await Promise.race([
+      new Promise<boolean>((r) => child.on('close', () => r(true))),
+      new Promise<boolean>((r) => setTimeout(() => r(false), 10_000)),
+    ]);
+    if (!exited) child.kill('SIGKILL'); // cleanup only on failure — the assertion below then reports it
+    expect(exited).toBe(true);                    // refused ⇒ exited, never hung
+    expect(out.trim()).toBe('REFUSED:replay');
+  }, 30_000);
+});
+
 describe('R54 · 8: exact primary-runtime import/reachability proof', () => {
   const read = (p: string) => readFileSync(fileURLToPath(new URL(`../${p}`, import.meta.url)), 'utf8');
   it('the ACTIVE door boot reaches @aukora/kernel-node through the durable monitor (each hop verified)', () => {
