@@ -16,7 +16,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { buildSync } from 'esbuild';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync, readFileSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -181,5 +181,19 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
     expect(r.ok).toBe(false);
     expect(r.phase).toBe('REFUSED_AT_OWNER');
     expect(inp.monitor.consumed().length).toBe(0);
+  });
+
+  it('a NON-RETRYABLE durable-store fault (corrupt) is surfaced as storeFault for operator triage (Sam 2 advisory)', () => {
+    const stateDir = join(base, 'state-corrupt');
+    // a healthy run first populates the durable trusted-state, then we corrupt every persisted file
+    const first = runLiveCandidateEffect(inputFor('corrupt-a', { candidate: makeCandidate('corrupt-a'), monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir) }));
+    expect(first.phase).toBe('COMMITTED');
+    expect(first.storeFault).toBeNull(); // a healthy store surfaces no fault
+    for (const f of readdirSync(stateDir)) writeFileSync(join(stateDir, f), 'CORRUPT-NOT-VALID-STATE');
+    // a fresh DIFFERENT candidate over the corrupted store → the durable monitor decide fails corrupt → refused,
+    // the effect quarantines, and the non-retryable fault is NAMED for triage.
+    const r = runLiveCandidateEffect(inputFor('corrupt-b', { candidate: makeCandidate('corrupt-b'), monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir) }));
+    expect(r.ok).toBe(false);
+    expect(r.storeFault).toBe('trusted_state_corrupt');
   });
 });

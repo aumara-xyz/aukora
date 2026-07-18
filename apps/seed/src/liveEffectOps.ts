@@ -76,8 +76,17 @@ export interface LiveEffectInput {
   readonly nowIso: string;
 }
 
+/** The two NON-RETRYABLE durable-store faults (Sam 2 advisory): surfaced for operator triage, distinct from a
+ *  retryable lock/outage. A corrupt or rolled-back trusted-state store needs attention, not a blind retry. */
+const NON_RETRYABLE_STORE_FAULT = /\((trusted_state_(?:rollback|corrupt))\)/;
+
+/** Mutable sink the run entry reads back after `driveEffect` — surfaces a non-retryable store fault for triage. */
+export interface LiveEffectSink {
+  storeFault: string | null;
+}
+
 /** Build the concrete `EffectOps` for one live candidate effect. Pure composition over the merged primitives. */
-export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger): EffectOps {
+export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, sink: LiveEffectSink = { storeFault: null }): EffectOps {
   const { repoRoot, worktreeBase, candidate, candidateAuth, ownerArmed, monitor, store, nowMs, nowIso } = input;
   const branch = candidateBranchName(candidate);
   const reader = gitRefReader(repoRoot);
@@ -101,6 +110,11 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger):
       // so git never double-runs — we then OBSERVE the existing candidate rather than re-executing.
       const m = materializeCandidate({ repoRoot, worktreeBase, candidate, candidateAuth, monitor, ownerArmed, store, nowMs, nowIso });
       completionRef = m.ok ? m.receiptHash : null;
+      // Advisory (Sam 2): surface a NON-RETRYABLE durable-store fault (rollback/corrupt) for operator triage — a
+      // retryable lock/outage is NOT surfaced. The effect still quarantines/reconciles; this only names the fault.
+      if (!m.ok && m.reasonClass === 'candidate:reference-monitor-refused') {
+        sink.storeFault = NON_RETRYABLE_STORE_FAULT.exec(m.text)?.[1] ?? sink.storeFault;
+      }
       // OBSERVE REALITY (not just m.ok): a replay-refused attempt whose branch already exists is present-but-ambiguous.
       const candidatePresent = m.ok ? (m.branch !== null) : candidateBranchExists(repoRoot, branch);
       return { candidatePresent, completionRef, snapshotAfter: snapshotProtected(reader, PROTECTED_REFS, nowIso) };
@@ -131,6 +145,9 @@ function settleablePhase(phase: EffectRunPhase): 'COMMITTED' | 'QUARANTINED' | '
 export interface LiveEffectResult extends EffectRunResult {
   /** The content-free audit trail of the run (phase labels only). */
   readonly auditTrail: ReadonlyArray<{ readonly toPhase: string; readonly hasCompletionRef: boolean }>;
+  /** A NON-RETRYABLE durable-store fault (`trusted_state_rollback`/`trusted_state_corrupt`) if one occurred —
+   *  for operator triage. `null` when the store was healthy (a retryable lock/outage is not reported here). */
+  readonly storeFault: string | null;
 }
 
 /**
@@ -140,8 +157,9 @@ export interface LiveEffectResult extends EffectRunResult {
  */
 export function runLiveCandidateEffect(input: LiveEffectInput): LiveEffectResult {
   const audit = new EffectAuditLedger();
-  const result = driveEffect(liveEffectOps(input, audit));
-  return { ...result, auditTrail: audit.log().map((e) => ({ toPhase: e.toPhase, hasCompletionRef: e.hasCompletionRef })) };
+  const sink: LiveEffectSink = { storeFault: null };
+  const result = driveEffect(liveEffectOps(input, audit, sink));
+  return { ...result, auditTrail: audit.log().map((e) => ({ toPhase: e.toPhase, hasCompletionRef: e.hasCompletionRef })), storeFault: sink.storeFault };
 }
 
 /** HARD: the adapter composes existing governed pieces; it signs nothing, pushes nothing, mints no authority. */
