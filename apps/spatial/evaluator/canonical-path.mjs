@@ -115,11 +115,12 @@ export async function runCanonicalPath({ typedInput = 'operator event: prove the
     record('4-fresh-aumlok-halt', 'PROVEN', 'unsigned /api/materialize HALTS at the hybrid AUMLOK owner gate — fail-closed',
       { status: haltRes.status, phase: haltRes.json.phase, reasonClass: haltRes.json.reasonClass ?? null, candidateBranch: haltRes.json.candidateBranch ?? null, signed: haltRes.json.signed === true, halted });
 
-    // 5. ISOLATED CANDIDATE — a DETERMINISTIC TEST owner signs the candidate payload + the true head; the
-    //    real live path halts at stage 4 without a real owner key, so this is TEST_ONLY.
-    const cp = candidatePayloadForProposals([proposal]);
-    const candidateAuth = owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: 'r52-1-cand', issuedAt: NOW_ISO, expiresAt: null });
+    // 5. ISOLATED CANDIDATE — a DETERMINISTIC TEST owner signs the HEAD-BOUND candidate payload over the exact
+    //    base the active ceremony materializes against (AUKORA-CANDIDATE-PAYLOAD/2 — the door's monitor binds this
+    //    same base via authBindsHead); the real live path halts at stage 4 without a real owner key, so TEST_ONLY.
     const headBefore = headOf(repoRoot);
+    const cp = candidatePayloadForProposals([proposal], headBefore);
+    const candidateAuth = owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: 'r52-1-cand', issuedAt: NOW_ISO, expiresAt: null });
     const matRes = await door.handle(post('/api/materialize', { proposalInput: proposal, nonce: 'r52-1', auth: authFor(owner, proposal, 'r52-1'), candidateAuth, ownerArmed: true, headBefore }));
     const branch = matRes.json.candidateBranch ?? null;
     record('5-isolated-candidate', 'TEST_ONLY', 'deterministic TEST owner signs → isolated candidate branch; real main never touched',

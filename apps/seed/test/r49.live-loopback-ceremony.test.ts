@@ -238,7 +238,7 @@ describe('R49 · the complete live loopback ceremony (real 127.0.0.1 socket)', (
   });
 
   it('explicit /api/materialize lands the candidate in a DISPOSABLE worktree only; main stays byte-identical', async () => {
-    const cp = candidatePayloadForProposals([p1]);
+    const cp = candidatePayloadForProposals([p1], headBefore); // R54 v6: the ACTIVE door is head-bound
     const candidateAuth = owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: `${N1}-cand`, issuedAt: NOW_ISO, expiresAt: null });
     sensitiveHex.push(candidateAuth.signatures.ed25519, candidateAuth.signatures.mlDsa65);
     materializeBody = { proposalInput: p1, nonce: N1, auth: mkAuth(p1, { nonce: N1 }), candidateAuth, ownerArmed: true, headBefore, explanation: 'r49 live loopback ceremony' };

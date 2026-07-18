@@ -187,6 +187,9 @@ export function crossToCandidate(env: LocalCeremonyEnv, input: CrossToCandidateI
     materialize: input.materialize === true,
     candidateAuth: input.candidateAuth,
     ownerArmed: input.ownerArmed === true,
+    // R54 v6: the crossing's bound base (verified equal to the current head above) rides into the runner's
+    // MANDATORY head binding — the candidateAuth must be signed over the head-bound payload for this base.
+    expectedHeadBefore: crossing.binding.headBefore,
     explanation: `governed crossing of pending intent ${crossing.intentId.slice(0, 12)}`,
   });
   return { ok: run.ok, reasonClass: run.reasonClass, text: run.text, run };
