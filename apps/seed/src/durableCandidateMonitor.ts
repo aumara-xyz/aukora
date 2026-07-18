@@ -29,7 +29,8 @@
 import { realpathSync, readlinkSync } from 'node:fs';
 import { resolve, dirname, basename, sep } from 'node:path';
 import {
-  TrustedStateStore, RollbackRefusedError, WriterLockedError, TrustedStoreCorruptError, type CrashHook,
+  TrustedStateStore, RollbackRefusedError, WriterLockedError, TrustedStoreCorruptError,
+  TrustedStoreUnsafePathError, type CrashHook,
 } from '@aukora/kernel-node';
 import type { AumlokAuthorityRootV2, SignedPromotionV2, TrustedStateV1 } from '@aukora/kernel/schemas';
 import {
@@ -150,6 +151,7 @@ export class DurableCandidateReferenceMonitor extends CandidateReferenceMonitor 
       // Durable receipt lineage lives in the store (receiptHead); the draft hash is not re-derived here.
       return { allowed: true, code: outcome.decision.code, ring: outcome.decision.ring, authorizedRootId: outcome.decision.authorizedRootId, payloadHash, receiptDraftHash: null };
     } catch (e) {
+      if (e instanceof TrustedStoreUnsafePathError) return refused('trusted_state_unsafe_path'); // symlink/path swap
       if (e instanceof WriterLockedError) return refused('trusted_state_locked');
       if (e instanceof RollbackRefusedError) return refused('trusted_state_rollback');
       if (e instanceof TrustedStoreCorruptError) return refused('trusted_state_corrupt');

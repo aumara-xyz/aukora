@@ -213,16 +213,26 @@ describe('R54 · 2+5 LIVE: real process death + concurrent OS processes (bare-no
     expect(fresh.consumed()).toEqual(['auth-sigkill']); // exactly one, not doubled
   }, 30_000);
 
-  it('[LIVE] two CONCURRENT OS processes on the same authorization → exactly one winner', async () => {
+  it('[LIVE] two CONCURRENT OS processes on the same authorization → exactly one winner, BOTH exit cleanly', async () => {
     const stateDir = join(base, 'state-race');
-    const run = () => new Promise<string>((resolve) => {
-      const p = spawn(process.execPath, [CHILD, stateDir, 'auth-race', 'commit-exit'], { stdio: ['ignore', 'pipe', 'ignore'] });
-      let buf = ''; p.stdout!.on('data', (d) => { buf += d.toString(); });
-      p.on('close', () => resolve(buf.trim())); // close (not exit): all stdio flushed — the Node-20 lesson
+    interface ChildResult { readonly out: string; readonly err: string; readonly code: number | null; readonly signal: NodeJS.Signals | null }
+    const run = () => new Promise<ChildResult>((resolve) => {
+      const p = spawn(process.execPath, [CHILD, stateDir, 'auth-race', 'commit-exit'], { stdio: ['ignore', 'pipe', 'pipe'] });
+      let out = ''; let err = '';
+      p.stdout!.on('data', (d) => { out += d.toString(); });
+      p.stderr!.on('data', (d) => { err += d.toString(); });
+      p.on('close', (code, signal) => resolve({ out: out.trim(), err: err.trim(), code, signal })); // close ⇒ all stdio flushed
     });
     const [a, b] = await Promise.all([run(), run()]);
-    expect([a, b].filter((o) => o.startsWith('COMMITTED:1'))).toHaveLength(1); // EXACTLY one prepared
-    expect([a, b].some((o) => o.startsWith('REFUSED:'))).toBe(true);           // the loser is contained
+    // finding #2: a child that emitted an expected line and THEN crashed must fail — assert clean termination.
+    for (const c of [a, b]) {
+      expect(c.signal, `child terminated by signal ${c.signal} (stderr: ${c.err})`).toBeNull(); // no crash/SIGSEGV/etc.
+      expect(c.code, `child exit code ${c.code} (stderr: ${c.err})`).toBe(0);                    // graceful exit
+      expect(c.err, 'child wrote to stderr').toBe('');                                           // no thrown error
+      expect(c.out).toMatch(/^(COMMITTED:1|REFUSED:(replay|trusted_state_locked))$/);            // exactly one governed line
+    }
+    expect([a, b].filter((c) => c.out === 'COMMITTED:1')).toHaveLength(1);                        // EXACTLY one prepared
+    expect([a, b].filter((c) => c.out.startsWith('REFUSED:'))).toHaveLength(1);                   // the loser is contained
     expect(readState(stateDir).state.receiptHead.count).toBe(1);
   }, 30_000);
 });
@@ -291,12 +301,14 @@ describe('R54 review repair · a REFUSED child decision exits — never orphans/
 describe('R54 · 8: exact primary-runtime import/reachability proof', () => {
   const read = (p: string) => readFileSync(fileURLToPath(new URL(`../${p}`, import.meta.url)), 'utf8');
   it('the ACTIVE door boot reaches @aukora/kernel-node through the runner-fenced durable monitor (each hop verified)', () => {
-    // hop 1 (R54 v3): the live door boot passes trustedStateDir and NEVER constructs the monitor directly —
-    // direct construction would bypass the runner's canonical fence (the exact v3 blocker).
+    // hop 1 (R54 v3/v4): the live door boot passes trustedStateDir and NEVER constructs the monitor directly —
+    // direct construction would bypass the runner's canonical fence (the v3 blocker). QUOTE- and ALIAS-safe: the
+    // class identifier must not appear via ANY route (`new X`, `import {… as X}`, `ns.DurableCandidateReferenceMonitor`)
+    // and the monitor module must not be imported by ANY specifier (single/double quotes, static import or require).
     const doorSrc = read('scripts/mind-door-7097.ts');
     expect(doorSrc).toMatch(/trustedStateDir:\s*doorTrustedStateDir/);
-    expect(doorSrc).not.toMatch(/new\s+DurableCandidateReferenceMonitor/);
-    expect(doorSrc).not.toMatch(/from '[^']*durableCandidateMonitor/); // no import ⇒ no bypass path at all
+    expect(doorSrc).not.toMatch(/DurableCandidateReferenceMonitor/); // no identifier route at all (incl. aliases/namespaces)
+    expect(doorSrc).not.toMatch(/durableCandidateMonitor/);          // module never imported by any specifier route
     // hop 2: the ceremony runner RUNS the canonical fence, then constructs the ONE durable monitor
     const runnerSrc = read('src/localCeremonyRunner.ts');
     expect(runnerSrc).toMatch(/trustedStateDirInsideFence/);
