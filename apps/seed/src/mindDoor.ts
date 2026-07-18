@@ -34,6 +34,10 @@ import { verdictFromCouncilOutcome } from './fuStructuredAdapter.js';
 export const DOOR_PORT = 7097;
 const MAX_RECEIPTS = 512;
 const MAX_BODY_FIELD = 8192;
+// R56 chat side-channel bounds (the donor envelope law: bounded counts, bounded bytes, disclosed handling).
+const VOICE_MAX_ATTACHMENTS = 8;
+const VOICE_MAX_IMAGES = 4;
+const VOICE_MAX_ATTACHMENT_CHARS = 65536;
 
 export interface DoorRequest {
   readonly method: string;
@@ -206,17 +210,84 @@ export class MindDoor {
     return this.driver;
   }
 
-  /** ADVISORY voice: never applies. Uses Fu evidence if supplied, else the model-free KIRA memory fallback. */
+  /**
+   * ADVISORY voice: never applies. Uses Fu evidence if supplied, else the model-free KIRA memory fallback.
+   *
+   * R56 CHAT ENVELOPE — the Spatial UI/voice client posts `{ owner_text, attachments, images, model }`
+   * (`owner_text` is the CANONICAL text channel; `text` remains deliberate legacy compatibility). The old
+   * handler read only `text`, so every real UI/voice turn silently fell into the empty-query fallback and the
+   * attachment/image channels were dead-lettered. Laws now:
+   *   - `owner_text` preferred; `text` accepted; BOTH present with different content → explicit refusal
+   *     (`door:chat-channel-ambiguous`), never a silent pick;
+   *   - truncation to MAX_BODY_FIELD is DISCLOSED (`truncated: true`), never silent;
+   *   - attachments/images are bounded, shape-checked channels: malformed → `door:chat-attachments-malformed`,
+   *     over the caps → `door:chat-attachments-oversized`; valid ones are ACKNOWLEDGED with an explicit
+   *     disposition — this model-free advisory door does not consume them, and SAYS so (no dead-letter);
+   *   - an AUTHORITY-SHAPED chat body (auth/candidateAuth/ownerArmed/nonce riding on the advisory channel) is
+   *     refused (`door:chat-authority-shaped`) — chat can never carry or launder authorization;
+   *   - `model` is disclosed as ignored (`modelDisposition`) — this door is model-free by construction.
+   */
   private chat(body: unknown, _driver: DoorDriver): DoorResponse {
-    const text = typeof (body as { text?: unknown })?.text === 'string' ? (body as { text: string }).text.slice(0, MAX_BODY_FIELD) : '';
-    const query = text.trim();
+    const b = (body ?? {}) as Record<string, unknown>;
+    // Authority-shaped fields on the advisory channel are hostile, not ignorable.
+    for (const k of ['auth', 'candidateAuth', 'ownerArmed', 'nonce', 'headBefore', 'proposalInput'] as const) {
+      if (k in b) {
+        const ev = this.receipt('refused', '/api/chat', 'door:chat-authority-shaped');
+        return this.respond(400, { error: 'refused: chat is advisory and can never carry authorization-shaped fields', reasonClass: 'door:chat-authority-shaped', eventReceipt: ev.receiptHash });
+      }
+    }
+    const ownerText = typeof b.owner_text === 'string' ? b.owner_text : null;
+    const legacyText = typeof b.text === 'string' ? b.text : null;
+    if (ownerText !== null && legacyText !== null && ownerText !== legacyText) {
+      const ev = this.receipt('refused', '/api/chat', 'door:chat-channel-ambiguous');
+      return this.respond(400, { error: 'refused: both owner_text and text present with different content — send ONE text channel', reasonClass: 'door:chat-channel-ambiguous', eventReceipt: ev.receiptHash });
+    }
+    const raw = ownerText ?? legacyText ?? '';
+    const textChannel = ownerText !== null ? 'owner_text' : legacyText !== null ? 'text' : 'none';
+    const truncated = raw.length > MAX_BODY_FIELD;
+    const query = raw.slice(0, MAX_BODY_FIELD).trim();
+
+    // Bounded, shape-checked side channels (never silently dropped): arrays of bounded string-ish entries.
+    const sideChannel = (name: 'attachments' | 'images', cap: number): { ok: true; count: number } | { ok: false; reason: 'door:chat-attachments-malformed' | 'door:chat-attachments-oversized' } => {
+      const v = b[name];
+      if (v === undefined || v === null) return { ok: true, count: 0 };
+      if (!Array.isArray(v)) return { ok: false, reason: 'door:chat-attachments-malformed' };
+      if (v.length > cap) return { ok: false, reason: 'door:chat-attachments-oversized' };
+      for (const entry of v) {
+        const s = typeof entry === 'string' ? entry : typeof (entry as { content?: unknown })?.content === 'string' ? (entry as { content: string }).content : typeof (entry as { name?: unknown })?.name === 'string' ? '' : null;
+        if (s === null) return { ok: false, reason: 'door:chat-attachments-malformed' };
+        if (s.length > VOICE_MAX_ATTACHMENT_CHARS) return { ok: false, reason: 'door:chat-attachments-oversized' };
+      }
+      return { ok: true, count: v.length };
+    };
+    const attachments = sideChannel('attachments', VOICE_MAX_ATTACHMENTS);
+    if (!attachments.ok) {
+      const ev = this.receipt('refused', '/api/chat', attachments.reason);
+      return this.respond(400, { error: 'refused: chat side channel is malformed or over its bound', reasonClass: attachments.reason, eventReceipt: ev.receiptHash });
+    }
+    const images = sideChannel('images', VOICE_MAX_IMAGES);
+    if (!images.ok) {
+      const ev = this.receipt('refused', '/api/chat', images.reason);
+      return this.respond(400, { error: 'refused: chat side channel is malformed or over its bound', reasonClass: images.reason, eventReceipt: ev.receiptHash });
+    }
+
     const hits = query.length > 0 ? this.config.store.recall({ text: query }).slice(0, 5) : [];
     const ev = this.receipt('chat', '/api/chat', 'door:advisory');
     // MODEL-FREE FALLBACK: recall-backed answer; the voice has no tools and no authority.
     const answer = hits.length > 0
       ? `From memory (advisory, no model): ${hits.map((hHit) => hHit.content).join(' · ').slice(0, 1200)}`
       : 'I have no memory matching that yet. (Advisory voice; I cannot read files or apply anything.)';
-    return this.respond(200, { schema: 'aukora-door-chat-v1', mode: 'model-free-memory-fallback', answer, citations: hits.map((hHit) => hHit.recordId), advisoryOnly: true, grantsAuthority: false, eventReceipt: ev.receiptHash });
+    return this.respond(200, {
+      schema: 'aukora-door-chat-v1', mode: 'model-free-memory-fallback', answer,
+      citations: hits.map((hHit) => hHit.recordId),
+      textChannel, truncated,
+      attachmentsReceived: attachments.count, imagesReceived: images.count,
+      attachmentDisposition: attachments.count + images.count > 0
+        ? 'acknowledged-not-consumed (model-free advisory door; attachments/images do not reach recall)'
+        : null,
+      modelDisposition: typeof b.model === 'string' ? 'ignored (model-free advisory door)' : null,
+      advisoryOnly: true, grantsAuthority: false, eventReceipt: ev.receiptHash,
+    });
   }
 
   /**
