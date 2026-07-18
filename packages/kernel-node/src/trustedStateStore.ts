@@ -19,7 +19,7 @@
  * (state + high-water together) is the same completeness limit a plain hash chain has — closed only by an
  * external monotonic source (signed head / hardware root), which is explicitly OUT of tonight's scope.
  */
-import { openSync, writeSync, fsyncSync, closeSync, renameSync, readFileSync, existsSync, mkdirSync, rmSync, statSync, lstatSync, fstatSync, constants as FS } from 'node:fs';
+import { openSync, writeSync, fsyncSync, closeSync, renameSync, readFileSync, mkdirSync, rmSync, lstatSync, fstatSync, constants as FS } from 'node:fs';
 import { join } from 'node:path';
 import { decide as kernelDecide, assertTrustedState, type TrustedStateV1, type KernelRequestV1, type KernelResultV1 } from '@aukora/kernel';
 
@@ -146,16 +146,13 @@ export class TrustedStateStore {
    * DIFFERENT real directory is refused. Every child open (lock/tmp/state/high-water) and the rename + cleanup are
    * guarded by this, so a swapped prefix can never redirect a write.
    *
-   * HONEST RESIDUAL (narrowed truthfully): Node exposes no `openat`/`renameat`, so a check-then-open pair is not a
-   * single atomic syscall — a separate process could swap the directory in the ~1-syscall window between this
-   * verification and the immediately-following op. That residual is reachable ONLY by an actor able to rename the
-   * dir, which the owner-only dir + ancestor-ownership contract denies to any OTHER user; the trusted operator is
-   * out of scope. Between-operation replacement (the reviewed gap) IS fully closed.
+   * HONEST RESIDUAL (narrowed truthfully): Node exposes no `openat`/`renameat`, so the re-verification and the
+   * immediately-following op are SEPARATE syscalls, not one atomic step — a separate process could swap the
+   * directory in the sub-syscall window between them. That residual is reachable ONLY by an actor able to rename
+   * the dir, which the owner-only dir + ancestor-ownership contract denies to any OTHER user; the trusted operator
+   * is out of scope. Between-operation replacement over a wider window (the reviewed gap) IS closed.
    */
   private assertDir(): void {
-    // Nothing pinned ⇒ this is a lock-free `load()` on an un-opened store (the informational `consumed()` snapshot),
-    // not a lifetime write op. The load-bearing guards all run on the OPENED path (open/commit), where dirFd is set.
-    if (this.dirFd === null) return;
     let fd: number;
     try { fd = openSync(this.dir, FS.O_RDONLY | O_DIRECTORY | O_NOFOLLOW); }
     catch (e) {
@@ -167,6 +164,42 @@ export class TrustedStateStore {
       const s = fstatSync(fd);
       if (s.dev !== this.pinnedDev || s.ino !== this.pinnedIno) throw new TrustedStoreUnsafePathError('trusted-state dir inode changed after open');
     } finally { closeSync(fd); }
+  }
+
+  /**
+   * Acquire → read → RELEASE a protected read pin. Opens the state dir itself O_NOFOLLOW|O_DIRECTORY (a symlink
+   * prefix fails ELOOP → refused, never followed), verifies it — inode-pin match when OPENED, owner-only when
+   * standalone — then reads `fileName` no-follow through that verified dir, and always releases the transient fd.
+   * Returns null when the dir OR the file does not exist (a fresh/empty store — not an error, and no `existsSync`
+   * precheck: a direct O_NOFOLLOW open with ENOENT handling is the only race-free probe). Throws
+   * TrustedStoreUnsafePathError on a symlink/replaced dir or a symlinked file. NOTE: the dir verify and the file
+   * open are separate syscalls (no openat) — same sub-syscall residual documented on assertDir.
+   */
+  private protectedRead(fileName: string): string | null {
+    let dfd: number;
+    try { dfd = openSync(this.dir, FS.O_RDONLY | O_DIRECTORY | O_NOFOLLOW); }
+    catch (e) {
+      const c = (e as NodeJS.ErrnoException).code;
+      if (c === 'ENOENT') return null; // no state dir yet ⇒ empty store
+      if (c === 'ELOOP' || c === 'ENOTDIR') throw new TrustedStoreUnsafePathError(`trusted-state dir is a symlink or not a directory: ${this.dir}`);
+      throw e;
+    }
+    try {
+      const s = fstatSync(dfd);
+      if (this.dirFd !== null) {
+        if (s.dev !== this.pinnedDev || s.ino !== this.pinnedIno) throw new TrustedStoreUnsafePathError('trusted-state dir inode changed after open');
+      } else if (process.platform !== 'win32') {
+        const uid = typeof process.getuid === 'function' ? process.getuid() : null;
+        if ((uid !== null && s.uid !== uid) || (s.mode & 0o077) !== 0) throw new TrustedStoreUnsafePathError('trusted-state dir is not owner-only');
+      }
+      try { return this.readNoFollow(this.p(fileName)); }
+      catch (e) {
+        const c = (e as NodeJS.ErrnoException).code;
+        if (c === 'ENOENT') return null; // file not written yet
+        if (c === 'ELOOP') throw new TrustedStoreUnsafePathError(`${fileName} is a symlink`);
+        throw e;
+      }
+    } finally { closeSync(dfd); }
   }
 
   /** Acquire the single-writer lock (atomic O_EXCL). A lock held by a DEAD pid is reclaimed; a live one refuses. */
@@ -197,6 +230,7 @@ export class TrustedStateStore {
           this.releaseDirFd();
           throw new WriterLockedError(`trusted store locked (holder ${raw || 'in-progress'})`);
         }
+        this.assertDir(); // reassert the pinned dir immediately before the stale-lock unlink (path mutation)
         rmSync(lock, { force: true }); // stale lock (dead pid) — reclaim, then retry once
       }
     }
@@ -222,28 +256,20 @@ export class TrustedStateStore {
   private pidAlive(pid: number): boolean { try { process.kill(pid, 0); return true; } catch { return false; } }
 
   private readHighWater(): number {
-    this.assertDir(); // the dir still resolves to the pinned inode before reading through its path
-    const f = this.p(HIGHWATER_FILE);
-    if (!existsSync(f)) return 0;
-    let text: string;
-    try { text = this.readNoFollow(f); }
-    catch (e) { if ((e as NodeJS.ErrnoException).code === 'ELOOP') throw new TrustedStoreUnsafePathError('receipt-highwater is a symlink'); throw e; }
+    const text = this.protectedRead(HIGHWATER_FILE); // acquire→read→release a protected read pin (no existsSync)
+    if (text === null) return 0;
     const n = Number(JSON.parse(text).count);
     return Number.isSafeInteger(n) && n >= 0 ? n : 0;
   }
 
   /** Durable read + rollback refusal. A fresh store returns `genesis`. A loaded count below the high-water is a rollback. */
   load(genesis: TrustedStateV1): PersistedTrustedRecordV1 {
-    this.assertDir(); // the dir still resolves to the pinned inode before any path-based read
-    const f = this.p(STATE_FILE);
-    if (!existsSync(f)) {
+    const text = this.protectedRead(STATE_FILE); // protected read pin; null ⇒ no dir/file yet ⇒ genesis (no existsSync)
+    if (text === null) {
       assertTrustedState(genesis); // fail-closed on a bad genesis
       return { storeSchema: STORE_SCHEMA_VERSION, state: genesis, prepared: [] };
     }
     let rec: PersistedTrustedRecordV1;
-    let text: string;
-    try { text = this.readNoFollow(f); }
-    catch (e) { if ((e as NodeJS.ErrnoException).code === 'ELOOP') throw new TrustedStoreUnsafePathError('trusted-state file is a symlink'); throw e; }
     try { rec = JSON.parse(text) as PersistedTrustedRecordV1; }
     catch (e) { throw new TrustedStoreCorruptError(`trusted state unparseable: ${String(e).slice(0, 80)}`); }
     if (rec.storeSchema !== STORE_SCHEMA_VERSION) throw new TrustedStoreCorruptError('unknown store schema (migration required)');
@@ -269,8 +295,9 @@ export class TrustedStateStore {
       fsyncSync(fd);
     } finally { closeSync(fd); }
     this.crash('rename');
-    this.assertDir(); // dir still the pinned inode at the DURABILITY POINT — the rename cannot land in a swapped dir
-    renameSync(tmp, this.p(STATE_FILE)); // atomic on POSIX — the durability point
+    this.assertDir(); // reassert the pinned inode immediately before the rename (a swap in the sub-syscall window
+                      // between this check and the rename is the documented residual; wider windows are closed)
+    renameSync(tmp, this.p(STATE_FILE)); // rename() itself is a single atomic syscall — the durability point
     // fsync the directory so the rename itself is durable across power loss — via the HELD dir fd (pinned inode,
     // never re-resolving `dir` by path, which would reopen the TOCTOU window).
     this.crash('dir-fsync');
@@ -319,8 +346,10 @@ export class TrustedStateStore {
 
   /** Sanity: the persisted files are owner-only (0600). Returns the octal perms of the state file, or null. */
   statePerms(): number | null {
-    const f = this.p(STATE_FILE);
-    return existsSync(f) ? (statSync(f).mode & 0o777) : null;
+    let fd: number;
+    try { fd = openSync(this.p(STATE_FILE), FS.O_RDONLY | O_NOFOLLOW); } // no existsSync; no-follow (a symlink surfaces ELOOP)
+    catch (e) { if ((e as NodeJS.ErrnoException).code === 'ENOENT') return null; throw e; }
+    try { return fstatSync(fd).mode & 0o777; } finally { closeSync(fd); }
   }
 }
 
