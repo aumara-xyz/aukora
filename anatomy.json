@@ -1,235 +1,307 @@
 {
-  "schema": "aukora-anatomy-v0",
-  "note": "Minimum executable ANATOMY (issue #53) — R46 truth round. source_continuity (where the bytes came from) is recorded SEPARATELY from runtime_reachability (what is proven live). Explicit MISSING/RUNTIME_UNPROVEN entries are honest and legal here; they block the next feature profile until closed or owner-deferred.",
-  "vocabulary": [
-    "EXACT_PORT",
-    "EXACT_HISTORICAL_PORT",
-    "ADAPTED_BOUNDARY",
-    "SUPERSEDED_WITH_COMPARATIVE_PROOF",
-    "OWNER_EXCLUDED",
-    "RUNTIME_UNPROVEN",
-    "MISSING",
-    "RESEARCH_NEW"
-  ],
-  "coverage_scopes": [
-    {
-      "glob": "apps/supervisor/src",
-      "note": "protected deterministic core — full file coverage enforced"
-    },
-    {
-      "glob": "packages/mind/src",
-      "note": "R51 expansion — the pure reasoning-loop organ; every src file maps to mind-organ (LIVE, ADAPTED_BOUNDARY, 51 tests)"
-    },
-    {
-      "glob": "packages/kernel/src",
-      "note": "R51 expansion — the canonical kernel; every src file maps to kernel-canonical (EXACT_PORT, LIVE in-gate; byte-identity gated by verify-provenance.mjs)"
-    }
-  ],
-  "entries": [
-    {
-      "id": "supervisor-core",
-      "disposition": "ADAPTED_BOUNDARY",
-      "source_continuity": "donor #71/#26 + CONVEX_CANONICAL_BRAIN_SPEC (blob a3af164bef32…) restoration, Wave 2",
-      "runtime_reachability": "LIVE (R44 boot/status/teardown transcripts)",
-      "files": [
-        {
-          "path": "apps/supervisor/src/engine.mjs"
-        },
-        {
-          "path": "apps/supervisor/src/supervisor.mjs"
-        },
-        {
-          "path": "apps/supervisor/src/gateway.mjs"
-        },
-        {
-          "path": "apps/supervisor/src/verify-protected.mjs"
-        }
-      ],
-      "tests": [
-        "apps/supervisor/test/supervisor.test.mjs"
-      ],
-      "checked_by": "apps/supervisor/protected.sha256 (verify:protected)"
-    },
-    {
-      "id": "kernel-canonical",
-      "disposition": "EXACT_PORT",
-      "source_continuity": "donor aukora-kernel@b441edc4d17d, 10 blob-pinned sources",
-      "runtime_reachability": "LIVE (in-gate, Edge/Bun/browser)",
-      "files": [
-        { "path": "packages/kernel/src/authority.ts" },
-        { "path": "packages/kernel/src/canonical.ts" },
-        { "path": "packages/kernel/src/errors.ts" },
-        { "path": "packages/kernel/src/evidence.ts" },
-        { "path": "packages/kernel/src/index.ts" },
-        { "path": "packages/kernel/src/merkle.ts" },
-        { "path": "packages/kernel/src/reducer.ts" },
-        { "path": "packages/kernel/src/registry.ts" },
-        { "path": "packages/kernel/src/schema.ts" },
-        { "path": "packages/kernel/src/staleness.ts" }
-      ],
-      "tests": [
-        "packages/kernel/test/reducer.test.ts"
-      ],
-      "checked_by": "scripts/verify-provenance.mjs (byte-identity gate)"
-    },
-    {
-      "id": "aura-birth",
-      "disposition": "EXACT_HISTORICAL_PORT",
-      "source_continuity": "donor commits 204540f53ee4b4ff835ebf72b4a096b2c00fcc06 + 6d3e23881d4f32c24ddd8410ddc9bffc7081b6c7, donor path spatial/assets/aura-birth.js, blob 846361640aecc90b9675d2921ef112a840b3fcd6 (ABSENT from donor HEAD — historical port, owner-corrected R46)",
-      "runtime_reachability": "served by spatial shell; organ-level proof pending",
-      "files": [
-        {
-          "path": "apps/spatial/assets/aura-birth.js",
-          "blob": "846361640aecc90b9675d2921ef112a840b3fcd6"
-        }
-      ],
-      "tests": [
-        "apps/spatial/test/transplant.test.mjs"
-      ],
-      "donor": {
-        "repo": "aukora-symbiote",
-        "commit": "204540f53ee4b4ff835ebf72b4a096b2c00fcc06",
-        "path": "spatial/assets/aura-birth.js",
-        "blob": "846361640aecc90b9675d2921ef112a840b3fcd6"
-      }
-    },
-    {
-      "id": "ghp-organ",
-      "disposition": "EXACT_PORT",
-      "source_continuity": "donor spatial/app/ghp.js same blob across donor history (owner-corrected R46: NOT absent) — commit pinned to the verified donor HEAD (owner cited additional historical commits by prefix; full SHAs recorded in the #20 correction)",
-      "runtime_reachability": "live in shell roster (R38+ transcripts)",
-      "files": [
-        {
-          "path": "apps/spatial/app/ghp.js",
-          "blob": "6804ef74985db34f1da391b72b7c4d4e83965dfb"
-        }
-      ],
-      "tests": [
-        "apps/spatial/test/transplant.test.mjs"
-      ],
-      "donor": {
-        "repo": "aukora-symbiote",
-        "commit": "41707f910d10696482c28ee80346c252a55e9d41",
-        "path": "spatial/app/ghp.js",
-        "blob": "6804ef74985db34f1da391b72b7c4d4e83965dfb"
-      }
-    },
-    {
-      "id": "ghp-research-tree",
-      "disposition": "RESEARCH_NEW",
-      "source_continuity": "donor GHP/ research tree — SEPARATE capability from the UI organ (owner ruling R46); disposition pending its own provenance pass",
-      "runtime_reachability": "n/a",
-      "files": [],
-      "tests": []
-    },
-    {
-      "id": "lingwa-lessons",
-      "disposition": "EXACT_PORT",
-      "source_continuity": "donor spatial/app/auma/auma.js same blob (owner-corrected R46: NOT absent)",
-      "runtime_reachability": "live in shell roster",
-      "files": [
-        {
-          "path": "apps/spatial/app/auma/auma.js",
-          "blob": "d589c376dc649c8d28ad0fc5c7e683033dba712f"
-        }
-      ],
-      "tests": [
-        "apps/spatial/test/transplant.test.mjs"
-      ],
-      "donor": {
-        "repo": "aukora-symbiote",
-        "commit": "41707f910d10696482c28ee80346c252a55e9d41",
-        "path": "spatial/app/auma/auma.js",
-        "blob": "d589c376dc649c8d28ad0fc5c7e683033dba712f"
-      }
-    },
-    {
-      "id": "lingwa-lane-realtime",
-      "disposition": "MISSING",
-      "source_continuity": "donor spatial/lingwaLane.ts (real-time translation lane) — SEPARATE capability from the lesson app (owner ruling R46)",
-      "runtime_reachability": "no current counterpart",
-      "files": [],
-      "tests": []
-    },
-    {
-      "id": "duplex-voice-supervision",
-      "disposition": "RUNTIME_UNPROVEN",
-      "source_continuity": "donor duplex voice present as files; supervision degrades/unwires under the default lifecycle (Sam 2/4 R46)",
-      "runtime_reachability": "DEGRADED(optional) under organism:up",
-      "files": [],
-      "tests": []
-    },
-    {
-      "id": "gaussian-memory-palace",
-      "disposition": "RESEARCH_NEW",
-      "source_continuity": "NOT a donor omission absent an exact donor commit/path/blob (owner ruling R46)",
-      "runtime_reachability": "n/a",
-      "files": [],
-      "tests": []
-    },
-    {
-      "id": "mind-organ",
-      "disposition": "ADAPTED_BOUNDARY",
-      "source_continuity": "re-authored from aukora-symbiote branch fable/arc3-reasoning-engine-20260710 @ e5768a2f; adopted from PR #72 after R45/R46 qualification and merged to main @ d4d63d4",
-      "runtime_reachability": "LIVE as the pure exported @aukora/mind package; model/KIRA/Fu/candidate runtime bridges remain separately governed adapters",
-      "files": [
-        {
-          "path": "packages/mind/index.ts"
-        },
-        {
-          "path": "packages/mind/src/governor.ts"
-        },
-        {
-          "path": "packages/mind/src/grid.ts"
-        },
-        {
-          "path": "packages/mind/src/plan.ts"
-        },
-        {
-          "path": "packages/mind/src/ports.ts"
-        },
-        {
-          "path": "packages/mind/src/reply.ts"
-        },
-        {
-          "path": "packages/mind/src/rollout.ts"
-        },
-        {
-          "path": "packages/mind/src/trace.ts"
-        },
-        {
-          "path": "packages/mind/src/window.ts"
-        }
-      ],
-      "tests": [
-        "packages/mind/test/governor.test.ts",
-        "packages/mind/test/grid.test.ts",
-        "packages/mind/test/plan.test.ts",
-        "packages/mind/test/reply.test.ts",
-        "packages/mind/test/rollout.test.ts",
-        "packages/mind/test/trace.test.ts",
-        "packages/mind/test/window.test.ts"
-      ],
-      "checked_by": "npm run test:mind + package export/boundary gates"
-    },
-    {
-      "id": "inkling-tinker-evolution-cell",
-      "disposition": "RESEARCH_NEW",
-      "source_continuity": "external frontier research: thinkingmachines/Inkling and Tinker; no third-party source imported into Aukora",
-      "runtime_reachability": "NOT DEPLOYED — proposed isolated Nebius teacher/evaluator and post-training path; issue #15",
-      "files": [],
-      "tests": []
-    }
-  ],
-  "spatial_seams": {
-    "total": 17,
-    "live_today": 7,
-    "donor_offline_or_unserved": 10,
-    "evidence": "docs/continuity/r46/SAM4_EMBODIMENT_REACHABILITY_AUDIT.md"
+ "schema": "aukora-anatomy-v0",
+ "note": "Minimum executable ANATOMY (issue #53) \u2014 R46 truth round. source_continuity (where the bytes came from) is recorded SEPARATELY from runtime_reachability (what is proven live). Explicit MISSING/RUNTIME_UNPROVEN entries are honest and legal here; they block the next feature profile until closed or owner-deferred.",
+ "vocabulary": [
+  "EXACT_PORT",
+  "EXACT_HISTORICAL_PORT",
+  "ADAPTED_BOUNDARY",
+  "SUPERSEDED_WITH_COMPARATIVE_PROOF",
+  "OWNER_EXCLUDED",
+  "RUNTIME_UNPROVEN",
+  "MISSING",
+  "RESEARCH_NEW"
+ ],
+ "coverage_scopes": [
+  {
+   "glob": "apps/supervisor/src",
+   "note": "protected deterministic core \u2014 full file coverage enforced"
   },
-  "known_gaps": {
-    "live_workflow_first_create": "R47 first-create refusal was diagnosed as a NONCE MISLABEL and closed as #87 for that cause ONLY. Production first-create DURABILITY is the separate track: opened as #99 (R50 P0, landed — production mind-door → local Convex persistence + process-death) and continued as #108 (R51 BRAIN — self-hosted Convex durable workflows). Do not read #87-closed as durability-proven.",
-    "lingwa_lane_realtime": "donor real-time translation lane has no current runtime counterpart",
-    "duplex_voice_runtime": "duplex voice files exist, but default supervised runtime reachability remains unproven"
+  {
+   "glob": "packages/mind/src",
+   "note": "R51 expansion \u2014 the pure reasoning-loop organ; every src file maps to mind-organ (LIVE, ADAPTED_BOUNDARY, 51 tests)"
+  },
+  {
+   "glob": "packages/kernel/src",
+   "note": "R51 expansion \u2014 the canonical kernel; every src file maps to kernel-canonical (EXACT_PORT, LIVE in-gate; byte-identity gated by verify-provenance.mjs)"
+  },
+  {
+   "glob": "packages/immune/src",
+   "note": "RESEARCH_NEW metaphorical immune substrate (R55) \u2014 full file coverage enforced"
   }
+ ],
+ "entries": [
+  {
+   "id": "supervisor-core",
+   "disposition": "ADAPTED_BOUNDARY",
+   "source_continuity": "donor #71/#26 + CONVEX_CANONICAL_BRAIN_SPEC (blob a3af164bef32\u2026) restoration, Wave 2",
+   "runtime_reachability": "LIVE (R44 boot/status/teardown transcripts)",
+   "files": [
+    {
+     "path": "apps/supervisor/src/engine.mjs"
+    },
+    {
+     "path": "apps/supervisor/src/supervisor.mjs"
+    },
+    {
+     "path": "apps/supervisor/src/gateway.mjs"
+    },
+    {
+     "path": "apps/supervisor/src/verify-protected.mjs"
+    }
+   ],
+   "tests": [
+    "apps/supervisor/test/supervisor.test.mjs"
+   ],
+   "checked_by": "apps/supervisor/protected.sha256 (verify:protected)"
+  },
+  {
+   "id": "kernel-canonical",
+   "disposition": "EXACT_PORT",
+   "source_continuity": "donor aukora-kernel@b441edc4d17d, 10 blob-pinned sources",
+   "runtime_reachability": "LIVE (in-gate, Edge/Bun/browser)",
+   "files": [
+    {
+     "path": "packages/kernel/src/authority.ts"
+    },
+    {
+     "path": "packages/kernel/src/canonical.ts"
+    },
+    {
+     "path": "packages/kernel/src/errors.ts"
+    },
+    {
+     "path": "packages/kernel/src/evidence.ts"
+    },
+    {
+     "path": "packages/kernel/src/index.ts"
+    },
+    {
+     "path": "packages/kernel/src/merkle.ts"
+    },
+    {
+     "path": "packages/kernel/src/reducer.ts"
+    },
+    {
+     "path": "packages/kernel/src/registry.ts"
+    },
+    {
+     "path": "packages/kernel/src/schema.ts"
+    },
+    {
+     "path": "packages/kernel/src/staleness.ts"
+    }
+   ],
+   "tests": [
+    "packages/kernel/test/reducer.test.ts"
+   ],
+   "checked_by": "scripts/verify-provenance.mjs (byte-identity gate)"
+  },
+  {
+   "id": "aura-birth",
+   "disposition": "EXACT_HISTORICAL_PORT",
+   "source_continuity": "donor commits 204540f53ee4b4ff835ebf72b4a096b2c00fcc06 + 6d3e23881d4f32c24ddd8410ddc9bffc7081b6c7, donor path spatial/assets/aura-birth.js, blob 846361640aecc90b9675d2921ef112a840b3fcd6 (ABSENT from donor HEAD \u2014 historical port, owner-corrected R46)",
+   "runtime_reachability": "served by spatial shell; organ-level proof pending",
+   "files": [
+    {
+     "path": "apps/spatial/assets/aura-birth.js",
+     "blob": "846361640aecc90b9675d2921ef112a840b3fcd6"
+    }
+   ],
+   "tests": [
+    "apps/spatial/test/transplant.test.mjs"
+   ],
+   "donor": {
+    "repo": "aukora-symbiote",
+    "commit": "204540f53ee4b4ff835ebf72b4a096b2c00fcc06",
+    "path": "spatial/assets/aura-birth.js",
+    "blob": "846361640aecc90b9675d2921ef112a840b3fcd6"
+   }
+  },
+  {
+   "id": "ghp-organ",
+   "disposition": "EXACT_PORT",
+   "source_continuity": "donor spatial/app/ghp.js same blob across donor history (owner-corrected R46: NOT absent) \u2014 commit pinned to the verified donor HEAD (owner cited additional historical commits by prefix; full SHAs recorded in the #20 correction)",
+   "runtime_reachability": "live in shell roster (R38+ transcripts)",
+   "files": [
+    {
+     "path": "apps/spatial/app/ghp.js",
+     "blob": "6804ef74985db34f1da391b72b7c4d4e83965dfb"
+    }
+   ],
+   "tests": [
+    "apps/spatial/test/transplant.test.mjs"
+   ],
+   "donor": {
+    "repo": "aukora-symbiote",
+    "commit": "41707f910d10696482c28ee80346c252a55e9d41",
+    "path": "spatial/app/ghp.js",
+    "blob": "6804ef74985db34f1da391b72b7c4d4e83965dfb"
+   }
+  },
+  {
+   "id": "ghp-research-tree",
+   "disposition": "RESEARCH_NEW",
+   "source_continuity": "donor GHP/ research tree \u2014 SEPARATE capability from the UI organ (owner ruling R46); disposition pending its own provenance pass",
+   "runtime_reachability": "n/a",
+   "files": [],
+   "tests": []
+  },
+  {
+   "id": "lingwa-lessons",
+   "disposition": "EXACT_PORT",
+   "source_continuity": "donor spatial/app/auma/auma.js same blob (owner-corrected R46: NOT absent)",
+   "runtime_reachability": "live in shell roster",
+   "files": [
+    {
+     "path": "apps/spatial/app/auma/auma.js",
+     "blob": "d589c376dc649c8d28ad0fc5c7e683033dba712f"
+    }
+   ],
+   "tests": [
+    "apps/spatial/test/transplant.test.mjs"
+   ],
+   "donor": {
+    "repo": "aukora-symbiote",
+    "commit": "41707f910d10696482c28ee80346c252a55e9d41",
+    "path": "spatial/app/auma/auma.js",
+    "blob": "d589c376dc649c8d28ad0fc5c7e683033dba712f"
+   }
+  },
+  {
+   "id": "lingwa-lane-realtime",
+   "disposition": "MISSING",
+   "source_continuity": "donor spatial/lingwaLane.ts (real-time translation lane) \u2014 SEPARATE capability from the lesson app (owner ruling R46)",
+   "runtime_reachability": "no current counterpart",
+   "files": [],
+   "tests": []
+  },
+  {
+   "id": "duplex-voice-supervision",
+   "disposition": "RUNTIME_UNPROVEN",
+   "source_continuity": "donor duplex voice present as files; supervision degrades/unwires under the default lifecycle (Sam 2/4 R46)",
+   "runtime_reachability": "DEGRADED(optional) under organism:up",
+   "files": [],
+   "tests": []
+  },
+  {
+   "id": "gaussian-memory-palace",
+   "disposition": "RESEARCH_NEW",
+   "source_continuity": "NOT a donor omission absent an exact donor commit/path/blob (owner ruling R46)",
+   "runtime_reachability": "n/a",
+   "files": [],
+   "tests": []
+  },
+  {
+   "id": "mind-organ",
+   "disposition": "ADAPTED_BOUNDARY",
+   "source_continuity": "re-authored from aukora-symbiote branch fable/arc3-reasoning-engine-20260710 @ e5768a2f; adopted from PR #72 after R45/R46 qualification and merged to main @ d4d63d4",
+   "runtime_reachability": "LIVE as the pure exported @aukora/mind package; model/KIRA/Fu/candidate runtime bridges remain separately governed adapters",
+   "files": [
+    {
+     "path": "packages/mind/index.ts"
+    },
+    {
+     "path": "packages/mind/src/governor.ts"
+    },
+    {
+     "path": "packages/mind/src/grid.ts"
+    },
+    {
+     "path": "packages/mind/src/plan.ts"
+    },
+    {
+     "path": "packages/mind/src/ports.ts"
+    },
+    {
+     "path": "packages/mind/src/reply.ts"
+    },
+    {
+     "path": "packages/mind/src/rollout.ts"
+    },
+    {
+     "path": "packages/mind/src/trace.ts"
+    },
+    {
+     "path": "packages/mind/src/window.ts"
+    }
+   ],
+   "tests": [
+    "packages/mind/test/governor.test.ts",
+    "packages/mind/test/grid.test.ts",
+    "packages/mind/test/plan.test.ts",
+    "packages/mind/test/reply.test.ts",
+    "packages/mind/test/rollout.test.ts",
+    "packages/mind/test/trace.test.ts",
+    "packages/mind/test/window.test.ts"
+   ],
+   "checked_by": "npm run test:mind + package export/boundary gates"
+  },
+  {
+   "id": "inkling-tinker-evolution-cell",
+   "disposition": "RESEARCH_NEW",
+   "source_continuity": "external frontier research: thinkingmachines/Inkling and Tinker; no third-party source imported into Aukora",
+   "runtime_reachability": "NOT DEPLOYED \u2014 proposed isolated Nebius teacher/evaluator and post-training path; issue #15",
+   "files": [],
+   "tests": []
+  },
+  {
+   "id": "immune-substrate",
+   "disposition": "RESEARCH_NEW",
+   "source_continuity": "adapted from donor draft PR #121 @ 8a1107379ca7ebf4728fd7c353f3d6bde164521c (packages/immune/src) \u2014 metaphorical, advisory-only; phantom @aukora/memory/decay.js resolved to in-package src/decay.ts; proprioception prompt + standalone test REJECTED. See packages/immune/docs/PROVENANCE.md",
+   "runtime_reachability": "NOT WIRED \u2014 pure exported @aukora/immune package; advisory scoring/state only; no actuator, no persistence, no authority path; not consumed by any runtime",
+   "files": [
+    {
+     "path": "packages/immune/index.ts"
+    },
+    {
+     "path": "packages/immune/src/decay.ts"
+    },
+    {
+     "path": "packages/immune/src/thymus.ts"
+    },
+    {
+     "path": "packages/immune/src/engagement.ts"
+    },
+    {
+     "path": "packages/immune/src/inflammation.ts"
+    },
+    {
+     "path": "packages/immune/src/killerT.ts"
+    },
+    {
+     "path": "packages/immune/src/antibody.ts"
+    },
+    {
+     "path": "packages/immune/src/memoryB.ts"
+    },
+    {
+     "path": "packages/immune/src/homeostasis.ts"
+    },
+    {
+     "path": "packages/immune/src/patrol.ts"
+    },
+    {
+     "path": "packages/immune/src/petriDish.ts"
+    }
+   ],
+   "tests": [
+    "packages/immune/test/decay.test.ts",
+    "packages/immune/test/substrate.test.ts",
+    "packages/immune/test/petriDish.test.ts",
+    "packages/immune/test/advisory-boundary.test.ts"
+   ],
+   "checked_by": "npm run test:immune + package export/boundary gates"
+  }
+ ],
+ "spatial_seams": {
+  "total": 17,
+  "live_today": 7,
+  "donor_offline_or_unserved": 10,
+  "evidence": "docs/continuity/r46/SAM4_EMBODIMENT_REACHABILITY_AUDIT.md"
+ },
+ "known_gaps": {
+  "live_workflow_first_create": "R47 first-create refusal was diagnosed as a NONCE MISLABEL and closed as #87 for that cause ONLY. Production first-create DURABILITY is the separate track: opened as #99 (R50 P0, landed \u2014 production mind-door \u2192 local Convex persistence + process-death) and continued as #108 (R51 BRAIN \u2014 self-hosted Convex durable workflows). Do not read #87-closed as durability-proven.",
+  "lingwa_lane_realtime": "donor real-time translation lane has no current runtime counterpart",
+  "duplex_voice_runtime": "duplex voice files exist, but default supervised runtime reachability remains unproven"
+ }
 }
