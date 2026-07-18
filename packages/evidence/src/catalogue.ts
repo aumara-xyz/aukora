@@ -23,7 +23,7 @@ export interface SecretCatalogueV1 {
 }
 
 export const SECRET_CATALOGUE: SecretCatalogueV1 = {
-  schema: 'aukora-fu-secret-catalogue-v3',
+  schema: 'aukora-fu-secret-catalogue-v4',
   patterns: [
     // NOTE (D4 anti-ReDoS): every greedy quantifier that is FOLLOWED by a required token has a bounded upper
     // limit ({m,N}, not {m,}). An unbounded greedy run before a required literal backtracks O(len) at each of
@@ -44,6 +44,14 @@ export const SECRET_CATALOGUE: SecretCatalogueV1 = {
     { id: 'anthropic-key', pattern: 'sk-ant-[A-Za-z0-9_\\-]{20,}', flags: 'g' },
     { id: 'sendgrid-key', pattern: 'SG\\.[A-Za-z0-9_\\-]{16,512}\\.[A-Za-z0-9_\\-]{16,}', flags: 'g' },
     { id: 'azure-account-key', pattern: 'AccountKey=[A-Za-z0-9+/]{40,}={0,2}', flags: 'g' },
+    // R56 (v4): current public provider token shapes. HuggingFace user access tokens (`hf_…`); Tinker
+    // (Thinking Machines) keys (`sk-tinker-…`, and the `tinker_…` / `tml_…` raw-token forms). Anti-ReDoS:
+    // every quantifier is a terminal `{m,}` (no trailing token → no backtracking). `sk-tinker-` is its own
+    // pattern — the hyphens make `openai-key`/`anthropic-key` (`sk-[A-Za-z0-9]{20,}` / `sk-ant-…`) never match it.
+    { id: 'huggingface-token', pattern: 'hf_[A-Za-z0-9]{16,}', flags: 'g' },
+    { id: 'tinker-key', pattern: 'sk-tinker-[A-Za-z0-9_\\-]{8,}', flags: 'g' },
+    { id: 'tinker-token', pattern: 'tml_[A-Za-z0-9]{12,}', flags: 'g' },
+    { id: 'tinker-raw', pattern: 'tinker_[A-Za-z0-9]{12,}', flags: 'g' },
   ],
   // Named bounded/linear scanners (NOT regexes), listed here so catalogueId binds them too.
   //  - url-userinfo-v1 (scheme://user:pass@host connection-string leaks): its former greedy regex was a
