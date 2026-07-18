@@ -16,6 +16,7 @@ export * from './geometry.js';
 export * from './mockCouncil.js';
 export * from './aumlokGate.js';
 export * from './ownerFixture.js';
+export * from './ownerBoundary.js';
 export * from './metabolism.js';
 export * from './recursion.js';
 export * from './ceremony.js';
