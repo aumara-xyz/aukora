@@ -34,14 +34,26 @@ import { ReactiveMemoryStore, ConvexWorkflowStore, liveWorkflowIo, assertLoopbac
 import { MindDoor, DOOR_PORT, type DoorRequest, type DoorDriver, type DoorDurability } from '../src/mindDoor.js';
 import { InMemoryWorkflowStore, validateWorkflowState, type WorkflowStore } from '../src/durableRecursion.js';
 import { HybridOwnerAdapter } from '../src/ownerFixture.js';
+import { resolveOwnerBootAuthority } from '../src/ownerBoundary.js';
 
 async function main(): Promise<void> {
   const port = Number(process.env.AUKORA_DOOR_PORT ?? DOOR_PORT);
   // Supervisor-minted per-boot token when present; undefined ⇒ the door self-mints (standalone fallback preserved).
   const injectedToken = process.env.AUKORA_DOOR_TOKEN;
   const store = new ReactiveMemoryStore();
-  // NOTE: a real deployment injects Peter's local AUMLOK root; the fixture owner here is for a local dev door only.
-  const owner = new HybridOwnerAdapter('local-door-dev');
+  // R55 P0 OWNER BOUNDARY — the production composition must NOT boot on a publicly derivable owner key.
+  // The operator injects the REAL owner's PUBLIC authority root via AUKORA_OWNER_ROOT_FILE (validated,
+  // fixture-derived roots refused); the deterministic dev fixture exists ONLY behind the explicit
+  // AUKORA_OWNER_FIXTURE=1 flag. The default (neither set) REFUSES to boot — fail closed, content-free reason.
+  const boundary = resolveOwnerBootAuthority(process.env, (p) => readFileSync(p, 'utf8'), Date.now());
+  if (boundary.mode === 'refused') {
+    console.error(`[mind-door] BOOT REFUSED (${boundary.reasonClass}): inject the owner's PUBLIC authority root via AUKORA_OWNER_ROOT_FILE, or set AUKORA_OWNER_FIXTURE=1 for an explicit dev-only fixture boot.`);
+    process.exit(1);
+  }
+  if (boundary.mode === 'fixture') {
+    console.log('[mind-door] WARNING: FIXTURE OWNER (AUKORA_OWNER_FIXTURE=1) — deterministic, PUBLICLY DERIVABLE key material. Dev/tests only; NEVER a production trust anchor.');
+  }
+  const ownerRoot = boundary.mode === 'injected' ? boundary.root : new HybridOwnerAdapter('local-door-dev').root;
   const repoRoot = resolve(process.cwd());
   // R54 v3: the door does NOT construct the monitor itself — a directly-injected monitor would bypass the
   // runner's canonical trusted-state fence (a sibling `aukora-door-trusted-state` SYMLINK could resolve back
@@ -76,7 +88,7 @@ async function main(): Promise<void> {
 
   const door = new MindDoor({
     store,
-    ownerRoot: owner.root,
+    ownerRoot,
     nowIso: new Date().toISOString(),
     postToken: injectedToken, // supervisor-minted when set; undefined ⇒ MindDoor self-mints (fallback preserved)
     // LAZY driver: a compile break in the composed modules fails a request, not the boot.
@@ -87,7 +99,7 @@ async function main(): Promise<void> {
         .split('\n').filter((f) => f.length > 0);
       const knownFiles = new Set(tracked);
       const recursionEnv = {
-        store, knownFiles, ownerRoot: owner.root,
+        store, knownFiles, ownerRoot,
         ledger: new (await import('../src/ledger.js')).RecursionLedger(),
         nowMs: Date.now(), nowIso: new Date().toISOString(),
         deadlineMs: Date.now() + 5 * 60_000,
@@ -101,7 +113,7 @@ async function main(): Promise<void> {
             read: (p) => (existsSync(join(repoRoot, p)) ? readFileSync(join(repoRoot, p), 'utf8') : ''),
             exists: (p) => existsSync(join(repoRoot, p)),
           },
-          ownerRoot: owner.root,
+          ownerRoot,
           store,
           trustedStateDir: doorTrustedStateDir,
           gitRepoRoot: repoRoot,
