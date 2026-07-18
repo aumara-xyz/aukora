@@ -64,7 +64,8 @@ function gitReadOnly(repoRoot: string, args: readonly string[]): string | null {
  * EXACT authorized-candidate identity (reads Git AFTER materialization; NEVER trusts `m.branch !== null`). A branch
  * name — and even the right file contents — are attacker-forgeable, so presence is credited ONLY when the observed
  * `candidate/<id>` ref is THIS authorized candidate committed over THIS authorized base, with EXACTLY the authorized
- * change set. The commit sha is resolved ONCE and every subsequent read pins that sha (no TOCTOU on the moving ref):
+ * change set. `authorizedBase` is the OWNER-APPROVED base (bound into the signed payload) — never a runtime HEAD
+ * observation. The commit sha is resolved ONCE and every subsequent read pins that sha (no TOCTOU on the moving ref):
  *   1. the ref exists (else: never created, deleted, or reconciled away → absent);
  *   2. the commit has a SINGLE parent equal to `authorizedBase` (else: wrong base, rebased, merge, or a branch
  *      squatted over a different history → absent);
@@ -74,8 +75,7 @@ function gitReadOnly(repoRoot: string, args: readonly string[]): string | null {
  *      the kernel monitor authorized) (else: forged content → absent).
  * Any deviation FAILS CLOSED (returns false) so a hostile, drifted, or partially-formed branch is never credited.
  */
-function exactAuthorizedCandidatePresent(repoRoot: string, branch: string, candidate: BranchCandidate, authorizedBase: string | null): boolean {
-  if (authorizedBase === null) return false; // no known base to bind identity against → cannot prove it is ours
+function exactAuthorizedCandidatePresent(repoRoot: string, branch: string, candidate: BranchCandidate, authorizedBase: string): boolean {
   // (1) resolve the observed ref to an IMMUTABLE commit sha; pin every further read to that sha.
   const commit = gitReadOnly(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${branch}^{commit}`]);
   if (commit === null || commit.length === 0) return false;
@@ -110,8 +110,14 @@ export interface LiveEffectInput {
   readonly worktreeBase: string;
   /** The passed-rehearsal, staged candidate (its files already carry rehearsal receipts). */
   readonly candidate: BranchCandidate;
-  /** The owner's hybrid authorization over the candidate payload hash (verified by the durable monitor). */
+  /** The owner's hybrid authorization over the HEAD-BOUND candidate payload hash (verified by the durable monitor).
+   *  It must be signed over `candidatePayloadHash(candidate, expectedHeadBefore)` — the signed bytes bind the base. */
   readonly candidateAuth: SignedPromotionV2 | undefined;
+  /** The exact 40-hex base commit the OWNER'S APPROVAL was signed against — NOT a runtime observation. REQUIRED on
+   *  the live path: it selects the head-bound signed payload (a mismatched claim refuses `authority_invalid` at the
+   *  owner gate), it is enforced against the ACTUAL repo head by the stage's stale-head precheck BEFORE the durable
+   *  consume, and it is the base the observed candidate must be parented on to ever be credited as present. */
+  readonly expectedHeadBefore: string;
   /** The owner has explicitly ARMED materialization (kernel humanClearance). */
   readonly ownerArmed: boolean;
   /** The trusted owner root — used ONLY for the non-consuming pre-authorization verdict at the owner gate. */
@@ -133,20 +139,23 @@ export interface LiveEffectInput {
  *  blind retry. Forward-compatible: `unsafe_path` simply never matches until Sam 2's v4 store lands. */
 const NON_RETRYABLE_STORE_FAULT = /\((trusted_state_(?:rollback|corrupt|unsafe_path))\)/;
 
-/** Mutable sink the run entry reads back after `driveEffect` — surfaces a non-retryable store fault for triage. */
+/** Mutable sink the run entry reads back after `driveEffect` — surfaces a non-retryable store fault, and the exact
+ *  stage refusal class (e.g. `candidate:stale-head`) when the ONE materialization was refused, for triage/proof. */
 export interface LiveEffectSink {
   storeFault: string | null;
+  stageRefusal: string | null;
 }
 
 /** Build the concrete `EffectOps` for one live candidate effect. Pure composition over the merged primitives. */
-export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, sink: LiveEffectSink = { storeFault: null }): EffectOps {
+export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, sink: LiveEffectSink = { storeFault: null, stageRefusal: null }): EffectOps {
   const { repoRoot, worktreeBase, candidate, candidateAuth, ownerArmed, monitor, store, nowMs, nowIso } = input;
   const branch = candidateBranchName(candidate);
   const reader = gitRefReader(repoRoot);
-  // The base the authorized candidate MUST be parented on: HEAD at build time. The effect is isolated (it never
-  // moves HEAD), so HEAD here == HEAD at materialization == the candidate commit's sole parent on the honest path.
-  // We bind the observed candidate to this base so a right-content branch committed over the WRONG base is rejected.
-  const authorizedBase = reader.readRef('HEAD');
+  // The base the authorized candidate MUST be parented on: the base THE OWNER APPROVED (bound into the signed
+  // payload) — NEVER a runtime HEAD observation, which would let a stale authorization bind to whatever the repo
+  // happens to point at now. The stage separately enforces ACTUAL head == this approved base before the durable
+  // consume, so a moved head is an exact stale-head refusal, and a forged claim breaks the signature.
+  const authorizedBase = input.expectedHeadBefore;
   let completionRef: string | null = null; // the durable completion receipt from the ONE materialization
 
   return {
@@ -162,15 +171,21 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, 
     // remains solely Sam 2's durable monitor inside `runGitEffect` (no second store, no second durable authority).
     // A replayed (already-durably-consumed) but valid authorization still verifies allowed here and flows on to be
     // reconciled by observing reality in `runGitEffect` — the owner gate rejects forgery, not replay.
-    ownerAuthorize: () => ({ authorized: new CandidateReferenceMonitor(input.ownerRoot).decide(candidate, candidateAuth, nowMs, { ownerArmed }).allowed }),
+    // The verify is over the HEAD-BOUND payload: an authorization signed for a different base — or a runtime lying
+    // about `expectedHeadBefore` to dodge the stale-head check — hashes differently and refuses here.
+    ownerAuthorize: () => ({ authorized: new CandidateReferenceMonitor(input.ownerRoot).decide(candidate, candidateAuth, nowMs, { ownerArmed, headBefore: input.expectedHeadBefore }).allowed }),
     // Identity only; the DURABLE PREPARED consume is journalled inside runGitEffect BEFORE any git (Sam 2's monitor).
     prepare: () => ({ effectId: candidate.candidateId, candidateBranch: branch }),
     snapshotBefore: () => snapshotProtected(reader, PROTECTED_REFS, nowIso),
     runGitEffect: (_effectId) => {
       // The ONE effect. The durable monitor consumes-once BEFORE git; a replay (post-crash restart) refuses here,
       // so git never double-runs — we then OBSERVE the existing candidate rather than re-executing.
-      const m = materializeCandidate({ repoRoot, worktreeBase, candidate, candidateAuth, monitor, ownerArmed, store, nowMs, nowIso });
+      // `expectedHeadBefore` rides into the stage: its stale-head precheck refuses a moved head BEFORE the durable
+      // consume, and `authBindsHead` makes its decide() call verify the head-bound signature (the ONE consume)
+      // over the same base — the live path never accepts a head-free authorization.
+      const m = materializeCandidate({ repoRoot, worktreeBase, candidate, candidateAuth, monitor, ownerArmed, store, nowMs, nowIso, expectedHeadBefore: input.expectedHeadBefore, authBindsHead: true });
       completionRef = m.ok ? m.receiptHash : null;
+      if (!m.ok) sink.stageRefusal = m.reasonClass; // the EXACT stage refusal (content-free class), e.g. candidate:stale-head
       // Advisory (Sam 2): surface a NON-RETRYABLE durable-store fault (rollback/corrupt) for operator triage — a
       // retryable lock/outage is NOT surfaced. The effect still quarantines/reconciles; this only names the fault.
       if (!m.ok && m.reasonClass === 'candidate:reference-monitor-refused') {
@@ -214,6 +229,10 @@ export interface LiveEffectResult extends EffectRunResult {
    *  store-open contract — `trusted_state_unsafe_path`) if one occurred, for operator triage. `null` when the store
    *  was healthy (a retryable lock/outage is deliberately not reported here). */
   readonly storeFault: string | null;
+  /** The EXACT stage refusal class when the ONE materialization was refused (e.g. `candidate:stale-head`,
+   *  `candidate:already-materialized`, `candidate:reference-monitor-refused`); `null` when it succeeded. Content-free
+   *  (a class label, never file content) — lets a caller/test pin the precise refusal, not just the terminal phase. */
+  readonly stageRefusal: string | null;
 }
 
 /**
@@ -225,9 +244,9 @@ export interface LiveEffectResult extends EffectRunResult {
  */
 export function runLiveCandidateEffect(input: LiveEffectInput): LiveEffectResult {
   const audit = new EffectAuditLedger();
-  const sink: LiveEffectSink = { storeFault: null };
+  const sink: LiveEffectSink = { storeFault: null, stageRefusal: null };
   const result = driveEffect(liveEffectOps(input, audit, sink));
-  return { ...result, auditTrail: audit.log().map((e) => ({ toPhase: e.toPhase, hasCompletionRef: e.hasCompletionRef })), storeFault: sink.storeFault };
+  return { ...result, auditTrail: audit.log().map((e) => ({ toPhase: e.toPhase, hasCompletionRef: e.hasCompletionRef })), storeFault: sink.storeFault, stageRefusal: sink.stageRefusal };
 }
 
 /** HARD: the adapter composes existing governed pieces; it signs nothing, pushes nothing, mints no authority. */

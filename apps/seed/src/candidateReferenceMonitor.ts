@@ -26,18 +26,24 @@ import type { BranchCandidate } from './ideEnvelope.js';
 
 const CANDIDATE_ACTION = Object.freeze({ namespace: 'aukora', kind: 'candidate', verb: 'materialize' });
 
-/** Canonical single payload hash the owner signs to authorize THIS candidate (binds candidateId + every file). */
-export function candidatePayloadHash(candidate: Pick<BranchCandidate, 'candidateId' | 'files'>): string {
-  return canonicalHash({
-    domain: 'AUKORA-CANDIDATE-PAYLOAD/1',
-    candidateId: candidate.candidateId,
-    files: candidate.files.map((f) => ({ path: f.path, intentId: f.intentId, draftHash: f.draftHash })),
-  });
+/**
+ * Canonical single payload hash the owner signs to authorize THIS candidate (binds candidateId + every file).
+ * When `headBefore` (the exact 40-hex base commit the approval is made against) is provided, the SIGNED BYTES also
+ * bind that base under the distinct head-bound domain `AUKORA-CANDIDATE-PAYLOAD/2` — an authorization signed for
+ * base A can then NEVER verify for any other base: a runtime claiming a different head computes a different hash
+ * and the kernel refuses `authority_invalid`. Runtime observation alone is insufficient; the base is in the
+ * signature. Without `headBefore` the original `/1` head-free bytes are produced (compatibility for surfaces that
+ * have not yet adopted head binding — the LIVE effect path always binds).
+ */
+export function candidatePayloadHash(candidate: Pick<BranchCandidate, 'candidateId' | 'files'>, headBefore?: string): string {
+  return candidatePayloadHashForFiles(candidate.candidateId, candidate.files, headBefore);
 }
 
 /** Compute the same payload hash from the raw file descriptors (so an owner can pre-sign before assembly). */
-export function candidatePayloadHashForFiles(candidateId: string, files: readonly { path: string; intentId: string; draftHash: string }[]): string {
-  return canonicalHash({ domain: 'AUKORA-CANDIDATE-PAYLOAD/1', candidateId, files: files.map((f) => ({ path: f.path, intentId: f.intentId, draftHash: f.draftHash })) });
+export function candidatePayloadHashForFiles(candidateId: string, files: readonly { path: string; intentId: string; draftHash: string }[], headBefore?: string): string {
+  const fileList = files.map((f) => ({ path: f.path, intentId: f.intentId, draftHash: f.draftHash }));
+  if (headBefore === undefined) return canonicalHash({ domain: 'AUKORA-CANDIDATE-PAYLOAD/1', candidateId, files: fileList });
+  return canonicalHash({ domain: 'AUKORA-CANDIDATE-PAYLOAD/2', candidateId, files: fileList, headBefore });
 }
 
 /** Candidate id from file descriptors — MUST match ideEnvelope's assembly formula. */
@@ -45,11 +51,12 @@ export function candidateIdForFiles(files: readonly { path: string; intentId: st
   return canonicalHash({ files: files.map((f) => ({ path: f.path, intentId: f.intentId, draftHash: f.draftHash })) });
 }
 
-/** The owner pre-signs THIS: derive {candidateId, payloadHash} from the proposals a materialization will stage. */
-export function candidatePayloadForProposals(proposals: readonly Proposal[]): { candidateId: string; payloadHash: string } {
+/** The owner pre-signs THIS: derive {candidateId, payloadHash} from the proposals a materialization will stage.
+ *  Pass `headBefore` to pre-sign a head-BOUND authorization (see `candidatePayloadHash`). */
+export function candidatePayloadForProposals(proposals: readonly Proposal[], headBefore?: string): { candidateId: string; payloadHash: string } {
   const files = proposals.map((p) => ({ path: p.targetPath, intentId: deriveIntentId(p), draftHash: deriveDraftHash(p) }));
   const candidateId = candidateIdForFiles(files);
-  return { candidateId, payloadHash: candidatePayloadHashForFiles(candidateId, files) };
+  return { candidateId, payloadHash: candidatePayloadHashForFiles(candidateId, files, headBefore) };
 }
 
 /** The ONE candidate policy — exported so every monitor implementation shares identical authorization semantics. */
@@ -65,8 +72,8 @@ export function candidatePolicyBytes(): Uint8Array {
  * The ONE canonical kernel request for a candidate materialization — extracted so the durable monitor (R54) and the
  * in-memory monitor submit byte-identical requests to `decide()`. Total: a hostile `auth` getter yields no nonce.
  */
-export function buildCandidateKernelRequest(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, ownerArmed: boolean): { request: KernelRequestV1; payloadHash: string } {
-  const payloadHash = candidatePayloadHash(candidate);
+export function buildCandidateKernelRequest(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, ownerArmed: boolean, headBefore?: string): { request: KernelRequestV1; payloadHash: string } {
+  const payloadHash = candidatePayloadHash(candidate, headBefore);
   let nonce = '';
   try { const n = auth?.authorization?.nonce; nonce = typeof n === 'string' ? n : ''; } catch { nonce = ''; }
   const request: KernelRequestV1 = {
@@ -105,7 +112,7 @@ export interface MonitorDecision {
  * store BEFORE any git). It adds no authority path: `decide()` remains the single authorization semantics.
  */
 export interface DurableEffectMonitor {
-  decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts?: { ownerArmed?: boolean }): MonitorDecision;
+  decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts?: { ownerArmed?: boolean; headBefore?: string }): MonitorDecision;
   consumed(): readonly string[];
 }
 
@@ -123,10 +130,12 @@ export class CandidateReferenceMonitor {
 
   /**
    * The ONE canonical authorization for a candidate effect. `ownerArmed` maps to `humanClearance` — an unarmed
-   * materialization is refused `self_modify_requires_clearance`. Total: a malformed request/state fails closed.
+   * materialization is refused `self_modify_requires_clearance`. `headBefore` (when the caller binds the approved
+   * base) selects the head-BOUND payload domain — an authorization signed over a different base (or unsigned over
+   * any base) hashes differently and refuses `authority_invalid`. Total: a malformed request/state fails closed.
    */
-  decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts: { ownerArmed?: boolean } = {}): MonitorDecision {
-    const { request, payloadHash } = buildCandidateKernelRequest(candidate, auth, opts.ownerArmed === true);
+  decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts: { ownerArmed?: boolean; headBefore?: string } = {}): MonitorDecision {
+    const { request, payloadHash } = buildCandidateKernelRequest(candidate, auth, opts.ownerArmed === true, opts.headBefore);
     const state: TrustedStateV1 = {
       schema: 'aukora-trusted-state-v1',
       salama: { active: false, reason: null },

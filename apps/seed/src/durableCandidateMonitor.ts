@@ -122,8 +122,8 @@ export class DurableCandidateReferenceMonitor extends CandidateReferenceMonitor 
    * The ONE canonical authorization for a candidate effect, made DURABLE: on `allowed` the consumption + PREPARED
    * descriptor are crash-safely committed before this method returns. Every store failure refuses.
    */
-  override decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts: { ownerArmed?: boolean } = {}): MonitorDecision {
-    const { request, payloadHash } = buildCandidateKernelRequest(candidate, auth, opts.ownerArmed === true);
+  override decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts: { ownerArmed?: boolean; headBefore?: string } = {}): MonitorDecision {
+    const { request, payloadHash } = buildCandidateKernelRequest(candidate, auth, opts.ownerArmed === true, opts.headBefore);
     const refused = (code: string): MonitorDecision =>
       ({ allowed: false, code, ring: 'self-modify', authorizedRootId: null, payloadHash, receiptDraftHash: null });
 

@@ -10,6 +10,7 @@
  */
 import { writeSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 import { ReactiveMemoryStore } from '@aukora/brain';
 import {
   runLiveCandidateEffect, HybridOwnerAdapter, candidatePayloadHash, deriveDraftHash, deriveIntentId,
@@ -38,11 +39,14 @@ function makeCandidate(t: string): BranchCandidate {
 
 const owner = new HybridOwnerAdapter(ownerLabel);
 const candidate = makeCandidate(tag);
-const ph = candidatePayloadHash(candidate);
+// The approval is HEAD-BOUND: the signed payload binds the base commit the owner approved against. Both racing
+// children read the same unmoved HEAD, so they carry identical signed bytes and contend only at the durable consume.
+const approvedHead = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+const ph = candidatePayloadHash(candidate, approvedHead);
 const auth = owner.authorize({ proposalHash: ph, draftHash: ph, nonce: `n-${tag}`, issuedAt: NOW_ISO, expiresAt: null });
 
 const r = runLiveCandidateEffect({
-  repoRoot, worktreeBase, candidate, candidateAuth: auth, ownerArmed: true, ownerRoot: owner.root,
+  repoRoot, worktreeBase, candidate, candidateAuth: auth, expectedHeadBefore: approvedHead, ownerArmed: true, ownerRoot: owner.root,
   monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir),
   store: new ReactiveMemoryStore(), nowMs: NOW_MS, nowIso: NOW_ISO,
 });

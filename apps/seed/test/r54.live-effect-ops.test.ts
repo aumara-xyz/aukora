@@ -68,11 +68,14 @@ function makeCandidate(tag: string): BranchCandidate {
 
 function inputFor(tag: string, over: Partial<LiveEffectInput> = {}): LiveEffectInput {
   const candidate = over.candidate ?? makeCandidate(tag);
-  const ph = candidatePayloadHash(candidate);
+  // The approval is HEAD-BOUND (R54 v5): the owner signs over candidatePayloadHash(candidate, approvedHead), and the
+  // same approved head rides in as expectedHeadBefore — the runtime never substitutes its own observation.
+  const approvedHead = over.expectedHeadBefore ?? g(over.repoRoot ?? repoRoot, ['rev-parse', 'HEAD']);
+  const ph = candidatePayloadHash(candidate, approvedHead);
   const auth = owner.authorize({ proposalHash: ph, draftHash: ph, nonce: `n-${tag}`, issuedAt: NOW_ISO, expiresAt: null });
   const stateDir = join(base, `state-${tag}`);
   return {
-    repoRoot, worktreeBase: wtBase, candidate, candidateAuth: auth, ownerArmed: true, ownerRoot: owner.root,
+    repoRoot, worktreeBase: wtBase, candidate, candidateAuth: auth, expectedHeadBefore: approvedHead, ownerArmed: true, ownerRoot: owner.root,
     monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir),
     store: new ReactiveMemoryStore(), nowMs: NOW_MS, nowIso: NOW_ISO, ...over,
   };
@@ -86,6 +89,7 @@ describe('R54 live EffectOps — the one committed path over a real repo + durab
     expect(r.ok).toBe(true);
     expect(r.phase).toBe('COMMITTED');
     expect(r.completionRef).toMatch(/^[0-9a-f]{64}$/);            // durable completion reference present
+    expect(r.stageRefusal).toBeNull();                            // the ONE materialization was not refused
     expect(r.touchedMain).toBe(false);
     expect(liveEffectOpsGrantsAuthority()).toBe(false);
     // the real candidate branch exists, main + tree are byte-identical, working tree clean
@@ -256,6 +260,65 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
       if (existsSync(wt)) execFileSync('git', ['-C', repoRoot, 'worktree', 'remove', '--force', wt]);
       tryG(repoRoot, ['branch', '-D', branch]);
     }
+  });
+
+  // R54 v5 STALE-APPROVAL ACCEPTANCE — the owner's approval binds a BASE, in the SIGNED BYTES and at the stage.
+  // A dedicated repo so advancing HEAD cannot poison the shared fixture.
+  describe('stale approval: sign at HEAD A → advance to unrelated B → same signed authorization', () => {
+    let staleBase = ''; let staleRepo = ''; let staleWt = ''; let headA = ''; let headB = '';
+    beforeAll(() => {
+      staleBase = mkdtempSync(join(tmpdir(), 'aukora-r54-stale-'));
+      staleRepo = join(staleBase, 'repo'); staleWt = join(staleBase, 'candidates');
+      mkdirSync(join(staleRepo, 'apps/seed/src'), { recursive: true });
+      execFileSync('git', ['init', '-q', '-b', 'main', staleRepo]);
+      g(staleRepo, ['config', 'user.name', 'R54 Stale']); g(staleRepo, ['config', 'user.email', 'stale@test.local']);
+      writeFileSync(join(staleRepo, 'apps/seed/src/notes.ts'), '// original\n');
+      g(staleRepo, ['add', '-A']); g(staleRepo, ['commit', '-q', '--no-gpg-sign', '-m', 'A']);
+      headA = g(staleRepo, ['rev-parse', 'HEAD']); // ← the base the owner approves against
+      writeFileSync(join(staleRepo, 'apps/seed/src/unrelated.ts'), '// unrelated later work\n');
+      g(staleRepo, ['add', '-A']); g(staleRepo, ['commit', '-q', '--no-gpg-sign', '-m', 'B']);
+      headB = g(staleRepo, ['rev-parse', 'HEAD']); // ← main/HEAD advanced AFTER the approval was signed
+    });
+    afterAll(() => rmSync(staleBase, { recursive: true, force: true }));
+
+    it('EXACT stale-head refusal BEFORE the durable consume — zero consume, no candidate branch, no Git effect', () => {
+      const inp = inputFor('stale', { repoRoot: staleRepo, worktreeBase: staleWt, expectedHeadBefore: headA });
+      const r = runLiveCandidateEffect(inp);
+      expect(r.ok).toBe(false);
+      expect(r.stageRefusal).toBe('candidate:stale-head');       // the EXACT refusal, not just a terminal phase
+      expect(r.phase).toBe('QUARANTINED');                        // fail-closed terminal; never COMMITTED
+      expect(r.completionRef).toBeNull();
+      // BEFORE the durable consume: the stage's head-binding precheck refused prior to decide() → nothing consumed
+      expect(inp.monitor.consumed().length).toBe(0);
+      // no Git effect of any kind
+      expect(tryG(staleRepo, ['rev-parse', '--verify', '--quiet', `refs/heads/${candidateBranchName(inp.candidate)}`])).toBeNull();
+      expect(g(staleRepo, ['rev-parse', 'HEAD'])).toBe(headB);
+      expect(g(staleRepo, ['status', '--porcelain'])).toBe('');
+    });
+
+    it('a runtime CLAIMING the moved head (expectedHeadBefore=B) cannot dodge the check — the SIGNED bytes bind base A → refused at the owner gate', () => {
+      const signedAtA = inputFor('stale-forge', { repoRoot: staleRepo, worktreeBase: staleWt, expectedHeadBefore: headA });
+      // attacker substitutes the CURRENT head to satisfy the stage precheck; the signature stays bound to A
+      const r = runLiveCandidateEffect({ ...signedAtA, expectedHeadBefore: headB });
+      expect(r.ok).toBe(false);
+      expect(r.phase).toBe('REFUSED_AT_OWNER');                   // payload hash over B ≠ signed hash over A
+      expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('EXECUTING');
+      expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('PREPARED');
+      expect(signedAtA.monitor.consumed().length).toBe(0);
+      expect(tryG(staleRepo, ['rev-parse', '--verify', '--quiet', `refs/heads/${candidateBranchName(signedAtA.candidate)}`])).toBeNull();
+    });
+
+    it('a HEAD-FREE (unbound) signature can never drive the live path — runtime observation alone is insufficient', () => {
+      const candidate = makeCandidate('headfree');
+      const phUnbound = candidatePayloadHash(candidate); // legacy /1 bytes: no base bound into the signature
+      const auth = owner.authorize({ proposalHash: phUnbound, draftHash: phUnbound, nonce: 'n-headfree', issuedAt: NOW_ISO, expiresAt: null });
+      const inp = inputFor('headfree', { candidate, candidateAuth: auth }); // live path always supplies expectedHeadBefore
+      const r = runLiveCandidateEffect(inp);
+      expect(r.ok).toBe(false);
+      expect(r.phase).toBe('REFUSED_AT_OWNER');                   // head-bound payload ≠ the unbound signed bytes
+      expect(inp.monitor.consumed().length).toBe(0);
+      expect(tryG(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${candidateBranchName(candidate)}`])).toBeNull();
+    });
   });
 
   // A staged candidate carries a PASSED rehearsal only when EVERY file has a real receiptHash. Three ways that can
