@@ -1,0 +1,40 @@
+name: Falsification report
+description: Falsify a stated capability, truth label, or invariant with an exact reproduction.
+labels: ["security", "continuity"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Aukora publishes falsifiable claims on purpose. If a README/CLAIMS/roadmap statement is not backed by
+        executable evidence, show it. **For exploitable security vulnerabilities, use the private advisory in SECURITY.md, not this public form.**
+  - type: input
+    id: claim
+    attributes:
+      label: The exact claim being tested
+      description: Quote the line from README.md / CLAIMS.md / ROADMAP.md / an issue, with its file and location.
+    validations:
+      required: true
+  - type: input
+    id: sha
+    attributes:
+      label: Exact main SHA tested
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Reproduction / counterexample
+      description: The exact commands or inputs that show the claim fails. Content-free — never paste real secrets or private memory.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: verdict
+    attributes:
+      label: Your verdict
+      options:
+        - FALSIFIED (claim fails)
+        - UNPROVEN (cannot reproduce either way)
+        - OVERCLAIM (label stronger than evidence)
+    validations:
+      required: true
