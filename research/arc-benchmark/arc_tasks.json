@@ -1,0 +1,246 @@
+{
+  "schema": "arc-agi-synthetic-v1",
+  "description": "Synthetic ARC-style tasks constructed from known ARC reasoning patterns. Grids use integers 0-9 (colors). Tasks test: counting, symmetry, color mapping, pattern completion, spatial reasoning, size comparison, boundary detection, hole filling, gravity, composition.",
+  "tasks": [
+    {
+      "id": "COUNT_OBJ",
+      "name": "Count and Transform Objects",
+      "difficulty": "easy",
+      "reasoning": "object counting, arithmetic",
+      "train": [
+        {
+          "input": [[0,0,0,0,0],[0,1,1,0,0],[0,1,1,0,0],[0,0,0,0,0],[0,0,0,0,0]],
+          "output": [[2]]
+        },
+        {
+          "input": [[0,0,0,0,0],[0,2,2,2,0],[0,2,0,2,0],[0,2,2,2,0],[0,0,0,0,0]],
+          "output": [[1]]
+        },
+        {
+          "input": [[1,1,0,0],[1,1,0,0],[0,0,2,2],[0,0,2,2]],
+          "output": [[2]]
+        }
+      ],
+      "test": {
+        "input": [[0,0,0,0,0,0],[0,3,3,3,0,0],[0,3,0,3,0,0],[0,3,3,3,0,0],[0,0,0,0,4,4],[0,0,0,0,4,4]],
+        "expected": [[1,1]]
+      }
+    },
+    {
+      "id": "SYM_MIRROR",
+      "name": "Symmetry Mirror",
+      "difficulty": "easy",
+      "reasoning": "symmetry, mirroring",
+      "train": [
+        {
+          "input": [[1,0,0],[2,0,0],[3,0,0]],
+          "output": [[1,0,1],[2,0,2],[3,0,3]]
+        },
+        {
+          "input": [[0,4],[0,5]],
+          "output": [[4,4],[5,5]]
+        },
+        {
+          "input": [[7,0,0,0],[8,0,0,0]],
+          "output": [[7,0,0,7],[8,0,0,8]]
+        }
+      ],
+      "test": {
+        "input": [[9,0,0,0,0],[1,0,0,0,0],[2,0,0,0,0]],
+        "expected": [[9,0,0,0,9],[1,0,0,0,1],[2,0,0,0,2]]
+      }
+    },
+    {
+      "id": "COLOR_MAP",
+      "name": "Color Mapping",
+      "difficulty": "easy",
+      "reasoning": "color transformation, mapping",
+      "train": [
+        {
+          "input": [[1,2],[2,1]],
+          "output": [[2,1],[1,2]]
+        },
+        {
+          "input": [[3,4,3],[4,3,4]],
+          "output": [[4,3,4],[3,4,3]]
+        },
+        {
+          "input": [[5],[5],[5]],
+          "output": [[6],[6],[6]]
+        }
+      ],
+      "test": {
+        "input": [[7,8,7,8],[8,7,8,7],[7,8,7,8]],
+        "expected": [[8,7,8,7],[7,8,7,8],[8,7,8,7]]
+      }
+    },
+    {
+      "id": "PATTERN_CONT",
+      "name": "Pattern Continuation",
+      "difficulty": "medium",
+      "reasoning": "pattern recognition, continuation",
+      "train": [
+        {
+          "input": [[1,2,1,2,1],[0,0,0,0,0]],
+          "output": [[1,2,1,2,1],[2,1,2,1,2]]
+        },
+        {
+          "input": [[3,3,3,0,0],[0,0,0,0,0],[0,0,0,0,0]],
+          "output": [[3,3,3,0,0],[3,3,3,0,0],[0,0,0,0,0]]
+        },
+        {
+          "input": [[4,0,4,0,4],[0,0,0,0,0],[4,0,4,0,4]],
+          "output": [[4,0,4,0,4],[0,4,0,4,0],[4,0,4,0,4]]
+        }
+      ],
+      "test": {
+        "input": [[5,5,0,0,0],[5,5,0,0,0],[0,0,0,0,0],[0,0,0,0,0]],
+        "expected": [[5,5,0,0,0],[5,5,0,0,0],[5,5,0,0,0],[0,0,0,0,0]]
+      }
+    },
+    {
+      "id": "SIZE_COMP",
+      "name": "Size Comparison and Sort",
+      "difficulty": "medium",
+      "reasoning": "size comparison, ordering",
+      "train": [
+        {
+          "input": [[1,1,0,2,2,2],[1,1,0,2,2,2]],
+          "output": [[2,2,2,0,1,1],[2,2,2,0,1,1]]
+        },
+        {
+          "input": [[3,0,4,4,4,4],[3,0,4,4,4,4]],
+          "output": [[4,4,4,4,0,3],[4,4,4,4,0,3]]
+        },
+        {
+          "input": [[5,5,5,0,6,6],[5,5,5,0,6,6]],
+          "output": [[5,5,5,0,6,6],[5,5,5,0,6,6]]
+        }
+      ],
+      "test": {
+        "input": [[7,7,0,8,8,8,8],[7,7,0,8,8,8,8]],
+        "expected": [[8,8,8,8,0,7,7],[8,8,8,8,0,7,7]]
+      }
+    },
+    {
+      "id": "BOUNDARY",
+      "name": "Boundary Detection and Outline",
+      "difficulty": "medium",
+      "reasoning": "boundary detection, outline",
+      "train": [
+        {
+          "input": [[0,0,0,0],[0,1,1,0],[0,1,1,0],[0,0,0,0]],
+          "output": [[0,0,0,0],[0,2,2,0],[0,2,2,0],[0,0,0,0]]
+        },
+        {
+          "input": [[1,1,1],[1,0,1],[1,1,1]],
+          "output": [[2,2,2],[2,0,2],[2,2,2]]
+        },
+        {
+          "input": [[0,0,0,0,0],[0,3,3,3,0],[0,3,0,3,0],[0,3,3,3,0],[0,0,0,0,0]],
+          "output": [[0,0,0,0,0],[0,2,2,2,0],[0,2,0,2,0],[0,2,2,2,0],[0,0,0,0,0]]
+        }
+      ],
+      "test": {
+        "input": [[0,0,0,0,0,0],[0,4,4,4,4,0],[0,4,0,0,4,0],[0,4,0,0,4,0],[0,4,4,4,4,0],[0,0,0,0,0,0]],
+        "expected": [[0,0,0,0,0,0],[0,2,2,2,2,0],[0,2,0,0,2,0],[0,2,0,0,2,0],[0,2,2,2,2,0],[0,0,0,0,0,0]]
+      }
+    },
+    {
+      "id": "GRAVITY",
+      "name": "Gravity Fall",
+      "difficulty": "medium",
+      "reasoning": "physics simulation, gravity",
+      "train": [
+        {
+          "input": [[1,0,0],[0,0,0],[0,0,0]],
+          "output": [[0,0,0],[0,0,0],[1,0,0]]
+        },
+        {
+          "input": [[0,2,0],[0,0,0],[0,0,0],[0,0,0]],
+          "output": [[0,0,0],[0,0,0],[0,0,0],[0,2,0]]
+        },
+        {
+          "input": [[3,0,4],[0,0,0],[0,0,0]],
+          "output": [[0,0,0],[0,0,0],[3,0,4]]
+        }
+      ],
+      "test": {
+        "input": [[0,5,0,6],[0,0,0,0],[0,0,0,0],[0,0,0,0]],
+        "expected": [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,5,0,6]]
+      }
+    },
+    {
+      "id": "HOLE_FILL",
+      "name": "Hole Detection and Fill",
+      "difficulty": "hard",
+      "reasoning": "hole detection, flood fill",
+      "train": [
+        {
+          "input": [[1,1,1],[1,0,1],[1,1,1]],
+          "output": [[1,1,1],[1,1,1],[1,1,1]]
+        },
+        {
+          "input": [[2,2,2,2],[2,0,0,2],[2,0,0,2],[2,2,2,2]],
+          "output": [[2,2,2,2],[2,2,2,2],[2,2,2,2],[2,2,2,2]]
+        },
+        {
+          "input": [[3,3,3],[3,0,3],[3,0,3],[3,3,3]],
+          "output": [[3,3,3],[3,3,3],[3,3,3],[3,3,3]]
+        }
+      ],
+      "test": {
+        "input": [[4,4,4,4,4],[4,0,0,0,4],[4,0,0,0,4],[4,0,0,0,4],[4,4,4,4,4]],
+        "expected": [[4,4,4,4,4],[4,4,4,4,4],[4,4,4,4,4],[4,4,4,4,4],[4,4,4,4,4]]
+      }
+    },
+    {
+      "id": "COMPOSITE",
+      "name": "Multi-Step Composition",
+      "difficulty": "hard",
+      "reasoning": "multi-step, composition of rules",
+      "train": [
+        {
+          "input": [[1,0,0],[0,0,0],[0,0,0]],
+          "output": [[0,0,0],[0,0,0],[1,1,1]]
+        },
+        {
+          "input": [[0,2,0],[0,0,0],[0,0,0]],
+          "output": [[0,0,0],[0,0,0],[2,2,2]]
+        },
+        {
+          "input": [[3,0,0],[0,0,0],[0,0,0]],
+          "output": [[0,0,0],[0,0,0],[3,3,3]]
+        }
+      ],
+      "test": {
+        "input": [[0,0,4],[0,0,0],[0,0,0]],
+        "expected": [[0,0,0],[0,0,0],[4,4,4]]
+      }
+    },
+    {
+      "id": "ROTATE_CW",
+      "name": "Rotate 90 Degrees Clockwise",
+      "difficulty": "hard",
+      "reasoning": "rotation, spatial transformation",
+      "train": [
+        {
+          "input": [[1,2],[3,4]],
+          "output": [[3,1],[4,2]]
+        },
+        {
+          "input": [[5,6,7],[8,9,1]],
+          "output": [[8,5],[9,6],[1,7]]
+        },
+        {
+          "input": [[2,0],[0,0]],
+          "output": [[0,2],[0,0]]
+        }
+      ],
+      "test": {
+        "input": [[1,2,3],[4,5,6]],
+        "expected": [[4,1],[5,2],[6,3]]
+      }
+    }
+  ]
+}
