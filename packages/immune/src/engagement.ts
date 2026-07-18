@@ -43,13 +43,14 @@ export const STANDARD_ROE: RoE = {
   mitreMapping: true,
 };
 
-/** Strict RoE — maximum security, more auto-actions allowed. */
+/** Strict RoE — maximum recommended response coverage. Council/owner approval is STILL required (no preset ever
+ *  bypasses it): the immune system only ever RECOMMENDS a broader plan, it never self-authorizes. */
 export const STRICT_ROE: RoE = {
   maxEscalationLevel: 13,
   allowedActions: ['patrol_scan', 'alert_log', 'elevate_inflammation', 'quarantine_content', 'block_egress', 'council_report', 'memory_snapshot', 'signature_update', 'force_diversity'],
   prohibitedActions: [],
   autoQuarantine: true,
-  councilApprovalRequired: false,
+  councilApprovalRequired: true, // no RoE preset may bypass council/owner approval
   mitreMapping: true,
 };
 
@@ -77,27 +78,35 @@ export interface OpPhase {
   readonly successCriteria: string;
 }
 
-/** Engagement package — every defensive action gets one. */
+/** Engagement package — a RECOMMENDATION for a defensive response. It never authorizes or executes anything. */
 export interface EngagementPackage {
-  readonly authorized: boolean;
+  /** RoE-recommended: escalation within bounds AND every planned action permitted by the RoE. A RECOMMENDATION
+   *  flag only — it is NOT an authorization (see grantsAuthority / executionAllowed, both hard-false). */
+  readonly recommended: boolean;
   readonly roe: RoE;
   readonly threat: ThreatSignature;
   readonly opplan: OperationalPlan;
+  /** Every planned-phase action, and whether each is permitted under the RoE (recommendation-only). */
+  readonly plannedActions: readonly DefensiveAction[];
   readonly deconfliction: readonly string[];
   readonly timestampMs: number;
+  /** Recommendation-only markers — no immune output ever claims authorization or execution. */
+  readonly advisoryOnly: true;
+  readonly grantsAuthority: false;
+  readonly executionAllowed: false;
+  /** The recommendation always routes through council/owner approval; the immune system never self-authorizes. */
+  readonly councilApprovalRequired: true;
 }
 
-/** Create an engagement package for a threat under given RoE. */
+/** Create an engagement RECOMMENDATION for a threat under given RoE. `nowMs` is required (deterministic; no wall clock). */
 export function createEngagement(
   threat: ThreatSignature,
   roe: RoE,
-  nowMs?: number,
+  nowMs: number,
 ): EngagementPackage {
   const escalationLevel = threat.severity === 'critical' ? 8 :
     threat.severity === 'high' ? 5 :
     threat.severity === 'medium' ? 2 : 1;
-
-  const authorized = escalationLevel <= roe.maxEscalationLevel;
 
   const phases: OpPhase[] = [
     { name: 'detect', action: 'patrol_scan', durationMs: 1000, successCriteria: 'Threat confirmed' },
@@ -108,6 +117,12 @@ export function createEngagement(
     phases.push({ name: 'contain', action: 'quarantine_content', durationMs: 10000, successCriteria: 'Content quarantined' });
   }
 
+  const plannedActions = phases.map((p) => p.action);
+  // A recommendation is only "recommended" if the escalation is in bounds AND EVERY planned action is permitted
+  // by the RoE — a plan containing a prohibited action can never be recommended (the old code checked escalation
+  // alone, so a plan with a prohibited `council_report` was still marked authorized).
+  const recommended = escalationLevel <= roe.maxEscalationLevel && plannedActions.every((a) => isActionAuthorized(a, roe));
+
   const opplan: OperationalPlan = {
     phases,
     estimatedDurationMs: phases.reduce((s, p) => s + p.durationMs, 0),
@@ -115,16 +130,23 @@ export function createEngagement(
   };
 
   return {
-    authorized,
+    recommended,
     roe,
     threat,
     opplan,
+    plannedActions,
     deconfliction: [
       'advisory-only',
       'grantsAuthority:false',
+      'executionAllowed:false',
+      'councilApprovalRequired:true',
       'mitre-mapping:' + (roe.mitreMapping ? 'enabled' : 'disabled'),
     ],
-    timestampMs: nowMs ?? Date.now(),
+    timestampMs: nowMs,
+    advisoryOnly: true,
+    grantsAuthority: false,
+    executionAllowed: false,
+    councilApprovalRequired: true,
   };
 }
 

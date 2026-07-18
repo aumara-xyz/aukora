@@ -127,7 +127,7 @@ export class PetriBus {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// PETRI DISH STATE — The living organism's current state
+// PETRI DISH STATE — the current immune-model projection (metaphor; not an organism)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export interface PetriState {
@@ -144,7 +144,7 @@ export interface PetriState {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// PETRI CYCLE — One full heartbeat of the immune organism
+// PETRI CYCLE — one deterministic fold of the immune model (metaphor; not a heartbeat)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export interface PetriCycleInput {
@@ -168,6 +168,9 @@ export function runPetriCycle(
   const actions: string[] = [];
   const events: PetriEvent[] = [];
   const now = input.nowMs;
+  // DETERMINISTIC emissions: stamp EVERY bus emission with the injected cycle timestamp `now`, so the bus history
+  // (`historyOf()`) is reproducible across runs and never falls back to wall-clock time.
+  const emitNow = (e: Omit<PetriEvent, 'timestampMs'>): void => bus.emit({ ...e, timestampMs: now });
 
   // Step 1: Aggregate patrol findings
   const totalFindings = input.patrolReports.reduce((s, r) => s + r.findings.length, 0);
@@ -175,7 +178,7 @@ export function runPetriCycle(
     (s, r) => s + r.findings.filter(f => f.severity === 'critical').length, 0
   );
   for (const report of input.patrolReports) {
-    bus.emit({ type: 'patrol.finding', source: 'patrol', payload: report, inflammationLevel: previousState.inflammationLevel });
+    emitNow({ type: 'patrol.finding', source: 'patrol', payload: report, inflammationLevel: previousState.inflammationLevel });
     events.push({ type: 'patrol.finding', timestampMs: now, source: 'patrol', payload: report, inflammationLevel: previousState.inflammationLevel });
   }
   if (totalFindings > 0) actions.push(`[PATROL] ${totalFindings} findings (${criticalFindings} critical) across ${input.patrolReports.length} scans`);
@@ -184,7 +187,7 @@ export function runPetriCycle(
   const { level: newInflammation, posture: newPosture } = computeInflammation(criticalFindings, totalFindings, previousState.inflammationLevel);
   if (newInflammation !== previousState.inflammationLevel) {
     const isRise = ['baseline', 'elevated', 'high', 'crisis'].indexOf(newInflammation) > ['baseline', 'elevated', 'high', 'crisis'].indexOf(previousState.inflammationLevel);
-    bus.emit({ type: isRise ? 'inflammation.rise' : 'inflammation.fall', source: 'inflammation', payload: { from: previousState.inflammationLevel, to: newInflammation }, inflammationLevel: newInflammation });
+    emitNow({ type: isRise ? 'inflammation.rise' : 'inflammation.fall', source: 'inflammation', payload: { from: previousState.inflammationLevel, to: newInflammation }, inflammationLevel: newInflammation });
     events.push({ type: isRise ? 'inflammation.rise' : 'inflammation.fall', timestampMs: now, source: 'inflammation', payload: { from: previousState.inflammationLevel, to: newInflammation }, inflammationLevel: newInflammation });
     actions.push(`[INFLAMMATION] ${isRise ? 'RISE' : 'FALL'}: ${previousState.inflammationLevel} → ${newInflammation}`);
   }
@@ -194,7 +197,7 @@ export function runPetriCycle(
   if (previousState.antibodies.length > 0 && input.candidateContent) {
     matchedAntibodies = findBindingAntibodies(previousState.antibodies, input.candidateContent);
     for (const match of matchedAntibodies) {
-      bus.emit({ type: 'antibody.bound', source: 'antibody', payload: match, inflammationLevel: newInflammation });
+      emitNow({ type: 'antibody.bound', source: 'antibody', payload: match, inflammationLevel: newInflammation });
       events.push({ type: 'antibody.bound', timestampMs: now, source: 'antibody', payload: match, inflammationLevel: newInflammation });
     }
     if (matchedAntibodies.length > 0) actions.push(`[ANTIBODY] ${matchedAntibodies.length} antibodies bound (fast path)`);
@@ -205,7 +208,7 @@ export function runPetriCycle(
   if (previousState.memoryBCells.length > 0 && input.candidateContent) {
     recalledMemory = recallMemoryB(previousState.memoryBCells, input.candidateContent, now);
     for (const cell of recalledMemory) {
-      bus.emit({ type: 'memoryB.recalled', source: 'memoryB', payload: cell, inflammationLevel: newInflammation });
+      emitNow({ type: 'memoryB.recalled', source: 'memoryB', payload: cell, inflammationLevel: newInflammation });
       events.push({ type: 'memoryB.recalled', timestampMs: now, source: 'memoryB', payload: cell, inflammationLevel: newInflammation });
     }
     if (recalledMemory.length > 0) actions.push(`[MEMORY B] ${recalledMemory.length} cells recalled (learned defense)`);
@@ -216,7 +219,7 @@ export function runPetriCycle(
   for (const threat of input.newThreats) {
     const ab = generateAntibody(threat, now);
     newAntibodies = [...newAntibodies, ab];
-    bus.emit({ type: 'antibody.generated', source: 'antibody', payload: ab, inflammationLevel: newInflammation });
+    emitNow({ type: 'antibody.generated', source: 'antibody', payload: ab, inflammationLevel: newInflammation });
     events.push({ type: 'antibody.generated', timestampMs: now, source: 'antibody', payload: ab, inflammationLevel: newInflammation });
     actions.push(`[ANTIBODY] Generated for threat: ${threat.pattern}`);
   }
@@ -226,7 +229,7 @@ export function runPetriCycle(
   for (const threat of input.newThreats) {
     const cell = createMemoryB(threat, 0.8, now);
     newMemoryB = [...newMemoryB, cell];
-    bus.emit({ type: 'memoryB.formed', source: 'memoryB', payload: cell, inflammationLevel: newInflammation });
+    emitNow({ type: 'memoryB.formed', source: 'memoryB', payload: cell, inflammationLevel: newInflammation });
     events.push({ type: 'memoryB.formed', timestampMs: now, source: 'memoryB', payload: cell, inflammationLevel: newInflammation });
     actions.push(`[MEMORY B] New cell formed for: ${threat.pattern}`);
   }
@@ -236,7 +239,7 @@ export function runPetriCycle(
   for (let i = 0; i < input.newThreats.length; i++) {
     const kt = spawnKillerT(input.newThreats[i], `kt_${now}_${i}`, now);
     newKillerT = [...newKillerT, kt];
-    bus.emit({ type: 'killerT.spawned', source: 'killerT', payload: kt, inflammationLevel: newInflammation });
+    emitNow({ type: 'killerT.spawned', source: 'killerT', payload: kt, inflammationLevel: newInflammation });
     events.push({ type: 'killerT.spawned', timestampMs: now, source: 'killerT', payload: kt, inflammationLevel: newInflammation });
     actions.push(`[KILLER T] ${kt.type} cell spawned targeting: ${input.newThreats[i].pattern}`);
   }
@@ -244,10 +247,12 @@ export function runPetriCycle(
   // Step 8: Execute killer T cells
   const executedKillerT: KillerT[] = [];
   for (const kt of newKillerT) {
-    const threat = input.newThreats.find(t => t.id === kt.targetThreatId) || input.newThreats.find(t => input.candidateContent.includes(t.pattern));
+    // Execute ONLY against the exact threat this cell was spawned for — no content-based fallback (which would
+    // pair a cell with an unrelated threat and let `executeKillerT` mis-report neutralization).
+    const threat = input.newThreats.find(t => t.id === kt.targetThreatId);
     if (threat) {
       const result = executeKillerT(kt, threat);
-      bus.emit({ type: 'killerT.executed', source: 'killerT', payload: { killerT: kt, result }, inflammationLevel: newInflammation });
+      emitNow({ type: 'killerT.executed', source: 'killerT', payload: { killerT: kt, result }, inflammationLevel: newInflammation });
       events.push({ type: 'killerT.executed', timestampMs: now, source: 'killerT', payload: { killerT: kt, result }, inflammationLevel: newInflammation });
       if (result.threatNeutralized) actions.push(`[KILLER T] ${kt.type} neutralized threat: ${threat.pattern}`);
     }
@@ -259,9 +264,9 @@ export function runPetriCycle(
   for (const threat of input.newThreats) {
     const engagement = createEngagement(threat, STANDARD_ROE, now);
     newEngagements = [...newEngagements, engagement];
-    bus.emit({ type: 'engagement.created', source: 'engagement', payload: engagement, inflammationLevel: newInflammation });
+    emitNow({ type: 'engagement.created', source: 'engagement', payload: engagement, inflammationLevel: newInflammation });
     events.push({ type: 'engagement.created', timestampMs: now, source: 'engagement', payload: engagement, inflammationLevel: newInflammation });
-    actions.push(`[ENGAGEMENT] ${engagement.authorized ? 'AUTHORIZED' : 'DENIED'} for ${threat.severity} threat: ${threat.pattern}`);
+    actions.push(`[ENGAGEMENT]  for ${threat.severity} threat: ${threat.pattern}`);
   }
 
   // Step 10: Advance homeostasis
@@ -269,22 +274,33 @@ export function runPetriCycle(
   if (newInflammation !== 'baseline' && totalFindings === 0) {
     if (!newHomeostasis) newHomeostasis = initHomeostasis(newInflammation, 0, 0, now);
     else newHomeostasis = advanceHomeostasis(newHomeostasis, now);
-    bus.emit({ type: 'homeostasis.advance', source: 'homeostasis', payload: newHomeostasis, inflammationLevel: newInflammation });
+    emitNow({ type: 'homeostasis.advance', source: 'homeostasis', payload: newHomeostasis, inflammationLevel: newInflammation });
     events.push({ type: 'homeostasis.advance', timestampMs: now, source: 'homeostasis', payload: newHomeostasis, inflammationLevel: newInflammation });
     actions.push(`[HOMEOSTASIS] Cooldown: ${newHomeostasis.currentLevel} → target ${newHomeostasis.targetLevel}`);
   }
 
-  // Step 11: Compute composite threat score
-  const threatScore = Math.min(1, (criticalFindings * 0.3) + (totalFindings * 0.05) + (matchedAntibodies.length * 0.1) + (recalledMemory.length * 0.15) + (['baseline', 'elevated', 'high', 'crisis'].indexOf(newInflammation) * 0.25));
+  // Step 10b: HOMEOSTASIS PROJECTION — if the cooldown de-escalated below the (hysteretic) inflammation level,
+  // the next state's effective level FOLLOWS homeostasis. Without this, `computeInflammation`'s hysteresis
+  // preserves the previous higher level and the organism could never actually cool down.
+  const levelIdx = (l: InflammationLevel) => ['baseline', 'elevated', 'high', 'crisis'].indexOf(l);
+  let effectiveLevel = newInflammation;
+  let effectivePostureVal = newPosture;
+  if (newHomeostasis && levelIdx(newHomeostasis.currentLevel) < levelIdx(newInflammation)) {
+    effectiveLevel = newHomeostasis.currentLevel;
+    effectivePostureVal = POSTURES[effectiveLevel];
+  }
+
+  // Step 11: Compute composite threat score (on the effective, post-cooldown level)
+  const threatScore = Math.min(1, (criticalFindings * 0.3) + (totalFindings * 0.05) + (matchedAntibodies.length * 0.1) + (recalledMemory.length * 0.15) + (levelIdx(effectiveLevel) * 0.25));
 
   // Step 12: Emit cycle complete
   const newState: PetriState = {
-    inflammationLevel: newInflammation, securityPosture: newPosture, homeostasis: newHomeostasis,
+    inflammationLevel: effectiveLevel, securityPosture: effectivePostureVal, homeostasis: newHomeostasis,
     memoryBCells: newMemoryB, antibodies: newAntibodies, killerTCells: executedKillerT,
     patrolReports: [...previousState.patrolReports, ...input.patrolReports],
     engagements: newEngagements, cycleCount: previousState.cycleCount + 1, threatScore,
   };
-  bus.emit({ type: 'petri.cycle', source: 'petriDish', payload: { state: newState, actions }, inflammationLevel: newInflammation });
+  emitNow({ type: 'petri.cycle', source: 'petriDish', payload: { state: newState, actions }, inflammationLevel: newInflammation });
   events.push({ type: 'petri.cycle', timestampMs: now, source: 'petriDish', payload: { state: newState, actions }, inflammationLevel: newInflammation });
   actions.push(`[PETRI] Cycle ${newState.cycleCount} complete | Threat: ${(threatScore * 100).toFixed(1)}% | Posture: ${newInflammation}`);
 
@@ -296,7 +312,6 @@ export function runPetriCycle(
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export function createInitialPetriState(nowMs?: number): PetriState {
-  const now = nowMs ?? Date.now();
   return {
     inflammationLevel: 'baseline', securityPosture: POSTURES.baseline, homeostasis: null,
     memoryBCells: [], antibodies: [], killerTCells: [], patrolReports: [], engagements: [],
@@ -312,7 +327,7 @@ export function wireCouncilToPatrol(bus: PetriBus, getSensitivity: (inf: Inflamm
   return bus.on('council.decision', (event) => {
     const payload = event.payload as { coherence: number; approved: boolean };
     if (!payload.approved) {
-      bus.emit({ type: 'inflammation.rise', source: 'council→patrol.feedback', payload: { reason: 'low_coherence_decision', coherence: payload.coherence }, inflammationLevel: event.inflammationLevel });
+      bus.emit({ type: 'inflammation.rise', source: 'council→patrol.feedback', payload: { reason: 'low_coherence_decision', coherence: payload.coherence }, inflammationLevel: event.inflammationLevel, timestampMs: event.timestampMs });
     }
   });
 }
@@ -320,7 +335,7 @@ export function wireCouncilToPatrol(bus: PetriBus, getSensitivity: (inf: Inflamm
 export function wireInflammationToMemory(bus: PetriBus): () => void {
   return bus.on('inflammation.rise', (event) => {
     const payload = event.payload as { from: InflammationLevel; to: InflammationLevel };
-    bus.emit({ type: 'memoryB.formed', source: 'inflammation→memory.feedback', payload: { reason: 'inflammation_rise', from: payload.from, to: payload.to, strengthBonus: PHI_INV }, inflammationLevel: event.inflammationLevel });
+    bus.emit({ type: 'memoryB.formed', source: 'inflammation→memory.feedback', payload: { reason: 'inflammation_rise', from: payload.from, to: payload.to, strengthBonus: PHI_INV }, inflammationLevel: event.inflammationLevel, timestampMs: event.timestampMs });
   });
 }
 
@@ -328,7 +343,7 @@ export function wireAntibodyToInflammation(bus: PetriBus): () => void {
   return bus.on('antibody.bound', (event) => {
     const payload = event.payload as { antibody: Antibody; confidence: number };
     if (payload.confidence > 0.8) {
-      bus.emit({ type: 'inflammation.fall', source: 'antibody→inflammation.feedback', payload: { reason: 'learned_immunity', confidence: payload.confidence }, inflammationLevel: event.inflammationLevel });
+      bus.emit({ type: 'inflammation.fall', source: 'antibody→inflammation.feedback', payload: { reason: 'learned_immunity', confidence: payload.confidence }, inflammationLevel: event.inflammationLevel, timestampMs: event.timestampMs });
     }
   });
 }

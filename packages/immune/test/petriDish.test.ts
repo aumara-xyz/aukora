@@ -33,12 +33,17 @@ describe('PetriBus — a synchronous in-memory event bus (no I/O)', () => {
 });
 
 describe('runPetriCycle — a deterministic PURE fold (advisory only)', () => {
-  it('same inputs → byte-identical events + actions + next state (no hidden state, no side effect)', () => {
-    const a = runPetriCycle(new PetriBus(), createInitialPetriState(NOW), input());
-    const b = runPetriCycle(new PetriBus(), createInitialPetriState(NOW), input());
+  it('same inputs → byte-identical events + actions + next state + BUS HISTORY (no wall-clock leakage)', () => {
+    const busA = new PetriBus();
+    const busB = new PetriBus();
+    const a = runPetriCycle(busA, createInitialPetriState(NOW), input());
+    const b = runPetriCycle(busB, createInitialPetriState(NOW), input());
     expect(JSON.stringify(a.events)).toBe(JSON.stringify(b.events));
     expect(a.actions).toEqual(b.actions);
     expect(JSON.stringify(a.state)).toBe(JSON.stringify(b.state));
+    // the observable BUS HISTORY must also be identical — this catches Date.now() leaking into any cycle emission
+    expect(JSON.stringify(busA.historyOf())).toBe(JSON.stringify(busB.historyOf()));
+    expect(busA.historyOf().every((e) => e.timestampMs === NOW)).toBe(true); // every emission carries the injected now
   });
   it('a new threat produces advisory events + human-readable action DESCRIPTIONS, never executed effects', () => {
     const out = runPetriCycle(new PetriBus(), createInitialPetriState(NOW), input());

@@ -32,10 +32,12 @@ export const RELEVANCE_FLOOR = PHI_INV;
  * A future-dated age returns full relevance; a non-positive half-life returns the floor. Pure; total.
  */
 export function phiDecay(ageMs: number, initialRelevance = 1.0, halfLifeMs: number = DEFAULT_HALF_LIFE_MS): number {
-  if (ageMs < 0) return initialRelevance;
+  // The result is CLAMPED to the documented range [PHI_INV, 1] on EVERY path — a caller passing an
+  // initialRelevance > 1, or a future-dated age, can never push a relevance weight above 1.
+  const clamp = (x: number): number => Math.min(1, Math.max(RELEVANCE_FLOOR, x));
+  if (ageMs < 0) return clamp(initialRelevance);
   if (halfLifeMs <= 0) return RELEVANCE_FLOOR;
-  const decayed = initialRelevance * Math.pow(PHI, -ageMs / halfLifeMs);
-  return Math.max(RELEVANCE_FLOOR, decayed);
+  return clamp(initialRelevance * Math.pow(PHI, -ageMs / halfLifeMs));
 }
 
 /**

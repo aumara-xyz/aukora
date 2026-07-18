@@ -83,6 +83,12 @@ export function executeKillerT(
   killer: KillerT,
   threat: ThreatSignature,
 ): { threatNeutralized: boolean; actionsTaken: readonly DefensiveAction[] } {
+  // TARGET IDENTITY: a Killer T cell acts ONLY against the exact threat it was spawned for. An unrelated threat
+  // is refused — it can never report neutralization (and only logs), so a mismatched pairing has no effect.
+  if (threat.id !== killer.targetThreatId) {
+    return { threatNeutralized: false, actionsTaken: ['alert_log'] };
+  }
+
   const effectivenessThreshold = threat.severity === 'critical' ? 0.9 :
     threat.severity === 'high' ? 0.7 : 0.5;
 

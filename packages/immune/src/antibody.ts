@@ -44,19 +44,25 @@ export function antibodyBind(
   antibody: Antibody,
   candidateContent: string,
 ): { binds: boolean; confidence: number } {
-  const normalizedPattern = antibody.antigenPattern.toLowerCase();
+  const normalizedPattern = antibody.antigenPattern.trim().toLowerCase();
   const normalizedContent = candidateContent.toLowerCase();
+
+  // An EMPTY antigen pattern binds nothing — never every candidate (`''.includes` / `includes('')` would).
+  if (normalizedPattern.length === 0) return { binds: false, confidence: 0 };
 
   // Exact substring match: highest confidence
   if (normalizedContent.includes(normalizedPattern)) {
     return { binds: true, confidence: antibody.bindScore };
   }
 
-  // Partial match: word-level overlap
-  const patternWords = new Set(normalizedPattern.split(/\s+/));
-  const contentWords = normalizedContent.split(/\s+/);
-  const overlap = contentWords.filter(w => patternWords.has(w)).length;
-  const overlapScore = patternWords.size > 0 ? overlap / patternWords.size : 0;
+  // Partial match: UNIQUE word-level overlap (a Set on both sides — duplicate content words can never inflate
+  // overlapScore beyond 1, so confidence = bindScore·overlapScore stays within [0, bindScore] ⊆ [0, 1]).
+  const patternWords = new Set(normalizedPattern.split(/\s+/).filter(Boolean));
+  const contentWords = new Set(normalizedContent.split(/\s+/).filter(Boolean));
+  if (patternWords.size === 0) return { binds: false, confidence: 0 };
+  let matched = 0;
+  for (const w of patternWords) if (contentWords.has(w)) matched++;
+  const overlapScore = matched / patternWords.size; // ∈ [0, 1]
 
   if (overlapScore > 0.7) {
     return { binds: true, confidence: antibody.bindScore * overlapScore };

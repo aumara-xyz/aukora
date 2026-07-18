@@ -51,9 +51,13 @@ export function advanceHomeostasis(
   const cycleProgress = Math.min(1, cooldownRate * (state.cyclesCompleted + 1));
 
   if (cycleProgress >= PHI_INV && currentIdx > targetIdx) {
+    // De-escalated ONE level. Restart the cooldown clock (clearanceTimeMs = nowMs) so the NEXT level-drop is
+    // measured from this transition, not the original clearance — otherwise cyclesCompleted compounds and the
+    // cooldown accelerates unboundedly. cooldownProgress resets for the new level.
     return {
       ...state,
       currentLevel: levels[currentIdx - 1],
+      clearanceTimeMs: nowMs,
       cooldownProgress: 0,
       cyclesCompleted: state.cyclesCompleted + 1,
     };
