@@ -22,13 +22,18 @@ export interface HomeostasisState {
   readonly cyclesCompleted: number;
 }
 
-/** Compute target inflammation level based on current threat status. */
+/**
+ * Compute the target inflammation level from current threat status. The thresholds MIRROR
+ * `computeInflammation` EXACTLY (criticalThreats↔criticalCount, activeThreats↔totalFindings) — otherwise the
+ * target can sit ABOVE the current level (e.g. 1 critical → inflammation 'high' but a 'crisis' target) and, since
+ * cooldown only de-escalates when current > target, the state machine gets permanently stuck.
+ */
 export function computeHomeostasisTarget(
   activeThreats: number,
   criticalThreats: number,
 ): InflammationLevel {
-  if (criticalThreats > 0) return 'crisis';
-  if (activeThreats >= 3) return 'high';
+  if (criticalThreats >= 2 || activeThreats >= 10) return 'crisis';
+  if (criticalThreats >= 1 || activeThreats >= 3) return 'high';
   if (activeThreats >= 1) return 'elevated';
   return 'baseline';
 }
@@ -46,14 +51,17 @@ export function advanceHomeostasis(
     return { ...state, cooldownProgress: 1.0 };
   }
 
-  const timeSinceClearance = nowMs - state.clearanceTimeMs;
-  const cooldownRate = phiDecay(timeSinceClearance, 1.0, 60000);
-  const cycleProgress = Math.min(1, cooldownRate * (state.cyclesCompleted + 1));
+  // Cooldown must REQUIRE TIME TO PASS. The old math multiplied a phiDecay value (always ≥ PHI_INV) by
+  // cyclesCompleted+1, so `cycleProgress ≥ PHI_INV` was true at timeSinceClearance = 0 → a level dropped on
+  // EVERY call regardless of elapsed time. Here progress GROWS 0 → 1 as the φ-decayed threat relevance falls
+  // from 1 toward its PHI_INV floor, and a level de-escalates only after at least one half-life has elapsed.
+  const HALF_LIFE_MS = 60_000;
+  const elapsed = Math.max(0, nowMs - state.clearanceTimeMs);
+  const relevance = phiDecay(elapsed, 1.0, HALF_LIFE_MS);            // 1.0 at t=0, → PHI_INV as t→∞
+  const cooldownProgress = Math.min(1, (1 - relevance) / (1 - PHI_INV)); // 0 at t=0, monotonically → 1
 
-  if (cycleProgress >= PHI_INV && currentIdx > targetIdx) {
-    // De-escalated ONE level. Restart the cooldown clock (clearanceTimeMs = nowMs) so the NEXT level-drop is
-    // measured from this transition, not the original clearance — otherwise cyclesCompleted compounds and the
-    // cooldown accelerates unboundedly. cooldownProgress resets for the new level.
+  if (elapsed >= HALF_LIFE_MS && currentIdx > targetIdx) {
+    // One half-life elapsed → de-escalate ONE level and restart the clearance clock for the next drop.
     return {
       ...state,
       currentLevel: levels[currentIdx - 1],
@@ -63,11 +71,8 @@ export function advanceHomeostasis(
     };
   }
 
-  return {
-    ...state,
-    cooldownProgress: cycleProgress,
-    cyclesCompleted: state.cyclesCompleted + 1,
-  };
+  // Not enough time yet — report progress toward the next drop; the clock and cycle count are unchanged.
+  return { ...state, cooldownProgress };
 }
 
 /** Initialize homeostasis state from current inflammation. */

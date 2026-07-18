@@ -102,8 +102,11 @@ export function hasSeroconverted(
   antibodies: readonly Antibody[],
   threatPattern: string,
 ): boolean {
+  // FAIL CLOSED on an empty requested pattern — `''` would otherwise match every antigen with any bind.
+  const needle = threatPattern.trim().toLowerCase();
+  if (needle.length === 0) return false;
   return antibodies.some(ab =>
-    ab.antigenPattern.toLowerCase().includes(threatPattern.toLowerCase()) &&
+    ab.antigenPattern.toLowerCase().includes(needle) &&
     ab.bindCount > 0
   );
 }

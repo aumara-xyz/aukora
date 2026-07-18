@@ -14,7 +14,7 @@ import {
   selectKillerTType, spawnKillerT, executeKillerT, checkAutoimmunity,
   generateAntibody, antibodyBind, findBindingAntibodies, reinforceAntibody, hasSeroconverted,
   createMemoryB, memoryBRecognition, reinforceMemoryB, recallMemoryB, memoryStrength,
-  initHomeostasis, advanceHomeostasis, effectivePosture,
+  initHomeostasis, advanceHomeostasis, effectivePosture, computeHomeostasisTarget,
   createEngagement, isActionAuthorized, STANDARD_ROE, STRICT_ROE, PERMISSIVE_ROE,
 } from '@aukora/immune';
 
@@ -97,6 +97,12 @@ describe('antibody — bind + seroconversion, φ-reinforced, bounded', () => {
     expect(r.confidence).toBeLessThanOrEqual(1);
     expect(r.confidence).toBeLessThanOrEqual(wordy.bindScore);
   });
+  it('hasSeroconverted fails closed on an empty/blank requested pattern (never matches every antigen)', () => {
+    const ab = reinforceAntibody(generateAntibody(threat({ pattern: 'x' }), NOW)); // bindCount > 0
+    expect(hasSeroconverted([ab], '   ')).toBe(false);
+    expect(hasSeroconverted([ab], '')).toBe(false);
+    expect(hasSeroconverted([ab], 'x')).toBe(true); // a real pattern still seroconverts
+  });
 });
 
 describe('memoryB — φ-decayed threat recall', () => {
@@ -108,6 +114,10 @@ describe('memoryB — φ-decayed threat recall', () => {
     expect(memoryStrength([reinforceMemoryB(cell, NOW + 1000, 0.95)])).toBeGreaterThan(0);
     expect(Array.isArray(recallMemoryB([cell], 'apt-beacon', NOW))).toBe(true);
   });
+  it('recognition fails closed on an empty stored pattern (never matches every candidate)', () => {
+    const blank = createMemoryB(threat({ pattern: '   ' }), 0.9, NOW);
+    expect(memoryBRecognition(blank, 'literally anything', NOW)).toBe(0);
+  });
 });
 
 describe('homeostasis — bounded relaxation toward a target posture', () => {
@@ -117,6 +127,24 @@ describe('homeostasis — bounded relaxation toward a target posture', () => {
     expect(advanceHomeostasis(s0, NOW + 3600_000)).toEqual(s1);   // pure: same input → same output
     expect(s1.cooldownProgress).toBeGreaterThanOrEqual(0);
     expect(effectivePosture(s1)).toBeDefined();
+  });
+  it('computeHomeostasisTarget mirrors computeInflammation thresholds (no stuck target-above-current)', () => {
+    // 1 critical → both say 'high' (the old target 'crisis' sat ABOVE the level and stuck the machine)
+    expect(computeHomeostasisTarget(0, 1)).toBe('high');
+    expect(computeHomeostasisTarget(3, 0)).toBe('high');
+    expect(computeHomeostasisTarget(0, 2)).toBe('crisis');
+    expect(computeHomeostasisTarget(10, 0)).toBe('crisis');
+    expect(computeHomeostasisTarget(1, 0)).toBe('elevated');
+    expect(computeHomeostasisTarget(0, 0)).toBe('baseline');
+  });
+  it('cooldown REQUIRES time — no de-escalation before one half-life, a drop at/after it', () => {
+    const s = initHomeostasis('crisis', 0, 0, NOW); // target baseline
+    const tooSoon = advanceHomeostasis(s, NOW + 30_000);  // < 60s half-life
+    expect(tooSoon.currentLevel).toBe('crisis');          // did NOT drop instantly (the old bug dropped at t=0)
+    expect(tooSoon.cooldownProgress).toBeGreaterThan(0);
+    expect(tooSoon.cooldownProgress).toBeLessThan(1);
+    const dropped = advanceHomeostasis(s, NOW + 60_000);  // exactly one half-life
+    expect(dropped.currentLevel).toBe('high');            // one level down
   });
   it('with NO active threats the level actually DE-ESCALATES over successive cooldown cycles', () => {
     // target = baseline (no active/critical threats) while current = crisis ⇒ a real downward transition, not the

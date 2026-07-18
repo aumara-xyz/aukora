@@ -1,7 +1,8 @@
 {
   "name": "@aukora/immune",
   "version": "0.1.0",
-  "description": "METAPHORICAL immune-system substrate (research/skunkworks): pure, offline, advisory scoring + state functions over threat-signature data. Not biology, not aliveness, not production. Never grants authority; no actuator, no persistence, no prompt wiring.",
+  "private": true,
+  "description": "METAPHORICAL immune-system substrate (research/skunkworks): pure, offline, advisory scoring + state functions over threat-signature data. Not biology, not aliveness, not production. Never grants authority; no actuator, no persistence, no prompt wiring. Monorepo-internal, source-exported (consumed via bundler resolution like its peers); NOT published — no dist build.",
   "author": "Aumara",
   "license": "AGPL-3.0-or-later",
   "repository": {

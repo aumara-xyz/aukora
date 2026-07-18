@@ -49,8 +49,10 @@ export function memoryBRecognition(
 ): number {
   const ageMs = nowMs - cell.lastEncounter;
   const relevance = phiDecay(ageMs, 1.0, cell.halfLifeMs);
-  const normalizedCell = cell.pattern.toLowerCase();
+  const normalizedCell = cell.pattern.trim().toLowerCase();
   const normalizedCandidate = candidateContent.toLowerCase();
+  // FAIL CLOSED on an empty stored pattern — `''` would otherwise substring-match every candidate.
+  if (normalizedCell.length === 0) return 0;
   if (normalizedCandidate.includes(normalizedCell)) {
     return relevance * 0.9;
   }

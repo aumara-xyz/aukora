@@ -102,9 +102,10 @@ export class PetriBus {
       timestampMs: event.timestampMs ?? Date.now(),
     };
     this.history.push(fullEvent);
-    if (this.history.length > this.maxHistory) {
-      this.history = this.history.slice(-this.maxHistory);
-    }
+    // maxHistory <= 0 means "retain NO history" — `slice(-0)` is `slice(0)` (the WHOLE array), so guard it
+    // explicitly rather than leaving history unbounded.
+    if (this.maxHistory <= 0) this.history = [];
+    else if (this.history.length > this.maxHistory) this.history = this.history.slice(-this.maxHistory);
     const set = this.listeners.get(fullEvent.type);
     if (set) {
       for (const listener of set) {
@@ -214,8 +215,9 @@ export function runPetriCycle(
     if (recalledMemory.length > 0) actions.push(`[MEMORY B] ${recalledMemory.length} cells recalled (learned defense)`);
   }
 
-  // Step 5: Generate new antibodies
-  let newAntibodies: Antibody[] = [...previousState.antibodies];
+  // Step 5: REINFORCE bound antibodies (a cycle-driven bind must increment bindCount), then generate new ones.
+  const boundIds = new Set(matchedAntibodies.map((m) => m.antibody.id));
+  let newAntibodies: Antibody[] = previousState.antibodies.map((ab) => (boundIds.has(ab.id) ? reinforceAntibody(ab) : ab));
   for (const threat of input.newThreats) {
     const ab = generateAntibody(threat, now);
     newAntibodies = [...newAntibodies, ab];
@@ -224,8 +226,9 @@ export function runPetriCycle(
     actions.push(`[ANTIBODY] Generated for threat: ${threat.pattern}`);
   }
 
-  // Step 6: Create memory B cells
-  let newMemoryB: MemoryBCell[] = [...previousState.memoryBCells];
+  // Step 6: REINFORCE recalled memory (a recall must update the cell's encounter state), then form new cells.
+  const recalledIds = new Set(recalledMemory.map((c) => c.signatureId));
+  let newMemoryB: MemoryBCell[] = previousState.memoryBCells.map((c) => (recalledIds.has(c.signatureId) ? reinforceMemoryB(c, now, c.responseEffectiveness) : c));
   for (const threat of input.newThreats) {
     const cell = createMemoryB(threat, 0.8, now);
     newMemoryB = [...newMemoryB, cell];
@@ -293,18 +296,22 @@ export function runPetriCycle(
   // Step 11: Compute composite threat score (on the effective, post-cooldown level)
   const threatScore = Math.min(1, (criticalFindings * 0.3) + (totalFindings * 0.05) + (matchedAntibodies.length * 0.1) + (recalledMemory.length * 0.15) + (levelIdx(effectiveLevel) * 0.25));
 
-  // Step 12: Emit cycle complete
+  // Step 12: FINALIZE the snapshot BEFORE emitting it — push the completion action first, then emit an IMMUTABLE
+  // copy of actions on the effective (post-homeostasis) level. Previously the emit happened, THEN `actions` was
+  // mutated, so listeners observed a payload missing the completion line while later history reads included it;
+  // the event also mis-reported `newInflammation` instead of `effectiveLevel`.
   const newState: PetriState = {
     inflammationLevel: effectiveLevel, securityPosture: effectivePostureVal, homeostasis: newHomeostasis,
     memoryBCells: newMemoryB, antibodies: newAntibodies, killerTCells: executedKillerT,
     patrolReports: [...previousState.patrolReports, ...input.patrolReports],
     engagements: newEngagements, cycleCount: previousState.cycleCount + 1, threatScore,
   };
-  emitNow({ type: 'petri.cycle', source: 'petriDish', payload: { state: newState, actions }, inflammationLevel: newInflammation });
-  events.push({ type: 'petri.cycle', timestampMs: now, source: 'petriDish', payload: { state: newState, actions }, inflammationLevel: newInflammation });
-  actions.push(`[PETRI] Cycle ${newState.cycleCount} complete | Threat: ${(threatScore * 100).toFixed(1)}% | Posture: ${newInflammation}`);
+  actions.push(`[PETRI] Cycle ${newState.cycleCount} complete | Threat: ${(threatScore * 100).toFixed(1)}% | Posture: ${effectiveLevel}`);
+  const finalActions: readonly string[] = Object.freeze([...actions]);
+  emitNow({ type: 'petri.cycle', source: 'petriDish', payload: { state: newState, actions: finalActions }, inflammationLevel: effectiveLevel });
+  events.push({ type: 'petri.cycle', timestampMs: now, source: 'petriDish', payload: { state: newState, actions: finalActions }, inflammationLevel: effectiveLevel });
 
-  return { state: newState, events, actions };
+  return { state: newState, events, actions: finalActions };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -327,7 +334,10 @@ export function wireCouncilToPatrol(bus: PetriBus, getSensitivity: (inf: Inflamm
   return bus.on('council.decision', (event) => {
     const payload = event.payload as { coherence: number; approved: boolean };
     if (!payload.approved) {
-      bus.emit({ type: 'inflammation.rise', source: 'council→patrol.feedback', payload: { reason: 'low_coherence_decision', coherence: payload.coherence }, inflammationLevel: event.inflammationLevel, timestampMs: event.timestampMs });
+      // The feedback signal now CARRIES the derived patrol sensitivity for the current level (the callback was
+      // previously ignored) — so a consumer can observe how a low-coherence decision retunes patrol coverage.
+      const patrolSensitivity = getSensitivity(event.inflammationLevel);
+      bus.emit({ type: 'inflammation.rise', source: 'council→patrol.feedback', payload: { reason: 'low_coherence_decision', coherence: payload.coherence, patrolSensitivity }, inflammationLevel: event.inflammationLevel, timestampMs: event.timestampMs });
     }
   });
 }

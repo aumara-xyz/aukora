@@ -7,8 +7,9 @@
  */
 import { describe, it, expect } from 'vitest';
 import {
-  type ThreatSignature, type PetriEvent,
-  PetriBus, runPetriCycle, createInitialPetriState, wireAllFeedbackLoops,
+  type ThreatSignature, type PetriEvent, type Antibody, type MemoryBCell,
+  PetriBus, runPetriCycle, createInitialPetriState, wireAllFeedbackLoops, wireCouncilToPatrol,
+  generateAntibody, createMemoryB,
 } from '@aukora/immune';
 
 const NOW = 1_735_689_600_000;
@@ -29,6 +30,43 @@ describe('PetriBus — a synchronous in-memory event bus (no I/O)', () => {
     off();
     bus.emit({ type: 'patrol.finding', source: 'patrol', payload: {}, inflammationLevel: 'baseline' });
     expect(seen).toHaveLength(1); // no delivery after unsubscribe
+  });
+  it('maxHistory = 0 retains NO history (guards the slice(-0) === whole-array footgun)', () => {
+    const bus = new PetriBus(0);
+    bus.emit({ type: 'patrol.finding', source: 'patrol', payload: {}, inflammationLevel: 'baseline', timestampMs: NOW });
+    bus.emit({ type: 'patrol.finding', source: 'patrol', payload: {}, inflammationLevel: 'baseline', timestampMs: NOW });
+    expect(bus.historyOf()).toHaveLength(0); // disabled, not unbounded
+  });
+});
+
+describe('cycle reinforcement + immutable snapshot + observable council feedback', () => {
+  it('a cycle-driven antibody bind INCREMENTS bindCount; a recalled memory cell is reinforced', () => {
+    const ab = generateAntibody(threat({ id: 'tA', pattern: 'malware-beacon' }), NOW); // bindCount 0
+    const cell = createMemoryB(threat({ id: 'tA', pattern: 'malware-beacon' }), 0.8, NOW);
+    const prev = { ...createInitialPetriState(NOW), antibodies: [ab] as readonly Antibody[], memoryBCells: [cell] as readonly MemoryBCell[] };
+    const out = runPetriCycle(new PetriBus(), prev, input({ newThreats: [], candidateContent: 'contains malware-beacon' }));
+    const persisted = out.state.antibodies.find((a) => a.id === ab.id)!;
+    expect(persisted.bindCount).toBeGreaterThan(ab.bindCount); // reinforcement persisted, not discarded
+    const recalled = out.state.memoryBCells.find((c) => c.signatureId === cell.signatureId)!;
+    expect(recalled.encounterTimestamps.length).toBeGreaterThanOrEqual(cell.encounterTimestamps.length);
+  });
+  it('the emitted petri.cycle payload actions EQUAL the returned actions (finalized before emit) + effective level', () => {
+    const bus = new PetriBus();
+    const out = runPetriCycle(bus, createInitialPetriState(NOW), input());
+    const cycleEvent = bus.historyOf('petri.cycle')[0];
+    const payload = cycleEvent.payload as { actions: readonly string[]; state: { inflammationLevel: string } };
+    expect(payload.actions).toEqual(out.actions);                 // listener saw the COMPLETE action list
+    expect(payload.actions).toContain(out.actions[out.actions.length - 1]); // incl. the completion line
+    expect(cycleEvent.inflammationLevel).toBe(out.state.inflammationLevel);  // effective (post-homeostasis) level
+  });
+  it('wireCouncilToPatrol includes the derived patrol sensitivity in its feedback signal (callback is observable)', () => {
+    const bus = new PetriBus();
+    const seen: PetriEvent[] = [];
+    bus.on('inflammation.rise', (e) => { if (e.source === 'council→patrol.feedback') seen.push(e); });
+    wireCouncilToPatrol(bus, (inf) => (inf === 'crisis' ? 1.0 : 0.42));
+    bus.emit({ type: 'council.decision', source: 'council', payload: { coherence: 0.3, approved: false }, inflammationLevel: 'elevated', timestampMs: NOW });
+    expect(seen).toHaveLength(1);
+    expect((seen[0].payload as { patrolSensitivity: number }).patrolSensitivity).toBe(0.42);
   });
 });
 
