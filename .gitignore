@@ -3,3 +3,25 @@ dist/
 *.tgz
 .DS_Store
 coverage/
+
+# Local secrets & environment — never commit real secret material (R56 Sam 1 hygiene).
+# Safe, committed templates (.env.example / .env.sample) are explicitly re-allowed below.
+.env
+.env.*
+*.env
+.envrc
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+.aws/credentials
+.npmrc
+credentials.json
+service-account*.json
+# Re-allow non-secret templates so contributors have a documented example.
+!.env.example
+!.env.sample
+!.env.*.example
