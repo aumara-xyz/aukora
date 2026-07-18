@@ -18,7 +18,7 @@
  * the dev credential: it is never printed, never committed, and must never leave this machine. This remains a
  * DEV convenience, not an owner ceremony — a real owner's keypair is generated and held out of band.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, chmodSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { HybridOwnerAdapter } from '../src/ownerFixture.js';
 import { provisionOwnerRoot } from '../src/ownerBoundary.js';
@@ -39,6 +39,9 @@ if (mode === '--from' && a && b) {
   // printed. Without this the booted door could verify but nothing local could ever sign a smoke operation.
   const sidecar = `${a}.dev-label.json`;
   writeFileSync(sidecar, JSON.stringify({ schema: 'aukora-dev-owner-label-v1', label, note: 'DEV smoke credential — re-derives the dev keypair; keep 0600, never commit, never print' }, null, 2), { mode: 0o600 });
+  // `mode` applies only on CREATE — a PRE-EXISTING permissive file at this path would keep its old mode after
+  // the overwrite. Enforce 0600 unconditionally after the write (R55.3).
+  chmodSync(sidecar, 0o600);
   console.log(`[provision-owner-root] DEV random-label envelope written (public material only): rootId ${owner.root.rootId.slice(0, 12)}…`);
   console.log(`[provision-owner-root] DEV signing label persisted (0600, value not printed): ${sidecar}`);
 } else {

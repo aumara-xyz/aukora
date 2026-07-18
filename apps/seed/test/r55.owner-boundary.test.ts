@@ -196,6 +196,16 @@ describe('R55 · planned provider secret shapes — refused by SHAPE, reported b
     for (const t of Object.values(tokens)) expect(out).not.toContain(t.slice(3));
   });
 
+  it('Bearer detection is CASE-INSENSITIVE (R55.3) — the standard header casings refuse like lowercase', () => {
+    const flagged = scanForbiddenValues({
+      std: 'Authorization: Bearer AbCdEf1234567890XyZq',   // the standard casing — previously missed
+      caps: 'BEARER abcdefghijklmnop12',                   // shouting variant
+      lower: 'bearer abcdefghijklmnop12',                  // the only casing the old pattern caught
+    });
+    expect(flagged.sort()).toEqual(['caps', 'lower', 'std']);
+    for (const t of ['AbCdEf1234567890XyZq', 'abcdefghijklmnop12']) expect(JSON.stringify(flagged)).not.toContain(t);
+  });
+
   it('benign near-misses stay clean (no over-refusal)', () => {
     expect(scanForbiddenValues({
       a: 'hf_short',                       // too short to be a token
@@ -203,6 +213,7 @@ describe('R55 · planned provider secret shapes — refused by SHAPE, reported b
       c: 'tinker with the settings',       // prose, no underscore-token shape
       d: 'html_encode helper',             // tml_ must be word-anchored
       e: 'skip sk-live note',              // sk- needs 12+ token chars
+      f: 'the bearer of good news',        // case-insensitive bearer still needs a 16+ token run
     })).toEqual([]);
   });
 });
