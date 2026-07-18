@@ -34,7 +34,6 @@ import { ReactiveMemoryStore, ConvexWorkflowStore, liveWorkflowIo, assertLoopbac
 import { MindDoor, DOOR_PORT, type DoorRequest, type DoorDriver, type DoorDurability } from '../src/mindDoor.js';
 import { InMemoryWorkflowStore, validateWorkflowState, type WorkflowStore } from '../src/durableRecursion.js';
 import { HybridOwnerAdapter } from '../src/ownerFixture.js';
-import { DurableCandidateReferenceMonitor } from '../src/durableCandidateMonitor.js';
 
 async function main(): Promise<void> {
   const port = Number(process.env.AUKORA_DOOR_PORT ?? DOOR_PORT);
@@ -44,10 +43,13 @@ async function main(): Promise<void> {
   // NOTE: a real deployment injects Peter's local AUMLOK root; the fixture owner here is for a local dev door only.
   const owner = new HybridOwnerAdapter('local-door-dev');
   const repoRoot = resolve(process.cwd());
-  // R54: the one canonical reference monitor per boot, now DURABLE — consumed authority + the receipt head are
-  // journalled crash-safely (kernel-node TrustedStateStore) BEFORE any git effect. The state dir lives OUTSIDE
-  // the repo and OUTSIDE the disposable worktree base: it must survive candidate cleanup and process death.
-  const monitor = new DurableCandidateReferenceMonitor(owner.root, resolve(repoRoot, '..', 'aukora-door-trusted-state'));
+  // R54 v3: the door does NOT construct the monitor itself — a directly-injected monitor would bypass the
+  // runner's canonical trusted-state fence (a sibling `aukora-door-trusted-state` SYMLINK could resolve back
+  // inside the repo). Passing `trustedStateDir` instead makes the ceremony runner construct the ONE durable
+  // monitor AND execute the canonical symlink-resolving fence on EVERY materialize, before monitor use,
+  // durable mutation, receipts, or git. Same single store, same single kernel decision — the state dir is the
+  // durable identity, so per-invocation construction over the same dir is semantically one monitor.
+  const doorTrustedStateDir = resolve(repoRoot, '..', 'aukora-door-trusted-state');
 
   // ── R50 store selection: local self-hosted Convex is the PRODUCTION path ─────────────────────────────
   const storeMode = process.env.AUKORA_WORKFLOW_STORE === 'memory' ? 'memory' : 'convex';
@@ -101,7 +103,7 @@ async function main(): Promise<void> {
           },
           ownerRoot: owner.root,
           store,
-          monitor,
+          trustedStateDir: doorTrustedStateDir,
           gitRepoRoot: repoRoot,
           worktreeBase: resolve(repoRoot, '..', 'aukora-door-candidates'),
           nowMs: Date.now(), nowIso: new Date().toISOString(),

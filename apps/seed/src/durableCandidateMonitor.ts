@@ -26,7 +26,7 @@
  * root requires an explicit owner-directed state migration (a new state dir) — deliberately NOT automatic, so a
  * swapped root can never silently re-open consumed authority.
  */
-import { realpathSync } from 'node:fs';
+import { realpathSync, readlinkSync } from 'node:fs';
 import { resolve, dirname, basename, sep } from 'node:path';
 import {
   TrustedStateStore, RollbackRefusedError, WriterLockedError, TrustedStoreCorruptError, type CrashHook,
@@ -46,18 +46,27 @@ import type { BranchCandidate } from './ideEnvelope.js';
  * that must not import fs under the structural containment law.
  */
 function canonicalizePath(p: string): string {
-  let existing = resolve(p);
+  let current = resolve(p);
   const suffix: string[] = [];
-  for (;;) {
+  // Bounded walk (guards symlink cycles). On exhaustion the caller-side fence still fails SAFE overall: a
+  // cyclic path can never be mkdir'd by the store either (ELOOP), so the monitor refuses fail-closed anyway.
+  for (let hop = 0; hop < 64; hop++) {
     try {
-      return suffix.length === 0 ? realpathSync(existing) : resolve(realpathSync(existing), ...suffix.reverse());
+      return suffix.length === 0 ? realpathSync(current) : resolve(realpathSync(current), ...suffix.slice().reverse());
     } catch {
-      const parent = dirname(existing);
-      if (parent === existing) return resolve(p); // no existing ancestor at all — lexical resolution is final
-      suffix.push(basename(existing));
-      existing = parent;
+      // realpath refuses a BROKEN symlink (target not created yet) — but mkdir would FOLLOW it, so the fence
+      // must see through it too: resolve the link text manually and keep canonicalizing the target.
+      try {
+        current = resolve(dirname(current), readlinkSync(current));
+        continue;
+      } catch { /* not a symlink — walk up to the nearest existing ancestor */ }
+      const parent = dirname(current);
+      if (parent === current) break; // no existing ancestor at all — lexical resolution below is final
+      suffix.push(basename(current));
+      current = parent;
     }
   }
+  return suffix.length === 0 ? resolve(current) : resolve(current, ...suffix.slice().reverse());
 }
 
 /**

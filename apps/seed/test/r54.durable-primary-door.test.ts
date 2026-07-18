@@ -290,15 +290,54 @@ describe('R54 review repair · a REFUSED child decision exits — never orphans/
 
 describe('R54 · 8: exact primary-runtime import/reachability proof', () => {
   const read = (p: string) => readFileSync(fileURLToPath(new URL(`../${p}`, import.meta.url)), 'utf8');
-  it('the ACTIVE door boot reaches @aukora/kernel-node through the durable monitor (each hop verified)', () => {
-    // hop 1: the live door boot constructs the DURABLE monitor
-    expect(read('scripts/mind-door-7097.ts')).toMatch(/DurableCandidateReferenceMonitor/);
-    // hop 2: the ceremony runner defaults to it whenever a trustedStateDir is configured
-    expect(read('src/localCeremonyRunner.ts')).toMatch(/DurableCandidateReferenceMonitor/);
+  it('the ACTIVE door boot reaches @aukora/kernel-node through the runner-fenced durable monitor (each hop verified)', () => {
+    // hop 1 (R54 v3): the live door boot passes trustedStateDir and NEVER constructs the monitor directly —
+    // direct construction would bypass the runner's canonical fence (the exact v3 blocker).
+    const doorSrc = read('scripts/mind-door-7097.ts');
+    expect(doorSrc).toMatch(/trustedStateDir:\s*doorTrustedStateDir/);
+    expect(doorSrc).not.toMatch(/new\s+DurableCandidateReferenceMonitor/);
+    expect(doorSrc).not.toMatch(/from '[^']*durableCandidateMonitor/); // no import ⇒ no bypass path at all
+    // hop 2: the ceremony runner RUNS the canonical fence, then constructs the ONE durable monitor
+    const runnerSrc = read('src/localCeremonyRunner.ts');
+    expect(runnerSrc).toMatch(/trustedStateDirInsideFence/);
+    expect(runnerSrc).toMatch(/new DurableCandidateReferenceMonitor\(env\.ownerRoot, env\.trustedStateDir\)/);
     // hop 3: the durable monitor consumes THROUGH the protected kernel-node store
     const monitorSrc = read('src/durableCandidateMonitor.ts');
     expect(monitorSrc).toMatch(/from '@aukora\/kernel-node'/);
     expect(monitorSrc).toMatch(/authorizeAndPrepare/);
+  });
+
+  it('DOOR-SHAPED sibling symlink attack: ../aukora-door-trusted-state → inside the repo is rejected BEFORE monitor use, durable mutation, receipts, or Git', () => {
+    // Reproduce the exact active-door layout: repoRoot with a SIBLING named aukora-door-trusted-state that an
+    // attacker pre-planted as a symlink resolving back inside the repo working tree.
+    const doorBase = join(base, 'door-layout');
+    const doorRepo = join(doorBase, 'repo');
+    mkdirSync(doorRepo, { recursive: true });
+    execFileSync('git', ['init', '-q', '-b', 'main', doorRepo]);
+    g(doorRepo, ['config', 'user.name', 'R54 Door']);
+    g(doorRepo, ['config', 'user.email', 'r54door@test.local']);
+    mkdirSync(join(doorRepo, 'apps/seed/src'), { recursive: true });
+    writeFileSync(join(doorRepo, 'apps/seed/src/recursion.ts'), '// original content\n');
+    g(doorRepo, ['add', '-A']); g(doorRepo, ['commit', '-q', '--no-gpg-sign', '-m', 'init']);
+    const sibling = join(doorBase, 'aukora-door-trusted-state'); // = resolve(repoRoot, '..', 'aukora-door-trusted-state')
+    execFileSync('ln', ['-s', join(doorRepo, '.hidden-authority'), sibling]);
+    // Build the env EXACTLY as the door does: trustedStateDir passed, monitor NOT injected.
+    const w = makeWorld({ ownerLabel: 'r54-owner' });
+    const env: LocalCeremonyEnv = {
+      recursionEnv: w.env, workflowStore: new InMemoryWorkflowStore(),
+      repo: { list: () => [], read: (p: string) => readFileSync(join(doorRepo, p), 'utf8'), exists: (p: string) => existsSync(join(doorRepo, p)) },
+      ownerRoot: w.owner.root, store: new ReactiveMemoryStore(),
+      trustedStateDir: sibling, gitRepoRoot: doorRepo, worktreeBase: join(doorBase, 'candidates'),
+      nowMs: NOW_MS, nowIso: NOW_ISO,
+    };
+    const res = runLocalRecursionCeremony(env, invocationFor(w, 'r54-door-sym', 'r54-cand-door-sym'));
+    expect(res.phase).toBe('refused-at-candidate');
+    expect(res.reasonClass).toBe('candidate:trusted-state-inside-repo');
+    expect(res.materialization).toBeNull();                                  // the stage never ran ⇒ no attempt receipt, no monitor use
+    expect(existsSync(join(doorRepo, '.hidden-authority'))).toBe(false);     // no durable mutation inside the repo
+    expect(existsSync(join(sibling, 'trusted-state.json'))).toBe(false);     // nothing journalled through the symlink
+    expect(g(doorRepo, ['branch', '--list', 'candidate/*'])).toBe('');       // no Git effect
+    expect(g(doorRepo, ['status', '--porcelain'])).toBe('');                 // repo tree untouched
   });
   it('NO Convex surface imports kernel-node: authority consumption cannot live in a Convex handler', () => {
     const brainRoot = fileURLToPath(new URL('../../brain', import.meta.url));
