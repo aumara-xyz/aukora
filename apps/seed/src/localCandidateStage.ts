@@ -48,7 +48,7 @@ import type { SignedPromotionV2 } from '@aukora/kernel/schemas';
 import { deriveDraftHash } from './proposal.js';
 import { classifyPath, candidateAllowed } from './pathFence.js';
 import { scrubText } from './councilPack.js';
-import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
+import type { DurableEffectMonitor } from './candidateReferenceMonitor.js';
 import type { BranchCandidate } from './ideEnvelope.js';
 
 export type CandidateReasonClass =
@@ -89,12 +89,20 @@ export interface MaterializeInput {
   readonly candidate: BranchCandidate;
   /** The owner's authorization over the candidate PAYLOAD hash (proposalHash===draftHash===candidatePayloadHash). */
   readonly candidateAuth: SignedPromotionV2 | undefined;
-  /** The canonical kernel reference monitor (durable consumed-id state). The ONE authorization path. */
-  readonly monitor: CandidateReferenceMonitor;
+  /** The canonical kernel reference monitor (durable consumed-id state). The ONE authorization path. Typed as the
+   *  exported `DurableEffectMonitor` contract (decide + consumed) so external callers can name it; the live door
+   *  supplies the concrete durable monitor whose `decide()` journals through the kernel store before any git. */
+  readonly monitor: DurableEffectMonitor;
   /** The owner has explicitly ARMED this materialization (maps to the kernel's humanClearance for self-modify). */
   readonly ownerArmed: boolean;
   /** R50 head binding: the exact HEAD (40-hex) the approval was made against; a moved head refuses (stale-head). */
   readonly expectedHeadBefore?: string;
+  /** R54 v5: the supplied `candidateAuth` was SIGNED over the head-bound payload
+   *  (`candidatePayloadHash(candidate, expectedHeadBefore)`) — the monitor then verifies under the head-bound
+   *  domain, so an authorization signed for any other base (or over no base) refuses `authority_invalid`. The live
+   *  effect path always sets this. When absent, the original head-free payload bytes are verified and
+   *  `expectedHeadBefore` remains the stage-level observational guard only (the pre-v5 primary-door behavior). */
+  readonly authBindsHead?: boolean;
   readonly store: ReactiveMemoryStore;
   readonly nowMs: number;
   readonly nowIso: string;
@@ -284,12 +292,22 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
   if (input.expectedHeadBefore !== undefined && input.expectedHeadBefore !== headBefore) {
     return refuse('candidate:stale-head', 'refused: repo HEAD moved since this materialization was approved — re-approve against the current head');
   }
+  // R54 v5 precondition — a head-bound authorization without a declared base is unverifiable: fail closed here
+  // rather than silently degrading to the head-free payload domain.
+  if (input.authBindsHead === true && input.expectedHeadBefore === undefined) {
+    return refuse('candidate:stale-head', 'refused: head-bound authorization requires expectedHeadBefore (the approved base)');
+  }
   const mainBefore = tryGit(repoRoot, 'rev-parse', ['--verify', '--quiet', 'refs/heads/main']);
 
   // 4b. CANONICAL AUTHORIZATION — the ONE reference monitor (kernel decide()): owner-armed self-modify, hybrid
   //     AUMLOK verify, consumed-once. No parallel or weaker path exists. Placed after the cheap git prechecks so a
-  //     dirty-tree / already-exists refusal never consumes the authorization nonce.
-  const decision = input.monitor.decide(candidate, input.candidateAuth, input.nowMs, { ownerArmed: input.ownerArmed });
+  //     dirty-tree / already-exists / stale-head refusal never consumes the authorization nonce. When the caller
+  //     declares a HEAD-BOUND authorization (`authBindsHead`, the live effect path always does), the SIGNED payload
+  //     must bind `expectedHeadBefore` (already verified equal to the ACTUAL head above): decide() computes the
+  //     head-bound hash, so an authorization signed over any other base (or over no base) refuses
+  //     `authority_invalid`. Callers without the declaration keep the original head-free payload bytes, with
+  //     `expectedHeadBefore` as the stage-level observational guard (pre-v5 primary-door behavior).
+  const decision = input.monitor.decide(candidate, input.candidateAuth, input.nowMs, { ownerArmed: input.ownerArmed, headBefore: input.authBindsHead === true ? input.expectedHeadBefore : undefined });
   if (!decision.allowed) return refuse('candidate:reference-monitor-refused', `refused: kernel reference monitor denied materialization (${decision.code})`);
 
   // 5. RECEIPT-BEFORE-EFFECT — the attempt is chained before any git mutation.

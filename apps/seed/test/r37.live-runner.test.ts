@@ -163,9 +163,9 @@ describe('composed owner-invoked local ceremony', () => {
     const auth = authFor(w.owner, proposal, { nonce: 'cer-2' });
     const headBefore = execFileSync('git', ['-C', repoRoot, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 
-    const cp = candidatePayloadForProposals([proposal]);
+    const cp = candidatePayloadForProposals([proposal], headBefore); // R54 v6: the ACTIVE door is head-bound
     const candidateAuth = w.owner.authorize({ proposalHash: cp.payloadHash, draftHash: cp.payloadHash, nonce: 'cand-2', issuedAt: NOW_ISO, expiresAt: null });
-    const out = runLocalRecursionCeremony(env, { proposalInput: proposal, nonce: 'cer-2', auth, materialize: true, candidateAuth, ownerArmed: true, explanation: 'owner-invoked' });
+    const out = runLocalRecursionCeremony(env, { proposalInput: proposal, nonce: 'cer-2', auth, materialize: true, candidateAuth, ownerArmed: true, expectedHeadBefore: headBefore, explanation: 'owner-invoked' });
     expect(out.ok).toBe(true);
     expect(out.phase).toBe('candidate-materialized');
     expect(out.materialization?.commitSha).toMatch(/^[0-9a-f]{40}$/);

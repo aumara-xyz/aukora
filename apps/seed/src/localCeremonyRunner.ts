@@ -33,6 +33,7 @@ import { deriveIntentId, deriveDraftHash, type Proposal } from './proposal.js';
 import { reviewerFor } from './fuStructuredAdapter.js';
 import { materializeCandidate, type CandidateMaterialization } from './localCandidateStage.js';
 import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
+import { DurableCandidateReferenceMonitor, trustedStateDirInsideFence } from './durableCandidateMonitor.js';
 import type { CouncilReviewer } from './mockCouncil.js';
 
 export type CeremonyRunPhase =
@@ -69,6 +70,13 @@ export interface LocalCeremonyEnv {
   readonly store: ReactiveMemoryStore;
   /** The canonical kernel reference monitor for the candidate effect (durable consumed-id state). Constructed if absent. */
   readonly monitor?: CandidateReferenceMonitor;
+  /**
+   * R54: protected trusted-state directory for the DURABLE reference monitor. When set (and no explicit `monitor`
+   * is injected), the ceremony consumes authority through `@aukora/kernel-node`'s crash-safe TrustedStateStore —
+   * the consumption + PREPARED descriptor are journalled BEFORE any git effect. MUST live outside the repo root
+   * and outside the disposable worktree base (it must survive candidate cleanup and process death).
+   */
+  readonly trustedStateDir?: string;
   /** For candidate materialization (effectful). Omit to keep the ceremony non-materializing. */
   readonly gitRepoRoot?: string;
   readonly worktreeBase?: string;
@@ -84,11 +92,16 @@ export interface LocalCeremonyInvocation {
   readonly fuOutcome?: CouncilOutcome;
   /** Explicit owner intent to materialize a candidate this invocation. Never inferred from durable state. */
   readonly materialize?: boolean;
-  /** The owner's authorization over the candidate PAYLOAD hash (required to materialize; verified by the monitor). */
+  /** The owner's authorization over the HEAD-BOUND candidate payload hash (required to materialize; verified by
+   *  the monitor). R54 v6: it MUST be signed over `candidatePayloadHash(candidate, expectedHeadBefore)` — the
+   *  head-free `/1` payload no longer authorizes a materialization through this ACTIVE door. */
   readonly candidateAuth?: SignedPromotionV2;
   /** The owner has explicitly ARMED materialization (maps to the kernel's humanClearance). */
   readonly ownerArmed?: boolean;
-  /** R50 head binding: the exact HEAD this materialization was approved against; the stage refuses a moved head. */
+  /** The exact HEAD this materialization was approved against — REQUIRED to materialize (R54 v6): it is enforced
+   *  against the ACTUAL repo head before the durable consume (R50 stale-head), AND it is bound inside the SIGNED
+   *  candidate payload, so an approval for base A can never be replayed while claiming a later base B. A missing
+   *  value refuses before the durable consume. */
   readonly expectedHeadBefore?: string;
   readonly explanation?: string;
 }
@@ -149,15 +162,35 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   if (!staged.ok) {
     return result({ ok: false, phase: 'refused-at-candidate', reasonClass: staged.refusal.reasonClass, text: staged.refusal.text, workflowId, workflowState: state, rehearsalReceiptHash });
   }
-  const monitor = env.monitor ?? new CandidateReferenceMonitor(env.ownerRoot);
+  // R54: prefer the DURABLE monitor whenever a protected state dir is configured — the consumption is then
+  // crash-safe on disk before the stage's first git mutation. An explicit injected monitor still wins (tests).
+  // RUNTIME ISOLATION (R54 review repair): the trusted-state dir must sit OUTSIDE the repo working tree and
+  // OUTSIDE the disposable worktree base, checked AFTER canonical/symlink resolution — a docstring is not a
+  // fence. Inside the repo it could ride a candidate/commit or be swept by git clean; inside the worktree base
+  // it would be disposed with a failed candidate — either way consumed authority could be erased or exfiltrated.
+  // (The canonicalization itself lives in durableCandidateMonitor — this runner is a RUNTIME module and, per the
+  // structural containment law, must not import fs; it composes the verdict, the effect-adjacent module resolves.)
+  if (env.monitor === undefined && env.trustedStateDir !== undefined
+    && trustedStateDirInsideFence(env.trustedStateDir, [env.gitRepoRoot, env.worktreeBase])) {
+    return result({ ok: false, phase: 'refused-at-candidate', reasonClass: 'candidate:trusted-state-inside-repo', text: 'refused: trustedStateDir resolves inside the repo or the disposable worktree base — the durable authority store must live outside both', workflowId, workflowState: state, rehearsalReceiptHash });
+  }
+  const monitor = env.monitor ?? (env.trustedStateDir !== undefined
+    ? new DurableCandidateReferenceMonitor(env.ownerRoot, env.trustedStateDir)
+    : new CandidateReferenceMonitor(env.ownerRoot));
+  // R54 v6 — the ACTIVE door is MANDATORILY head-bound: the stage verifies the owner's signature over the
+  // head-bound payload (`AUKORA-CANDIDATE-PAYLOAD/2` with expectedHeadBefore). A missing expectedHeadBefore
+  // refuses inside the stage BEFORE the durable consume (its head-bound precondition), and a head-free or
+  // wrong-base signature refuses `authority_invalid` at the ONE consuming decide(). No unbound approval can
+  // materialize through this door.
   const materialization = materializeCandidate({
     repoRoot: env.gitRepoRoot,
     worktreeBase: env.worktreeBase,
     candidate: staged.candidate,
-    candidateAuth: invocation.candidateAuth, // owner's signature over the candidate payload hash
+    candidateAuth: invocation.candidateAuth, // owner's signature over the HEAD-BOUND candidate payload hash
     monitor,                                  // the ONE canonical kernel reference monitor
     ownerArmed: invocation.ownerArmed === true,
     expectedHeadBefore: invocation.expectedHeadBefore,
+    authBindsHead: true,
     store: env.store,
     nowMs: env.nowMs,
     nowIso: env.nowIso,

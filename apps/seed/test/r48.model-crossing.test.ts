@@ -120,7 +120,7 @@ describe('R48 · model output → owner-signed → byte-bound isolated candidate
     if (!t.ok) throw new Error('translate failed');
     const proposal = { id: 'p', targetPath: TARGET, newContent: content, createdAt: NOW_ISO, supersedes: null };
     const auth = authFor(w.owner, proposal, { nonce: 'model-1' });
-    const { payloadHash } = candidatePayloadForProposals([proposal]);
+    const { payloadHash } = candidatePayloadForProposals([proposal], headSha()); // R54 v6: head-bound approval
     const candidateAuth = w.owner.authorize({ proposalHash: payloadHash, draftHash: payloadHash, nonce: 'model-cand-1', issuedAt: NOW_ISO, expiresAt: null });
 
     const cross = crossToCandidate(env, { crossing: t.crossing, currentHead: headSha(), auth, nonce: 'model-1', candidateAuth, ownerArmed: true, materialize: true });
