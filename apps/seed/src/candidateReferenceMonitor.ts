@@ -52,12 +52,36 @@ export function candidatePayloadForProposals(proposals: readonly Proposal[]): { 
   return { candidateId, payloadHash: candidatePayloadHashForFiles(candidateId, files) };
 }
 
-function candidatePolicyBytes(): Uint8Array {
+/** The ONE candidate policy — exported so every monitor implementation shares identical authorization semantics. */
+export function candidatePolicyBytes(): Uint8Array {
   return canonicalBytes({
     schema: 'aukora-policy-v1',
     rules: [{ action: { namespace: CANDIDATE_ACTION.namespace, kind: CANDIDATE_ACTION.kind, verb: CANDIDATE_ACTION.verb }, resourceNamespace: 'candidate', maxRing: 'self-modify', requiresAuthorization: true }],
     sacred: [],
   });
+}
+
+/**
+ * The ONE canonical kernel request for a candidate materialization — extracted so the durable monitor (R54) and the
+ * in-memory monitor submit byte-identical requests to `decide()`. Total: a hostile `auth` getter yields no nonce.
+ */
+export function buildCandidateKernelRequest(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, ownerArmed: boolean): { request: KernelRequestV1; payloadHash: string } {
+  const payloadHash = candidatePayloadHash(candidate);
+  let nonce = '';
+  try { const n = auth?.authorization?.nonce; nonce = typeof n === 'string' ? n : ''; } catch { nonce = ''; }
+  const request: KernelRequestV1 = {
+    schema: 'aukora-kernel-request-v1',
+    requestId: `candidate-${candidate.candidateId.slice(0, 24)}`,
+    action: { namespace: CANDIDATE_ACTION.namespace, kind: CANDIDATE_ACTION.kind, verb: CANDIDATE_ACTION.verb },
+    resource: { namespace: 'candidate', id: candidate.candidateId },
+    ring: 'self-modify',
+    payloadHash,
+    consumptionId: nonce.length > 0 ? nonce : null,
+    humanClearance: ownerArmed,
+    authorization: (auth as SignedPromotionV2) ?? null,
+    evidenceRefs: candidate.files.map((f) => f.receiptHash).filter((x): x is string => typeof x === 'string').sort(),
+  };
+  return { request, payloadHash };
 }
 
 export interface MonitorDecision {
@@ -88,22 +112,7 @@ export class CandidateReferenceMonitor {
    * materialization is refused `self_modify_requires_clearance`. Total: a malformed request/state fails closed.
    */
   decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts: { ownerArmed?: boolean } = {}): MonitorDecision {
-    const payloadHash = candidatePayloadHash(candidate);
-    let nonce = '';
-    try { const n = auth?.authorization?.nonce; nonce = typeof n === 'string' ? n : ''; } catch { nonce = ''; }
-
-    const request: KernelRequestV1 = {
-      schema: 'aukora-kernel-request-v1',
-      requestId: `candidate-${candidate.candidateId.slice(0, 24)}`,
-      action: { namespace: CANDIDATE_ACTION.namespace, kind: CANDIDATE_ACTION.kind, verb: CANDIDATE_ACTION.verb },
-      resource: { namespace: 'candidate', id: candidate.candidateId },
-      ring: 'self-modify',
-      payloadHash,
-      consumptionId: nonce.length > 0 ? nonce : null,
-      humanClearance: opts.ownerArmed === true,
-      authorization: (auth as SignedPromotionV2) ?? null,
-      evidenceRefs: candidate.files.map((f) => f.receiptHash).filter((x): x is string => typeof x === 'string').sort(),
-    };
+    const { request, payloadHash } = buildCandidateKernelRequest(candidate, auth, opts.ownerArmed === true);
     const state: TrustedStateV1 = {
       schema: 'aukora-trusted-state-v1',
       salama: { active: false, reason: null },
