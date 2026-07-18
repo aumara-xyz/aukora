@@ -1,0 +1,45 @@
+name: Research candidate
+description: Propose external prior art / a technique for the absorption ledger — research only, not code intake.
+labels: ["research-only"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Research candidates are qualified in [`docs/research/ABSORPTION_LEDGER.md`](https://github.com/aumara-xyz/aukora/blob/main/docs/research/ABSORPTION_LEDGER.md).
+        Nothing is absorbed because it appears here. **No source expression is copied** until it clears the admission law
+        (exact pin, license-file hash, clean-room/adopt/reject disposition, differential proof, secret/PII scan, and a
+        counsel-reviewed inbound grant). Raw external numbers never become organism test totals.
+  - type: input
+    id: source
+    attributes:
+      label: Source (repo URL + exact commit)
+    validations:
+      required: true
+  - type: input
+    id: license
+    attributes:
+      label: License + SPDX identifier (and any patent/notice constraint)
+      placeholder: e.g. Apache-2.0 / MIT / FSL / SSPL / BUSL / unlicensed
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea, and its canonical relation
+      description: What technique it is, and whether Aukora already has an equivalent (DUPLICATE) or a genuine gap.
+    validations:
+      required: true
+  - type: dropdown
+    id: disposition
+    attributes:
+      label: Proposed disposition
+      options:
+        - CLEAN_ROOM_PATTERN
+        - CONFORMANCE_VECTOR_ONLY
+        - DEPENDENCY_WITH_LICENSE
+        - CITE_ONLY
+        - LEGAL_REVIEW
+        - REJECT
+        - ALREADY_CANONICAL
+    validations:
+      required: true

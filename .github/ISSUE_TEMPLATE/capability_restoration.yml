@@ -1,0 +1,32 @@
+name: Capability restoration
+description: Request restoring a donor/Spatial feature that is currently EXCLUDED, OFFLINE, or FIXTURE.
+labels: ["roadmap", "good-first-audit"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Many surfaces carry an honest `OFFLINE` / `FIXTURE` / `EXCLUDED` label (see
+        [`docs/research/SPATIAL_TRUTH_LABELS.md`](https://github.com/aumara-xyz/aukora/blob/main/docs/research/SPATIAL_TRUTH_LABELS.md)).
+        A label is **not** a bug — restoration must ship the real behavior, not just remove the label. Good first
+        audits: verify a label is accurate, or scope the smallest donor-first restoration slice.
+  - type: input
+    id: affordance
+    attributes:
+      label: Which affordance / file
+      placeholder: e.g. spatial/app/onboarding.js (EXCLUDED), AUMA·Live duplex voice (OFFLINE)
+    validations:
+      required: true
+  - type: dropdown
+    id: current
+    attributes:
+      label: Current truth label
+      options: [EXCLUDED, OFFLINE, FIXTURE, PARTIAL, PARKED]
+    validations:
+      required: true
+  - type: textarea
+    id: slice
+    attributes:
+      label: Smallest restoration slice
+      description: The minimal, donor-faithful change that would move it to LIVE/PROVEN, and how it would be gated (tests, provenance pin).
+    validations:
+      required: true
