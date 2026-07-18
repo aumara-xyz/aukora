@@ -31,7 +31,8 @@ import { runGovernedRecursion, type RecursionEnv } from './recursion.js';
 import { AumaIdeEnvelope, type RepoReadCapability, type BranchCandidate } from './ideEnvelope.js';
 import { deriveIntentId, deriveDraftHash, type Proposal } from './proposal.js';
 import { reviewerFor } from './fuStructuredAdapter.js';
-import { materializeCandidate, type CandidateMaterialization } from './localCandidateStage.js';
+import { type CandidateMaterialization } from './localCandidateStage.js';
+import { runLiveCandidateEffect } from './liveEffectOps.js';
 import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
 import { DurableCandidateReferenceMonitor, trustedStateDirInsideFence } from './durableCandidateMonitor.js';
 import type { CouncilReviewer } from './mockCouncil.js';
@@ -177,28 +178,47 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   const monitor = env.monitor ?? (env.trustedStateDir !== undefined
     ? new DurableCandidateReferenceMonitor(env.ownerRoot, env.trustedStateDir)
     : new CandidateReferenceMonitor(env.ownerRoot));
-  // R54 v6 — the ACTIVE door is MANDATORILY head-bound: the stage verifies the owner's signature over the
-  // head-bound payload (`AUKORA-CANDIDATE-PAYLOAD/2` with expectedHeadBefore). A missing expectedHeadBefore
-  // refuses inside the stage BEFORE the durable consume (its head-bound precondition), and a head-free or
-  // wrong-base signature refuses `authority_invalid` at the ONE consuming decide(). No unbound approval can
-  // materialize through this door.
-  const materialization = materializeCandidate({
+  // R54 v6 — the ACTIVE door is MANDATORILY head-bound: a missing expectedHeadBefore is unverifiable, so refuse
+  // it here (the same fail-closed the stage's head-bound precondition enforced) before any effect.
+  if (invocation.expectedHeadBefore === undefined) {
+    return result({ ok: false, phase: 'refused-at-candidate', reasonClass: 'candidate:stale-head', text: 'refused: head-bound authorization requires expectedHeadBefore (the approved base)', workflowId, workflowState: state, rehearsalReceiptHash, candidate: staged.candidate });
+  }
+  // R56 — the PRIMARY ceremony materialization now runs THROUGH the crash-recoverable effect coordinator
+  // (`runLiveCandidateEffect`): rehearsal gate → NON-CONSUMING owner verify (forged/absent/wrong-base
+  // authorization refuses BEFORE any Git) → durable PREPARED consume + the ONE isolated Git effect inside the
+  // effect adapter → observe reality → isolation check → projection-only settle. Direct `materializeCandidate()`
+  // lives ONLY inside that adapter now, never beside it. Crash-safety is free from the composition: a durably
+  // consumed authorization replay-refuses and the adapter OBSERVES the existing candidate instead of
+  // re-executing (COMMITTED / RECONCILE_REQUIRED / QUARANTINED), so a crash after consume — before OR after Git —
+  // never double-effects. The stage still verifies the head-bound signature over the SAME `expectedHeadBefore`.
+  const live = runLiveCandidateEffect({
     repoRoot: env.gitRepoRoot,
     worktreeBase: env.worktreeBase,
     candidate: staged.candidate,
     candidateAuth: invocation.candidateAuth, // owner's signature over the HEAD-BOUND candidate payload hash
-    monitor,                                  // the ONE canonical kernel reference monitor
-    ownerArmed: invocation.ownerArmed === true,
     expectedHeadBefore: invocation.expectedHeadBefore,
-    authBindsHead: true,
+    ownerArmed: invocation.ownerArmed === true,
+    ownerRoot: env.ownerRoot,
+    monitor,                                  // the ONE canonical kernel reference monitor (durable when configured)
     store: env.store,
     nowMs: env.nowMs,
     nowIso: env.nowIso,
   });
-  if (!materialization.ok) {
-    return result({ ok: false, phase: 'refused-at-candidate', reasonClass: materialization.reasonClass, text: materialization.text, workflowId, workflowState: state, rehearsalReceiptHash, candidate: staged.candidate, materialization });
+  const materialization = live.materialization; // the underlying stage result (branch/commitSha/receipts), or null
+  if (live.phase === 'COMMITTED') {
+    return result({ ok: true, phase: 'candidate-materialized', reasonClass: 'candidate:ok', text: materialization?.text ?? 'candidate materialized', workflowId, workflowState: state, rehearsalReceiptHash, candidate: staged.candidate, materialization });
   }
-  return result({ ok: true, phase: 'candidate-materialized', reasonClass: 'candidate:ok', text: materialization.text, workflowId, workflowState: state, rehearsalReceiptHash, candidate: staged.candidate, materialization });
+  // Any non-COMMITTED coordinator verdict is a refused ceremony. Preserve the EXACT stage reason when the effect
+  // actually ran (candidate:stale-head / candidate:reference-monitor-refused / candidate:already-materialized /
+  // isolation…); when the owner gate refused a bad candidate authorization before the effect, that is the same
+  // root cause the stage's decide() would have named → `candidate:reference-monitor-refused`.
+  const reasonClass = materialization !== null
+    ? materialization.reasonClass
+    : live.phase === 'REFUSED_AT_OWNER'
+      ? 'candidate:reference-monitor-refused'
+      : live.reasonClass;
+  const text = materialization?.text ?? `refused at the governed effect (${live.phase.toLowerCase()})`;
+  return result({ ok: false, phase: 'refused-at-candidate', reasonClass, text, workflowId, workflowState: state, rehearsalReceiptHash, candidate: staged.candidate, materialization });
 }
 
 /** Extract the draft input from an already-validated proposal input (the durable gate validated it). */

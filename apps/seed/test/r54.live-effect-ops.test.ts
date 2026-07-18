@@ -206,7 +206,7 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
 
   it('the checkout-truth snapshot SEES uncommitted worktree bytes, index staging, and untracked files — HEAD^{tree} alone is blind to all three', () => {
     const inp = inputFor('snaptruth');
-    const ops = liveEffectOps(inp, new EffectAuditLedger(), { storeFault: null, stageRefusal: null });
+    const ops = liveEffectOps(inp, new EffectAuditLedger(), { storeFault: null, stageRefusal: null, materialization: null });
     const snap = () => ops.snapshotBefore() as ProtectedSnapshot;
     const clean = snap();
     const target = join(repoRoot, 'apps/seed/src/notes.ts');
@@ -231,7 +231,7 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
   it('an UNCOMMITTED primary mutation landing DURING the effect → isolation violation → QUARANTINED, never COMMITTED', () => {
     const inp = inputFor('mutmid');
     const audit = new EffectAuditLedger();
-    const ops = liveEffectOps(inp, audit, { storeFault: null, stageRefusal: null });
+    const ops = liveEffectOps(inp, audit, { storeFault: null, stageRefusal: null, materialization: null });
     const target = join(repoRoot, 'apps/seed/src/notes.ts');
     const orig = readFileSync(target, 'utf8');
     // The real effect runs clean (branch + durable consume), then an uncommitted primary mutation lands BEFORE the

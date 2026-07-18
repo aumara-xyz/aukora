@@ -210,10 +210,16 @@ describe('R50 · durable ceremony over the real ConvexWorkflowStore + process de
     expect(noHead.status).toBe(400);
     expect(noHead.json.reasonClass).toBe('door:head-missing');
 
-    // stale head (valid shape, wrong value): refused BEFORE the reference monitor — authorization not consumed
+    // Claimed head (valid shape, wrong value) while the authorization was SIGNED over the true head. R56: the
+    // ceremony now runs through the crash-recoverable effect coordinator, whose NON-CONSUMING owner verify
+    // catches the claim/signature mismatch EARLIER than the stage's head precheck — the head-bound payload over
+    // the claimed 'aaaa…' base does not verify → refused `candidate:reference-monitor-refused`. The security
+    // properties are identical to (stronger than) the old `candidate:stale-head`: refused BEFORE the durable
+    // consume, zero Git. (A genuine repo-moved-under-a-correct-claim still yields `candidate:stale-head` from the
+    // stage — proven in r56.primary-effect.)
     const stale = await h3.door.handle(post('/api/materialize', { ...bodyBase, headBefore: 'a'.repeat(40) }));
     expect(stale.json.ok).toBe(false);
-    expect(stale.json.reasonClass).toBe('candidate:stale-head');
+    expect(stale.json.reasonClass).toBe('candidate:reference-monitor-refused');
     expect(execFileSync('git', ['-C', repoRoot, 'branch', '--list', 'candidate/*'], { encoding: 'utf8' }).trim()).toBe('');
 
     // true head with the SAME authorization: exactly one isolated candidate
