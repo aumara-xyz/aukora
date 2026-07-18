@@ -24,6 +24,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { createHash, randomUUID } from 'node:crypto';
+import { aumlokRootId, aumlokRootIntegrity } from '@aukora/kernel/authority';
 import {
   resolveOwnerBootAuthority, provisionOwnerRoot, ownerBoundaryGrantsAuthority,
   HybridOwnerAdapter, CandidateReferenceMonitor, candidatePayloadHash,
@@ -126,6 +127,23 @@ describe('R55 · owner boot boundary — the production default REFUSES; fixture
       .toEqual({ mode: 'refused', reasonClass: 'owner:root-invalid' });
   });
 
+  it('EXACT KERNEL VALIDATION (R55.2): an internally-consistent root with WRONG-LENGTH keys can never resolve as injected', () => {
+    // Hand-built to defeat the pre-R55.2 loose gate: 40-hex keys (≥32 → passed the old shape check) with a
+    // rootId and integrity RECOMPUTED over them, so identity/integrity checks also pass. Only the kernel's
+    // exact validator (`assertAuthorityRoot`: ed25519=64 hex, mlDsa65=3904 hex) stands between this and
+    // `injected` — it must refuse owner:root-invalid.
+    const publicKeys = { ed25519: 'ab'.repeat(20), mlDsa65: 'cd'.repeat(20) }; // 40 hex each — wrong length
+    const base = {
+      schema: 'aumlok-authority-root-v2' as const, suite: 'aumlok-ed25519-ml-dsa-65-v1' as const,
+      rootId: aumlokRootId(publicKeys), publicKeys, mode: 'software_hybrid' as const,
+      createdAt: NOW_ISO, expiresAt: null, revoked: false,
+    };
+    const consistentButWrong = { ...base, integrity: aumlokRootIntegrity(base) };
+    const envelope = provisionOwnerRoot(consistentButWrong, NOW_ISO);
+    expect(resolveOwnerBootAuthority(INJ, fileOf(JSON.stringify(envelope)), NOW_MS))
+      .toEqual({ mode: 'refused', reasonClass: 'owner:root-invalid' });
+  });
+
   it('END-TO-END THREAT: an attacker re-deriving the public fixture key CANNOT authorize against a real injected root', () => {
     // the attacker's cheap move: rebuild the fixture from its public label and sign an "owner" authorization
     const attacker = new HybridOwnerAdapter('local-door-dev');
@@ -163,9 +181,16 @@ describe('R55 · planned provider secret shapes — refused by SHAPE, reported b
       tinkerSk: 'sk-tinker-Abc123_def-456xyz',
       tinkerRaw: 'tinker_ABCdef123456789012',
       tml: 'tml_ZYXwvu987654321098',
+      // R55.2 regression: SEGMENTED sk- keys (short segments before later hyphens) must be covered
+      skProj: 'sk-proj-Ab12Cd34Ef56Gh78',
+      skAnt: 'sk-ant-api03-Zz99Yy88Xx77',
     };
-    const flagged = scanForbiddenValues({ note: `deploy with ${tokens.hf}`, deep: { a: [tokens.tinkerSk], b: tokens.tinkerRaw, c: tokens.tml } });
-    expect(flagged.sort()).toEqual(['deep.a[0]', 'deep.b', 'deep.c', 'note']);
+    const flagged = scanForbiddenValues({
+      note: `deploy with ${tokens.hf}`,
+      deep: { a: [tokens.tinkerSk], b: tokens.tinkerRaw, c: tokens.tml },
+      seg: { proj: `key=${tokens.skProj}`, ant: tokens.skAnt },
+    });
+    expect(flagged.sort()).toEqual(['deep.a[0]', 'deep.b', 'deep.c', 'note', 'seg.ant', 'seg.proj']);
     // content-free: the scanner output is the PATH list — assert no token bytes ride along
     const out = JSON.stringify(flagged);
     for (const t of Object.values(tokens)) expect(out).not.toContain(t.slice(3));

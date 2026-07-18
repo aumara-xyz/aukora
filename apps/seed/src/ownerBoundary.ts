@@ -35,7 +35,7 @@
  */
 import { canonicalHash } from '@aukora/kernel/canonical';
 import { aumlokRootId, aumlokRootIntegrity } from '@aukora/kernel/authority';
-import type { AumlokAuthorityRootV2 } from '@aukora/kernel/schemas';
+import { assertAuthorityRoot, type AumlokAuthorityRootV2 } from '@aukora/kernel/schemas';
 import { HybridOwnerAdapter } from './ownerFixture.js';
 
 /** The provisioning stamp domain — distinct from every kernel/candidate domain; versioned. */
@@ -160,8 +160,17 @@ export function resolveOwnerBootAuthority(
   }
   const root = parsed.root;
 
-  // KERNEL-FORM checks (the same identity/integrity forms verifyAumlokPromotionV2 enforces downstream — fail
-  // fast at boot, content-free): the rootId must derive from the public keys, the integrity must recompute.
+  // THE KERNEL'S OWN EXACT VALIDATOR (R55.2): `assertAuthorityRoot` — exact field set, exact key lengths
+  // (ed25519 = 64 hex, ML-DSA-65 = 3904 hex), canonical ISO timestamps. A root that would fail
+  // `verifyAumlokPromotionV2` downstream can never resolve as `injected` at boot. The thrown kernel error is
+  // swallowed content-free.
+  try {
+    assertAuthorityRoot(root);
+  } catch {
+    return { mode: 'refused', reasonClass: 'owner:root-invalid' };
+  }
+  // KERNEL-FORM identity/integrity (also enforced at verification — fail fast at boot, content-free): the
+  // rootId must derive from the public keys, the integrity must recompute.
   if (root.rootId !== aumlokRootId({ ed25519: root.publicKeys.ed25519, mlDsa65: root.publicKeys.mlDsa65 })) {
     return { mode: 'refused', reasonClass: 'owner:root-invalid' };
   }
