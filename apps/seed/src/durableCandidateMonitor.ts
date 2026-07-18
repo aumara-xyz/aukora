@@ -26,6 +26,8 @@
  * root requires an explicit owner-directed state migration (a new state dir) — deliberately NOT automatic, so a
  * swapped root can never silently re-open consumed authority.
  */
+import { realpathSync } from 'node:fs';
+import { resolve, dirname, basename, sep } from 'node:path';
 import {
   TrustedStateStore, RollbackRefusedError, WriterLockedError, TrustedStoreCorruptError, type CrashHook,
 } from '@aukora/kernel-node';
@@ -35,6 +37,43 @@ import {
 } from './candidateReferenceMonitor.js';
 import { candidateBranchName } from './localCandidateStage.js';
 import type { BranchCandidate } from './ideEnvelope.js';
+
+/**
+ * Canonicalize a path for the isolation fence (R54 review repair): lexical resolve, then realpath the NEAREST
+ * EXISTING ancestor and re-append the not-yet-created suffix. This resolves every symlink an attacker can
+ * pre-plant (a symlinked parent routing an "outside" path back inside the repo) while still working for dirs the
+ * store will mkdir later. Lives HERE (the effect-adjacent module) because the ceremony runner is a RUNTIME module
+ * that must not import fs under the structural containment law.
+ */
+function canonicalizePath(p: string): string {
+  let existing = resolve(p);
+  const suffix: string[] = [];
+  for (;;) {
+    try {
+      return suffix.length === 0 ? realpathSync(existing) : resolve(realpathSync(existing), ...suffix.reverse());
+    } catch {
+      const parent = dirname(existing);
+      if (parent === existing) return resolve(p); // no existing ancestor at all — lexical resolution is final
+      suffix.push(basename(existing));
+      existing = parent;
+    }
+  }
+}
+
+/**
+ * TRUE when the trusted-state dir canonically resolves EQUAL TO or BENEATH any fence root (the repo working tree,
+ * the disposable worktree base). The durable authority store must survive candidate cleanup and never ride a
+ * commit — inside either fence, consumed authority could be erased or exfiltrated.
+ */
+export function trustedStateDirInsideFence(stateDir: string, fences: readonly (string | undefined)[]): boolean {
+  const stateReal = canonicalizePath(stateDir);
+  for (const fence of fences) {
+    if (fence === undefined) continue;
+    const fenceReal = canonicalizePath(fence);
+    if (stateReal === fenceReal || stateReal.startsWith(fenceReal + sep)) return true;
+  }
+  return false;
+}
 
 function genesis(ownerRoot: AumlokAuthorityRootV2): TrustedStateV1 {
   return {
