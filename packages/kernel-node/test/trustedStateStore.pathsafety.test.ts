@@ -11,7 +11,7 @@
  * check→swap→open RACE test.
  */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdtempSync, mkdirSync, rmSync, existsSync, symlinkSync, writeFileSync, chmodSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, rmSync, existsSync, symlinkSync, writeFileSync, chmodSync, readFileSync, renameSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -105,5 +105,34 @@ describe('RACE — swap the state dir between an external check and the store op
     const b = new TrustedStateStore(outside, { decide: stub }); b.open();
     expect(b.load(genesis()).state.consumedIds).toEqual(['k']); // durable across restart
     b.close();
+  });
+});
+
+describe('POST-OPEN directory replacement (the exact Codex v5 acceptance) → fail closed, zero writes at target', () => {
+  it('open real 0700 dir → rename it aside → replace the pathname with a symlink → authorizeAndPrepare refuses, nothing at target', () => {
+    mkdirSync(outside, { recursive: true }); chmodSync(outside, 0o700);
+    const s = new TrustedStateStore(outside, { decide: stub });
+    s.open(); // held dirFd + pinned inode on the REAL dir
+    // attacker (after open): move the real dir aside and drop a symlink at the ORIGINAL pathname → sneak target
+    renameSync(outside, join(base, 'aside'));
+    symlinkSync(sneakTarget, outside);
+    // every path-based lifetime op now re-verifies the pinned inode: load()'s assertDir opens `outside` no-follow,
+    // sees a symlink (ELOOP) → refuse. Nothing is ever written through the replacement.
+    expect(() => authorize(s, 'auth-x')).toThrow(TrustedStoreUnsafePathError);
+    for (const name of ['trusted-state.json', 'trusted-state.tmp', 'receipt-highwater.json', 'writer.lock']) {
+      expect(existsSync(join(sneakTarget, name)), `wrote ${name} into the swapped target`).toBe(false);
+    }
+    // and the state genuinely aside was never advanced either (the consume never happened)
+    expect(existsSync(join(base, 'aside', 'trusted-state.json'))).toBe(false);
+  });
+
+  it('post-open replacement with a DIFFERENT real directory (not a symlink) is caught by the inode pin', () => {
+    mkdirSync(outside, { recursive: true }); chmodSync(outside, 0o700);
+    const s = new TrustedStateStore(outside, { decide: stub });
+    s.open();
+    renameSync(outside, join(base, 'aside2'));
+    mkdirSync(outside, { mode: 0o700 }); // a brand-new real dir at the same pathname (different inode)
+    expect(() => authorize(s, 'auth-y')).toThrow(TrustedStoreUnsafePathError);
+    expect(existsSync(join(outside, 'trusted-state.json'))).toBe(false); // nothing written into the impostor dir
   });
 });
