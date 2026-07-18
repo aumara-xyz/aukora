@@ -35,8 +35,15 @@ export const FORBIDDEN_KEY_RE =
   /(chainofthought|cot|rawprompt|rawmodel|hiddenstate|privatekey|signingseed|signingsecret|signaturebody|rawsignature|\bpop\b|proofofpossession|secretbody|authoritytoken|verifierinternals|evidencebundle|mnemonic|apikey|\bsecret\b|\btoken\b|password|seedphrase|privateseed)/;
 
 // Forbidden VALUE content — secret material / production wires smuggled into an allowlisted STRING value.
+// R55: includes the PLANNED provider token shapes (HuggingFace `hf_…`; Tinker `tinker_…` / `tml_…`) so a pasted
+// provider credential is refused BEFORE those integrations exist. R55.2: the `sk-` branch allows separators
+// throughout the suffix, so SEGMENTED keys (`sk-proj-…`, `sk-ant-api03-…`, `sk-tinker-…`) are covered by ONE
+// shape, not a per-vendor list. R55.3: the WHOLE pattern is CASE-INSENSITIVE — `Bearer`/`BEARER` (the standard
+// header casings) match like `bearer`, and every prefix/wire shape refuses regardless of case; strictly broader
+// refusal, never narrower (the 64-hex class was already case-symmetric). Shape-only: the scanners report the
+// PATH of the offending string, never the matched bytes.
 export const FORBIDDEN_VALUE_RE =
-  /-----BEGIN [A-Z ]*PRIVATE KEY-----|\bsk-[A-Za-z0-9]{12,}\b|\bbearer\s+[A-Za-z0-9._-]{16,}|chain[\s_-]*of[\s_-]*thought|\.convex\.(cloud|dev|site)\b|\bauma\.one\b|(?<![a-fA-F0-9])[a-fA-F0-9]{64,}(?![a-fA-F0-9])/;
+  /-----BEGIN [A-Z ]*PRIVATE KEY-----|\bsk-[A-Za-z0-9._-]{12,}(?![A-Za-z0-9._-])|\bhf_[A-Za-z0-9]{16,}\b|\btinker_[A-Za-z0-9]{12,}\b|\btml_[A-Za-z0-9]{12,}\b|\bbearer\s+[A-Za-z0-9._-]{16,}|chain[\s_-]*of[\s_-]*thought|\.convex\.(cloud|dev|site)\b|\bauma\.one\b|(?<![a-fA-F0-9])[a-fA-F0-9]{64,}(?![a-fA-F0-9])/i;
 
 // Affirmative apply/active OVERCLAIMS an honest manifest never emits (it says "NOT BUILT", "NEVER applyable").
 export const OVERCLAIM_RE =
