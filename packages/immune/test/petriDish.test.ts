@@ -25,10 +25,10 @@ describe('PetriBus — a synchronous in-memory event bus (no I/O)', () => {
     const bus = new PetriBus();
     const seen: PetriEvent[] = [];
     const off = bus.on('patrol.finding', (e) => seen.push(e));
-    bus.emit({ type: 'patrol.finding', source: 'patrol', payload: {}, inflammationLevel: 'baseline' });
+    bus.emit({ type: 'patrol.finding', source: 'patrol', payload: {}, inflammationLevel: 'baseline', timestampMs: NOW });
     expect(seen).toHaveLength(1);
     off();
-    bus.emit({ type: 'patrol.finding', source: 'patrol', payload: {}, inflammationLevel: 'baseline' });
+    bus.emit({ type: 'patrol.finding', source: 'patrol', payload: {}, inflammationLevel: 'baseline', timestampMs: NOW });
     expect(seen).toHaveLength(1); // no delivery after unsubscribe
   });
   it('maxHistory = 0 retains NO history (guards the slice(-0) === whole-array footgun)', () => {
@@ -48,7 +48,9 @@ describe('cycle reinforcement + immutable snapshot + observable council feedback
     const persisted = out.state.antibodies.find((a) => a.id === ab.id)!;
     expect(persisted.bindCount).toBeGreaterThan(ab.bindCount); // reinforcement persisted, not discarded
     const recalled = out.state.memoryBCells.find((c) => c.signatureId === cell.signatureId)!;
-    expect(recalled.encounterTimestamps.length).toBeGreaterThanOrEqual(cell.encounterTimestamps.length);
+    // STRICTLY greater — a `>=` would pass on an unchanged (non-reinforced) cell and miss the regression.
+    expect(recalled.encounterTimestamps.length).toBeGreaterThan(cell.encounterTimestamps.length);
+    expect(recalled.lastEncounter).toBe(NOW); // the recall updated the encounter state to this cycle
   });
   it('the emitted petri.cycle payload actions EQUAL the returned actions (finalized before emit) + effective level', () => {
     const bus = new PetriBus();

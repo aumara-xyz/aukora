@@ -96,11 +96,10 @@ export class PetriBus {
     return () => unsubscribes.forEach(u => u());
   }
 
-  emit(event: Omit<PetriEvent, 'timestampMs'> & { timestampMs?: number }): void {
-    const fullEvent: PetriEvent = {
-      ...event,
-      timestampMs: event.timestampMs ?? Date.now(),
-    };
+  emit(event: PetriEvent): void {
+    // timestampMs is MANDATORY — the bus is a deterministic reducer, so there is NO wall-clock (`Date.now()`)
+    // fallback. Every internal caller injects the cycle/triggering timestamp.
+    const fullEvent: PetriEvent = event;
     this.history.push(fullEvent);
     // maxHistory <= 0 means "retain NO history" — `slice(-0)` is `slice(0)` (the WHOLE array), so guard it
     // explicitly rather than leaving history unbounded.
@@ -269,26 +268,29 @@ export function runPetriCycle(
     newEngagements = [...newEngagements, engagement];
     emitNow({ type: 'engagement.created', source: 'engagement', payload: engagement, inflammationLevel: newInflammation });
     events.push({ type: 'engagement.created', timestampMs: now, source: 'engagement', payload: engagement, inflammationLevel: newInflammation });
-    actions.push(`[ENGAGEMENT]  for ${threat.severity} threat: ${threat.pattern}`);
+    actions.push(`[ENGAGEMENT] ${engagement.recommended ? 'RECOMMENDED' : 'NOT-RECOMMENDED'} for ${threat.severity} threat: ${threat.pattern}`);
   }
 
-  // Step 10: Advance homeostasis
+  // Step 10: Homeostasis. FRESH FINDINGS END ANY COOLDOWN — a stale cooldown level must never mask an active
+  // threat cycle. So when findings are present we CLEAR homeostasis and hold the active inflammation; only a
+  // ZERO-finding cycle advances the φ-governed cooldown.
   let newHomeostasis = previousState.homeostasis;
-  if (newInflammation !== 'baseline' && totalFindings === 0) {
-    if (!newHomeostasis) newHomeostasis = initHomeostasis(newInflammation, 0, 0, now);
-    else newHomeostasis = advanceHomeostasis(newHomeostasis, now);
+  if (totalFindings > 0) {
+    newHomeostasis = null; // active-threat cycle — no cooldown projection may apply this cycle
+  } else if (newInflammation !== 'baseline') {
+    newHomeostasis = newHomeostasis ? advanceHomeostasis(newHomeostasis, now) : initHomeostasis(newInflammation, 0, 0, now);
     emitNow({ type: 'homeostasis.advance', source: 'homeostasis', payload: newHomeostasis, inflammationLevel: newInflammation });
     events.push({ type: 'homeostasis.advance', timestampMs: now, source: 'homeostasis', payload: newHomeostasis, inflammationLevel: newInflammation });
     actions.push(`[HOMEOSTASIS] Cooldown: ${newHomeostasis.currentLevel} → target ${newHomeostasis.targetLevel}`);
   }
 
-  // Step 10b: HOMEOSTASIS PROJECTION — if the cooldown de-escalated below the (hysteretic) inflammation level,
-  // the next state's effective level FOLLOWS homeostasis. Without this, `computeInflammation`'s hysteresis
-  // preserves the previous higher level and the organism could never actually cool down.
+  // Step 10b: HOMEOSTASIS PROJECTION — applies ONLY on a zero-finding cooldown cycle. If the cooldown has
+  // de-escalated below the (hysteretic) inflammation level, the next state's effective level follows homeostasis;
+  // with fresh findings the active inflammation stands (the projection is skipped).
   const levelIdx = (l: InflammationLevel) => ['baseline', 'elevated', 'high', 'crisis'].indexOf(l);
   let effectiveLevel = newInflammation;
   let effectivePostureVal = newPosture;
-  if (newHomeostasis && levelIdx(newHomeostasis.currentLevel) < levelIdx(newInflammation)) {
+  if (totalFindings === 0 && newHomeostasis && levelIdx(newHomeostasis.currentLevel) < levelIdx(newInflammation)) {
     effectiveLevel = newHomeostasis.currentLevel;
     effectivePostureVal = POSTURES[effectiveLevel];
   }

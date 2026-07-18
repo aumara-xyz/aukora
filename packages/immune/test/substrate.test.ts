@@ -24,18 +24,26 @@ const threat = (over: Partial<ThreatSignature> = {}): ThreatSignature => ({
 });
 
 describe('thymus — self/non-self selection + Fibonacci escalation', () => {
-  it('fibonacciEscalation maps severity onto the Fibonacci ladder', () => {
+  it('fibonacciEscalation maps severity onto the EXACT documented Fibonacci rungs', () => {
+    // Encode the contract directly — membership + `critical > low` would still pass if medium/high regressed.
+    expect(fibonacciEscalation('low')).toBe(1);
+    expect(fibonacciEscalation('medium')).toBe(2);
+    expect(fibonacciEscalation('high')).toBe(5);
+    expect(fibonacciEscalation('critical')).toBe(8);
     for (const s of ['low', 'medium', 'high', 'critical'] as const) expect(FIBONACCI_LEVELS).toContain(fibonacciEscalation(s));
-    expect(fibonacciEscalation('critical')).toBeGreaterThan(fibonacciEscalation('low')); // more severe ⇒ higher rung
   });
   it('negativeSelect rejects a candidate that collides with a protected self-pattern', () => {
     const selfish = threat({ pattern: DEFAULT_SELF_PATTERNS[0].pattern });
     expect(negativeSelect([selfish]).passed).toBe(false);          // would attack self → culled
     expect(negativeSelect([threat({ pattern: 'zzz-unrelated-zzz' })]).passed).toBe(true);
   });
-  it('thymicSelection returns immutable trained cells (data only, no side effect)', () => {
-    const cells = thymicSelection([{ archetype: 'patrol', patterns: ['ransomware'], signatures: [threat()], id: 'c1' }]);
-    expect(Array.isArray(cells)).toBe(true);
+  it('thymicSelection actually PRODUCES the trained cell (right count, archetype + id preserved)', () => {
+    // patterns must recognize ≥2 self-patterns (positive selection) so a cell is actually trained — an empty
+    // result would slip past the old Array.isArray check.
+    const cells = thymicSelection([{ archetype: 'patrol', patterns: ['grantsAuthority:false', 'advisoryOnly:true'], signatures: [threat({ pattern: 'zzz-unrelated-zzz' })], id: 'c1' }]);
+    expect(cells).toHaveLength(1);                 // not an empty array (which Array.isArray would also pass)
+    expect(cells[0].archetype).toBe('patrol');
+    expect(cells[0].id).toBe('c1');
   });
 });
 

@@ -72,8 +72,11 @@ export function patrolScan(
     { pattern: 'replay attack', severity: 'high' as const, action: 'Check consumed-ID set' },
   ];
 
+  const lowerContent = content.toLowerCase();
   for (const ap of anomalyPatterns) {
-    if (content.toLowerCase().includes(ap.pattern)) {
+    // Case-INSENSITIVE on BOTH sides — some patterns carry uppercase (e.g. 'grantsAuthority=true'); matching a
+    // lowercased content against a mixed-case pattern would never fire.
+    if (lowerContent.includes(ap.pattern.toLowerCase())) {
       findings.push({
         id: `anomaly_${ap.pattern.replace(/\s+/g, '_')}_${nowMs}`,
         pattern: ap.pattern,
@@ -84,7 +87,8 @@ export function patrolScan(
     }
   }
 
-  const uniquePatterns = new Set(findings.map(f => f.pattern)).size;
+  // coverageScore is intentionally a bounded function of the finding COUNT; the per-scan unique-pattern tally is
+  // computed once from `allPatterns` in the returned report (below), so no separate local is needed here.
   const coverageScore = Math.min(1, findings.length * 0.618);
 
   return {

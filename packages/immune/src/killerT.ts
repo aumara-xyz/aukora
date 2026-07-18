@@ -108,6 +108,7 @@ export function checkAutoimmunity(
   const collisions: string[] = [];
   for (const action of killer.actions) {
     for (const sp of selfPatterns) {
+      if (sp.length === 0) continue; // an empty self-pattern would make `action.includes('')` classify EVERY action autoimmune
       if (action.includes(sp) || sp.includes(action)) {
         collisions.push(`${action}×${sp}`);
       }

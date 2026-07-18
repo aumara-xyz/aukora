@@ -104,6 +104,11 @@ export function createEngagement(
   roe: RoE,
   nowMs: number,
 ): EngagementPackage {
+  // NORMALIZE the RoE so council/owner approval is STRUCTURALLY required — a caller cannot smuggle in a RoE with
+  // councilApprovalRequired:false and end up with a package whose nested `roe` contradicts its top-level marker.
+  const normalizedRoe: RoE = roe.councilApprovalRequired ? roe : { ...roe, councilApprovalRequired: true };
+  roe = normalizedRoe;
+
   const escalationLevel = threat.severity === 'critical' ? 8 :
     threat.severity === 'high' ? 5 :
     threat.severity === 'medium' ? 2 : 1;
