@@ -30,7 +30,7 @@ import type { ReactiveMemoryStore } from '@aukora/brain';
 import type { SignedPromotionV2, AumlokAuthorityRootV2 } from '@aukora/kernel/schemas';
 import { driveEffect, type EffectOps, type EffectRunResult, type EffectRunPhase } from './effectCoordinator.js';
 import { CandidateReferenceMonitor, type DurableEffectMonitor } from './candidateReferenceMonitor.js';
-import { materializeCandidate, candidateBranchName } from './localCandidateStage.js';
+import { materializeCandidate, candidateBranchName, type CandidateMaterialization } from './localCandidateStage.js';
 import { deriveDraftHash } from './proposal.js';
 import { snapshotProtected, verifyIsolation, type RefReader, type ProtectedSnapshot } from './refSnapshot.js';
 import { EffectAuditLedger } from './effectAudit.js';
@@ -165,15 +165,19 @@ export interface LiveEffectInput {
  *  blind retry. Forward-compatible: `unsafe_path` simply never matches until Sam 2's v4 store lands. */
 const NON_RETRYABLE_STORE_FAULT = /\((trusted_state_(?:rollback|corrupt|unsafe_path))\)/;
 
-/** Mutable sink the run entry reads back after `driveEffect` — surfaces a non-retryable store fault, and the exact
- *  stage refusal class (e.g. `candidate:stale-head`) when the ONE materialization was refused, for triage/proof. */
+/** Mutable sink the run entry reads back after `driveEffect` — surfaces a non-retryable store fault, the exact
+ *  stage refusal class (e.g. `candidate:stale-head`) when the ONE materialization was refused, and the underlying
+ *  `CandidateMaterialization` itself (so a primary caller can preserve its existing materialization contract while
+ *  the coordinator governs crash-safety/isolation/settlement on top). `materialization` is null when the owner gate
+ *  refused before the effect ran. */
 export interface LiveEffectSink {
   storeFault: string | null;
   stageRefusal: string | null;
+  materialization: CandidateMaterialization | null;
 }
 
 /** Build the concrete `EffectOps` for one live candidate effect. Pure composition over the merged primitives. */
-export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, sink: LiveEffectSink = { storeFault: null, stageRefusal: null }): EffectOps {
+export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, sink: LiveEffectSink = { storeFault: null, stageRefusal: null, materialization: null }): EffectOps {
   const { repoRoot, worktreeBase, candidate, candidateAuth, ownerArmed, monitor, store, nowMs, nowIso } = input;
   const branch = candidateBranchName(candidate);
   const reader = gitRefReader(repoRoot);
@@ -211,6 +215,7 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, 
       // over the same base — the live path never accepts a head-free authorization.
       const m = materializeCandidate({ repoRoot, worktreeBase, candidate, candidateAuth, monitor, ownerArmed, store, nowMs, nowIso, expectedHeadBefore: input.expectedHeadBefore, authBindsHead: true });
       completionRef = m.ok ? m.receiptHash : null;
+      sink.materialization = m;                     // the underlying materialization (branch/commitSha/receipts) for a primary caller
       if (!m.ok) sink.stageRefusal = m.reasonClass; // the EXACT stage refusal (content-free class), e.g. candidate:stale-head
       // Advisory (Sam 2): surface a NON-RETRYABLE durable-store fault (rollback/corrupt) for operator triage — a
       // retryable lock/outage is NOT surfaced. The effect still quarantines/reconciles; this only names the fault.
@@ -267,20 +272,24 @@ export interface LiveEffectResult extends EffectRunResult {
    *  `candidate:already-materialized`, `candidate:reference-monitor-refused`); `null` when it succeeded. Content-free
    *  (a class label, never file content) — lets a caller/test pin the precise refusal, not just the terminal phase. */
   readonly stageRefusal: string | null;
+  /** The underlying `CandidateMaterialization` (branch/commitSha/receipts) from the ONE governed effect, so a
+   *  primary caller keeps its existing materialization contract; `null` when the owner gate refused before the
+   *  effect ran. */
+  readonly materialization: CandidateMaterialization | null;
 }
 
 /**
- * Run ONE live candidate effect through the lifecycle coordinator. FOUNDATION-ONLY: it drives the real durable
- * monitor + hardened candidate stage through `driveEffect` and is proven end-to-end, but it is NOT yet on the
- * primary door path — that hop (switching `localCeremonyRunner`'s materialize step to `runLiveCandidateEffect`)
- * remains deferred on that protected surface. Returns the coordinator verdict plus the content-free audit trail.
- * No authority minted here; the durable monitor holds the ONE authorization.
+ * Run ONE live candidate effect through the lifecycle coordinator. It drives the real durable monitor + hardened
+ * candidate stage through `driveEffect`. R56: this is now the PRIMARY ceremony materialization path
+ * (`localCeremonyRunner` delegates its effect step here); direct `materializeCandidate()` lives ONLY inside this
+ * adapter's `runGitEffect`, never beside it. Returns the coordinator verdict, the content-free audit trail, and
+ * the underlying materialization. No authority minted here; the durable monitor holds the ONE authorization.
  */
 export function runLiveCandidateEffect(input: LiveEffectInput): LiveEffectResult {
   const audit = new EffectAuditLedger();
-  const sink: LiveEffectSink = { storeFault: null, stageRefusal: null };
+  const sink: LiveEffectSink = { storeFault: null, stageRefusal: null, materialization: null };
   const result = driveEffect(liveEffectOps(input, audit, sink));
-  return { ...result, auditTrail: audit.log().map((e) => ({ toPhase: e.toPhase, hasCompletionRef: e.hasCompletionRef })), storeFault: sink.storeFault, stageRefusal: sink.stageRefusal };
+  return { ...result, auditTrail: audit.log().map((e) => ({ toPhase: e.toPhase, hasCompletionRef: e.hasCompletionRef })), storeFault: sink.storeFault, stageRefusal: sink.stageRefusal, materialization: sink.materialization };
 }
 
 /** HARD: the adapter composes existing governed pieces; it signs nothing, pushes nothing, mints no authority. */
