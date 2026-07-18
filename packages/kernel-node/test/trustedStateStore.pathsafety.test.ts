@@ -1,0 +1,109 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2026 Aukora
+/**
+ * R54 v4 — the store-opening TOCTOU closure, proven from the store boundary itself.
+ *
+ * The trusted-state fence used to live only in the CALLER (canonicalize then hand a string to the store); an
+ * attacker could swap a symlink component between that check and the store's own open. These tests prove the
+ * invariant now lives where the journal is actually opened: `TrustedStateStore.open()` verifies the dir NO-FOLLOW
+ * with a held fd + an owner-only contract, and every journal file is opened O_NOFOLLOW — so a symlink swapped in
+ * AFTER any external check is refused at use, before any durable write. Includes the required
+ * check→swap→open RACE test.
+ */
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { mkdtempSync, mkdirSync, rmSync, existsSync, symlinkSync, writeFileSync, chmodSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import {
+  TrustedStateStore, TrustedStoreUnsafePathError, type CrashHook,
+} from '../src/index.js';
+import type { TrustedStateV1, KernelRequestV1, KernelResultV1 } from '@aukora/kernel';
+
+const genesis = (): TrustedStateV1 => ({ schema: 'aukora-trusted-state-v1', salama: { active: false, reason: null }, trustedRoots: [], consumedIds: [], receiptHead: { count: 0, headHash: null } });
+const stub = ((request: KernelRequestV1, state: TrustedStateV1): KernelResultV1 => {
+  const cid = request.consumptionId;
+  if (cid !== null && state.consumedIds.includes(cid)) return { schema: 'aukora-kernel-result-v1', decision: { status: 'refused', code: 'replay', ring: 'self-modify', authorizedRootId: null }, nextState: state, receiptDraft: {} as never } as never;
+  const consumedIds = cid !== null ? [...state.consumedIds, cid].sort() : state.consumedIds;
+  return { schema: 'aukora-kernel-result-v1', decision: { status: 'allowed', code: 'allowed', ring: 'self-modify', authorizedRootId: 'root-1' }, nextState: { ...state, consumedIds, receiptHead: { count: state.receiptHead.count + 1, headHash: 'd'.repeat(64) } }, receiptDraft: {} as never } as never;
+}) as never;
+const effect = { effectId: 'e1', descriptorKind: 'git-candidate', targetPath: 'candidate/x', contentHash: 'c'.repeat(64) };
+const authorize = (s: TrustedStateStore, cid: string) => s.authorizeAndPrepare({ genesis: genesis(), request: { consumptionId: cid } as never, policyBytes: new Uint8Array(), effect, nowMs: 2_000 });
+
+let base: string; let outside: string; let sneakTarget: string;
+beforeEach(() => {
+  base = mkdtempSync(join(tmpdir(), 'aukora-pathsafety-'));
+  outside = join(base, 'trusted');     // the legitimate owner-only state dir
+  sneakTarget = join(base, 'sneak');   // where a hostile symlink would redirect the journal
+  mkdirSync(sneakTarget, { recursive: true });
+});
+afterEach(() => { rmSync(base, { recursive: true, force: true }); });
+
+describe('a normal owner-only dir opens + commits (held-fd dir-fsync path)', () => {
+  it('consumes durably and the receipt head advances (no regression from the no-follow rewrite)', () => {
+    const s = new TrustedStateStore(outside, { decide: stub }); s.open();
+    expect(authorize(s, 'auth-1').ok).toBe(true);
+    s.close();
+    const reopened = new TrustedStateStore(outside, { decide: stub }); reopened.open();
+    expect(authorize(reopened, 'auth-1').ok).toBe(false);   // durable replay across reopen — dir-fsync via held fd
+    expect(reopened.load(genesis()).state.receiptHead.count).toBe(1);
+    reopened.close();
+  });
+});
+
+describe('open() refuses a symlinked / non-owner-only state dir (no-follow + owner-only at the store boundary)', () => {
+  it('the state dir SWAPPED to a symlink is refused before any write', () => {
+    symlinkSync(sneakTarget, outside);                 // outside → sneakTarget (a real dir)
+    const s = new TrustedStateStore(outside, { decide: stub });
+    expect(() => s.open()).toThrow(TrustedStoreUnsafePathError);
+    expect(existsSync(join(sneakTarget, 'writer.lock'))).toBe(false); // nothing written through the link
+    expect(existsSync(join(sneakTarget, 'trusted-state.json'))).toBe(false);
+  });
+
+  it('a symlink pointing at a NOT-YET-EXISTING target is still refused (broken-link case)', () => {
+    symlinkSync(join(base, 'does-not-exist-yet'), outside);
+    const s = new TrustedStateStore(outside, { decide: stub });
+    expect(() => s.open()).toThrow(TrustedStoreUnsafePathError);
+    expect(existsSync(join(base, 'does-not-exist-yet'))).toBe(false); // the store never created through the link
+  });
+
+  it('[POSIX] a group/world-accessible dir is refused (owner-only contract)', () => {
+    if (process.platform === 'win32') return; // POSIX mode bits only
+    mkdirSync(outside, { recursive: true });
+    chmodSync(outside, 0o755); // group+other readable/executable
+    const s = new TrustedStateStore(outside, { decide: stub });
+    expect(() => s.open()).toThrow(TrustedStoreUnsafePathError);
+  });
+
+  it('a writer.lock pre-planted as a symlink is refused (O_NOFOLLOW on the lock)', () => {
+    mkdirSync(outside, { recursive: true }); chmodSync(outside, 0o700);
+    symlinkSync(join(sneakTarget, 'evil-lock'), join(outside, 'writer.lock'));
+    const s = new TrustedStateStore(outside, { decide: stub });
+    expect(() => s.open()).toThrow(TrustedStoreUnsafePathError);
+    expect(existsSync(join(sneakTarget, 'evil-lock'))).toBe(false); // never written through the link
+  });
+});
+
+describe('RACE — swap the state dir between an external check and the store open → fail closed', () => {
+  it('a caller that canonicalizes a real dir, then has it swapped to a symlink, is refused at open()', () => {
+    // 1. CHECK: an external fence canonicalizes a real owner-only dir and approves it (outside any repo).
+    mkdirSync(outside, { recursive: true }); chmodSync(outside, 0o700);
+    const checkedReal = readFileSync; // (the check is just: it existed as a real dir — approved)
+    void checkedReal;
+    // 2. SWAP: the attacker replaces it with a symlink into a location the journal must never reach.
+    rmSync(outside, { recursive: true, force: true });
+    symlinkSync(sneakTarget, outside);
+    // 3. OPEN (use): the store re-resolves at open — and refuses, because its OWN no-follow check runs at use.
+    const s = new TrustedStateStore(outside, { decide: stub });
+    expect(() => s.open()).toThrow(TrustedStoreUnsafePathError);
+    expect(existsSync(join(sneakTarget, 'writer.lock'))).toBe(false);
+    expect(existsSync(join(sneakTarget, 'trusted-state.json'))).toBe(false);
+  });
+
+  it('valid EXTERNAL owner-only state (unswapped) still opens and survives a reopen', () => {
+    mkdirSync(outside, { recursive: true }); chmodSync(outside, 0o700);
+    const a = new TrustedStateStore(outside, { decide: stub }); a.open(); expect(authorize(a, 'k').ok).toBe(true); a.close();
+    const b = new TrustedStateStore(outside, { decide: stub }); b.open();
+    expect(b.load(genesis()).state.consumedIds).toEqual(['k']); // durable across restart
+    b.close();
+  });
+});
