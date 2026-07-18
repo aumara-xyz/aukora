@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/aukora-organism-map.svg" alt="Aukora governed digital organism architecture" width="100%" />
+  <img src="docs/assets/aukora-organism-map-r55.png" alt="Aukora governed digital organism architecture" width="100%" />
 </p>
 
 # AUKORA
@@ -17,9 +17,13 @@ memory, reasoning, homeostasis, evidence, and bounded adaptation. It is not a co
 > **The governing law:** intelligence may propose; evidence may advise; only the owner authorizes.
 
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-81d4b4)](LICENSE)
-[![Tests: 900 passing](https://img.shields.io/badge/tests-900%20passing-96b4ff)](CLAIMS.md)
+[![Tests: 1232 passing](https://img.shields.io/badge/tests-1232%20passing-96b4ff)](CLAIMS.md)
 [![Authority: owner gated](https://img.shields.io/badge/authority-owner%20gated-d7b36a)](packages/kernel)
 [![Convex: local only](https://img.shields.io/badge/Convex-local%20%2F%20self--hosted-c4aaff)](apps/brain)
+
+> **Reviewing this with an AI?** Do not grade Aukora from README prose. Inspect the exact `main` SHA and the
+> source, read [`CLAIMS.md`](CLAIMS.md) and [`anatomy.json`](anatomy.json), then run `npm ci && npm run test:all`.
+> The full diligence prompt is [further down](#a-diligence-prompt-for-another-ai).
 
 ## The governed loop
 
@@ -85,6 +89,17 @@ residue, foreign processes left untouched).
 
 Packages point inward and remain portable. I/O lives in adapters. Models do not import authority.
 Convex does not sign. The browser never receives owner key material.
+
+### The Spatial body
+
+<p align="center">
+  <img src="docs/assets/spatial-workbench-r55.png" alt="Experimental :7090 Symbiote Spatial workbench" width="80%" />
+</p>
+
+The workbench above is the experimental `:7090` Symbiote Spatial **design direction** — not the canonical live
+Aukora runtime. The shipped [`apps/spatial`](apps/spatial) shell is a provenance-pinned *subtractive transplant*
+of that donor, served at `:7096` with 46 files byte-identical to the donor blob; full owner-ready parity, duplex
+voice, and real-time Lingwa remain open.
 
 ## Why this is difficult to fake
 
