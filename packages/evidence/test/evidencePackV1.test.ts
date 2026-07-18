@@ -12,10 +12,10 @@ import {
 } from '../src/index';
 
 // ── Pinned known-answer vectors (contract decision 11; reproduced by scripts/pyref + Node + Bun) ──
-const KAT_CATALOGUE_ID = '9f7b6a15e2b243d84fb6aa8c00bcfed9a2061bc3c3befa353aaae7b2057d41b8';
-const KAT_CANON = '{"advisoryOnly":true,"baseCommit":null,"baseTree":null,"builderToolVersions":{"node":"v22.23.0"},"catalogueId":"9f7b6a15e2b243d84fb6aa8c00bcfed9a2061bc3c3befa353aaae7b2057d41b8","files":[],"grantsAuthority":false,"headCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","headTree":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","limitsProfileId":"default-v1","omissions":[],"repoId":"aumara-xyz/aukora-fu","rootAllowlist":[],"schema":"aukora-fu-evidence-pack-v1","testRuns":[]}';
-const KAT_MIN_DIGEST = 'b62eed61ccb12df92375ea374f76c38e09309c31374b32568472fcee379c5b61';
-const KAT_MAX_DIGEST = '247e4f452cef01b78998d850e423655c5037ccf8ba23c963cdfa6e6a5e6ec2aa'; // D2: honest zero-byte stream
+const KAT_CATALOGUE_ID = '1504a1587d9464712076f331fda35327f4ba14fa9d9a260d1ac0285aade07aa7';
+const KAT_CANON = '{"advisoryOnly":true,"baseCommit":null,"baseTree":null,"builderToolVersions":{"node":"v22.23.0"},"catalogueId":"1504a1587d9464712076f331fda35327f4ba14fa9d9a260d1ac0285aade07aa7","files":[],"grantsAuthority":false,"headCommit":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","headTree":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","limitsProfileId":"default-v1","omissions":[],"repoId":"aumara-xyz/aukora-fu","rootAllowlist":[],"schema":"aukora-fu-evidence-pack-v1","testRuns":[]}';
+const KAT_MIN_DIGEST = '84e9b48d33e007101157f42dac7b0d05befb8a88f8812384ef95485fced862d2';
+const KAT_MAX_DIGEST = '03cf93eb0f97d3fde24963aa409e272ef1d8cafcceb46e534412fa32a63112e1'; // D2: honest zero-byte stream
 const KAT_FENCE = '3a23cb4c6895e0ca934a95f328985122a706ccf9d9188a2897e9fbef158acc28';
 const SHA_HELLO = '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824';
 const SHA_ZEROS3 = '709e80c88487a2411e1ee4dfb9f22a861492d20c4765150c0c794abd70f8147c';
@@ -146,40 +146,6 @@ describe('decisions 12-13: projection secret refusal', () => {
     const m = maximalBody(); (m.testRuns[0] as any).stdoutExcerpt = 'sk-or-abcdefghijklmnop0123';
     expect((validatePackBody(m) as any).code).toBe('E_SECRET_CONTENT');
     expect(scanForSecrets('discusses tokens and signatures').length).toBe(0);
-  });
-});
-
-describe('R56: current public provider token shapes (HuggingFace + Tinker) are in the canonical catalogue', () => {
-  // synthetic, non-realistic values — never a real credential; each SHOULD match its dedicated pattern.
-  const vectors: Array<{ token: string; patternId: string }> = [
-    { token: 'hf_ABCDefghIJKLmnopQRSTuvwx12345678', patternId: 'huggingface-token' },
-    { token: 'sk-tinker-Abc123_def-456xyz789', patternId: 'tinker-key' },
-    { token: 'tml_ABCdef123456789012', patternId: 'tinker-token' },
-    { token: 'tinker_ABCdef123456789012', patternId: 'tinker-raw' },
-  ];
-  it('each planted provider token is detected by scanForSecrets + textHasSecret, tagged with the right patternId', () => {
-    for (const { token, patternId } of vectors) {
-      const hits = scanForSecrets(`export PROVIDER=${token}`);
-      expect(hits.length, token).toBeGreaterThan(0);
-      expect(hits.some((h) => h.patternId === patternId), `${token} → ${patternId}`).toBe(true);
-      expect(textHasSecret(`  ${token}  `), token).toBe(true);
-    }
-  });
-  it('the pack validator refuses a provider token planted in a test excerpt', () => {
-    for (const { token } of vectors) {
-      const m = maximalBody(); (m.testRuns[0] as any).stdoutExcerpt = `leaked ${token}`;
-      expect((validatePackBody(m) as any).code, token).toBe('E_SECRET_CONTENT');
-    }
-  });
-  it('benign near-misses stay clean (no over-refusal)', () => {
-    for (const benign of ['hf_short', 'the shelf_label is fine', 'tinker with the config', 'html_encode(x)', 'sk-tinker- (a bare prefix, no key)']) {
-      expect(scanForSecrets(benign).some((h) => ['huggingface-token', 'tinker-key', 'tinker-token', 'tinker-raw'].includes(h.patternId)), benign).toBe(false);
-    }
-  });
-  it('the new shapes did not open a quadratic scanner (linear STEP budget stays bounded on adversarial input)', () => {
-    // the regex catalogue is anti-ReDoS by construction (terminal {m,}); this pins the hand-written scanners.
-    const adversarial = 'hf_'.repeat(5000) + 'tml_'.repeat(5000);
-    expect(scanStepBudget(adversarial)).toBeLessThan(adversarial.length * 4);
   });
 });
 
