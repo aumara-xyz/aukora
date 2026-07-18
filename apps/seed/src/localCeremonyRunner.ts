@@ -33,6 +33,7 @@ import { deriveIntentId, deriveDraftHash, type Proposal } from './proposal.js';
 import { reviewerFor } from './fuStructuredAdapter.js';
 import { materializeCandidate, type CandidateMaterialization } from './localCandidateStage.js';
 import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
+import { DurableCandidateReferenceMonitor, trustedStateDirInsideFence } from './durableCandidateMonitor.js';
 import type { CouncilReviewer } from './mockCouncil.js';
 
 export type CeremonyRunPhase =
@@ -69,6 +70,13 @@ export interface LocalCeremonyEnv {
   readonly store: ReactiveMemoryStore;
   /** The canonical kernel reference monitor for the candidate effect (durable consumed-id state). Constructed if absent. */
   readonly monitor?: CandidateReferenceMonitor;
+  /**
+   * R54: protected trusted-state directory for the DURABLE reference monitor. When set (and no explicit `monitor`
+   * is injected), the ceremony consumes authority through `@aukora/kernel-node`'s crash-safe TrustedStateStore —
+   * the consumption + PREPARED descriptor are journalled BEFORE any git effect. MUST live outside the repo root
+   * and outside the disposable worktree base (it must survive candidate cleanup and process death).
+   */
+  readonly trustedStateDir?: string;
   /** For candidate materialization (effectful). Omit to keep the ceremony non-materializing. */
   readonly gitRepoRoot?: string;
   readonly worktreeBase?: string;
@@ -149,7 +157,21 @@ export function runLocalRecursionCeremony(env: LocalCeremonyEnv, invocation: Loc
   if (!staged.ok) {
     return result({ ok: false, phase: 'refused-at-candidate', reasonClass: staged.refusal.reasonClass, text: staged.refusal.text, workflowId, workflowState: state, rehearsalReceiptHash });
   }
-  const monitor = env.monitor ?? new CandidateReferenceMonitor(env.ownerRoot);
+  // R54: prefer the DURABLE monitor whenever a protected state dir is configured — the consumption is then
+  // crash-safe on disk before the stage's first git mutation. An explicit injected monitor still wins (tests).
+  // RUNTIME ISOLATION (R54 review repair): the trusted-state dir must sit OUTSIDE the repo working tree and
+  // OUTSIDE the disposable worktree base, checked AFTER canonical/symlink resolution — a docstring is not a
+  // fence. Inside the repo it could ride a candidate/commit or be swept by git clean; inside the worktree base
+  // it would be disposed with a failed candidate — either way consumed authority could be erased or exfiltrated.
+  // (The canonicalization itself lives in durableCandidateMonitor — this runner is a RUNTIME module and, per the
+  // structural containment law, must not import fs; it composes the verdict, the effect-adjacent module resolves.)
+  if (env.monitor === undefined && env.trustedStateDir !== undefined
+    && trustedStateDirInsideFence(env.trustedStateDir, [env.gitRepoRoot, env.worktreeBase])) {
+    return result({ ok: false, phase: 'refused-at-candidate', reasonClass: 'candidate:trusted-state-inside-repo', text: 'refused: trustedStateDir resolves inside the repo or the disposable worktree base — the durable authority store must live outside both', workflowId, workflowState: state, rehearsalReceiptHash });
+  }
+  const monitor = env.monitor ?? (env.trustedStateDir !== undefined
+    ? new DurableCandidateReferenceMonitor(env.ownerRoot, env.trustedStateDir)
+    : new CandidateReferenceMonitor(env.ownerRoot));
   const materialization = materializeCandidate({
     repoRoot: env.gitRepoRoot,
     worktreeBase: env.worktreeBase,

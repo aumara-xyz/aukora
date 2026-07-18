@@ -34,7 +34,7 @@ import { ReactiveMemoryStore, ConvexWorkflowStore, liveWorkflowIo, assertLoopbac
 import { MindDoor, DOOR_PORT, type DoorRequest, type DoorDriver, type DoorDurability } from '../src/mindDoor.js';
 import { InMemoryWorkflowStore, validateWorkflowState, type WorkflowStore } from '../src/durableRecursion.js';
 import { HybridOwnerAdapter } from '../src/ownerFixture.js';
-import { CandidateReferenceMonitor } from '../src/candidateReferenceMonitor.js';
+import { DurableCandidateReferenceMonitor } from '../src/durableCandidateMonitor.js';
 
 async function main(): Promise<void> {
   const port = Number(process.env.AUKORA_DOOR_PORT ?? DOOR_PORT);
@@ -43,8 +43,11 @@ async function main(): Promise<void> {
   const store = new ReactiveMemoryStore();
   // NOTE: a real deployment injects Peter's local AUMLOK root; the fixture owner here is for a local dev door only.
   const owner = new HybridOwnerAdapter('local-door-dev');
-  const monitor = new CandidateReferenceMonitor(owner.root); // one canonical reference monitor per boot
   const repoRoot = resolve(process.cwd());
+  // R54: the one canonical reference monitor per boot, now DURABLE — consumed authority + the receipt head are
+  // journalled crash-safely (kernel-node TrustedStateStore) BEFORE any git effect. The state dir lives OUTSIDE
+  // the repo and OUTSIDE the disposable worktree base: it must survive candidate cleanup and process death.
+  const monitor = new DurableCandidateReferenceMonitor(owner.root, resolve(repoRoot, '..', 'aukora-door-trusted-state'));
 
   // ── R50 store selection: local self-hosted Convex is the PRODUCTION path ─────────────────────────────
   const storeMode = process.env.AUKORA_WORKFLOW_STORE === 'memory' ? 'memory' : 'convex';
