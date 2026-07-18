@@ -29,7 +29,7 @@ import {
   resolveOwnerBootAuthority, provisionOwnerRoot, ownerBoundaryGrantsAuthority,
   HybridOwnerAdapter, CandidateReferenceMonitor, candidatePayloadHash,
   deriveDraftHash, deriveIntentId,
-  scanForbiddenValues,
+  scanForbiddenValues, scanForbiddenKeys, REDACTED_KEY_MARKER,
   type BranchCandidate,
 } from '../src/index.js';
 
@@ -204,6 +204,27 @@ describe('R55 · planned provider secret shapes — refused by SHAPE, reported b
     });
     expect(flagged.sort()).toEqual(['caps', 'lower', 'std']);
     for (const t of ['AbCdEf1234567890XyZq', 'abcdefghijklmnop12']) expect(JSON.stringify(flagged)).not.toContain(t);
+  });
+
+  it('a credential-shaped object KEY is a finding (R55.4) — reported as the redacted marker, never the key bytes', () => {
+    const token = 'sk-proj-SecretAbc123456';
+    // pre-R55.4 both scanners returned [] for this shape, and a nested finding leaked the key via its path
+    const asKey = scanForbiddenValues({ config: { [token]: 'model-a' } });
+    expect(asKey).toEqual([`config.${REDACTED_KEY_MARKER}`]);
+    expect(JSON.stringify(asKey)).not.toContain('SecretAbc');
+  });
+
+  it('a credential-shaped key can never re-leak through ANY reported path (R55.4) — value and key scans both redact parent segments', () => {
+    const token = 'sk-proj-SecretAbc123456';
+    const hostile = { [token]: { token: 'x', note: 'Bearer abcdefghijklmnop12' } };
+    const values = scanForbiddenValues(hostile);
+    const keys = scanForbiddenKeys(hostile);
+    // findings exist (the key itself + the bearer value; the name-forbidden 'token' field) …
+    expect(values).toContain(REDACTED_KEY_MARKER);
+    expect(values).toContain(`${REDACTED_KEY_MARKER}.note`);
+    expect(keys).toContain(`${REDACTED_KEY_MARKER}.token`);
+    // … and NO output carries the credential bytes
+    expect(JSON.stringify([values, keys])).not.toContain('SecretAbc');
   });
 
   it('benign near-misses stay clean (no over-refusal)', () => {

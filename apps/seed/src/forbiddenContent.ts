@@ -65,14 +65,23 @@ export function normalizeKey(k: string): string {
   return k.toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
-/** Recursive: forbidden KEY names (exact-set OR normalized-regex) at any depth (objects + arrays). */
+/** R55.4: an object KEY can itself be credential-shaped (a token used as a map key). Reported paths must stay
+ *  CONTENT-FREE, so any path segment that matches the forbidden VALUE shapes is replaced by this marker — the
+ *  scanner report can never re-leak the very credential it found (neither as a finding nor as a parent segment). */
+export const REDACTED_KEY_MARKER = '<redacted-key>';
+function pathSegment(k: string): string {
+  return FORBIDDEN_VALUE_RE.test(k) ? REDACTED_KEY_MARKER : k;
+}
+
+/** Recursive: forbidden KEY names (exact-set OR normalized-regex) at any depth (objects + arrays). Paths are
+ *  content-free: a credential-shaped key appears as `<redacted-key>` in every reported path. */
 export function scanForbiddenKeys(obj: unknown, path = ''): string[] {
   const found: string[] = [];
   const walk = (o: unknown, p: string): void => {
     if (o === null || typeof o !== 'object') return;
     if (Array.isArray(o)) { o.forEach((v, i) => walk(v, `${p}[${i}]`)); return; }
     for (const [k, v] of Object.entries(o as Record<string, unknown>)) {
-      const full = p ? `${p}.${k}` : k;
+      const full = p ? `${p}.${pathSegment(k)}` : pathSegment(k);
       if (FORBIDDEN_FIELDS.has(k) || FORBIDDEN_KEY_RE.test(normalizeKey(k))) found.push(full);
       walk(v, full);
     }
@@ -81,14 +90,20 @@ export function scanForbiddenKeys(obj: unknown, path = ''): string[] {
   return found;
 }
 
-/** Recursive: forbidden CONTENT inside string VALUES at any depth. */
+/** Recursive: forbidden CONTENT inside string VALUES at any depth — and (R55.4) inside object KEYS: a
+ *  credential-shaped key is itself a finding, reported as the content-free `<redacted-key>` marker. */
 export function scanForbiddenValues(obj: unknown, path = ''): string[] {
   const found: string[] = [];
   const walk = (o: unknown, p: string): void => {
     if (typeof o === 'string') { if (FORBIDDEN_VALUE_RE.test(o)) found.push(p || '(root)'); return; }
     if (o === null || typeof o !== 'object') return;
     if (Array.isArray(o)) { o.forEach((v, i) => walk(v, `${p}[${i}]`)); return; }
-    for (const [k, v] of Object.entries(o as Record<string, unknown>)) walk(v, p ? `${p}.${k}` : k);
+    for (const [k, v] of Object.entries(o as Record<string, unknown>)) {
+      const seg = pathSegment(k);
+      const full = p ? `${p}.${seg}` : seg;
+      if (seg === REDACTED_KEY_MARKER) found.push(full); // the KEY is credential-shaped — a finding in itself
+      walk(v, full);
+    }
   };
   walk(obj, path);
   return found;
@@ -105,7 +120,7 @@ export function scanForbiddenClaims(obj: unknown, path = '', skipPaths: Set<stri
     for (const [k, v] of Object.entries(o as Record<string, unknown>)) {
       const full = p ? `${p}.${k}` : k;
       if (skipPaths.has(full)) continue;
-      walk(v, full);
+      walk(v, p ? `${p}.${pathSegment(k)}` : pathSegment(k)); // reported paths stay content-free (R55.4)
     }
   };
   walk(obj, path);
@@ -119,7 +134,7 @@ export function scanForbiddenAuthorityClaims(obj: unknown, path = ''): string[] 
     if (typeof o === 'string') { if (FALSE_AUTHORITY_CLAIM_RE.test(o)) found.push(p || '(root)'); return; }
     if (o === null || typeof o !== 'object') return;
     if (Array.isArray(o)) { o.forEach((v, i) => walk(v, `${p}[${i}]`)); return; }
-    for (const [k, v] of Object.entries(o as Record<string, unknown>)) walk(v, p ? `${p}.${k}` : k);
+    for (const [k, v] of Object.entries(o as Record<string, unknown>)) walk(v, p ? `${p}.${pathSegment(k)}` : pathSegment(k));
   };
   walk(obj, path);
   return found;

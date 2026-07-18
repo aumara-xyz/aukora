@@ -18,7 +18,7 @@
  * the dev credential: it is never printed, never committed, and must never leave this machine. This remains a
  * DEV convenience, not an owner ceremony — a real owner's keypair is generated and held out of band.
  */
-import { readFileSync, writeFileSync, chmodSync } from 'node:fs';
+import { readFileSync, writeFileSync, openSync, writeSync, closeSync, fsyncSync, renameSync, unlinkSync, constants as FS } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { HybridOwnerAdapter } from '../src/ownerFixture.js';
 import { provisionOwnerRoot } from '../src/ownerBoundary.js';
@@ -37,11 +37,25 @@ if (mode === '--from' && a && b) {
   writeFileSync(a, JSON.stringify(provisionOwnerRoot(owner.root, new Date().toISOString()), null, 2));
   // Persist the SIGNING CAPABILITY separately (the label re-derives the keypair): 0600 sidecar, value never
   // printed. Without this the booted door could verify but nothing local could ever sign a smoke operation.
+  // ATOMIC 0600 FLOW (R55.4 — replaces write-then-chmod): the credential bytes are only ever written to a
+  // FRESH O_EXCL inode created at mode 0600, then atomically renamed over the sidecar path. A pre-existing
+  // permissive file's inode is discarded by the rename, never written through — there is no window where the
+  // bytes sit behind permissive modes, and no post-write chmod whose failure could leave them exposed. Any
+  // failure before the rename unlinks the temp; the durable-then-visible order is fsync → rename.
   const sidecar = `${a}.dev-label.json`;
-  writeFileSync(sidecar, JSON.stringify({ schema: 'aukora-dev-owner-label-v1', label, note: 'DEV smoke credential — re-derives the dev keypair; keep 0600, never commit, never print' }, null, 2), { mode: 0o600 });
-  // `mode` applies only on CREATE — a PRE-EXISTING permissive file at this path would keep its old mode after
-  // the overwrite. Enforce 0600 unconditionally after the write (R55.3).
-  chmodSync(sidecar, 0o600);
+  const tmp = `${sidecar}.tmp-${process.pid}-${randomUUID()}`;
+  const payload = JSON.stringify({ schema: 'aukora-dev-owner-label-v1', label, note: 'DEV smoke credential — re-derives the dev keypair; keep 0600, never commit, never print' }, null, 2);
+  const fd = openSync(tmp, FS.O_WRONLY | FS.O_CREAT | FS.O_EXCL, 0o600); // fresh inode, 0600 from birth
+  try {
+    writeSync(fd, payload);
+    fsyncSync(fd);
+    closeSync(fd);
+    renameSync(tmp, sidecar); // atomic replace — the old (possibly permissive) inode is discarded
+  } catch (e) {
+    try { closeSync(fd); } catch { /* already closed on the success path */ }
+    try { unlinkSync(tmp); } catch { /* temp may not exist */ }
+    throw e;
+  }
   console.log(`[provision-owner-root] DEV random-label envelope written (public material only): rootId ${owner.root.rootId.slice(0, 12)}…`);
   console.log(`[provision-owner-root] DEV signing label persisted (0600, value not printed): ${sidecar}`);
 } else {
