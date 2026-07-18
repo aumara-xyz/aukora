@@ -24,9 +24,10 @@
  */
 import { execFileSync } from 'node:child_process';
 import type { ReactiveMemoryStore } from '@aukora/brain';
-import type { SignedPromotionV2 } from '@aukora/kernel/schemas';
+import type { SignedPromotionV2, AumlokAuthorityRootV2 } from '@aukora/kernel/schemas';
 import { driveEffect, type EffectOps, type EffectRunResult, type EffectRunPhase } from './effectCoordinator.js';
 import { DurableCandidateReferenceMonitor } from './durableCandidateMonitor.js';
+import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
 import { materializeCandidate, candidateBranchName } from './localCandidateStage.js';
 import { snapshotProtected, verifyIsolation, type RefReader, type ProtectedSnapshot } from './refSnapshot.js';
 import { EffectAuditLedger } from './effectAudit.js';
@@ -64,6 +65,8 @@ export interface LiveEffectInput {
   readonly candidateAuth: SignedPromotionV2 | undefined;
   /** The owner has explicitly ARMED materialization (kernel humanClearance). */
   readonly ownerArmed: boolean;
+  /** The trusted owner root — used ONLY for the non-consuming pre-authorization verdict at the owner gate. */
+  readonly ownerRoot: AumlokAuthorityRootV2;
   /** Sam 2's durable reference monitor over a protected trusted-state dir (the SOLE durable PREPARED store). */
   readonly monitor: DurableCandidateReferenceMonitor;
   readonly store: ReactiveMemoryStore;
@@ -83,8 +86,13 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger):
   return {
     // The staged candidate already passed rehearsal upstream (its files carry rehearsal receipts).
     rehearse: () => ({ proceed: candidate.files.length > 0 && candidate.files.every((f) => typeof f.receiptHash === 'string'), status: 'passed' }),
-    // Pre-gate: the AUTHORITATIVE owner verify is the kernel decide() inside the durable monitor (runGitEffect).
-    ownerAuthorize: () => ({ authorized: candidateAuth !== undefined && ownerArmed }),
+    // OWNER GATE = the kernel authorization verdict, NON-CONSUMING (a fresh base monitor with empty consumed state
+    // runs the SAME `decide()` logic and its in-memory consume is discarded). A forged/absent/unarmed authorization
+    // refuses HERE — before EXECUTING/audit/Git. The ONE DURABLE PREPARED transition (the authoritative consume)
+    // remains solely Sam 2's durable monitor inside `runGitEffect` (no second store, no second durable authority).
+    // A replayed (already-durably-consumed) but valid authorization still verifies allowed here and flows on to be
+    // reconciled by observing reality in `runGitEffect` — the owner gate rejects forgery, not replay.
+    ownerAuthorize: () => ({ authorized: new CandidateReferenceMonitor(input.ownerRoot).decide(candidate, candidateAuth, nowMs, { ownerArmed }).allowed }),
     // Identity only; the DURABLE PREPARED consume is journalled inside runGitEffect BEFORE any git (Sam 2's monitor).
     prepare: () => ({ effectId: candidate.candidateId, candidateBranch: branch }),
     snapshotBefore: () => snapshotProtected(reader, PROTECTED_REFS, nowIso),
