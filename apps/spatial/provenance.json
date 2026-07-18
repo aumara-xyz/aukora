@@ -197,9 +197,9 @@
       "path": "apps/spatial/app/settings.js",
       "donorPath": "spatial/app/settings.js",
       "donorBlob": "e724e01d04ff12e167779575a91ad08c25a329dc",
-      "sha256": "30ec5607bc6e9858e8c72b576cae877082fa8f13fd24ff3da63016288b3b1216",
+      "sha256": "4be789d3b1411844b1c61307ab3c058d9329fa70a5c24a9f308930e325dad684",
       "status": "ADAPTED",
-      "note": "R39: DOOR same-origin via the launcher proxy"
+      "note": "R39: DOOR same-origin via the launcher proxy; R55: settings hint corrected — no nonexistent core/.env path, key stays machine-local"
     },
     {
       "path": "apps/spatial/app/shell-registry.js",
