@@ -1,6 +1,6 @@
 {
   "schema": "aukora-readiness-meter-v2",
-  "head_basis": "R51 integration candidate from main 5aae90d6 + exact PR heads #111/#112/#113; 900 canonical passing tests including protected supervisor",
+  "head_basis": "Current round R56 over public savepoint main 2543044d93a943f050b6131e0c5e3ef8aee15ab2 (PR #165). Last fully-GATED integration remains R51 (base 5aae90d6 + PR heads #111/#112/#113; 900 canonical passing tests incl. protected supervisor). The R56 integration total is owned by Sam 1 generated gate artifact (consumed after integration) — not restated here. This meter score is unchanged: R56 lane work strengthens evidence, not milestone pass/fail.",
   "denominator": 11,
   "score": "8/11",
   "score_law": "Each row is a named integration milestone, not a percentage of organism completion. A row passes only with canonical source, executable evidence, and honest runtime reachability.",
@@ -19,7 +19,7 @@
     {
       "name": "KIRA portable memory and governed forgetting law",
       "pass": true,
-      "evidence": "packages/memory: content addressing, consent scope, deterministic recall, content-free tombstones; primary-runtime integration remains narrower than the full law"
+      "evidence": "packages/memory: content addressing, consent scope, deterministic recall, content-free tombstones; primary-runtime integration remains narrower than the full law | R56 (PR #167): DurableReceiptBridge forwards a permitted door receipt to the durable Convex memoryChain exactly-once + restart-safe (grants no authority); the public ingest is capability-gated with untrusted self-attested provenance quarantined. Primary-runtime integration is closer but still narrower than the full law."
     },
     {
       "name": "Local/self-hosted Convex durability",

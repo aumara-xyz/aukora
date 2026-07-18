@@ -1,10 +1,17 @@
-# DILIGENCE STATUS — public diligence projection (R51 / #106)
+# DILIGENCE STATUS — public diligence projection (current round R56 / #106; last GATED integration R51)
 
-The maximum safe **sanitized** projection of the R51 integration tree, assembled from base
-`5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d` and the exact reviewed R51 lane heads recorded in Git
-ancestry. Every claim here is backed by an in-repo artifact and a gate; a Markdown document is never
-treated as proof. Sensitive titles, notes, paths, rationales, and owner material stay in the private
-Symbiote ledger and are **not** reproduced here.
+The maximum safe **sanitized** projection of the integration tree. Every claim here is backed by an in-repo
+artifact and a gate; a Markdown document is never treated as proof. Sensitive titles, notes, paths, rationales,
+and owner material stay in the private Symbiote ledger and are **not** reproduced here.
+
+**R56 refresh (Sam 2, brain/continuity lane).** The last fully-GATED integration remains **R51** (base
+`5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d`, exact reviewed R51 lane heads in Git ancestry). Since then the
+**R55/R55.x** immune substrate and the **R56 Dream-Cleanup** lanes have landed on lane branches over the public
+R56 savepoint base **`2543044d93a943f050b6131e0c5e3ef8aee15ab2`** (PR #165). This lane's R56 additions —
+brain/continuity, PR #167 — are: a **DurableReceiptBridge** (door receipt → durable Convex `memoryChain`, exactly
+once + restart-safe + grants no authority) and a **capability-gated public ingest** with untrusted-provenance
+quarantine. The R56 integration's authoritative **test total is owned by Sam 1's generated gate artifact**
+(consumed after integration) and is **not** restated here; the last gated number below is R51's.
 
 Four labels:
 
@@ -67,7 +74,7 @@ Four labels:
 - **#87 vs #99/#108:** #87 was closed for the **nonce mislabel only**. Production first-create
   **durability** is the separate track #99 (landed) → #108 (open). #87-closed ≠ durability-proven.
 - **Nebius:** every Nebius surface is **PARKED / UNARMED**. No spend, no live inference, no managed cloud.
-- **Test total:** **900 passing** in the R51 integration gate (including 31 protected-supervisor tests; was stated 774) — gated by `test:all` plus `verify-continuity.mjs`.
+- **Test total:** the last GATED integration total is **900 passing** in the **R51** gate (including 31 protected-supervisor tests; was stated 774) — gated by `test:all` plus `verify-continuity.mjs`. The **R56** integration total is owned by **Sam 1's generated gate artifact** (consumed after integration); it is deliberately **not** restated here to avoid a copied/stale number.
 
 ## Set-equality result (#106 req 1–2)
 
