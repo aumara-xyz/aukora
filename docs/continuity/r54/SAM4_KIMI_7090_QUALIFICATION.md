@@ -1,9 +1,15 @@
 # SAM 4 · R54 — Kimi convergence + 7090 donor qualification (READ-ONLY disposition)
 
-**No code integration, no merge.** A file-level qualification matrix for the public branch
+**Scope of the rejection:** this record REJECTS **canonical-runtime adoption and donor merging** of the
+`convergence/kimi-overnight` modules — it does **not** object to administratively merging *this qualification
+record itself* (the doc/PR is fine to merge). A file-level qualification matrix for the public branch
 `convergence/kimi-overnight` (PR #121, head `c3a0fb4`) against canonical Aukora (`main` `92a452b`) and donor
-equivalents. Skeptical bar: **the branch's 617 self-tests are evidence of internal consistency, not of
-superiority or donor continuity.**
+equivalents. No module integration, no runtime-code change, no provider calls.
+
+**Headline (test evidence):** the branch **externally reports 617 assertions**, but the public tree makes only
+**156 reproducible** (`convergence.run.ts`, ≈169 inline asserts) — the other **461 are ABSENT** (no
+`stress.test.ts`/`deep.test.ts` blob exists). Even the 156 demonstrate **internal consistency only — not
+superiority, not donor continuity.** (Full reconciliation table below.)
 
 ## The 6 Kimi modules (all under top-level `convergence/`)
 
@@ -127,7 +133,11 @@ supplied and re-run first-hand.
 ## 7090 (item D) — tracked at Symbiote #405, still BLOCKED
 
 The 7090 donor lane is now tracked at `aumara-xyz/aukora-symbiote#405` ("[R54 SKUNKWORKS] 7090 memory/Spatial
-donor lane + governed local-mind handoff"). As of this amendment it is **OPEN with no packet posted** — so no
-7090 delta can be qualified yet. Per the directive, I will qualify **only the sanitized delta from #405's exact
+donor lane + governed local-mind handoff").
+
+**#405 snapshot — inspected 2026-07-18T00:31Z (UTC):** `state=OPEN` · `created=2026-07-17T23:36:47Z` ·
+`comments=0` · **no branch/commit/blob/test/secret-free packet posted.** So as of that dated inspection **no
+7090 delta exists to qualify** — the status is BLOCKED against a current (not stale) snapshot; re-inspect #405
+for a posted packet before crediting any 7090 row. Per the directive, I will qualify **only the sanitized delta from #405's exact
 branch/commit/blob/test/secret-free packet** when it appears; **nothing from the local `:7090` donor lane enters
 canonical Aukora by summary or chat alone.** The required packet contents are the six items specified above.
