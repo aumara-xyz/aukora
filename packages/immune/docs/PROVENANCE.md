@@ -31,9 +31,16 @@ distinguished from the donor prototype — **do NOT read this as "no behavior ch
   - `engagement.ts` — recommendation-only shape (`recommended` + `advisoryOnly/grantsAuthority:false/executionAllowed:false`);
     `recommended` requires every planned action permitted by the RoE; council approval normalized structurally true
     (no preset bypass, no contradictory markers); deterministic timestamp (required `nowMs`).
-  - `killerT.ts` — `executeKillerT` enforces target identity; `checkAutoimmunity` ignores empty self-patterns.
+  - `killerT.ts` — `executeKillerT` enforces target identity; **strictly advisory return** (`wouldNeutralize` +
+    `plannedActions`, never a confirmed `threatNeutralized`); `checkAutoimmunity` ignores empty self-patterns.
   - `antibody.ts` / `memoryB.ts` — matching fails closed on empty patterns; `patrol.ts` anomaly match is fully
     case-insensitive.
+  - `inflammation.ts` / `petriDish.ts` — **runtime immutability**: `deepFreeze` on exported `POSTURES`, on every
+    emitted/stored bus event, and on the returned cycle snapshot (no writable alias escapes).
+  - `petriDish.ts` — declared `newThreats` fold into the **canonical active-threat set** for inflammation +
+    threat-score + cooldown gating (a critical `newThreats` with no findings no longer sits at baseline/zero); a
+    homeostasis de-escalation emits an **effective `inflammation.fall`** so the event stream matches the returned
+    state; `PetriBus.emit` timestamp is mandatory (no `Date.now()`).
 
 ## Decay resolution (the phantom `@aukora/memory/decay.js`)
 `@aukora/memory` defines no decay/φ primitives, and the repo's ONE `tilde` is `@aukora/council`'s glyph-shear

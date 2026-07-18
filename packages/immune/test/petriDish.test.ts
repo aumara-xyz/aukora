@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import {
   type ThreatSignature, type PetriEvent, type Antibody, type MemoryBCell,
   PetriBus, runPetriCycle, createInitialPetriState, wireAllFeedbackLoops, wireCouncilToPatrol,
-  generateAntibody, createMemoryB,
+  generateAntibody, createMemoryB, initHomeostasis, POSTURES,
 } from '@aukora/immune';
 
 const NOW = 1_735_689_600_000;
@@ -69,6 +69,36 @@ describe('cycle reinforcement + immutable snapshot + observable council feedback
     bus.emit({ type: 'council.decision', source: 'council', payload: { coherence: 0.3, approved: false }, inflammationLevel: 'elevated', timestampMs: NOW });
     expect(seen).toHaveLength(1);
     expect((seen[0].payload as { patrolSensitivity: number }).patrolSensitivity).toBe(0.42);
+  });
+});
+
+describe('R55.3 · runtime immutability + canonical newThreats scoring + effective fall', () => {
+  it('exported POSTURES and returned/emitted cycle snapshots are FROZEN at runtime (no alias leak)', () => {
+    expect(Object.isFrozen(POSTURES)).toBe(true);
+    expect(Object.isFrozen(POSTURES.crisis)).toBe(true);
+    const bus = new PetriBus();
+    const out = runPetriCycle(bus, createInitialPetriState(NOW), input());
+    expect(Object.isFrozen(out.state)).toBe(true);
+    expect(Object.isFrozen(out.state.antibodies)).toBe(true);
+    expect(() => { (out.state as { threatScore: number }).threatScore = 999; }).toThrow(TypeError);
+    const cycleEvent = bus.historyOf('petri.cycle')[0];
+    expect(Object.isFrozen(cycleEvent)).toBe(true);      // stored events are frozen too
+  });
+  it('a critical newThreats with ZERO patrol findings still RAISES inflammation + a non-zero threat score', () => {
+    const out = runPetriCycle(new PetriBus(), createInitialPetriState(NOW), input({
+      patrolReports: [], newThreats: [threat({ id: 'tC', severity: 'critical', pattern: 'forge-receipt' })], candidateContent: '',
+    }));
+    expect(out.state.inflammationLevel).not.toBe('baseline'); // a declared critical threat is counted (was 'baseline' before)
+    expect(out.state.threatScore).toBeGreaterThan(0);
+  });
+  it('a homeostasis de-escalation emits an EFFECTIVE inflammation.fall (high → elevated) on a quiet cycle', () => {
+    const prev = { ...createInitialPetriState(NOW), inflammationLevel: 'high' as const, homeostasis: initHomeostasis('elevated', 0, 0, NOW) };
+    const bus = new PetriBus();
+    const out = runPetriCycle(bus, prev, input({ patrolReports: [], newThreats: [], candidateContent: '' }));
+    const fall = bus.historyOf('inflammation.fall').find((e) => (e.payload as { from: string }).from === 'high');
+    expect(fall).toBeDefined();
+    expect((fall!.payload as { to: string }).to).toBe('elevated');
+    expect(out.state.inflammationLevel).toBe('elevated'); // returned state agrees with the emitted transition
   });
 });
 

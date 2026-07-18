@@ -17,6 +17,19 @@ import { PHI, PHI_INV } from './decay.js';
 import { fibonacciEscalation } from './thymus.js';
 import type { ThreatSignature } from './thymus.js';
 
+/**
+ * RECURSIVELY freeze a value in place — enforce the immutability contract at RUNTIME (TypeScript `readonly` is a
+ * compile-time fiction that does not stop a JavaScript consumer or an aliased reference from mutating the graph).
+ * Idempotent + cycle-safe (skips already-frozen nodes). Returns the same (now frozen) reference.
+ */
+export function deepFreeze<T>(value: T): T {
+  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const v of Object.values(value as Record<string, unknown>)) deepFreeze(v);
+  }
+  return value;
+}
+
 /** Inflammation levels — golden ratio governed. */
 export type InflammationLevel = 'baseline' | 'elevated' | 'high' | 'crisis';
 
@@ -30,8 +43,9 @@ export interface SecurityPosture {
   readonly escalationLevel: number;
 }
 
-/** φ-governed security postures. PHI_INV floor ensures minimum security. */
-export const POSTURES: Readonly<Record<InflammationLevel, SecurityPosture>> = {
+/** φ-governed security postures. PHI_INV floor ensures minimum security. Deep-frozen so a consumer cannot mutate
+ *  the exported posture graph at runtime (the `Readonly<>` type alone does not prevent it). */
+export const POSTURES: Readonly<Record<InflammationLevel, SecurityPosture>> = deepFreeze({
   baseline: {
     level: 'baseline',
     coherenceThreshold: PHI_INV,
@@ -64,7 +78,7 @@ export const POSTURES: Readonly<Record<InflammationLevel, SecurityPosture>> = {
     verificationRounds: 3,
     escalationLevel: 8,
   },
-};
+});
 
 /** Compute inflammation level from threat status. */
 export function computeInflammation(

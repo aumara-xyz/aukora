@@ -82,21 +82,23 @@ export function spawnKillerT(
 export function executeKillerT(
   killer: KillerT,
   threat: ThreatSignature,
-): { threatNeutralized: boolean; actionsTaken: readonly DefensiveAction[] } {
-  // TARGET IDENTITY: a Killer T cell acts ONLY against the exact threat it was spawned for. An unrelated threat
-  // is refused — it can never report neutralization (and only logs), so a mismatched pairing has no effect.
+): { wouldNeutralize: boolean; plannedActions: readonly DefensiveAction[] } {
+  // STRICTLY ADVISORY: this performs no action, so it NEVER claims confirmed neutralization. It reports whether
+  // the cell WOULD neutralize the threat (a recommendation) and the PLANNED actions; a real executor with
+  // authority is the only thing that could later confirm an actual neutralization.
+  // TARGET IDENTITY: a Killer T cell only ever recommends against the exact threat it was spawned for.
   if (threat.id !== killer.targetThreatId) {
-    return { threatNeutralized: false, actionsTaken: ['alert_log'] };
+    return { wouldNeutralize: false, plannedActions: ['alert_log'] };
   }
 
   const effectivenessThreshold = threat.severity === 'critical' ? 0.9 :
     threat.severity === 'high' ? 0.7 : 0.5;
 
-  const neutralized = killer.effectiveness >= effectivenessThreshold;
+  const wouldNeutralize = killer.effectiveness >= effectivenessThreshold;
 
   return {
-    threatNeutralized: neutralized,
-    actionsTaken: neutralized ? killer.actions : ['alert_log'],
+    wouldNeutralize,
+    plannedActions: wouldNeutralize ? killer.actions : ['alert_log'],
   };
 }
 

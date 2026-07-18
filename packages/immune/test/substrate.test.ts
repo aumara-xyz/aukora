@@ -74,16 +74,22 @@ describe('killerT — advisory neutralization plan, self-protection, TARGET IDEN
     const t = threat();
     const kt = spawnKillerT(t, 'kt1', NOW);
     expect(['cytotoxic', 'helper', 'suppressor']).toContain(selectKillerTType(t));
-    expect(Array.isArray(executeKillerT(kt, t).actionsTaken)).toBe(true);   // a PLAN of actions, never run here
+    const plan = executeKillerT(kt, t);
+    // ADVISORY contract: a RECOMMENDATION (`wouldNeutralize`) + a PLAN (`plannedActions`) — never a confirmed
+    // `threatNeutralized`/`actionsTaken` (which would read as an executed action).
+    expect(typeof plan.wouldNeutralize).toBe('boolean');
+    expect(Array.isArray(plan.plannedActions)).toBe(true);
+    expect(plan).not.toHaveProperty('threatNeutralized');
     expect(checkAutoimmunity(kt, []).autoImmune).toBe(false);               // no declared self-patterns → safe
+    expect(checkAutoimmunity(kt, ['']).autoImmune).toBe(false);             // an EMPTY self-pattern is ignored
     expect(checkAutoimmunity(kt, [kt.actions[0]]).autoImmune).toBe(true);   // an action that hits a self-pattern = autoimmune
   });
-  it('a Killer T executed against a MISMATCHED threat id cannot report neutralization (target identity)', () => {
+  it('a Killer T against a MISMATCHED threat id cannot even RECOMMEND neutralization (target identity)', () => {
     const kt = spawnKillerT(threat({ id: 'threat-A' }), 'kt-A', NOW);
     const other = threat({ id: 'threat-B', pattern: 'unrelated' });      // a DIFFERENT threat than kt was spawned for
     const res = executeKillerT(kt, other);
-    expect(res.threatNeutralized).toBe(false);                            // never neutralizes an unrelated threat
-    expect(res.actionsTaken).toEqual(['alert_log']);                      // only logs
+    expect(res.wouldNeutralize).toBe(false);                              // never recommends against an unrelated threat
+    expect(res.plannedActions).toEqual(['alert_log']);                    // only logs
   });
 });
 

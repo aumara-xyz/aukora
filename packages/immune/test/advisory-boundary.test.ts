@@ -42,6 +42,11 @@ function moduleRefs(code: string): ModuleRef[] {
   const out: ModuleRef[] = [];
   const visit = (n: ts.Node): void => {
     if ((ts.isImportDeclaration(n) || ts.isExportDeclaration(n)) && n.moduleSpecifier && ts.isStringLiteral(n.moduleSpecifier)) out.push({ text: n.moduleSpecifier.text, dynamic: false });
+    // `import x = require("…")` (TS import-equals) — a distinct AST node the import/export check above misses.
+    if (ts.isImportEqualsDeclaration(n) && ts.isExternalModuleReference(n.moduleReference)) {
+      const expr = n.moduleReference.expression;
+      out.push({ text: expr && ts.isStringLiteral(expr) ? expr.text : null, dynamic: expr ? !ts.isStringLiteral(expr) : true });
+    }
     if (ts.isCallExpression(n)) {
       const isReq = ts.isIdentifier(n.expression) && n.expression.text === 'require';
       const isDynImport = n.expression.kind === ts.SyntaxKind.ImportKeyword;
@@ -64,9 +69,13 @@ function freeIdentifiers(code: string): Set<string> {
   const visit = (n: ts.Node): void => {
     if (ts.isIdentifier(n)) {
       const p = n.parent;
-      const isPropertyName = (ts.isPropertyAccessExpression(p) && p.name === n) || (ts.isQualifiedName(p) && p.right === n);
-      const isMemberDecl = ts.isPropertyAssignment(p) || ts.isPropertySignature(p) || ts.isBindingElement(p);
-      if (!isPropertyName && !isMemberDecl) names.add(n.text);
+      // Skip ONLY genuine NAME positions — not value positions. Property-access/qualified names, and the KEY of a
+      // property assignment/signature/enum member. A property-assignment INITIALIZER (`{ k: process }`) is a VALUE
+      // and MUST be collected; a shorthand (`{ process }`) is itself a reference and is collected too.
+      const isAccessName = (ts.isPropertyAccessExpression(p) && p.name === n) || (ts.isQualifiedName(p) && p.right === n);
+      const isKeyName = (ts.isPropertyAssignment(p) && p.name === n) || (ts.isPropertySignature(p) && p.name === n)
+        || (ts.isEnumMember(p) && p.name === n) || (ts.isBindingElement(p) && p.propertyName === n);
+      if (!isAccessName && !isKeyName) names.add(n.text);
     }
     ts.forEachChild(n, visit);
   };
@@ -120,6 +129,11 @@ describe('syntax-aware hard-boundary scan (AST, not regex) — recursive over AL
     // a traversal specifier resolves OUTSIDE the package.
     const escaped = resolve(join(srcDir, 'x.ts'), '..', './../../apps/seed');
     expect(escaped.startsWith(pkgRoot + sep)).toBe(false);
+    // AST escapes now closed: `import x = require(...)`, a property-assignment INITIALIZER, and a shorthand global.
+    expect(moduleSpecifiers('import fs = require("child_process");')).toEqual(['child_process']);
+    expect(freeIdentifiers('export const o = { danger: process };').has('process')).toBe(true);      // value, not key
+    expect(freeIdentifiers('export function f() { return { process }; }').has('process')).toBe(true); // shorthand ref
+    expect(freeIdentifiers('export const o = { process: 1 };').has('process')).toBe(false);           // a KEY is not a ref
   });
 });
 

@@ -22,7 +22,7 @@ import { PHI, PHI_INV, phiDecay } from './decay.js';
 import type { ThreatSignature, ImmuneCell } from './thymus.js';
 import type { ScanReport, ScanFinding } from './patrol.js';
 import type { InflammationLevel, SecurityPosture } from './inflammation.js';
-import { computeInflammation, applyPostureToCouncil, POSTURES } from './inflammation.js';
+import { computeInflammation, applyPostureToCouncil, POSTURES, deepFreeze } from './inflammation.js';
 import type { MemoryBCell } from './memoryB.js';
 import { createMemoryB, memoryBRecognition, recallMemoryB, reinforceMemoryB, memoryStrength } from './memoryB.js';
 import type { HomeostasisState } from './homeostasis.js';
@@ -99,7 +99,9 @@ export class PetriBus {
   emit(event: PetriEvent): void {
     // timestampMs is MANDATORY — the bus is a deterministic reducer, so there is NO wall-clock (`Date.now()`)
     // fallback. Every internal caller injects the cycle/triggering timestamp.
-    const fullEvent: PetriEvent = event;
+    // Freeze the event (recursively) BEFORE it is stored or dispatched — a listener or a later history reader can
+    // never mutate an event's graph, and no alias leaks a writable reference out of the bus.
+    const fullEvent: PetriEvent = deepFreeze(event);
     this.history.push(fullEvent);
     // maxHistory <= 0 means "retain NO history" — `slice(-0)` is `slice(0)` (the WHOLE array), so guard it
     // explicitly rather than leaving history unbounded.
@@ -172,19 +174,26 @@ export function runPetriCycle(
   // (`historyOf()`) is reproducible across runs and never falls back to wall-clock time.
   const emitNow = (e: Omit<PetriEvent, 'timestampMs'>): void => bus.emit({ ...e, timestampMs: now });
 
-  // Step 1: Aggregate patrol findings
+  // Step 1: Aggregate the CANONICAL active-threat set — patrol findings (content anomalies) PLUS the declared
+  // `newThreats` (threat signatures). These are DISTINCT sources, so summing them is not double-counting: a
+  // critical `newThreats` with zero patrol findings must still raise inflammation + the threat score (previously
+  // it stayed at baseline with a zero score while defenses were spawned for it).
   const totalFindings = input.patrolReports.reduce((s, r) => s + r.findings.length, 0);
   const criticalFindings = input.patrolReports.reduce(
     (s, r) => s + r.findings.filter(f => f.severity === 'critical').length, 0
   );
+  const newCriticals = input.newThreats.filter((t) => t.severity === 'critical').length;
+  const activeThreatCount = totalFindings + input.newThreats.length;   // patrol anomalies + declared signatures
+  const activeCriticalCount = criticalFindings + newCriticals;
+  const activeCycle = activeThreatCount > 0;                            // any threat input ⇒ NOT a quiet cooldown cycle
   for (const report of input.patrolReports) {
     emitNow({ type: 'patrol.finding', source: 'patrol', payload: report, inflammationLevel: previousState.inflammationLevel });
     events.push({ type: 'patrol.finding', timestampMs: now, source: 'patrol', payload: report, inflammationLevel: previousState.inflammationLevel });
   }
   if (totalFindings > 0) actions.push(`[PATROL] ${totalFindings} findings (${criticalFindings} critical) across ${input.patrolReports.length} scans`);
 
-  // Step 2: Compute inflammation
-  const { level: newInflammation, posture: newPosture } = computeInflammation(criticalFindings, totalFindings, previousState.inflammationLevel);
+  // Step 2: Compute inflammation from the CANONICAL active-threat set (findings + declared newThreats).
+  const { level: newInflammation, posture: newPosture } = computeInflammation(activeCriticalCount, activeThreatCount, previousState.inflammationLevel);
   if (newInflammation !== previousState.inflammationLevel) {
     const isRise = ['baseline', 'elevated', 'high', 'crisis'].indexOf(newInflammation) > ['baseline', 'elevated', 'high', 'crisis'].indexOf(previousState.inflammationLevel);
     emitNow({ type: isRise ? 'inflammation.rise' : 'inflammation.fall', source: 'inflammation', payload: { from: previousState.inflammationLevel, to: newInflammation }, inflammationLevel: newInflammation });
@@ -256,7 +265,7 @@ export function runPetriCycle(
       const result = executeKillerT(kt, threat);
       emitNow({ type: 'killerT.executed', source: 'killerT', payload: { killerT: kt, result }, inflammationLevel: newInflammation });
       events.push({ type: 'killerT.executed', timestampMs: now, source: 'killerT', payload: { killerT: kt, result }, inflammationLevel: newInflammation });
-      if (result.threatNeutralized) actions.push(`[KILLER T] ${kt.type} neutralized threat: ${threat.pattern}`);
+      if (result.wouldNeutralize) actions.push(`[KILLER T] ${kt.type} RECOMMENDS neutralizing threat: ${threat.pattern}`); // advisory — never a confirmed action
     }
     executedKillerT.push(kt);
   }
@@ -275,8 +284,8 @@ export function runPetriCycle(
   // threat cycle. So when findings are present we CLEAR homeostasis and hold the active inflammation; only a
   // ZERO-finding cycle advances the φ-governed cooldown.
   let newHomeostasis = previousState.homeostasis;
-  if (totalFindings > 0) {
-    newHomeostasis = null; // active-threat cycle — no cooldown projection may apply this cycle
+  if (activeCycle) {
+    newHomeostasis = null; // active-threat cycle (findings OR declared newThreats) — no cooldown projection applies
   } else if (newInflammation !== 'baseline') {
     newHomeostasis = newHomeostasis ? advanceHomeostasis(newHomeostasis, now) : initHomeostasis(newInflammation, 0, 0, now);
     emitNow({ type: 'homeostasis.advance', source: 'homeostasis', payload: newHomeostasis, inflammationLevel: newInflammation });
@@ -284,19 +293,24 @@ export function runPetriCycle(
     actions.push(`[HOMEOSTASIS] Cooldown: ${newHomeostasis.currentLevel} → target ${newHomeostasis.targetLevel}`);
   }
 
-  // Step 10b: HOMEOSTASIS PROJECTION — applies ONLY on a zero-finding cooldown cycle. If the cooldown has
-  // de-escalated below the (hysteretic) inflammation level, the next state's effective level follows homeostasis;
-  // with fresh findings the active inflammation stands (the projection is skipped).
+  // Step 10b: HOMEOSTASIS PROJECTION — applies ONLY on a quiet (no-active-threat) cooldown cycle. If the cooldown
+  // has de-escalated below the (hysteretic) inflammation level, the next state's effective level follows
+  // homeostasis; with active threats the active inflammation stands (the projection is skipped).
   const levelIdx = (l: InflammationLevel) => ['baseline', 'elevated', 'high', 'crisis'].indexOf(l);
   let effectiveLevel = newInflammation;
   let effectivePostureVal = newPosture;
-  if (totalFindings === 0 && newHomeostasis && levelIdx(newHomeostasis.currentLevel) < levelIdx(newInflammation)) {
+  if (!activeCycle && newHomeostasis && levelIdx(newHomeostasis.currentLevel) < levelIdx(newInflammation)) {
     effectiveLevel = newHomeostasis.currentLevel;
     effectivePostureVal = POSTURES[effectiveLevel];
+    // Emit the EFFECTIVE fall transition — hysteresis holds `newInflammation` high, so without this a homeostasis
+    // drop (e.g. high → elevated) produces no `inflammation.fall` and the returned state silently disagrees.
+    emitNow({ type: 'inflammation.fall', source: 'homeostasis', payload: { from: newInflammation, to: effectiveLevel }, inflammationLevel: effectiveLevel });
+    events.push({ type: 'inflammation.fall', timestampMs: now, source: 'homeostasis', payload: { from: newInflammation, to: effectiveLevel }, inflammationLevel: effectiveLevel });
+    actions.push(`[INFLAMMATION] FALL (homeostasis): ${newInflammation} → ${effectiveLevel}`);
   }
 
-  // Step 11: Compute composite threat score (on the effective, post-cooldown level)
-  const threatScore = Math.min(1, (criticalFindings * 0.3) + (totalFindings * 0.05) + (matchedAntibodies.length * 0.1) + (recalledMemory.length * 0.15) + (levelIdx(effectiveLevel) * 0.25));
+  // Step 11: Compute composite threat score on the CANONICAL active-threat set + the effective post-cooldown level.
+  const threatScore = Math.min(1, (activeCriticalCount * 0.3) + (activeThreatCount * 0.05) + (matchedAntibodies.length * 0.1) + (recalledMemory.length * 0.15) + (levelIdx(effectiveLevel) * 0.25));
 
   // Step 12: FINALIZE the snapshot BEFORE emitting it — push the completion action first, then emit an IMMUTABLE
   // copy of actions on the effective (post-homeostasis) level. Previously the emit happened, THEN `actions` was
@@ -313,7 +327,8 @@ export function runPetriCycle(
   emitNow({ type: 'petri.cycle', source: 'petriDish', payload: { state: newState, actions: finalActions }, inflammationLevel: effectiveLevel });
   events.push({ type: 'petri.cycle', timestampMs: now, source: 'petriDish', payload: { state: newState, actions: finalActions }, inflammationLevel: effectiveLevel });
 
-  return { state: newState, events, actions: finalActions };
+  // Return a RECURSIVELY IMMUTABLE snapshot — no writable alias to the cycle state or event list escapes.
+  return { state: deepFreeze(newState), events: deepFreeze(events), actions: finalActions };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
