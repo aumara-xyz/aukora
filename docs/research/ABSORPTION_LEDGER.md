@@ -7,9 +7,9 @@ Companion to issue [#159](https://github.com/aumara-xyz/aukora/issues/159) (rese
 
 ## 1 · Manus `all_audit_findings.json` (53) + Kimi 61-item tracking report — availability
 
-I qualify only what I can read on this node. **Neither raw artifact is present here** — not in the PR #162 tree, not
-in #158/#159/#20/#23 comments, not on the host filesystem, and not in the repo-root `VibeOS-main.zip` (which is an
-unrelated micropython/DOOM project, not audit data). I did **not** import any untrusted bundle to obtain them.
+I qualify only what is present in the committed public tree and the linked issues. **Neither raw artifact is
+available here** — it is not in the audited repository tree and not in the #158/#159/#20/#23 comments. No untrusted
+external bundle was imported to obtain it.
 
 - **Manus `all_audit_findings.json` (53 entries):** **UNPROVEN as a set** — the raw entries are unavailable, so a
   per-entry VERIFIED/FALSIFIED/DUPLICATE against exact files/lines cannot be produced honestly. Absence is stated,
@@ -61,8 +61,9 @@ consent + tombstones; the anatomy / continuity / provenance / no-overclaim gates
 - **License minefield (research flags, not clearance):** FSL (Convex backend), SSPL (Inngest), ELv2 (later Asqav),
   BUSL / noncommercial / unlicensed (e.g. researched `llm-council`, StruQ/SecAlign cite-only) → `CITE_ONLY`,
   `LEGAL_REVIEW`, or `REJECT`. Apache-2.0's patent grant is bounded by its terms; MIT/BSD commonly lack an express
-  patent grant. Reported USPTO application **19/433,835** (sealed governance artifacts / chained receipts) is a
-  counsel flag, **not** an infringement conclusion — do not freeze a derived wire format on it.
+  patent grant. A third-party patent-application flag in the sealed-governance / chained-receipts area is recorded
+  on the research ledger [#159](https://github.com/aumara-xyz/aukora/issues/159) for **legal review** — it is a
+  counsel-review item, **not** an infringement conclusion here, and no derived wire format is frozen on it.
 
 ## 5 · Post-R55 candidate confirmations (directive item 4)
 
