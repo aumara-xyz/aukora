@@ -1,6 +1,6 @@
 {
   "name": "aukora",
-  "description": "Aukora: a governed recursive digital-organism seed. Its constitutional spine is the AUMLOK authority kernel (verify, never mint). Pure portable packages (kernel, evidence, council, memory) plus governed organism adapters — the reactive memory brain, sandbox-only recursion seed, and read-only operator console — built outward under strict governance.",
+  "description": "Aukora: a governed recursive digital-organism seed. Its constitutional spine is the AUMLOK authority kernel (verify, never mint). Pure portable packages (kernel, evidence, council, memory) plus governed organism adapters \u2014 the reactive memory brain, sandbox-only recursion seed, and read-only operator console \u2014 built outward under strict governance.",
   "author": "Aumara",
   "license": "AGPL-3.0-or-later",
   "version": "0.1.0",
@@ -34,13 +34,14 @@
     "test:supervisor": "npm test --workspace @aukora/supervisor",
     "fixture:console": "npm run build:kernel && npm run fixture --workspace @aukora/console && git diff --exit-code -- apps/console/public/fixture.json apps/console/public/fixture.js apps/console/docs/spatial-map.svg",
     "test:organism": "npm run test:memory && npm run test:mind && npm run test:brain && npm run test:seed && npm run test:console && npm run test:spatial && npm run test:supervisor",
-    "test:all": "npm run verify:provenance && npm run verify:anatomy && npm run verify:continuity && npm run boundary && npm run test && npm run test:kernel && npm run test:kernel-node && npm run test:organism && npm run fixture:console",
+    "test:all": "npm run verify:provenance && npm run verify:anatomy && npm run verify:continuity && npm run boundary && npm run test && npm run test:kernel && npm run test:kernel-node && npm run test:immune && npm run test:organism && npm run fixture:console",
     "demo:organism": "npm run demo --workspace @aukora/seed",
     "test:spatial": "npm test --workspace @aukora/spatial",
     "verify:anatomy": "node scripts/verify-anatomy.mjs",
     "verify:continuity": "node scripts/verify-continuity.mjs",
     "workbench:readiness": "node scripts/workbench-readiness.mjs",
-    "test:kernel-node": "npm test --workspace @aukora/kernel-node"
+    "test:kernel-node": "npm test --workspace @aukora/kernel-node",
+    "test:immune": "npm test --workspace @aukora/immune"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
