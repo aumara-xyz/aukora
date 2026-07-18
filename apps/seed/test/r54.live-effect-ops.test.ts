@@ -13,15 +13,17 @@
  *   - main / protected refs are byte-unchanged.
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { buildSync } from 'esbuild';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ReactiveMemoryStore } from '@aukora/brain';
 import {
   runLiveCandidateEffect, liveEffectOpsGrantsAuthority,
-  candidatePayloadHash, HybridOwnerAdapter, deriveDraftHash, deriveIntentId,
+  candidatePayloadHash, HybridOwnerAdapter, deriveDraftHash, deriveIntentId, candidateBranchName,
   type BranchCandidate, type LiveEffectInput,
 } from '../src/index.js';
 // Protected primary-door module — deliberately NOT in the barrel; imported directly (as localCeremonyRunner does).
@@ -32,7 +34,7 @@ const NOW_MS = Date.parse(NOW_ISO);
 const g = (cwd: string, args: string[]) => execFileSync('git', ['-C', cwd, ...args], { encoding: 'utf8' }).trim();
 const tryG = (cwd: string, args: string[]) => { try { return g(cwd, args); } catch { return null; } };
 
-let base: string; let repoRoot: string; let wtBase: string; let owner: HybridOwnerAdapter;
+let base: string; let repoRoot: string; let wtBase: string; let owner: HybridOwnerAdapter; let CHILD = '';
 beforeAll(() => {
   base = mkdtempSync(join(tmpdir(), 'aukora-r54-live-'));
   repoRoot = join(base, 'repo'); wtBase = join(base, 'candidates');
@@ -42,6 +44,9 @@ beforeAll(() => {
   writeFileSync(join(repoRoot, 'apps/seed/src/notes.ts'), '// original\n');
   g(repoRoot, ['add', '-A']); g(repoRoot, ['commit', '-q', '--no-gpg-sign', '-m', 'init']);
   owner = new HybridOwnerAdapter('r54-live-owner');
+  // bundle the live-effect child harness to plain ESM once (bare-node spawn — Node 20 + 22, no experimental flags)
+  CHILD = join(base, 'r54-live-child.mjs');
+  buildSync({ entryPoints: [fileURLToPath(new URL('./r54-live-child.ts', import.meta.url))], outfile: CHILD, bundle: true, platform: 'node', format: 'esm', target: 'node18' });
 });
 afterAll(() => rmSync(base, { recursive: true, force: true }));
 
@@ -67,7 +72,7 @@ function inputFor(tag: string, over: Partial<LiveEffectInput> = {}): LiveEffectI
   const auth = owner.authorize({ proposalHash: ph, draftHash: ph, nonce: `n-${tag}`, issuedAt: NOW_ISO, expiresAt: null });
   const stateDir = join(base, `state-${tag}`);
   return {
-    repoRoot, worktreeBase: wtBase, candidate, candidateAuth: auth, ownerArmed: true,
+    repoRoot, worktreeBase: wtBase, candidate, candidateAuth: auth, ownerArmed: true, ownerRoot: owner.root,
     monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir),
     store: new ReactiveMemoryStore(), nowMs: NOW_MS, nowIso: NOW_ISO, ...over,
   };
@@ -104,10 +109,10 @@ describe('R54 live EffectOps — restart observes reality, never blindly re-exec
 
     // "restart": a fresh monitor over the SAME trusted-state dir (durable consume survived) re-runs the effect.
     const restart = runLiveCandidateEffect(inputFor('restart', { candidate: inp.candidate, monitor: new DurableCandidateReferenceMonitor(owner.root, join(base, 'state-restart')) }));
-    // the durable authorization is already consumed → git never re-runs; the existing candidate is observed →
-    // present but its original completion ref is not re-recoverable this run → RECONCILE_REQUIRED (never COMMITTED-twice).
+    // the existing candidate branch is observed → present but its original completion ref is not re-recoverable
+    // this run → EXACTLY RECONCILE_REQUIRED (never COMMITTED-twice, never QUARANTINED-as-a-masking-fallback).
     expect(restart.ok).toBe(false);
-    expect(['RECONCILE_REQUIRED', 'QUARANTINED']).toContain(restart.phase);
+    expect(restart.phase).toBe('RECONCILE_REQUIRED');
     // NO second candidate branch, main unchanged
     expect(g(repoRoot, ['branch', '--list', 'candidate/*'])).toBe(branchesAfterFirst);
     expect(g(repoRoot, ['rev-parse', 'HEAD'])).toBe(headAfterFirst);
@@ -115,21 +120,31 @@ describe('R54 live EffectOps — restart observes reality, never blindly re-exec
   });
 });
 
-describe('R54 live EffectOps — concurrent replay → exactly one candidate', () => {
-  it('two attempts on the SAME durable state + candidate → one COMMITTED, the other refused; one branch', () => {
+describe('R54 live EffectOps — GENUINE cross-process concurrency → exactly one candidate', () => {
+  it('two SEPARATE OS processes race the FULL live-effect path over one shared trusted-state dir → one COMMITTED, one refused, one branch, one consumed, main unchanged', async () => {
     const stateDir = join(base, 'state-concurrent');
-    const candidate = makeCandidate('concurrent');
-    const mk = () => inputFor('concurrent', { candidate, monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir) });
-    const a = runLiveCandidateEffect(mk());
-    const b = runLiveCandidateEffect(mk()); // second attempt sees the consumed authorization
-    const committed = [a, b].filter((r) => r.phase === 'COMMITTED');
-    const notCommitted = [a, b].filter((r) => r.phase !== 'COMMITTED');
-    expect(committed).toHaveLength(1);
-    expect(notCommitted).toHaveLength(1);
-    // exactly one candidate branch for this id
-    const branch = a.candidateBranch;
-    expect(g(repoRoot, ['branch', '--list', branch as string]).trim().length).toBeGreaterThan(0);
+    const headBefore = g(repoRoot, ['rev-parse', 'HEAD']);
+    // GENUINE concurrency: both children are launched and run in PARALLEL (async spawn), so they contend at the
+    // durable single-writer decide — the loser is refused by the O_EXCL lock (or a replay if it lands just after).
+    const runChild = (): Promise<string> => new Promise((resolvePhase) => {
+      const c = spawn(process.execPath, [CHILD, repoRoot, wtBase, stateDir, 'r54-live-owner', 'xproc'], { stdio: ['ignore', 'pipe', 'pipe'] });
+      let out = ''; let err = '';
+      c.stdout.on('data', (d) => { out += d.toString(); });
+      c.stderr.on('data', (d) => { err += d.toString(); });
+      c.on('close', () => resolvePhase(out.match(/PHASE:(\S+)/)?.[1] ?? `ERR(${err.slice(0, 100)})`));
+    });
+    const phases = await Promise.all([runChild(), runChild()]); // both in flight simultaneously
+    const committed = phases.filter((p) => p === 'COMMITTED');
+    // exactly one COMMITTED; the other is a non-committed governed refusal (reconcile/quarantine/refused — never a 2nd commit)
+    expect(committed, `phases=${JSON.stringify(phases)}`).toHaveLength(1);
+    expect(phases.filter((p) => p !== 'COMMITTED')).toHaveLength(1);
+    // exactly ONE candidate branch FOR THIS candidate id (the repo is shared across tests), one durable consume
+    const xprocBranch = candidateBranchName(makeCandidate('xproc'));
+    expect(g(repoRoot, ['branch', '--list', xprocBranch]).split('\n').filter((l) => l.trim().length > 0)).toHaveLength(1);
     expect(new DurableCandidateReferenceMonitor(owner.root, stateDir).consumed().length).toBe(1);
+    expect(g(repoRoot, ['rev-parse', 'HEAD'])).toBe(headBefore);
+    expect(g(repoRoot, ['status', '--porcelain'])).toBe('');
+    expect(g(repoRoot, ['remote'])).toBe(''); // no remote exists → nothing could push
   });
 });
 
@@ -144,7 +159,23 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
     expect(inp.monitor.consumed().length).toBe(1);
   });
 
-  it('a forged/absent owner authorization → refused at the owner gate; no git, no durable consume', () => {
+  it('a FORGED (non-undefined, one-nibble-flipped signature) authorization refuses at the owner gate BEFORE EXECUTING/audit/Git — no consume, no branch', () => {
+    const good = inputFor('forged');
+    const auth = good.candidateAuth!;              // 'forged' always builds a present, valid-shaped authorization
+    const sig = auth.signatures.ed25519;
+    const forged = { ...auth, signatures: { ...auth.signatures, ed25519: (sig[0] === 'a' ? 'b' : 'a') + sig.slice(1) } };
+    const r = runLiveCandidateEffect({ ...good, candidateAuth: forged });
+    expect(r.ok).toBe(false);
+    expect(r.phase).toBe('REFUSED_AT_OWNER');
+    // refused at the gate: the audit trail STOPS at REHEARSAL — EXECUTING/PREPARED were never recorded
+    expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('EXECUTING');
+    expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('PREPARED');
+    // no durable consume, no candidate branch, no git effect
+    expect(good.monitor.consumed().length).toBe(0);
+    expect(tryG(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${candidateBranchName(good.candidate as never)}`])).toBeNull();
+  });
+
+  it('an ABSENT owner authorization → refused at the owner gate; no git, no durable consume', () => {
     const inp = inputFor('noauth', { candidateAuth: undefined });
     const r = runLiveCandidateEffect(inp);
     expect(r.ok).toBe(false);
