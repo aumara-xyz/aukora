@@ -13,7 +13,13 @@ Copied from `packages/immune/src/**` in the donor, then adapted:
   `patrol.ts`, `petriDish.ts` — the pure, offline, advisory substrate.
 - Adaptation applied to every module: the donor's phantom `import … from '@aukora/memory/decay.js'` (a module that
   never existed in the shipped tree) is repointed to a single in-package `./decay.js`.
-- `petriDish.ts`: one strict-mode fix (`readonly` widening on `matchedAntibodies`); no behavior change.
+- `petriDish.ts`: **behavioral adaptations vs the donor** (an adapted fold, not a byte-verbatim copy) — recorded here for honesty rather than the earlier "no behavior change" note:
+  - **deterministic event time** — every emitted `PetriEvent` carries an injected `timestampMs` (`emitNow`; `now = nowMs ?? Date.now()`), where the donor's `bus.emit(...)` calls omitted per-event timestamps;
+  - **antibody + memory-B reinforcement** — matched antibodies and recalled memory-B cells are reinforced (`reinforceAntibody` / `reinforceMemoryB`); the donor passed them through unchanged;
+  - **narrowed killer-T targeting** — targets only by exact `targetThreatId`; the donor's fallback content-substring match (`candidateContent.includes(t.pattern)`) was removed;
+  - **homeostasis cooldown projection** — when the homeostasis level is below the fresh inflammation, an attenuated `effectiveLevel`/`effectivePosture` is projected into the returned state and the `threatScore` (the donor reported raw `newInflammation`/`newPosture`);
+  - **immutable outputs** — returned `actions` are frozen (`Object.freeze`, `readonly string[]`) and `matchedAntibodies` is widened to `readonly` (the strict-mode fix).
+  The deterministic-time and cooldown semantics are under active R55.2 review-repair; this entry records the divergence from the donor, not a claim that the current semantics are final.
 - `patrol.ts`: `tilde(...)` → `trigramDistance(...)` (see Decay resolution).
 
 ## Decay resolution (the phantom `@aukora/memory/decay.js`)
