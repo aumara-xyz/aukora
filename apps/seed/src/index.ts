@@ -2,7 +2,10 @@
 // Copyright (c) 2026 Aukora
 /**
  * @aukora/seed — governed inward-out recursion + the hybrid AUMLOK owner-gate + deterministic advisory review.
- * Adapter; never mutates a live repo, never signs for the owner (the runtime only VERIFIES), never grants authority.
+ * Most modules are pure adapters; the candidate stage (and the FOUNDATION-ONLY `liveEffectOps` that composes it)
+ * DO make a governed, isolated Git mutation — a DISPOSABLE `candidate/<id>` worktree/branch only, after a durable
+ * owner-authorized PREPARED consume. It never pushes, merges, signs for the owner, mutates the primary checkout /
+ * main / protected refs, or grants authority (the runtime only VERIFIES).
  */
 export * from './proposal.js';
 export * from './ledger.js';

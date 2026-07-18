@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Copyright (c) 2026 Aukora
 /**
- * Live EffectOps adapter (R54) — the ONE concrete wiring that moves the effect-lifecycle coordinator from
- * FOUNDATION-ONLY to PRIMARY-WIRED, by delegating a real candidate materialization to the existing hardened
- * `localCandidateStage` THROUGH `driveEffect`.
+ * Live EffectOps adapter (R54) — an exported, runnable, but **FOUNDATION-ONLY** adapter that composes the
+ * effect-lifecycle coordinator with a real candidate materialization by delegating to the existing hardened
+ * `localCandidateStage` THROUGH `driveEffect`. It is proven end-to-end, but is NOT yet on the primary door path:
+ * active primary-door integration (switching `localCeremonyRunner`'s materialize step to `runLiveCandidateEffect`)
+ * remains deferred and lives on that protected surface.
  *
  * It adds NO new state machine, store, or protocol. It composes what already exists on main:
  *   - PREPARED (durable) authority   ← Sam 2's `DurableCandidateReferenceMonitor` (the sole durable PREPARED
@@ -29,6 +31,7 @@ import { driveEffect, type EffectOps, type EffectRunResult, type EffectRunPhase 
 import { DurableCandidateReferenceMonitor } from './durableCandidateMonitor.js';
 import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
 import { materializeCandidate, candidateBranchName } from './localCandidateStage.js';
+import { deriveDraftHash } from './proposal.js';
 import { snapshotProtected, verifyIsolation, type RefReader, type ProtectedSnapshot } from './refSnapshot.js';
 import { EffectAuditLedger } from './effectAudit.js';
 import { validateSettlement } from './effectSettlement.js';
@@ -51,9 +54,27 @@ function gitRefReader(repoRoot: string): RefReader {
   };
 }
 
-/** Does the candidate branch already exist in the repo? (post-crash reality check — reads, never writes.) */
-function candidateBranchExists(repoRoot: string, branch: string): boolean {
-  return gitRefReader(repoRoot).readRef(`refs/heads/${branch}`) !== null;
+/**
+ * Post-crash reality check (reads, never writes): is the observed `candidate/<id>` branch ACTUALLY this authorized
+ * candidate — not merely a branch with the right NAME? A branch name is attacker-forgeable, so we verify IDENTITY:
+ * every authorized candidate file must be present in the observed branch's tree with content whose `deriveDraftHash`
+ * equals the candidate's signed draftHash (the same content-binding the kernel monitor authorized over). A hostile
+ * pre-existing `candidate/<id>` with wrong/missing content — or a missing branch — FAILS CLOSED (returns false), so
+ * it is never credited as the effect.
+ */
+function observedBranchIsAuthorizedCandidate(repoRoot: string, branch: string, candidate: BranchCandidate): boolean {
+  if (gitRefReader(repoRoot).readRef(`refs/heads/${branch}`) === null) return false;
+  for (const f of candidate.files) {
+    let blob: string;
+    try {
+      blob = execFileSync('git', ['-C', repoRoot, 'show', `refs/heads/${branch}:${f.path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    } catch {
+      return false; // an authorized file is missing from the observed branch → not our candidate
+    }
+    const recomputed = deriveDraftHash({ id: 'candidate', targetPath: f.path, newContent: blob, createdAt: '2026-01-01T00:00:00.000Z', supersedes: null });
+    if (recomputed !== f.draftHash) return false; // content mismatch → forged/wrong branch → fail closed
+  }
+  return true;
 }
 
 export interface LiveEffectInput {
@@ -93,8 +114,12 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, 
   let completionRef: string | null = null; // the durable completion receipt from the ONE materialization
 
   return {
-    // The staged candidate already passed rehearsal upstream (its files carry rehearsal receipts).
-    rehearse: () => ({ proceed: candidate.files.length > 0 && candidate.files.every((f) => typeof f.receiptHash === 'string'), status: 'passed' }),
+    // The staged candidate must carry a passed rehearsal (every file has a receipt). An empty candidate or a
+    // missing/blank receiptHash is a REFUSAL — never a pass. Truthful status: 'passed' only when it truly passed.
+    rehearse: () => {
+      const passed = candidate.files.length > 0 && candidate.files.every((f) => typeof f.receiptHash === 'string' && f.receiptHash.length > 0);
+      return { proceed: passed, status: passed ? 'passed' : 'failed' };
+    },
     // OWNER GATE = the kernel authorization verdict, NON-CONSUMING (a fresh base monitor with empty consumed state
     // runs the SAME `decide()` logic and its in-memory consume is discarded). A forged/absent/unarmed authorization
     // refuses HERE — before EXECUTING/audit/Git. The ONE DURABLE PREPARED transition (the authoritative consume)
@@ -115,8 +140,9 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, 
       if (!m.ok && m.reasonClass === 'candidate:reference-monitor-refused') {
         sink.storeFault = NON_RETRYABLE_STORE_FAULT.exec(m.text)?.[1] ?? sink.storeFault;
       }
-      // OBSERVE REALITY (not just m.ok): a replay-refused attempt whose branch already exists is present-but-ambiguous.
-      const candidatePresent = m.ok ? (m.branch !== null) : candidateBranchExists(repoRoot, branch);
+      // OBSERVE REALITY (not just m.ok): a replay-refused attempt is present ONLY if the observed branch is the
+      // AUTHORIZED candidate by CONTENT identity — a hostile pre-existing candidate/<id> fails closed (§F2).
+      const candidatePresent = m.ok ? (m.branch !== null) : observedBranchIsAuthorizedCandidate(repoRoot, branch, candidate);
       return { candidatePresent, completionRef, snapshotAfter: snapshotProtected(reader, PROTECTED_REFS, nowIso) };
     },
     verifyIsolation: (before, after) => ({ intact: verifyIsolation(before as ProtectedSnapshot, after as ProtectedSnapshot).ok }),

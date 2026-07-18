@@ -124,19 +124,27 @@ describe('R54 live EffectOps — GENUINE cross-process concurrency → exactly o
   it('two SEPARATE OS processes race the FULL live-effect path over one shared trusted-state dir → one COMMITTED, one refused, one branch, one consumed, main unchanged', async () => {
     const stateDir = join(base, 'state-concurrent');
     const headBefore = g(repoRoot, ['rev-parse', 'HEAD']);
-    // GENUINE concurrency: both children are launched and run in PARALLEL (async spawn), so they contend at the
-    // durable single-writer decide — the loser is refused by the O_EXCL lock (or a replay if it lands just after).
-    const runChild = (): Promise<string> => new Promise((resolvePhase) => {
+    // GENUINE concurrency: both children run in PARALLEL (async spawn), contending at the durable single-writer
+    // decide — the loser is refused by the O_EXCL lock (or a replay if it lands just after).
+    interface ChildOutcome { phase: string; code: number | null; signal: string | null; err: string }
+    const runChild = (): Promise<ChildOutcome> => new Promise((resolveOutcome) => {
       const c = spawn(process.execPath, [CHILD, repoRoot, wtBase, stateDir, 'r54-live-owner', 'xproc'], { stdio: ['ignore', 'pipe', 'pipe'] });
       let out = ''; let err = '';
       c.stdout.on('data', (d) => { out += d.toString(); });
       c.stderr.on('data', (d) => { err += d.toString(); });
-      c.on('close', () => resolvePhase(out.match(/PHASE:(\S+)/)?.[1] ?? `ERR(${err.slice(0, 100)})`));
+      c.on('close', (code, signal) => resolveOutcome({ phase: out.match(/PHASE:(\S+)/)?.[1] ?? '', code, signal, err: err.slice(0, 200) }));
     });
-    const phases = await Promise.all([runChild(), runChild()]); // both in flight simultaneously
-    const committed = phases.filter((p) => p === 'COMMITTED');
-    // exactly one COMMITTED; the other is a non-committed governed refusal (reconcile/quarantine/refused — never a 2nd commit)
-    expect(committed, `phases=${JSON.stringify(phases)}`).toHaveLength(1);
+    const outcomes = await Promise.all([runChild(), runChild()]); // both in flight simultaneously
+    // NEITHER child may crash or exit abnormally, and BOTH must emit an explicit governed phase.
+    const GOVERNED = new Set(['COMMITTED', 'RECONCILE_REQUIRED', 'QUARANTINED', 'REFUSED_AT_OWNER', 'REHEARSAL_FAILED']);
+    for (const o of outcomes) {
+      expect(o.signal, `child killed by signal · err=${o.err}`).toBeNull();
+      expect(o.code, `child exit code · err=${o.err}`).toBe(0);
+      expect(GOVERNED.has(o.phase), `child phase='${o.phase}' err=${o.err}`).toBe(true); // no missing/ungoverned phase
+    }
+    const phases = outcomes.map((o) => o.phase);
+    // exactly one COMMITTED; the other is a GOVERNED loser (reconcile/quarantine/refused — never a 2nd commit)
+    expect(phases.filter((p) => p === 'COMMITTED'), `phases=${JSON.stringify(phases)}`).toHaveLength(1);
     expect(phases.filter((p) => p !== 'COMMITTED')).toHaveLength(1);
     // exactly ONE candidate branch FOR THIS candidate id (the repo is shared across tests), one durable consume
     const xprocBranch = candidateBranchName(makeCandidate('xproc'));
@@ -180,6 +188,35 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
     const r = runLiveCandidateEffect(inp);
     expect(r.ok).toBe(false);
     expect(r.phase).toBe('REFUSED_AT_OWNER');
+    expect(inp.monitor.consumed().length).toBe(0);
+  });
+
+  it('a HOSTILE pre-existing candidate/<id> branch (right NAME, forged content) is NEVER credited as the effect — fail closed', () => {
+    const candidate = makeCandidate('hostile');
+    const branch = candidateBranchName(candidate);
+    // an attacker squats the branch NAME pointing at a commit with the WRONG content (the original, not the candidate)
+    execFileSync('git', ['-C', repoRoot, 'branch', branch, 'HEAD']);
+    try {
+      const inp = inputFor('hostile', { candidate, monitor: new DurableCandidateReferenceMonitor(owner.root, join(base, 'state-hostile')) });
+      const r = runLiveCandidateEffect(inp);
+      // the reconcile/observe path verifies CONTENT identity → the squat mismatches → candidatePresent=false →
+      // QUARANTINED (candidate-absent). The forged branch is never COMMITTED, and no durable authority is consumed.
+      expect(r.phase).not.toBe('COMMITTED');
+      expect(r.phase).toBe('QUARANTINED');
+      expect(inp.monitor.consumed().length).toBe(0);
+    } finally {
+      execFileSync('git', ['-C', repoRoot, 'branch', '-D', branch]); // clean the squat so other tests' counts are unaffected
+    }
+  });
+
+  it('an empty candidate or a file missing its rehearsal receipt is a REHEARSAL_FAILED refusal (never a pass, no consume)', () => {
+    const b0 = makeCandidate('norcpt');
+    // rebuild immutably with the first file's rehearsal receipt missing (empty)
+    const noReceipt = { ...b0, files: b0.files.map((f, i) => (i === 0 ? { ...f, receiptHash: '' } : f)) } as unknown as BranchCandidate;
+    const inp = inputFor('norcpt', { candidate: noReceipt });
+    const r = runLiveCandidateEffect(inp);
+    expect(r.phase).toBe('REHEARSAL_FAILED');
+    expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('EXECUTING');
     expect(inp.monitor.consumed().length).toBe(0);
   });
 
