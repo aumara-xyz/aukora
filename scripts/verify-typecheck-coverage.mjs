@@ -40,6 +40,18 @@ if (!tcAll) {
     `\`typecheck:all\` must run \`npm run typecheck --workspaces --if-present\` (escape-proof: covers ALL workspaces with a typecheck). ` +
     `A hand-maintained list lets a new workspace escape the gate. Got: ${tcAll}`,
   );
+} else {
+  // R57 build-order P0: @aukora/kernel exports its types from ./dist, so its declarations must be BUILT
+  // before any dependent workspace typechecks. In a clean clone (npm ci, no dist) `typecheck:all` must
+  // therefore build the kernel first, or dependents fail `TS2307: Cannot find module '@aukora/kernel'`.
+  const bk = tcAll.indexOf('build:kernel');
+  const tc = tcAll.indexOf('typecheck --workspaces');
+  if (bk === -1 || tc === -1 || bk > tc) {
+    failures.push(
+      `\`typecheck:all\` must build the kernel BEFORE typechecking workspaces (\`npm run build:kernel && npm run typecheck --workspaces --if-present\`). ` +
+      `@aukora/kernel exports its .d.ts from ./dist; without a prior build a clean clone fails TS2307 on Node 20/22. Got: ${tcAll}`,
+    );
+  }
 }
 
 // 3. `typecheck:all` must be part of `test:all`.
