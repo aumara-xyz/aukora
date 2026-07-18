@@ -5,6 +5,7 @@
  * @aukora/kernel), plus the provider-neutral model boundary. Not a portable package.
  */
 export * from './reactiveStore.js';
+export * from './receiptBridge.js';
 export * from './brainProvider.js';
 export * from './nebiusProvider.js';
 export * from './providerPolicy.js';
