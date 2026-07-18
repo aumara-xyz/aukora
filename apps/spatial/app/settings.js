@@ -67,7 +67,7 @@ export async function mountSettings(root) {
   hint.append(document.createTextNode('No key yet? Create one at '));
   const a = el('a', null, 'openrouter.ai/keys'); a.href = 'https://openrouter.ai/keys'; a.target = '_blank'; a.rel = 'noopener noreferrer';
   hint.append(a);
-  hint.append(document.createTextNode('. Prefer the terminal? Put OPENROUTER_API_KEY in core/.env instead — either works.'));
+  hint.append(document.createTextNode('. Saving here keeps the key on THIS machine only — held by the local door, never sent anywhere else and never written into the repository.'));
   card.append(hint);
 
   scroll.append(card);
