@@ -136,3 +136,35 @@ describe('POST-OPEN directory replacement (the exact Codex v5 acceptance) → fa
     expect(existsSync(join(outside, 'trusted-state.json'))).toBe(false); // nothing written into the impostor dir
   });
 });
+
+describe('STANDALONE load()/consumed() acquire a protected read pin — an unsafe prefix THROWS, never followed (v6)', () => {
+  it('a standalone load() over a state dir SWAPPED to a symlink refuses instead of reading through it', () => {
+    // seed a real store with one durable consumption, then swap the dir for a symlink to a hostile copy.
+    const s = new TrustedStateStore(outside, { decide: stub }); s.open(); authorize(s, 'real-1'); s.close();
+    const realState = readFileSync(join(outside, 'trusted-state.json'), 'utf8');
+    writeFileSync(join(sneakTarget, 'trusted-state.json'), realState); // attacker's lookalike behind the link
+    rmSync(outside, { recursive: true, force: true });
+    symlinkSync(sneakTarget, outside);
+    // a FRESH, never-opened store (exactly the consumed() path) must NOT follow the symlink — it throws.
+    const probe = new TrustedStateStore(outside, { decide: stub });
+    expect(() => probe.load(genesis())).toThrow(TrustedStoreUnsafePathError);
+  });
+
+  it('a standalone load() on a real owner-only dir still reads (pin acquired then released; reopen works)', () => {
+    const s = new TrustedStateStore(outside, { decide: stub }); s.open(); authorize(s, 'real-2'); s.close();
+    // repeated standalone reads succeed and leak no fd (each acquires + releases its own transient pin)
+    for (let i = 0; i < 5; i++) {
+      const probe = new TrustedStateStore(outside, { decide: stub });
+      expect(probe.load(genesis()).state.consumedIds).toEqual(['real-2']);
+    }
+    // and the dir is still fully usable for a real reopen+consume afterward
+    const re = new TrustedStateStore(outside, { decide: stub }); re.open();
+    expect(authorize(re, 'real-2').ok).toBe(false); // durable replay
+    re.close();
+  });
+
+  it('a standalone load() on a MISSING dir returns genesis (ENOENT is empty, not unsafe — no existsSync precheck)', () => {
+    const probe = new TrustedStateStore(join(base, 'never-created'), { decide: stub });
+    expect(probe.load(genesis()).state.consumedIds).toEqual([]);
+  });
+});
