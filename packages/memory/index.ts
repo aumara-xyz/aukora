@@ -9,6 +9,7 @@
  * store that persists and grows these records lives in apps/brain (an adapter), never in this package.
  */
 export * from './src/envelope.js';
+export * from './src/ingestGate.js';
 export * from './src/recall.js';
 export * from './src/scope.js';
 export * from './src/staleness.js';

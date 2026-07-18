@@ -16,7 +16,7 @@ qualified) in the linked qualification records; this surface summarises and poin
 
 | status | meaning | may claim |
 | --- | --- | --- |
-| **VERIFIED** | reproduced *in this repository* over production adapters, self-verifying on this node | observation / live-local proof |
+| **VERIFIED** | reproduced *in this repository* over production adapters, self-verifying from the committed sources | observation / live-local proof |
 | **PREPARED** | an in-repo cell that is complete but **inert** (`enabled:false`) — no runtime, no deployment, unbound pins | a design that is parked, nothing more |
 | **EXTERNAL** | ran only in an outside harness/container; **not** reproducible from the public tree | a documented experiment, never an Aukora fact |
 
@@ -41,16 +41,15 @@ cells**. They are different kinds of thing and must never be conflated.
 
 ### A. External Inkling/Tinker experiments (ran outside this repo)
 
-Recorded for honesty; none is reproducible from the public tree, so none is an Aukora capability.
+Recorded for honesty; **none is reproducible from the committed public tree, so none is an Aukora capability**,
+and **no externally reported number is an Aukora test total**. Each carries exact provenance, a reproducibility
+status, and a canonical disposition:
 
-- **Kimi K3 experiments** (memory/index prototype; a constitutional-evolution *simulation*). The externally
-  reported counts (candidate records, advisory reviews, recall deltas) are **simulation figures, not Aukora
-  results** — documented and explicitly negated in the R51/R54 records above.
-- **Fugu Ultra via OpenRouter** — an external live-model experiment. Fugu Ultra is **not** Inkling; results
-  are not committed here (the raw harness needed credential scrubbing and independent reproduction).
-- **Auma-VL LoRA ladder** (reported v5..v17) and other model runs — provenance is out-of-repo; the resolved
-  truth for every one is `UNVERIFIED_OR_PARKED` / `BLOCKED` / `DESIGN_ONLY` in `models/MODEL_TRUTH.md`. This
-  repo ships **no weights**.
+| experiment | provenance | reproducibility | disposition |
+| --- | --- | --- | --- |
+| Kimi K3 memory/index prototype + constitutional-evolution *simulation* | external harness/container (not committed); qualified in [`docs/r51/EXTERNAL_SKUNKWORKS.md`](../r51/EXTERNAL_SKUNKWORKS.md) | **REPRODUCTION_PENDING** — raw bundle absent from the tree | **EXTERNAL** — reported counts are simulation figures, explicitly negated in the R51/R54 records; never Aukora results |
+| Fugu Ultra via OpenRouter (governed crossing) | external live-model run; issue [#98](https://github.com/aumara-xyz/aukora/issues/98) | **not reproduced** — raw harness needs credential scrubbing + independent run | **EXTERNAL** — Fugu Ultra is **not** Inkling; not committed here |
+| Auma-VL LoRA ladder (reported v5..v17) + other model runs | provenance out-of-repo; resolved in [`models/MODEL_TRUTH.md`](../../models/MODEL_TRUTH.md) | **weights not in repo** | `UNVERIFIED_OR_PARKED` / `BLOCKED` / `DESIGN_ONLY` — this repo ships **no weights** |
 
 ### B. Parked runtime cells (in-repo, inert, `enabled:false`)
 
@@ -81,8 +80,8 @@ result-equivalence + measured-performance tests against the canonical implementa
 pass; (2) source, model, environment, seed, dependency versions pinned; (3) evidence bundle + verifier
 complete; (4) an independent run reproduces the result at an exact `main` SHA; (5) claims distinguish
 observation / simulation / live-local / deployed; (6) every model/cell stays `advisoryOnly:true`,
-`grantsAuthority:false`. None of (1)–(4) is satisfiable on this node for the external artifacts, so they stay
-EXTERNAL.
+`grantsAuthority:false`. None of (1)–(4) is satisfiable from the committed public tree for the external
+artifacts, so they stay EXTERNAL.
 
 ## The fence is executable
 

@@ -25,7 +25,7 @@ import { createServer } from 'node:http';
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { readPidRecord, listenerPidOnPort, isAlive, pgidOf } from './supervisor.mjs';
+import { readPidRecord, listenerPidOnPort, isAlive, pgidOf, groupAlive } from './supervisor.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const APP = join(HERE, '..');
@@ -58,7 +58,7 @@ async function httpProbe(port, path, marker) {
  * testable. Returns `{ ok:true, port }` for a verified upstream, else `{ ok:false, reason }`.
  */
 export async function resolveUpstreamShellPort(deps) {
-  const { policy: pol, readState, readPidRecord: readRec, listenerPidOnPort: listenerOn, isAlive: alive, pgidOf: pgidFn, probe } = deps;
+  const { policy: pol, readState, readPidRecord: readRec, listenerPidOnPort: listenerOn, isAlive: alive, pgidOf: pgidFn, groupAlive: groupAliveFn, probe } = deps;
   const svc = pol.services.find((s) => s.name === 'spatial-shell');
   const allowed = new Set([svc.port, svc.candidatePort].filter((p) => Number.isInteger(p)));
   const refused = new Set(pol.gateway.refusedUpstreams ?? []);
@@ -73,22 +73,40 @@ export async function resolveUpstreamShellPort(deps) {
   if (refused.has(claimed)) return { ok: false, reason: 'gateway:upstream-refused-port' };       // AUMLOK is never fronted
   if (!allowed.has(claimed)) return { ok: false, reason: 'gateway:upstream-port-not-in-policy' }; // a foreign/arbitrary port
 
-  // (2) SUPERVISOR-OWNED CHILD IDENTITY: a live pid record whose owned group is the ACTUAL listener.
+  // (2) SUPERVISOR-OWNED CHILD IDENTITY: a record with a RECORDED process GROUP that is STILL ALIVE, and whose
+  // group the ACTUAL listener belongs to. Group membership (not a numeric pid/pgid equality) is the ownership
+  // relation the supervisor maintains, and requiring the RECORDED owner group to be alive closes the pid-reuse
+  // hole: a stale record (owner already exited) can no longer be authenticated by a foreign process that merely
+  // recycled its pid number — the group is gone, and a recycled pid gets its own new group id.
   const rec = readRec('spatial-shell', claimed);
   if (rec === null) return { ok: false, reason: 'gateway:upstream-unowned' };                     // no supervisor record → not ours
+  if (!Number.isInteger(rec.pgid) || rec.pgid <= 0) return { ok: false, reason: 'gateway:upstream-unowned' }; // record has no owned group
+  if (!groupAliveFn(rec.pgid)) return { ok: false, reason: 'gateway:upstream-owner-dead' };         // recorded owner group gone → stale record
   const listener = listenerOn(claimed);
   if (listener === null) return { ok: false, reason: 'gateway:upstream-not-listening' };           // nothing bound
-  const ownedPids = new Set([rec.listenerPid, rec.wrapperPid, rec.pgid].filter((p) => Number.isInteger(p) && p > 0));
-  const listenerOwned = ownedPids.has(listener) || (Number.isInteger(rec.pgid) && pgidFn(listener) === rec.pgid);
-  if (!listenerOwned) return { ok: false, reason: 'gateway:upstream-foreign-listener' };           // someone else on our port
-  if (!alive(listener)) return { ok: false, reason: 'gateway:upstream-owner-dead' };                // stale
+  if (pgidFn(listener) !== rec.pgid) return { ok: false, reason: 'gateway:upstream-foreign-listener' }; // listener not in the owned group
+  if (!alive(listener)) return { ok: false, reason: 'gateway:upstream-owner-dead' };                // listener itself gone (raced)
 
   // (3) the identity PROBE the header promises — trust probes, not files.
   const p = await probe(claimed, svc.probePath, svc.identityMarker);
   if (!p.portOpen) return { ok: false, reason: 'gateway:upstream-not-listening' };
   if (p.identityOk !== true) return { ok: false, reason: 'gateway:upstream-identity-mismatch' };
 
-  return { ok: true, port: claimed };
+  // an IMMUTABLE identity travels with the verdict so a caller can cheaply re-validate before each proxy op
+  // (finding: a cached port alone lets a takeover — verified shell exits, another process binds the freed port —
+  // proxy indefinitely). listenerPid + owned pgid pin the exact process this verification trusted.
+  return { ok: true, port: claimed, listenerPid: listener, pgid: rec.pgid };
+}
+
+/** Cheap (no-network) re-validation of a prior verdict: the SAME owned pid is still the listener on the same port
+ *  and still alive in the same owned group. False → the verification is stale and must be re-run (incl. re-probe). */
+export function upstreamStillOwned(verdict, deps) {
+  if (!verdict || verdict.ok !== true) return false;
+  const { listenerPidOnPort: listenerOn, isAlive: alive, pgidOf: pgidFn, groupAlive: groupAliveFn } = deps;
+  return listenerOn(verdict.port) === verdict.listenerPid
+    && alive(verdict.listenerPid)
+    && pgidFn(verdict.listenerPid) === verdict.pgid
+    && groupAliveFn(verdict.pgid);
 }
 
 /** Real dependencies for `resolveUpstreamShellPort` (ambient fs/net/supervisor helpers). */
@@ -96,7 +114,7 @@ function liveDeps() {
   return {
     policy,
     readState: () => (existsSync(STATE) ? JSON.parse(readFileSync(STATE, 'utf8')) : { services: {} }),
-    readPidRecord, listenerPidOnPort, isAlive, pgidOf, probe: httpProbe,
+    readPidRecord, listenerPidOnPort, isAlive, pgidOf, groupAlive, probe: httpProbe,
   };
 }
 
@@ -113,8 +131,13 @@ function declared(pathname) {
 /** Build the gateway http server. The verified upstream is resolved+cached once (before first use each boot);
  *  an unverified upstream refuses proxying. `deps` is injectable for tests; omitted → the live ambient deps. */
 export function createGatewayServer(deps = liveDeps()) {
-  let verifiedUpstream = null; // { ok, port } | { ok:false, reason } — cached after the first proxy attempt this boot
+  let verifiedUpstream = null; // { ok, port, listenerPid, pgid } | { ok:false, reason } — cached verification
   async function upstream() {
+    // Re-validate before serving: a cached OK port is trusted only while the SAME owned pid is still the listener
+    // (a cheap no-network check). If the verified shell exited and another process bound the freed port, the
+    // cheap check fails and we re-run the full verification (including the identity probe) — a takeover can never
+    // be proxied to indefinitely on a stale cache.
+    if (verifiedUpstream !== null && verifiedUpstream.ok && !upstreamStillOwned(verifiedUpstream, deps)) verifiedUpstream = null;
     if (verifiedUpstream === null) verifiedUpstream = await resolveUpstreamShellPort(deps);
     return verifiedUpstream;
   }

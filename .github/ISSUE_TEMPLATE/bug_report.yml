@@ -1,0 +1,40 @@
+name: Bug report
+description: Something the organism does that contradicts its documented behavior.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Filing an issue is always welcome. Note the
+        [contribution & licensing boundary](https://github.com/aumara-xyz/aukora/blob/main/CONTRIBUTING.md#outside-contributions-and-licensing):
+        outside **code** cannot be merged until a counsel-reviewed CLA/inbound grant exists — but reports, reproductions, and design input are welcome now.
+  - type: input
+    id: sha
+    attributes:
+      label: Exact main SHA
+      description: The `git rev-parse HEAD` you observed this on.
+      placeholder: 2543044d93a943f050b6131e0c5e3ef8aee15ab2
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      description: What the docs/CLAIMS say should happen, and what actually happened.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Exact commands. Prefer `npm ci && npm run test:all` plus the minimal failing step.
+      render: shell
+    validations:
+      required: true
+  - type: checkboxes
+    id: hygiene
+    attributes:
+      label: Hygiene
+      options:
+        - label: No secrets, keys, or private data are included in this report.
+          required: true

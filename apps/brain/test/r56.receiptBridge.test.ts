@@ -14,7 +14,7 @@
  * outage.
  */
 import { convexTest } from 'convex-test';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import schema from '../convex/schema';
 import { api } from '../convex/_generated/api';
 import { buildMemoryRecord } from '@aukora/memory';
@@ -22,12 +22,16 @@ import { ReactiveMemoryStore, DurableReceiptBridge, durableReceiptBridgeGrantsAu
 
 const modules = import.meta.glob('../convex/**/*.*s');
 const at = (s: number) => `2026-07-16T00:00:${String(s).padStart(2, '0')}.000Z`;
-// A door ceremony receipt: a bounded, content-free summary (no proposal content, no secret).
+// A door ceremony receipt: a bounded, content-free summary (no proposal content, no secret). owner-only ⇒ the
+// TRUSTED bridge presents the door/service ingest capability when forwarding it (R56 brick 2).
 const doorReceipt = () => buildMemoryRecord({ content: 'governed-recursion applied · seq=7 · stage=sandbox-applied', createdAt: at(1), kind: 'receipt', consent: 'owner-only', provenance: 'durable-recursion' });
+const DOOR_CAP = 'r56-door-ingest-capability-test-only';
+beforeEach(() => { process.env.AUKORA_INGEST_CAPABILITY = DOOR_CAP; });
+afterEach(() => { delete process.env.AUKORA_INGEST_CAPABILITY; });
 
-/** A projection io backed by the REAL public Convex ingest action (secret-scan → internal.memory.ingestValidated). */
+/** A projection io backed by the REAL public Convex ingest action, presenting the door capability (trusted path). */
 const ioFor = (t: ReturnType<typeof convexTest>): DurableProjectionIo => ({
-  ingest: (record) => t.action(api.ingest.ingest, { record }) as Promise<{ ok: boolean; recordId?: string; chainHash?: string; idempotent?: boolean; refusal?: string }>,
+  ingest: (record) => t.action(api.ingest.ingest, { record, capability: DOOR_CAP }) as Promise<{ ok: boolean; recordId?: string; chainHash?: string; idempotent?: boolean; refusal?: string }>,
 });
 const chainRows = (t: ReturnType<typeof convexTest>) =>
   t.run(async (ctx: any) => ctx.db.query('memoryChain').withIndex('by_index').collect());

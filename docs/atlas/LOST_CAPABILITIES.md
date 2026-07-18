@@ -1,11 +1,18 @@
 # LOST_CAPABILITIES (derived from ATLAS.json — do not edit by hand)
 
-Definition: donor capability with no proven current counterpart (`RESTORE_DONOR`). 35 rows.
+Definition: donor capability with no proven current counterpart (`RESTORE_DONOR`). 36 rows.
+
+<!-- R56 reconciliation (Sam 2): synced this derived doc to its ATLAS.json source — the source holds 36
+     RESTORE_DONOR rows (aukora-symbiote 23, aukora-fu 4, aukora-kernel 9); the symbiote-uncategorized family is
+     6 (#3, #33, #244, #298, #344, #391), not 5. The count is CONTINGENT on the open #391 disposition disagreement
+     recorded in CONFLICTS.md (ledger DUPLICATE/superseded vs atlas RESTORE_DONOR) — if the owner rules #391 a
+     duplicate, this drops to 35 / uncategorized 5. Not hand-authored beyond this sync. -->
+
 
 | family | rows | ring | priority | sources |
 |---|---|---|---|---|
 | identity/memory-continuity | 6 | core | P0 | aukora-symbiote |
-| uncategorized | 5 | unassigned | P2 | aukora-symbiote |
+| uncategorized | 6 | unassigned | P2 | aukora-symbiote |
 | apply-lane-integrity | 4 | core | P0 | aukora-symbiote |
 | authority/ring-laws | 3 | core | P0 | aukora-symbiote |
 | kira | 2 | unassigned | P2 | aukora-symbiote |
