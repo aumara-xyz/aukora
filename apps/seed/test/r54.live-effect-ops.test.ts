@@ -209,19 +209,80 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
     }
   });
 
-  it('an empty candidate or a file missing its rehearsal receipt is a REHEARSAL_FAILED refusal (never a pass, no consume)', () => {
-    const b0 = makeCandidate('norcpt');
-    // rebuild immutably with the first file's rehearsal receipt missing (empty)
-    const noReceipt = { ...b0, files: b0.files.map((f, i) => (i === 0 ? { ...f, receiptHash: '' } : f)) } as unknown as BranchCandidate;
-    const inp = inputFor('norcpt', { candidate: noReceipt });
-    const r = runLiveCandidateEffect(inp);
-    expect(r.phase).toBe('REHEARSAL_FAILED');
-    expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('EXECUTING');
-    expect(inp.monitor.consumed().length).toBe(0);
+  it('a candidate/<id> with the RIGHT content over the RIGHT base but ONE EXTRA unauthorized change is NEVER credited — exact change-set identity fails closed', () => {
+    const candidate = makeCandidate('extra');
+    const branch = candidateBranchName(candidate);
+    const wt = mkdtempSync(join(tmpdir(), 'aukora-r54-squat-extra-'));
+    // build candidate/<id> at HEAD carrying the authorized content PLUS one unauthorized extra file, then dispose wt
+    execFileSync('git', ['-C', repoRoot, 'worktree', 'add', '-q', '-b', branch, wt, 'HEAD']);
+    try {
+      writeFileSync(join(wt, 'apps/seed/src/notes.ts'), '// live effect extra\n');            // the authorized content
+      writeFileSync(join(wt, 'apps/seed/src/EXTRA.ts'), '// unauthorized piggy-backed change\n'); // + an extra change
+      g(wt, ['add', '-A']); g(wt, ['commit', '-q', '--no-gpg-sign', '-m', 'candidate+extra']);
+      execFileSync('git', ['-C', repoRoot, 'worktree', 'remove', '--force', wt]);
+      const inp = inputFor('extra', { candidate, monitor: new DurableCandidateReferenceMonitor(owner.root, join(base, 'state-extra')) });
+      const r = runLiveCandidateEffect(inp);
+      // materialize refuses (branch already exists) → observe reality: base→branch changes {notes.ts, EXTRA.ts} ≠
+      // the authorized {notes.ts} → candidatePresent=false → QUARANTINED, never COMMITTED, no durable consume.
+      expect(r.phase).toBe('QUARANTINED');
+      expect(inp.monitor.consumed().length).toBe(0);
+    } finally {
+      if (existsSync(wt)) execFileSync('git', ['-C', repoRoot, 'worktree', 'remove', '--force', wt]);
+      tryG(repoRoot, ['branch', '-D', branch]);
+    }
   });
 
-  it('a NON-RETRYABLE durable-store fault (corrupt) is surfaced as storeFault for operator triage (Sam 2 advisory)', () => {
+  it('a candidate/<id> with the RIGHT content over the WRONG base is NEVER credited — base binding fails closed', () => {
+    const candidate = makeCandidate('wrongbase');
+    const branch = candidateBranchName(candidate);
+    const wt = mkdtempSync(join(tmpdir(), 'aukora-r54-squat-base-'));
+    execFileSync('git', ['-C', repoRoot, 'worktree', 'add', '-q', '--detach', wt, 'HEAD']);
+    try {
+      // a side base commit (NOT equal to repo HEAD), then the authorized candidate content committed ON TOP of it →
+      // candidate/<id>'s parent is the side base, not the authorized HEAD.
+      writeFileSync(join(wt, 'apps/seed/src/notes.ts'), '// unrelated side base\n');
+      g(wt, ['add', '-A']); g(wt, ['commit', '-q', '--no-gpg-sign', '-m', 'side-base']);
+      writeFileSync(join(wt, 'apps/seed/src/notes.ts'), '// live effect wrongbase\n');       // the authorized content
+      g(wt, ['add', '-A']); g(wt, ['commit', '-q', '--no-gpg-sign', '-m', 'candidate-on-wrong-base']);
+      const wrongCommit = g(wt, ['rev-parse', 'HEAD']);
+      execFileSync('git', ['-C', repoRoot, 'branch', branch, wrongCommit]); // candidate/<id> → the wrong-base commit
+      execFileSync('git', ['-C', repoRoot, 'worktree', 'remove', '--force', wt]);
+      const inp = inputFor('wrongbase', { candidate, monitor: new DurableCandidateReferenceMonitor(owner.root, join(base, 'state-wrongbase')) });
+      const r = runLiveCandidateEffect(inp);
+      // observe reality: parent(candidate) = side-base ≠ authorizedBase(HEAD) → candidatePresent=false → QUARANTINED.
+      expect(r.phase).toBe('QUARANTINED');
+      expect(inp.monitor.consumed().length).toBe(0);
+    } finally {
+      if (existsSync(wt)) execFileSync('git', ['-C', repoRoot, 'worktree', 'remove', '--force', wt]);
+      tryG(repoRoot, ['branch', '-D', branch]);
+    }
+  });
+
+  // A staged candidate carries a PASSED rehearsal only when EVERY file has a real receiptHash. Three ways that can
+  // fail — a blank receipt, an absent (undefined) receipt, and a candidate with NO files — must ALL be a
+  // REHEARSAL_FAILED refusal: never a pass, never an EXECUTING/PREPARED transition, never a durable consume.
+  const rehearsalRefusals: ReadonlyArray<{ label: string; mutate: (b: BranchCandidate) => BranchCandidate }> = [
+    { label: 'a BLANK ("") rehearsal receipt', mutate: (b) => ({ ...b, files: b.files.map((f, i) => (i === 0 ? { ...f, receiptHash: '' } : f)) } as unknown as BranchCandidate) },
+    { label: 'an ABSENT (undefined) rehearsal receipt', mutate: (b) => ({ ...b, files: b.files.map((f, i) => (i === 0 ? { ...f, receiptHash: undefined } : f)) } as unknown as BranchCandidate) },
+    { label: 'an EMPTY candidate (no files at all)', mutate: (b) => ({ ...b, files: [] } as unknown as BranchCandidate) },
+  ];
+  for (const { label, mutate } of rehearsalRefusals) {
+    it(`${label} → REHEARSAL_FAILED (never a pass, no EXECUTING/PREPARED, no durable consume, no branch)`, () => {
+      const tag = `rehfail-${label.replace(/\W+/g, '-')}`;
+      const candidate = mutate(makeCandidate(tag));
+      const inp = inputFor(tag, { candidate });
+      const r = runLiveCandidateEffect(inp);
+      expect(r.phase).toBe('REHEARSAL_FAILED');
+      expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('EXECUTING');
+      expect(r.auditTrail.map((a) => a.toPhase)).not.toContain('PREPARED');
+      expect(inp.monitor.consumed().length).toBe(0);
+      expect(tryG(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${candidateBranchName(candidate)}`])).toBeNull();
+    });
+  }
+
+  it('a NON-RETRYABLE durable-store fault (corrupt) → EXACTLY QUARANTINED, no branch/git effect, surfaced as storeFault (Sam 2 advisory)', () => {
     const stateDir = join(base, 'state-corrupt');
+    const headBefore = g(repoRoot, ['rev-parse', 'HEAD']);
     // a healthy run first populates the durable trusted-state, then we corrupt every persisted file
     const first = runLiveCandidateEffect(inputFor('corrupt-a', { candidate: makeCandidate('corrupt-a'), monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir) }));
     expect(first.phase).toBe('COMMITTED');
@@ -229,8 +290,14 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
     for (const f of readdirSync(stateDir)) writeFileSync(join(stateDir, f), 'CORRUPT-NOT-VALID-STATE');
     // a fresh DIFFERENT candidate over the corrupted store → the durable monitor decide fails corrupt → refused,
     // the effect quarantines, and the non-retryable fault is NAMED for triage.
-    const r = runLiveCandidateEffect(inputFor('corrupt-b', { candidate: makeCandidate('corrupt-b'), monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir) }));
+    const candB = makeCandidate('corrupt-b');
+    const r = runLiveCandidateEffect(inputFor('corrupt-b', { candidate: candB, monitor: new DurableCandidateReferenceMonitor(owner.root, stateDir) }));
     expect(r.ok).toBe(false);
+    expect(r.phase).toBe('QUARANTINED');                 // exact terminal — the store fault never masquerades as present
     expect(r.storeFault).toBe('trusted_state_corrupt');
+    // NO git effect: the corrupt-b candidate branch was never created, HEAD + working tree are byte-unchanged
+    expect(tryG(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${candidateBranchName(candB)}`])).toBeNull();
+    expect(g(repoRoot, ['rev-parse', 'HEAD'])).toBe(headBefore);
+    expect(g(repoRoot, ['status', '--porcelain'])).toBe('');
   });
 });

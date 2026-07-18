@@ -28,8 +28,7 @@ import { execFileSync } from 'node:child_process';
 import type { ReactiveMemoryStore } from '@aukora/brain';
 import type { SignedPromotionV2, AumlokAuthorityRootV2 } from '@aukora/kernel/schemas';
 import { driveEffect, type EffectOps, type EffectRunResult, type EffectRunPhase } from './effectCoordinator.js';
-import { DurableCandidateReferenceMonitor } from './durableCandidateMonitor.js';
-import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
+import { CandidateReferenceMonitor, type DurableEffectMonitor } from './candidateReferenceMonitor.js';
 import { materializeCandidate, candidateBranchName } from './localCandidateStage.js';
 import { deriveDraftHash } from './proposal.js';
 import { snapshotProtected, verifyIsolation, type RefReader, type ProtectedSnapshot } from './refSnapshot.js';
@@ -54,22 +53,51 @@ function gitRefReader(repoRoot: string): RefReader {
   };
 }
 
+/** A read-only git command over the repo root; `null` on any failure (never throws, never mutates). */
+function gitReadOnly(repoRoot: string, args: readonly string[]): string | null {
+  try {
+    return execFileSync('git', ['-C', repoRoot, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+  } catch { return null; }
+}
+
 /**
- * Post-crash reality check (reads, never writes): is the observed `candidate/<id>` branch ACTUALLY this authorized
- * candidate — not merely a branch with the right NAME? A branch name is attacker-forgeable, so we verify IDENTITY:
- * every authorized candidate file must be present in the observed branch's tree with content whose `deriveDraftHash`
- * equals the candidate's signed draftHash (the same content-binding the kernel monitor authorized over). A hostile
- * pre-existing `candidate/<id>` with wrong/missing content — or a missing branch — FAILS CLOSED (returns false), so
- * it is never credited as the effect.
+ * EXACT authorized-candidate identity (reads Git AFTER materialization; NEVER trusts `m.branch !== null`). A branch
+ * name — and even the right file contents — are attacker-forgeable, so presence is credited ONLY when the observed
+ * `candidate/<id>` ref is THIS authorized candidate committed over THIS authorized base, with EXACTLY the authorized
+ * change set. The commit sha is resolved ONCE and every subsequent read pins that sha (no TOCTOU on the moving ref):
+ *   1. the ref exists (else: never created, deleted, or reconciled away → absent);
+ *   2. the commit has a SINGLE parent equal to `authorizedBase` (else: wrong base, rebased, merge, or a branch
+ *      squatted over a different history → absent);
+ *   3. the change set base→candidate is EXACTLY the authorized candidate file paths — no missing file AND no
+ *      unauthorized EXTRA change piggy-backed onto the commit (else → absent);
+ *   4. every authorized file's blob in the candidate tree content-binds to its signed `draftHash` (the same binding
+ *      the kernel monitor authorized) (else: forged content → absent).
+ * Any deviation FAILS CLOSED (returns false) so a hostile, drifted, or partially-formed branch is never credited.
  */
-function observedBranchIsAuthorizedCandidate(repoRoot: string, branch: string, candidate: BranchCandidate): boolean {
-  if (gitRefReader(repoRoot).readRef(`refs/heads/${branch}`) === null) return false;
+function exactAuthorizedCandidatePresent(repoRoot: string, branch: string, candidate: BranchCandidate, authorizedBase: string | null): boolean {
+  if (authorizedBase === null) return false; // no known base to bind identity against → cannot prove it is ours
+  // (1) resolve the observed ref to an IMMUTABLE commit sha; pin every further read to that sha.
+  const commit = gitReadOnly(repoRoot, ['rev-parse', '--verify', '--quiet', `refs/heads/${branch}^{commit}`]);
+  if (commit === null || commit.length === 0) return false;
+  // (2) single parent, exactly the authorized base. `rev-list --parents -n 1` → "<commit> <parent...>".
+  const lineage = gitReadOnly(repoRoot, ['rev-list', '--parents', '-n', '1', commit]);
+  if (lineage === null) return false;
+  const ids = lineage.split(/\s+/).filter((s) => s.length > 0);
+  if (ids.length !== 2 || ids[1] !== authorizedBase) return false; // 0 parents (root), a merge (≥2), or wrong base
+  // (3) the change set base→candidate is EXACTLY the authorized file paths (rename detection disabled so a rename
+  //     cannot masquerade as an in-place edit; every literal changed path must be an authorized one, and vice-versa).
+  const diff = gitReadOnly(repoRoot, ['diff', '--no-renames', '--name-only', authorizedBase, commit]);
+  if (diff === null) return false;
+  const changed = diff.split('\n').map((s) => s.trim()).filter((s) => s.length > 0).sort();
+  const expected = candidate.files.map((f) => f.path).slice().sort();
+  if (changed.length !== expected.length || changed.some((p, i) => p !== expected[i])) return false;
+  // (4) content identity of every authorized file against its signed draftHash.
   for (const f of candidate.files) {
     let blob: string;
     try {
-      blob = execFileSync('git', ['-C', repoRoot, 'show', `refs/heads/${branch}:${f.path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+      blob = execFileSync('git', ['-C', repoRoot, 'show', `${commit}:${f.path}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
     } catch {
-      return false; // an authorized file is missing from the observed branch → not our candidate
+      return false; // an authorized file is missing from the observed tree → not our candidate
     }
     const recomputed = deriveDraftHash({ id: 'candidate', targetPath: f.path, newContent: blob, createdAt: '2026-01-01T00:00:00.000Z', supersedes: null });
     if (recomputed !== f.draftHash) return false; // content mismatch → forged/wrong branch → fail closed
@@ -88,8 +116,10 @@ export interface LiveEffectInput {
   readonly ownerArmed: boolean;
   /** The trusted owner root — used ONLY for the non-consuming pre-authorization verdict at the owner gate. */
   readonly ownerRoot: AumlokAuthorityRootV2;
-  /** Sam 2's durable reference monitor over a protected trusted-state dir (the SOLE durable PREPARED store). */
-  readonly monitor: DurableCandidateReferenceMonitor;
+  /** The durable reference-monitor contract (decide + consumed). The live door supplies Sam 2's concrete
+   *  `DurableCandidateReferenceMonitor` over a protected trusted-state dir (the SOLE durable PREPARED store); the
+   *  exported interface lets external callers name the parameter without depending on that barrel-private class. */
+  readonly monitor: DurableEffectMonitor;
   readonly store: ReactiveMemoryStore;
   /** Optional projection sink; returns false to simulate a projection outage (→ reconcile, never "absent"). */
   readonly project?: (settlement: unknown) => boolean;
@@ -97,9 +127,11 @@ export interface LiveEffectInput {
   readonly nowIso: string;
 }
 
-/** The two NON-RETRYABLE durable-store faults (Sam 2 advisory): surfaced for operator triage, distinct from a
- *  retryable lock/outage. A corrupt or rolled-back trusted-state store needs attention, not a blind retry. */
-const NON_RETRYABLE_STORE_FAULT = /\((trusted_state_(?:rollback|corrupt))\)/;
+/** The NON-RETRYABLE durable-store faults (Sam 2 advisory): surfaced for operator triage, distinct from a retryable
+ *  lock/outage. A rolled-back or corrupt trusted-state store — or (Sam 2 v4 store-open contract) a refused
+ *  path-swap (`trusted_state_unsafe_path`, the store opening onto a hostile symlink) — needs attention, not a
+ *  blind retry. Forward-compatible: `unsafe_path` simply never matches until Sam 2's v4 store lands. */
+const NON_RETRYABLE_STORE_FAULT = /\((trusted_state_(?:rollback|corrupt|unsafe_path))\)/;
 
 /** Mutable sink the run entry reads back after `driveEffect` — surfaces a non-retryable store fault for triage. */
 export interface LiveEffectSink {
@@ -111,6 +143,10 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, 
   const { repoRoot, worktreeBase, candidate, candidateAuth, ownerArmed, monitor, store, nowMs, nowIso } = input;
   const branch = candidateBranchName(candidate);
   const reader = gitRefReader(repoRoot);
+  // The base the authorized candidate MUST be parented on: HEAD at build time. The effect is isolated (it never
+  // moves HEAD), so HEAD here == HEAD at materialization == the candidate commit's sole parent on the honest path.
+  // We bind the observed candidate to this base so a right-content branch committed over the WRONG base is rejected.
+  const authorizedBase = reader.readRef('HEAD');
   let completionRef: string | null = null; // the durable completion receipt from the ONE materialization
 
   return {
@@ -140,9 +176,12 @@ export function liveEffectOps(input: LiveEffectInput, audit: EffectAuditLedger, 
       if (!m.ok && m.reasonClass === 'candidate:reference-monitor-refused') {
         sink.storeFault = NON_RETRYABLE_STORE_FAULT.exec(m.text)?.[1] ?? sink.storeFault;
       }
-      // OBSERVE REALITY (not just m.ok): a replay-refused attempt is present ONLY if the observed branch is the
-      // AUTHORIZED candidate by CONTENT identity — a hostile pre-existing candidate/<id> fails closed (§F2).
-      const candidatePresent = m.ok ? (m.branch !== null) : observedBranchIsAuthorizedCandidate(repoRoot, branch, candidate);
+      // OBSERVE REALITY by RE-READING Git after materialization — on BOTH paths, never trusting `m.branch !== null`
+      // as proof. Presence requires the observed candidate/<id> to be EXACTLY this authorized candidate over the
+      // authorized base with exactly the authorized change set (see `exactAuthorizedCandidatePresent`). A fresh
+      // success verifies as itself; a hostile squat, a wrong-base commit, an extra piggy-backed change, or a
+      // deleted/forged branch all fail closed → treated as absent (→ QUARANTINED, never COMMITTED).
+      const candidatePresent = exactAuthorizedCandidatePresent(repoRoot, branch, candidate, authorizedBase);
       return { candidatePresent, completionRef, snapshotAfter: snapshotProtected(reader, PROTECTED_REFS, nowIso) };
     },
     verifyIsolation: (before, after) => ({ intact: verifyIsolation(before as ProtectedSnapshot, after as ProtectedSnapshot).ok }),
@@ -171,15 +210,18 @@ function settleablePhase(phase: EffectRunPhase): 'COMMITTED' | 'QUARANTINED' | '
 export interface LiveEffectResult extends EffectRunResult {
   /** The content-free audit trail of the run (phase labels only). */
   readonly auditTrail: ReadonlyArray<{ readonly toPhase: string; readonly hasCompletionRef: boolean }>;
-  /** A NON-RETRYABLE durable-store fault (`trusted_state_rollback`/`trusted_state_corrupt`) if one occurred —
-   *  for operator triage. `null` when the store was healthy (a retryable lock/outage is not reported here). */
+  /** A NON-RETRYABLE durable-store fault (`trusted_state_rollback` / `trusted_state_corrupt` / — under Sam 2's v4
+   *  store-open contract — `trusted_state_unsafe_path`) if one occurred, for operator triage. `null` when the store
+   *  was healthy (a retryable lock/outage is deliberately not reported here). */
   readonly storeFault: string | null;
 }
 
 /**
- * Run ONE live candidate effect through the lifecycle coordinator. This is the PRIMARY-WIRED entry: it drives the
- * real durable monitor + hardened candidate stage through `driveEffect`. Returns the coordinator verdict plus the
- * audit trail. No authority minted here; the durable monitor holds the ONE authorization.
+ * Run ONE live candidate effect through the lifecycle coordinator. FOUNDATION-ONLY: it drives the real durable
+ * monitor + hardened candidate stage through `driveEffect` and is proven end-to-end, but it is NOT yet on the
+ * primary door path — that hop (switching `localCeremonyRunner`'s materialize step to `runLiveCandidateEffect`)
+ * remains deferred on that protected surface. Returns the coordinator verdict plus the content-free audit trail.
+ * No authority minted here; the durable monitor holds the ONE authorization.
  */
 export function runLiveCandidateEffect(input: LiveEffectInput): LiveEffectResult {
   const audit = new EffectAuditLedger();

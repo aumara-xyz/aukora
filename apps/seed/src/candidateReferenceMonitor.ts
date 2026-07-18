@@ -95,6 +95,20 @@ export interface MonitorDecision {
   readonly receiptDraftHash: string | null;
 }
 
+/**
+ * The minimal, EXPORTED reference-monitor contract the candidate stage and the live effect adapter consume:
+ * the ONE canonical `decide()` authorization plus a read of the durably-consumed ids. It exists so package-root
+ * consumers can name the parameter type WITHOUT depending on a concrete (and deliberately barrel-private) monitor
+ * class. `CandidateReferenceMonitor` and Sam 2's durable subclass both satisfy it structurally. NOTE: the contract
+ * itself carries no durability guarantee — crash-safety is a property of the CONCRETE implementation supplied (the
+ * live door supplies the durable `DurableCandidateReferenceMonitor`, whose `decide()` journals through the kernel
+ * store BEFORE any git). It adds no authority path: `decide()` remains the single authorization semantics.
+ */
+export interface DurableEffectMonitor {
+  decide(candidate: BranchCandidate, auth: SignedPromotionV2 | undefined, nowMs: number, opts?: { ownerArmed?: boolean }): MonitorDecision;
+  consumed(): readonly string[];
+}
+
 export class CandidateReferenceMonitor {
   private consumedIds: string[] = [];
   private receiptHead: { count: number; headHash: string | null } = { count: 0, headHash: null };

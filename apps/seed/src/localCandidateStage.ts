@@ -48,7 +48,7 @@ import type { SignedPromotionV2 } from '@aukora/kernel/schemas';
 import { deriveDraftHash } from './proposal.js';
 import { classifyPath, candidateAllowed } from './pathFence.js';
 import { scrubText } from './councilPack.js';
-import { CandidateReferenceMonitor } from './candidateReferenceMonitor.js';
+import type { DurableEffectMonitor } from './candidateReferenceMonitor.js';
 import type { BranchCandidate } from './ideEnvelope.js';
 
 export type CandidateReasonClass =
@@ -89,8 +89,10 @@ export interface MaterializeInput {
   readonly candidate: BranchCandidate;
   /** The owner's authorization over the candidate PAYLOAD hash (proposalHash===draftHash===candidatePayloadHash). */
   readonly candidateAuth: SignedPromotionV2 | undefined;
-  /** The canonical kernel reference monitor (durable consumed-id state). The ONE authorization path. */
-  readonly monitor: CandidateReferenceMonitor;
+  /** The canonical kernel reference monitor (durable consumed-id state). The ONE authorization path. Typed as the
+   *  exported `DurableEffectMonitor` contract (decide + consumed) so external callers can name it; the live door
+   *  supplies the concrete durable monitor whose `decide()` journals through the kernel store before any git. */
+  readonly monitor: DurableEffectMonitor;
   /** The owner has explicitly ARMED this materialization (maps to the kernel's humanClearance for self-modify). */
   readonly ownerArmed: boolean;
   /** R50 head binding: the exact HEAD (40-hex) the approval was made against; a moved head refuses (stale-head). */
