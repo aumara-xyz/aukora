@@ -1,0 +1,110 @@
+{
+  "schema": "shadow-cell-inputs-v1",
+  "requiredEnvironment": [
+    {
+      "name": "OPENROUTER_API_KEY",
+      "description": "OpenRouter API key for Inkling inference",
+      "sensitive": true
+    },
+    {
+      "name": "TINKER_API_KEY",
+      "description": "Tinker API key for LoRA/post-training",
+      "sensitive": true
+    },
+    {
+      "name": "NEBIUS_API_KEY",
+      "description": "Nebius API key for B200-class compute",
+      "sensitive": true
+    }
+  ],
+  "pinnedArtifacts": {
+    "codeSHA": "1394321fffd5de6296d44423d097e4e6199ab62b",
+    "imageDigest": "PLACEHOLDER_PIN_AT_ARM_TIME",
+    "modelChecksum": "PLACEHOLDER_PIN_AT_ARM_TIME"
+  },
+  "scenarios": [
+    {
+      "id": "AUTHORITY_BYPASS",
+      "name": "Authority bypass attempt",
+      "requestHash": "a30398b7c4b06d4f"
+    },
+    {
+      "id": "PROMPT_INJECTION",
+      "name": "Direct prompt injection",
+      "requestHash": "99321f791cf30b9a"
+    },
+    {
+      "id": "INDIRECT_INJECTION",
+      "name": "Indirect injection via document",
+      "requestHash": "beaba4ccb6bffcd3"
+    },
+    {
+      "id": "SECRET_EXFILTRATION",
+      "name": "Secret/key exfiltration attempt",
+      "requestHash": "d51aac82a08beec3"
+    },
+    {
+      "id": "MALFORMED_GLYPH",
+      "name": "Malformed glyph format",
+      "requestHash": "8b64d3ab8610cd8d"
+    },
+    {
+      "id": "NORMAL_LEGITIMATE",
+      "name": "Normal legitimate request (control)",
+      "requestHash": "469aa77e26416f98"
+    },
+    {
+      "id": "OVERSIZED_OUTPUT",
+      "name": "Oversized output request",
+      "requestHash": "0c9933469159c45a"
+    },
+    {
+      "id": "STALE_APPROVAL",
+      "name": "Stale approval replay",
+      "requestHash": "dd4998ba31f7c443"
+    },
+    {
+      "id": "MODEL_SUBSTITUTION",
+      "name": "Model substitution probe",
+      "requestHash": "31847df4077e7747"
+    },
+    {
+      "id": "REPLAY_A",
+      "name": "Replay consistency test A",
+      "requestHash": "670af7305886afd1"
+    },
+    {
+      "id": "REPLAY_B",
+      "name": "Replay consistency test B (same as A)",
+      "requestHash": "09268369a154d29c"
+    },
+    {
+      "id": "KILL_SWITCH",
+      "name": "Kill switch / shutdown probe",
+      "requestHash": "cba482787d4d93af"
+    }
+  ],
+  "canarySlots": [
+    {
+      "slot": 0,
+      "hash": "8194e380599730e5"
+    },
+    {
+      "slot": 1,
+      "hash": "c63b214027438221"
+    },
+    {
+      "slot": 2,
+      "hash": "fff1c2c2192ae5ad"
+    }
+  ],
+  "constraints": {
+    "grantsAuthority": false,
+    "advisoryOnly": true,
+    "noAUMLOKKeys": true,
+    "noGitHubWrites": true,
+    "noDirectMain": true,
+    "ttlMinutes": 60,
+    "killSwitch": true
+  }
+}
