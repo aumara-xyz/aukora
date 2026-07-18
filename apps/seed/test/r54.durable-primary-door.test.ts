@@ -1,0 +1,257 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (c) 2026 Aukora
+/**
+ * R54 — PROTECTED PRIMARY-DOOR AUTHORITY BRICK acceptance suite.
+ *
+ * The live path (mindDoor → localCeremonyRunner → durableRecursion → localCandidateStage) now consumes the
+ * owner's candidate authorization through the DURABLE reference monitor (`DurableCandidateReferenceMonitor` over
+ * `@aukora/kernel-node`'s crash-safe TrustedStateStore) at stage step 4b — BEFORE the attempt receipt and every
+ * git mutation. Convex receives only projections afterward. This suite proves the owner's acceptance list:
+ *   1. valid owner authorization → exactly one durable PREPARED (real git repo, real hybrid signature);
+ *   2. the same authorization after REAL SIGKILL / restart → replay refusal (separate OS process, kill -9);
+ *   3. disk/journal failure → NO git effect and NO "applied"/materialized projection;
+ *   4. stale/forged/expired authorization → no durable mutation;
+ *   5. two concurrent attempts (separate OS processes) → exactly one winner;
+ *   6. AUMLOK v2 vectors byte-identical (kernel suite — re-run alongside this one);
+ *   7. no key / signature / proposal plaintext in the durable trusted state or any Convex-bound surface;
+ *   8. exact primary-runtime import/reachability proof (door boot reaches kernel-node; Convex handlers never do).
+ */
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { spawn, execFileSync } from 'node:child_process';
+import { buildSync } from 'esbuild';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync, readFileSync, readdirSync, type Dirent } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { ReactiveMemoryStore } from '@aukora/brain';
+import { runLocalRecursionCeremony, type LocalCeremonyEnv, type LocalCeremonyInvocation } from '../src/localCeremonyRunner.js';
+import { DurableCandidateReferenceMonitor } from '../src/durableCandidateMonitor.js';
+import { candidatePayloadForProposals, candidatePayloadHash } from '../src/candidateReferenceMonitor.js';
+import { InMemoryWorkflowStore } from '../src/durableRecursion.js';
+import { HybridOwnerAdapter } from '../src/ownerFixture.js';
+import type { BranchCandidate } from '../src/ideEnvelope.js';
+import { makeWorld, makeProposal, authFor, NOW_MS, NOW_ISO } from './support.js';
+
+const g = (cwd: string, args: string[]) => execFileSync('git', ['-C', cwd, ...args], { encoding: 'utf8' }).trim();
+const tryG = (cwd: string, args: string[]) => { try { return g(cwd, args); } catch { return null; } };
+
+let base: string; let repoRoot: string; let wtBase: string; let CHILD = '';
+beforeAll(() => {
+  base = mkdtempSync(join(tmpdir(), 'aukora-r54-'));
+  repoRoot = join(base, 'repo');
+  wtBase = join(base, 'candidates');
+  mkdirSync(repoRoot, { recursive: true });
+  execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
+  g(repoRoot, ['config', 'user.name', 'R54 Test']);
+  g(repoRoot, ['config', 'user.email', 'r54@test.local']);
+  mkdirSync(join(repoRoot, 'apps/seed/src'), { recursive: true });
+  writeFileSync(join(repoRoot, 'apps/seed/src/recursion.ts'), '// original content\n');
+  g(repoRoot, ['add', '-A']);
+  g(repoRoot, ['commit', '-q', '--no-gpg-sign', '-m', 'init']);
+  // bundle the child harness to plain ESM once (bare-node spawn — Node 20 + 22, no experimental flags)
+  CHILD = join(base, 'r54-child.mjs');
+  buildSync({
+    entryPoints: [fileURLToPath(new URL('./r54-child.ts', import.meta.url))],
+    outfile: CHILD, bundle: true, platform: 'node', format: 'esm', target: 'node18',
+  });
+});
+afterAll(() => { rmSync(base, { recursive: true, force: true }); });
+
+/** A full live-path ceremony env over a REAL git repo + a durable trusted-state dir. */
+function ceremonyEnv(stateDir: string, over: Partial<LocalCeremonyEnv> = {}): { env: LocalCeremonyEnv; w: ReturnType<typeof makeWorld> } {
+  const w = makeWorld({ ownerLabel: 'r54-owner' }); // deterministic owner — replays reconstruct the same root
+  const env: LocalCeremonyEnv = {
+    recursionEnv: w.env,
+    workflowStore: new InMemoryWorkflowStore(),
+    repo: { list: () => [], read: (p: string) => readFileSync(join(repoRoot, p), 'utf8'), exists: (p: string) => existsSync(join(repoRoot, p)) },
+    ownerRoot: w.owner.root,
+    store: new ReactiveMemoryStore(),
+    trustedStateDir: stateDir,
+    gitRepoRoot: repoRoot,
+    worktreeBase: wtBase,
+    nowMs: NOW_MS, nowIso: NOW_ISO,
+    ...over,
+  };
+  return { env, w };
+}
+
+/** One owner-armed materializing invocation: proposal auth + candidate auth from the same deterministic owner. */
+function invocationFor(w: ReturnType<typeof makeWorld>, nonce: string, candNonce: string, over: Partial<LocalCeremonyInvocation> = {}): LocalCeremonyInvocation {
+  const proposal = makeProposal({ newContent: `// r54 governed refinement (${nonce})` });
+  const { payloadHash } = candidatePayloadForProposals([proposal]);
+  const candidateAuth = w.owner.authorize({ proposalHash: payloadHash, draftHash: payloadHash, nonce: candNonce, issuedAt: NOW_ISO, expiresAt: null });
+  return { proposalInput: proposal, nonce, auth: authFor(w.owner, proposal, { nonce: `${nonce}-owner` }), materialize: true, candidateAuth, ownerArmed: true, ...over };
+}
+
+const readState = (dir: string) => JSON.parse(readFileSync(join(dir, 'trusted-state.json'), 'utf8'));
+const cleanupCandidate = (branch: string, worktree: string) => {
+  tryG(repoRoot, ['worktree', 'remove', '--force', worktree]);
+  tryG(repoRoot, ['branch', '-D', branch]);
+};
+
+describe('R54 · 1+7: a valid owner authorization → exactly ONE durable PREPARED, content-free on disk', () => {
+  it('materializes through the durable monitor and journals the consumption BEFORE git ran', () => {
+    const stateDir = join(base, 'state-accept');
+    const { env, w } = ceremonyEnv(stateDir);
+    const res = runLocalRecursionCeremony(env, invocationFor(w, 'r54-n1', 'r54-cand-1'));
+    expect(res.phase).toBe('candidate-materialized');
+    expect(res.ok).toBe(true);
+    // exactly one durable PREPARED, bound by hash to THIS candidate effect
+    const persisted = readState(stateDir);
+    expect(persisted.prepared).toHaveLength(1);
+    expect(persisted.state.consumedIds).toEqual(['r54-cand-1']);
+    expect(persisted.state.receiptHead.count).toBe(1);
+    expect(persisted.prepared[0].descriptorKind).toBe('git-candidate');
+    expect(persisted.prepared[0].targetPath).toBe(res.materialization!.branch);
+    // the git effect actually happened (branch exists) — and the durable row precedes it by construction
+    expect(tryG(repoRoot, ['rev-parse', '--verify', `refs/heads/${res.materialization!.branch}`])).not.toBeNull();
+    // 7: NOTHING secret in the durable state: no signatures, no private keys, no proposal text
+    const raw = readFileSync(join(stateDir, 'trusted-state.json'), 'utf8');
+    expect(raw).not.toMatch(/"signatures"|secretKey|privateKey|BEGIN |newContent|governed refinement/);
+    cleanupCandidate(res.materialization!.branch!, res.materialization!.worktreePath!);
+  });
+
+  it('a SECOND ceremony reusing the same candidate authorization replays against the DURABLE state (fresh process-equivalent)', () => {
+    const stateDir = join(base, 'state-replay');
+    const first = ceremonyEnv(stateDir);
+    const inv = invocationFor(first.w, 'r54-n2', 'r54-cand-2');
+    const res1 = runLocalRecursionCeremony(first.env, inv);
+    expect(res1.phase).toBe('candidate-materialized');
+    // remove the branch + worktree so the git prechecks CANNOT be the refusal — only durable replay can refuse
+    cleanupCandidate(res1.materialization!.branch!, res1.materialization!.worktreePath!);
+    // a completely fresh env (new monitor instance, new ledger, new stores) over the SAME trusted-state dir
+    const second = ceremonyEnv(stateDir);
+    const res2 = runLocalRecursionCeremony(second.env, { ...inv, auth: authFor(second.w.owner, inv.proposalInput as never, { nonce: 'r54-n2-owner-b' }) });
+    expect(res2.phase).toBe('refused-at-candidate');
+    expect(res2.text).toContain('replay');
+    // still exactly one durable consumption — never doubled
+    expect(readState(stateDir).state.receiptHead.count).toBe(1);
+    expect(tryG(repoRoot, ['rev-parse', '--verify', `refs/heads/${res1.materialization!.branch}`])).toBeNull();
+  });
+});
+
+describe('R54 · 3: disk/journal failure → NO git effect, NO materialized projection, nothing consumed', () => {
+  it('a crash at the atomic-rename journal step refuses the ceremony before any git mutation', () => {
+    const stateDir = join(base, 'state-crash');
+    const { env, w } = ceremonyEnv(stateDir, {});
+    const crashing = new DurableCandidateReferenceMonitor(w.owner.root, stateDir, (label) => { if (label === 'rename') throw new Error('injected disk failure'); });
+    const res = runLocalRecursionCeremony({ ...env, monitor: crashing }, invocationFor(w, 'r54-n3', 'r54-cand-3'));
+    expect(res.phase).toBe('refused-at-candidate');
+    expect(res.text).toContain('trusted_state_unavailable');
+    expect(res.materialization?.ok ?? false).toBe(false);          // no materialized projection anywhere
+    expect(existsSync(join(stateDir, 'trusted-state.json'))).toBe(false); // crash before rename ⇒ nothing durable
+    // NO candidate branch and NO worktree were ever created
+    expect(g(repoRoot, ['branch', '--list', 'candidate/*'])).toBe('');
+    expect(g(repoRoot, ['worktree', 'list'])).not.toContain('wt-');
+  });
+});
+
+describe('R54 · 4: stale/forged/expired authorization → no durable mutation', () => {
+  const cases: readonly { name: string; tag: string; mutate: (inv: LocalCeremonyInvocation, w: ReturnType<typeof makeWorld>) => LocalCeremonyInvocation }[] = [
+    {
+      name: 'FORGED (one nibble of the ML-DSA half flipped)', tag: 'forged',
+      mutate: (inv) => {
+        const a = inv.candidateAuth!;
+        const orig = a.signatures.mlDsa65;
+        return { ...inv, candidateAuth: { ...a, signatures: { ...a.signatures, mlDsa65: (orig[0] === '0' ? '1' : '0') + orig.slice(1) } } };
+      },
+    },
+    {
+      name: 'EXPIRED (authorization TTL in the past)', tag: 'expired',
+      mutate: (inv, w) => {
+        const ph = candidatePayloadForProposals([inv.proposalInput as never]).payloadHash;
+        return { ...inv, candidateAuth: w.owner.authorize({ proposalHash: ph, draftHash: ph, nonce: 'r54-cand-expired', issuedAt: '2026-07-01T00:00:00.000Z', expiresAt: '2026-07-02T00:00:00.000Z' }) };
+      },
+    },
+    {
+      name: 'STALE HEAD (approved against a head the repo has moved past)', tag: 'stale',
+      mutate: (inv) => ({ ...inv, expectedHeadBefore: 'f'.repeat(40) }),
+    },
+  ];
+  for (const c of cases) {
+    it(`${c.name} refuses with zero durable mutation and zero git effect`, () => {
+      const stateDir = join(base, `state-${c.tag}`);
+      const { env, w } = ceremonyEnv(stateDir);
+      // nonces stay in the kernel's lowercase identifier charset — an uppercase tag would malform the AUTH itself
+      const res = runLocalRecursionCeremony(env, c.mutate(invocationFor(w, `r54-${c.tag}`, `r54-cand-${c.tag}`), w));
+      expect(res.phase).toBe('refused-at-candidate');
+      // nothing durable was written (or, for stale-head, the store was never even reached)
+      expect(existsSync(join(stateDir, 'trusted-state.json'))).toBe(false);
+      expect(g(repoRoot, ['branch', '--list', 'candidate/*'])).toBe('');
+    });
+  }
+});
+
+describe('R54 · 2+5 LIVE: real process death + concurrent OS processes (bare-node bundled child)', () => {
+  it('[LIVE] consumed candidate authority survives a REAL kill -9 — a fresh process replays', async () => {
+    const stateDir = join(base, 'state-sigkill');
+    const child = spawn(process.execPath, [CHILD, stateDir, 'auth-sigkill', 'commit-hang'], { stdio: ['ignore', 'pipe', 'pipe'] });
+    const line = await new Promise<string>((resolve, reject) => {
+      let buf = '';
+      child.stdout!.on('data', (d) => { buf += d.toString(); const nl = buf.indexOf('\n'); if (nl >= 0) resolve(buf.slice(0, nl).trim()); });
+      child.on('close', () => { if (buf.trim()) resolve(buf.trim()); else reject(new Error('child exited with no output')); });
+      child.on('error', reject);
+    });
+    expect(line).toBe('COMMITTED:1');                 // the child fsync-committed the consumption, then hangs
+    child.kill('SIGKILL');                             // REAL process death
+    await new Promise<void>((r) => child.on('close', () => r()));
+    // a FRESH process (this one) rebuilds the same deterministic owner + authorization and replays
+    const owner = new HybridOwnerAdapter('r54-child');
+    const candidate = {
+      schema: 'aukora-branch-candidate-v1', candidateId: 'ab'.repeat(32),
+      workspace: new Map([['apps/seed/src/notes.ts', '// c']]),
+      files: [{ path: 'apps/seed/src/notes.ts', intentId: 'cd'.repeat(32), draftHash: 'ef'.repeat(32), diff: '', receiptHash: 'ab'.repeat(32) }],
+      explanation: 'x', lineage: [{ intentId: 'cd'.repeat(32), depth: 0 }],
+      staged: true, pushed: false, signed: false, merged: false, deployed: false, grantsAuthority: false,
+    } as unknown as BranchCandidate;
+    const ph = candidatePayloadHash(candidate);
+    const auth = owner.authorize({ proposalHash: ph, draftHash: ph, nonce: 'auth-sigkill', issuedAt: NOW_ISO, expiresAt: null });
+    const fresh = new DurableCandidateReferenceMonitor(owner.root, stateDir);
+    const replay = fresh.decide(candidate, auth, NOW_MS, { ownerArmed: true });
+    expect(replay.allowed).toBe(false);
+    expect(replay.code).toBe('replay');               // consumed authority REMAINS consumed across real death
+    expect(fresh.consumed()).toEqual(['auth-sigkill']); // exactly one, not doubled
+  }, 30_000);
+
+  it('[LIVE] two CONCURRENT OS processes on the same authorization → exactly one winner', async () => {
+    const stateDir = join(base, 'state-race');
+    const run = () => new Promise<string>((resolve) => {
+      const p = spawn(process.execPath, [CHILD, stateDir, 'auth-race', 'commit-exit'], { stdio: ['ignore', 'pipe', 'ignore'] });
+      let buf = ''; p.stdout!.on('data', (d) => { buf += d.toString(); });
+      p.on('close', () => resolve(buf.trim())); // close (not exit): all stdio flushed — the Node-20 lesson
+    });
+    const [a, b] = await Promise.all([run(), run()]);
+    expect([a, b].filter((o) => o.startsWith('COMMITTED:1'))).toHaveLength(1); // EXACTLY one prepared
+    expect([a, b].some((o) => o.startsWith('REFUSED:'))).toBe(true);           // the loser is contained
+    expect(readState(stateDir).state.receiptHead.count).toBe(1);
+  }, 30_000);
+});
+
+describe('R54 · 8: exact primary-runtime import/reachability proof', () => {
+  const read = (p: string) => readFileSync(fileURLToPath(new URL(`../${p}`, import.meta.url)), 'utf8');
+  it('the ACTIVE door boot reaches @aukora/kernel-node through the durable monitor (each hop verified)', () => {
+    // hop 1: the live door boot constructs the DURABLE monitor
+    expect(read('scripts/mind-door-7097.ts')).toMatch(/DurableCandidateReferenceMonitor/);
+    // hop 2: the ceremony runner defaults to it whenever a trustedStateDir is configured
+    expect(read('src/localCeremonyRunner.ts')).toMatch(/DurableCandidateReferenceMonitor/);
+    // hop 3: the durable monitor consumes THROUGH the protected kernel-node store
+    const monitorSrc = read('src/durableCandidateMonitor.ts');
+    expect(monitorSrc).toMatch(/from '@aukora\/kernel-node'/);
+    expect(monitorSrc).toMatch(/authorizeAndPrepare/);
+  });
+  it('NO Convex surface imports kernel-node: authority consumption cannot live in a Convex handler', () => {
+    const brainRoot = fileURLToPath(new URL('../../brain', import.meta.url));
+    const offenders: string[] = [];
+    const walk = (dir: string): void => {
+      for (const entry of readdirSync(dir, { withFileTypes: true }) as Dirent[]) {
+        const p = join(dir, entry.name);
+        if (entry.isDirectory()) walk(p);
+        else if (/\.(ts|js)$/.test(entry.name) && readFileSync(p, 'utf8').includes('@aukora/kernel-node')) offenders.push(p);
+      }
+    };
+    walk(join(brainRoot, 'convex'));
+    expect(offenders).toEqual([]); // no Convex handler can verify/consume authority
+    // and the ConvexWorkflowStore adapter stays non-authoritative (projections only)
+    expect(readFileSync(join(brainRoot, 'src/convexWorkflowStore.ts'), 'utf8')).not.toContain('@aukora/kernel-node');
+  });
+});
