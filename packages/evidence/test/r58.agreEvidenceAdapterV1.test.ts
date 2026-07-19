@@ -66,7 +66,7 @@ function expectErr(r: AgreValidationResult, code: string, pathFragment?: string)
 }
 
 describe('R58: adapter good path — AGRE becomes a real SwarmRunEvidenceV1 producer', () => {
-  it('a local source-analysis beaten-level run seals into a verifying, PAIRED, ungoverned envelope', () => {
+  it('a local source-analysis levelBeaten run seals into a verifying, PAIRED, ungoverned envelope', () => {
     const receipt = goodReceipt();
     const env = buildAgreSwarmEvidence(receipt, goodContext());
     expect(verifySwarmRunEnvelope(env)).toBe(true);
@@ -207,7 +207,7 @@ describe('R58 class 3: missing replay', () => {
 });
 
 describe('R58 class 4: contradictory outcomes', () => {
-  it('a beaten level on a refused / timed-out / transport-failed run is refused', () => {
+  it('a levelBeaten claim on a refused / timed-out / transport-failed run is refused', () => {
     for (const outcome of ['refused', 'timed-out', 'transport-failed'] as const) {
       const ctx = goodContext({ execution: { ...goodContext().execution, outcome } });
       expect(() => buildAgreSwarmEvidence(goodReceipt(), ctx), outcome).toThrow(/E_AGRE_OUTCOME_CONTRADICTION/);

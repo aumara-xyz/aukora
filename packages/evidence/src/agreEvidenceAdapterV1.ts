@@ -29,8 +29,8 @@
  *    may honestly be blind or not.
  *  - AXES STAY SEPARATE. The adapter can only emit `governance: ungoverned` (it seals through the
  *    R57 builder path); transport completion never implies acceptance. Receipt-level outcome
- *    contradictions (beaten level on a refused/timed-out/transport-failed run; replay references on
- *    a transport-failed run) fail closed before sealing.
+ *    contradictions (a levelBeaten claim on a refused/timed-out/transport-failed run; replay
+ *    references on a transport-failed run) fail closed before sealing.
  *  - CONTENT-FREE. Receipts carry digests, closed labels, bounded counts, and identifiers only —
  *    no raw game frames, source code, model output, or private payloads. Every label passes the
  *    envelope's secret/provider-token screens at seal time.
