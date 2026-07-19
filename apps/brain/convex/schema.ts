@@ -127,6 +127,17 @@ export default defineSchema({
     grantsAuthority: v.literal(false),
   }).index('by_record', ['recordId']).index('by_digest', ['digest']),
 
+  // R59 (G1 repair) — registered erase-root PIN allowlist. Public material only: ownerRootId → the owner's
+  // ML-DSA-65 PUBLIC key (hex). This is a store-integrity pin, NOT authority: the row decides and releases
+  // nothing; erase authority remains the owner's off-store signature. `forget` honors an attestation only if its
+  // carried public key byte-equals the pin registered here for its root. Empty table = fail-closed (no erase).
+  eraseRoots: defineTable({
+    ownerRootId: v.string(),
+    publicKeyHex: v.string(),
+    advisoryOnly: v.literal(true),
+    grantsAuthority: v.literal(false),
+  }).index('by_root', ['ownerRootId']),
+
   // WAVE 2 — PQC-SIGNED CHAIN HEADS (donor SignedChainHeadV3/V4, vendored). Mutable row per chainKey under a
   // MONOTONICITY law: a lower chainLength or older timestamp than the stored head refuses (truncation/rollback
   // detection, donor high-water semantics). Signature minted OUTSIDE; the store verifies-and-records.

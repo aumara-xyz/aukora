@@ -16,10 +16,10 @@ import { anyApi } from 'convex/server';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import {
-  ConvexWorkflowStore, liveWorkflowIo, liveDoorBackend, startLocalDoor, assertLoopbackUrl, AUKORA_PORTS,
+  ConvexWorkflowStore, liveWorkflowIo, liveDoorBackend, startLocalDoor, assertLoopbackUrl, AUKORA_PORTS, DOOR_CAPABILITY_HEADER,
 } from '../src/index.js';
 // R44 LAW 2 — supervisor awareness: same custody module the supervisor itself uses (one owner, one path).
-import { assertComposeMayBindDoor } from '../scripts/doorCustody.mjs';
+import { assertComposeMayBindDoor, mintDoorToken } from '../scripts/doorCustody.mjs';
 import { DurableRecursion, validateWorkflowState, deriveWorkflowId, deriveIntentId, deriveDraftHash } from '../../seed/src/index.js';
 import { makeWorld, makeProposal, authFor } from '../../seed/test/support.js';
 import { buildMemoryRecord } from '@aukora/memory';
@@ -78,7 +78,8 @@ describe.skipIf(!LIVE)('LIVE composition — real machine over the real local ba
     const APP_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
     // R47: also defer to the ONE lifecycle owner's recorded door pid (apps/supervisor/state).
     assertComposeMayBindDoor(resolve(APP_DIR, '.local', 'organism'), resolve(APP_DIR, '..', '..'), undefined, resolve(APP_DIR, '..', 'supervisor', 'state'));
-    const door = await startLocalDoor(liveDoorBackend(client), AUKORA_PORTS.brainDoor);
+    const doorToken = mintDoorToken(); // R59: the control plane requires the per-boot capability token
+    const door = await startLocalDoor(liveDoorBackend(client), AUKORA_PORTS.brainDoor, doorToken);
     try {
       const base = `http://127.0.0.1:${AUKORA_PORTS.brainDoor}`;
       const health = await fetch(`${base}/health`);
@@ -86,7 +87,7 @@ describe.skipIf(!LIVE)('LIVE composition — real machine over the real local ba
       expect(((await health.json()) as { backend: { ok: boolean } }).backend.ok).toBe(true);
       const receipts = (await (await fetch(`${base}/receipts?rehearsalKey=${rehearsalKey}`)).json()) as { event: string }[];
       expect(receipts.map((e) => e.event)).toContain('started'); // live receipt REFERENCES through the door
-      const cancel = await fetch(`${base}/control/cancel-rehearsal`, { method: 'POST', body: JSON.stringify({ key: rehearsalKey }) });
+      const cancel = await fetch(`${base}/control/cancel-rehearsal`, { method: 'POST', headers: { [DOOR_CAPABILITY_HEADER]: doorToken }, body: JSON.stringify({ key: rehearsalKey }) });
       expect(((await cancel.json()) as { ok: boolean }).ok).toBe(true);
       const after = (await (await fetch(`${base}/receipts?rehearsalKey=${rehearsalKey}`)).json()) as { event: string }[];
       expect(after[after.length - 1].event).toBe('cancelled'); // cancellation visible live

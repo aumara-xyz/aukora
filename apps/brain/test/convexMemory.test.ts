@@ -14,14 +14,22 @@
  * authority-shaped / secret-bearing memory.
  */
 import { convexTest } from 'convex-test';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
 import schema from '../convex/schema';
 import { api } from '../convex/_generated/api';
 import { buildMemoryRecord } from '@aukora/memory';
-import { signEraseAttestation } from '../src/index.js';
+import { signEraseAttestation, mlDsa65PublicKeyFromSeed } from '../src/index.js';
 
 const ERASE_SEED = 'a'.repeat(64); // disposable owner seed for tests only
 const eraseFor = (recordId: string) => signEraseAttestation(ERASE_SEED, { ownerRootId: 'owner-test', key: recordId, eraseReason: 'test erase', timestamp: Date.now() });
+// R59 G1: erase is now pinned to a registered root; seed the SEED public key into the eraseRoots allowlist.
+let ERASE_PUB = '';
+beforeAll(async () => { ERASE_PUB = await mlDsa65PublicKeyFromSeed(ERASE_SEED); });
+async function seedEraseRoot(t: ReturnType<typeof convexTest>) {
+  await t.run(async (ctx) => {
+    await ctx.db.insert('eraseRoots', { ownerRootId: 'owner-test', publicKeyHex: ERASE_PUB, advisoryOnly: true as const, grantsAuthority: false as const });
+  });
+}
 
 // convex-test locates the module root from the `_generated` directory in these keys.
 const modules = import.meta.glob('../convex/**/*.*s');
@@ -96,6 +104,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
 
   it('governed forgetting: removes plaintext, keeps a content-free tombstone, chain still verifies', async () => {
     const t = convexTest(schema, modules);
+    await seedEraseRoot(t);
     const secretish = buildMemoryRecord({ content: 'private diary entry to forget', createdAt: at(1) });
     await t.action(api.ingest.ingest, { record: secretish });
     await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'kept memory', createdAt: at(2) }) });
@@ -257,6 +266,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
 
   it('corrupt store fails closed: a tampered chain blocks further ingest/forget and health reports not-ok', async () => {
     const t = convexTest(schema, modules);
+    await seedEraseRoot(t); // pin the root so the refusal is the corrupt-store guard, not the (earlier) unregistered-root guard
     const first = buildMemoryRecord({ content: 'alpha', createdAt: at(1) });
     await t.action(api.ingest.ingest, { record: first });
     await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'beta', createdAt: at(2) }) });

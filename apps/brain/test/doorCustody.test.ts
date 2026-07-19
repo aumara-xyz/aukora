@@ -17,6 +17,7 @@ import {
   DOOR_TOKEN_ENV, TOKEN_LOG_LAW, mintDoorToken, tokenFilePath, writeTokenFile, readTokenFile, clearTokenFile,
   describeTokenPresence, readOrganismLock, readDoorPid, supervisorHoldsDoor, assertComposeMayBindDoor,
 } from '../scripts/doorCustody.mjs';
+import { DOOR_CAPABILITY_ENV, verifyDoorControlToken } from '../src/index.js';
 
 const APP_DIR = resolve(fileURLToPath(new URL('..', import.meta.url)));
 let orgDir: string;
@@ -73,6 +74,15 @@ describe('LAW 1 — per-boot token custody', () => {
   it('NEVER COMMITTED: the organism dir is gitignored (`.local/` in apps/brain/.gitignore)', () => {
     const gitignore = readFileSync(resolve(APP_DIR, '.gitignore'), 'utf8');
     expect(gitignore.split('\n')).toContain('.local/');
+  });
+
+  it('R59 door-side ENFORCEMENT reuses the SAME per-boot token env the supervisor mints (no drift)', () => {
+    // The custody module mints/stores the token; localDoor.ts must read the identical env name — else the
+    // door would enforce a token the supervisor never provisions. A minted token verifies against itself.
+    expect(DOOR_CAPABILITY_ENV).toBe(DOOR_TOKEN_ENV);
+    const t = mintDoorToken();
+    expect(verifyDoorControlToken(t, t)).toBe(true);
+    expect(verifyDoorControlToken(mintDoorToken(), t)).toBe(false); // a different boot's token does not verify
   });
 
   it('NEVER PRINTED: the ONE owner (apps/supervisor) logs the law, not the value (R47)', () => {

@@ -92,6 +92,10 @@ ALIEN CORE                        AGRE v2 (today)                    Gap
 
 ## 4. What Each Round Burns (Episode Structure)
 
+> **Caption (R59):** the JSON examples in this section are **schema illustrations with hypothetical
+> values**. The `tu93` / level-4 / 17-action / `"level_beaten": true` numbers reuse the §1 claims,
+> which are UNPROVEN — no such episode was ever recorded. They show the intended field shapes only.
+
 Each game-solving round produces an **episode** suitable for the event store:
 
 ```json
