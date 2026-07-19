@@ -7,7 +7,10 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { Server } from 'node:http';
-import { startLocalDoor, localDoorGrantsAuthority, AUKORA_PORTS, type DoorBackend } from '../src/index.js';
+import { startLocalDoor, localDoorGrantsAuthority, AUKORA_PORTS, DOOR_CAPABILITY_HEADER, verifyDoorControlToken, type DoorBackend } from '../src/index.js';
+
+const TOKEN = 'a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718'; // 48-hex, per-boot shape (synthetic, test only)
+const authed = (extra: Record<string, string> = {}) => ({ [DOOR_CAPABILITY_HEADER]: TOKEN, ...extra });
 
 const calls: string[] = [];
 let pushSnapshot: ((s: unknown) => void) | null = null;
@@ -27,7 +30,7 @@ const PORT = 7148; // test port inside the NEW-AUKORA brain block (7141 is the r
 const BASE = `http://127.0.0.1:${PORT}`;
 let server: Server;
 
-beforeAll(async () => { server = await startLocalDoor(fake, PORT); });
+beforeAll(async () => { server = await startLocalDoor(fake, PORT, TOKEN); });
 afterAll(() => new Promise<void>((r) => { server.closeAllConnections(); server.close(() => r()); }));
 
 describe('local door — loopback projection/control', () => {
@@ -97,13 +100,64 @@ describe('local door — loopback projection/control', () => {
     expect(pushSnapshot).toBeNull(); // unsubscribed on close
   });
 
-  it('exactly two control reflexes; malformed bodies refuse; unknown paths 404', async () => {
-    const ok = await fetch(`${BASE}/control/cancel-rehearsal`, { method: 'POST', body: JSON.stringify({ key: 'w9' }) });
+  it('exactly two control reflexes (with a valid token); malformed bodies refuse; unknown paths 404', async () => {
+    const ok = await fetch(`${BASE}/control/cancel-rehearsal`, { method: 'POST', headers: authed(), body: JSON.stringify({ key: 'w9' }) });
     expect(ok.status).toBe(200);
     expect(calls).toContain('cancel-rehearsal:w9');
-    const bad = await fetch(`${BASE}/control/cancel-impulse`, { method: 'POST', body: '{}' });
+    const bad = await fetch(`${BASE}/control/cancel-impulse`, { method: 'POST', headers: authed(), body: '{}' });
     expect(bad.status).toBe(400);
-    expect((await fetch(`${BASE}/control/ingest`, { method: 'POST', body: '{}' })).status).toBe(404); // no write door
+    expect((await fetch(`${BASE}/control/ingest`, { method: 'POST', headers: authed(), body: '{}' })).status).toBe(404); // no write door
     expect((await fetch(`${BASE}/anything`)).status).toBe(404);
+  });
+
+  it('R59 control capability: missing / forged / replayed-stale tokens are rejected 401; the token is never echoed', async () => {
+    const paths = ['/control/cancel-rehearsal', '/control/cancel-impulse'];
+    const before = calls.length;
+    for (const p of paths) {
+      // missing token
+      const miss = await fetch(`${BASE}${p}`, { method: 'POST', body: JSON.stringify({ key: 'x', impulseId: 'x' }) });
+      expect(miss.status, `${p} missing`).toBe(401);
+      // forged token (right shape, wrong value)
+      const forged = await fetch(`${BASE}${p}`, { method: 'POST', headers: { [DOOR_CAPABILITY_HEADER]: 'f'.repeat(48) }, body: JSON.stringify({ key: 'x', impulseId: 'x' }) });
+      expect(forged.status, `${p} forged`).toBe(401);
+      // replayed/stale token from a prior boot (any non-matching value; per-boot rotation is the replay boundary)
+      const stale = await fetch(`${BASE}${p}`, { method: 'POST', headers: { authorization: 'Bearer 00000000000000000000000000000000000000000000dead' }, body: JSON.stringify({ key: 'x', impulseId: 'x' }) });
+      expect(stale.status, `${p} stale`).toBe(401);
+      // the 401 body carries no token material
+      expect(JSON.stringify(await forged.json())).not.toContain('f'.repeat(48));
+    }
+    expect(calls.length, 'no control effect ran for any unauthorized request').toBe(before);
+  });
+
+  it('R59 accepts the Authorization: Bearer form as well as the x-aukora-door-token header', async () => {
+    const viaBearer = await fetch(`${BASE}/control/cancel-rehearsal`, { method: 'POST', headers: { authorization: `Bearer ${TOKEN}` }, body: JSON.stringify({ key: 'w-bearer' }) });
+    expect(viaBearer.status).toBe(200);
+    expect(calls).toContain('cancel-rehearsal:w-bearer');
+  });
+});
+
+describe('R59 door capability — unit + unprovisioned control plane', () => {
+  it('verifyDoorControlToken is constant-time-shaped and total (missing/forged/valid/replay)', () => {
+    expect(verifyDoorControlToken(TOKEN, TOKEN)).toBe(true);        // valid
+    expect(verifyDoorControlToken(TOKEN, TOKEN)).toBe(true);        // same token again = accepted within a boot (bearer)
+    expect(verifyDoorControlToken('f'.repeat(48), TOKEN)).toBe(false); // forged, same length
+    expect(verifyDoorControlToken('short', TOKEN)).toBe(false);     // length mismatch
+    expect(verifyDoorControlToken(TOKEN, null)).toBe(false);        // unprovisioned expected
+    expect(verifyDoorControlToken(TOKEN, '')).toBe(false);          // empty expected
+    expect(verifyDoorControlToken(undefined, TOKEN)).toBe(false);   // missing presented
+    expect(verifyDoorControlToken(12345 as unknown, TOKEN)).toBe(false); // non-string presented
+  });
+
+  it('an UNPROVISIONED control plane fails closed: control POSTs refuse 503 even with a token', async () => {
+    const port = 7149;
+    const srv = await startLocalDoor(fake, port, null); // no control token provisioned
+    try {
+      const r = await fetch(`http://127.0.0.1:${port}/control/cancel-rehearsal`, { method: 'POST', headers: authed(), body: JSON.stringify({ key: 'w9' }) });
+      expect(r.status).toBe(503);
+      // reads remain available on the same unprovisioned door (projections are not gated)
+      expect((await fetch(`http://127.0.0.1:${port}/health`)).status).toBe(200);
+    } finally {
+      await new Promise<void>((res) => { srv.closeAllConnections(); srv.close(() => res()); });
+    }
   });
 });

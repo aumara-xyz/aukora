@@ -13,15 +13,55 @@
  *   - PROJECTION + narrow CONTROL: reads (health, snapshot, workflow state, receipt stream, provider truth) plus
  *     exactly two control reflexes (cancel rehearsal / cancel impulse). No ingest, no forget, no save — writes
  *     of substance stay with the machine and the AUMLOK-gated paths. The door grants no authority.
+ *   - CONTROL CAPABILITY (R59): the two state-changing control reflexes REQUIRE the per-boot mind-door token
+ *     (scripts/doorCustody.mjs: minted by the supervisor, held only in the child env + a 0600 file, never
+ *     logged). Loopback binding alone did not authenticate the caller — any local process could POST a cancel.
+ *     The token is presented per request (Authorization: Bearer or x-aukora-door-token), compared in constant
+ *     time, and fail-closed: an unprovisioned control plane refuses (503) and a missing/forged token is
+ *     rejected (401) with no token value ever echoed. Reads stay open loopback projections (read-only, no
+ *     authority). The replay boundary is per-boot rotation + 0600 custody, not per-request nonces.
  *   - Kernel/AUMLOK stays outside: the door only relays projections and receipt REFERENCES.
  *
  * Senses/controls are injected (`DoorBackend`), so unit tests drive fakes and the live composition injects the
  * ConvexHttpClient-backed IO (composeLive.ts).
  */
 import { createServer, type Server, type IncomingMessage, type ServerResponse } from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 import { CANONICAL_SEATS } from '@aukora/council';
 import { providerTruthTable } from './brainProvider.js';
 import { AUKORA_PORTS } from './ports.js';
+
+// The per-boot mind-door token env — MIRRORS scripts/doorCustody.mjs DOOR_TOKEN_ENV (a test asserts they stay
+// equal). The value is minted by the supervisor and never appears in this module.
+export const DOOR_CAPABILITY_ENV = 'AUKORA_DOOR_TOKEN';
+/** Canonical control-capability header (Authorization: Bearer is also accepted). */
+export const DOOR_CAPABILITY_HEADER = 'x-aukora-door-token';
+
+/**
+ * Constant-time control-token equality. TOTAL: false on an unprovisioned expected token, a non-string or
+ * length-mismatched presented token, or any error — never throws, never leaks which check failed via timing.
+ */
+export function verifyDoorControlToken(presented: unknown, expected: string | null | undefined): boolean {
+  if (typeof expected !== 'string' || expected.length === 0) return false; // control plane not provisioned
+  if (typeof presented !== 'string' || presented.length !== expected.length) return false;
+  try {
+    return timingSafeEqual(Buffer.from(presented, 'utf8'), Buffer.from(expected, 'utf8'));
+  } catch {
+    return false;
+  }
+}
+
+/** The control token presented on a request: x-aukora-door-token, else Authorization: Bearer. Null if absent. */
+function presentedControlToken(req: IncomingMessage): string | null {
+  const direct = req.headers[DOOR_CAPABILITY_HEADER];
+  if (typeof direct === 'string' && direct.length > 0) return direct;
+  const auth = req.headers['authorization'];
+  if (typeof auth === 'string') {
+    const m = /^Bearer\s+(.+)$/i.exec(auth);
+    if (m) return m[1];
+  }
+  return null;
+}
 
 export type WorkflowPhaseFilter = 'awaiting-owner' | 'applied' | 'refused' | 'cancelled';
 
@@ -65,7 +105,7 @@ async function readBody(req: IncomingMessage): Promise<Record<string, unknown>> 
   }
 }
 
-export async function handleDoorRequest(backend: DoorBackend, req: IncomingMessage, res: ServerResponse): Promise<void> {
+export async function handleDoorRequest(backend: DoorBackend, req: IncomingMessage, res: ServerResponse, controlToken: string | null = null): Promise<void> {
   const url = new URL(req.url ?? '/', 'http://127.0.0.1');
   const path = url.pathname;
   try {
@@ -105,6 +145,16 @@ export async function handleDoorRequest(backend: DoorBackend, req: IncomingMessa
       }
     }
     if (req.method === 'POST') {
+      if (path === '/control/cancel-rehearsal' || path === '/control/cancel-impulse') {
+        // R59 control capability: state-changing reflexes require the per-boot token. Fail-closed — an
+        // unprovisioned control plane refuses, and a missing/forged token is rejected without echoing it.
+        if (typeof controlToken !== 'string' || controlToken.length === 0) {
+          return send(res, 503, { error: 'control plane not provisioned' });
+        }
+        if (!verifyDoorControlToken(presentedControlToken(req), controlToken)) {
+          return send(res, 401, { error: 'unauthorized' });
+        }
+      }
       if (path === '/control/cancel-rehearsal') {
         const body = await readBody(req);
         if (typeof body.key !== 'string' || body.key.length === 0) return send(res, 400, { error: 'key required' });
@@ -122,9 +172,17 @@ export async function handleDoorRequest(backend: DoorBackend, req: IncomingMessa
   }
 }
 
-/** Start the door. LOOPBACK ONLY — the host is not configurable. Returns the server (close() to stop). */
-export function startLocalDoor(backend: DoorBackend, port: number = AUKORA_PORTS.brainDoor): Promise<Server> {
-  const server = createServer((req, res) => void handleDoorRequest(backend, req, res));
+/**
+ * Start the door. LOOPBACK ONLY — the host is not configurable. The control-plane capability token defaults to
+ * the per-boot supervisor-provisioned `AUKORA_DOOR_TOKEN` env (null when unset ⇒ control reflexes fail closed);
+ * pass it explicitly to override in tests. Returns the server (close() to stop).
+ */
+export function startLocalDoor(
+  backend: DoorBackend,
+  port: number = AUKORA_PORTS.brainDoor,
+  controlToken: string | null = process.env[DOOR_CAPABILITY_ENV] ?? null,
+): Promise<Server> {
+  const server = createServer((req, res) => void handleDoorRequest(backend, req, res, controlToken));
   return new Promise((resolve, reject) => {
     server.once('error', reject);
     server.listen(port, '127.0.0.1', () => resolve(server));
