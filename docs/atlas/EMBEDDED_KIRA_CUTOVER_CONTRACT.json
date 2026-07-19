@@ -1,82 +1,122 @@
 {
-  "schema": "aukora-embedded-kira-cutover-contract-v1",
-  "note": "R59 single-writer embedded-KIRA cutover contract. This contract is LAW-ONLY this round: it defines and gates the Convex→embedded durable-memory transition before any SQLite/libSQL dependency may land. Its companion scripts/verify-cutover-contract.mjs is a DRY-RUN verifier — an offline simulation proving the laws are enforceable and internally consistent against in-memory models. It is NOT a live-store integration; no third store exists in the tree this round, and this contract forbids adding one outside its phases.",
+  "schema": "aukora-embedded-kira-cutover-contract-v2",
+  "note": "R60 M3 hardening of the single-writer embedded-KIRA cutover contract. v2 replaces the v1 prose/keyword inference with TYPED, EXACT machine data: kill-switch direction, canonical seam identity, the allowed transition graph, the rollback edge, crash laws, and the single-writer invariant are all enumerated as data the verifier consumes directly — no regex over prose, so negation-smuggling ('dual writes are NOT forbidden') cannot pass. Still LAW-ONLY: scripts/verify-cutover-contract.mjs is a DRY-RUN verifier over an in-memory two-store simulation. NOT a live-store integration; no SQLite/libSQL dependency exists or is introduced this round.",
   "authored": {
-    "round": "R59",
+    "round": "R60 (v2; v1 authored R60-predecessor R59)",
     "by": "Sam 3 (recursion/effects/Atlas lane)",
-    "base": "c87880da79934559faf36515e84ffdc9ddd70f16",
-    "directive": "https://github.com/aumara-xyz/aukora/issues/20 — ROUND_DIRECTIVE R59, Sam 3 item 1"
+    "base": "1e1bfcf437b7ee8ece1b4ecb66c859ee17377d2e",
+    "directive": "https://github.com/aumara-xyz/aukora/issues/20 — ROUND_DIRECTIVE R60, Sam 3 item 1 (M3 typed cutover hardening)"
   },
   "canonicality_registry": {
-    "note": "The R58 audit found the repo's receipt/memory seams never name canonicality ('split-brain exists in embryo'). This registry names it. Exactly ONE entry may hold role=CANONICAL_DURABLE_MEMORY_WRITER at any instant.",
+    "note": "Every durable writer/receipt seam is named here; there is no unnamed store. Exactly ONE seam may hold role CANONICAL_DURABLE_MEMORY_WRITER at any instant. The verifier derives the canonical writer from this typed role field, not from prose.",
+    "roles_vocabulary": [
+      "CANONICAL_DURABLE_MEMORY_WRITER",
+      "RECEIPT_LANE",
+      "AUTHORITY_STATE_JOURNAL",
+      "DESTINATION_NOT_PRESENT"
+    ],
     "seams": [
       {
         "name": "convex-memoryChain",
         "role": "CANONICAL_DURABLE_MEMORY_WRITER",
-        "detail": "The Convex memoryChain projection — the temporary live substrate. Idempotent by content-addressed recordId (R34), no-resurrection (R44), receipt-before-row. Canonical TODAY and remains canonical until a cutover checkpoint under this contract completes."
+        "code_identity": "apps/brain — Convex memoryChain projection",
+        "detail": "The one canonical durable memory writer today. Idempotent by content-addressed recordId (R34), no-resurrection (R44), receipt-before-row. Canonical until a cutover checkpoint under this contract completes."
       },
       {
         "name": "in-process-door-receipts",
         "role": "RECEIPT_LANE",
-        "detail": "In-process door receipt store. A receipt lane, NOT a durable memory writer; never canonical for memory rows. DurableReceiptBridge remains inert until wired through its own governed brick."
+        "code_identity": "apps/brain/src/receiptBridge.ts (DurableReceiptBridge — inert)",
+        "detail": "In-process door receipt store. A receipt lane, never a canonical memory writer; DurableReceiptBridge stays inert until its own governed brick."
+      },
+      {
+        "name": "trusted-state-store",
+        "role": "AUTHORITY_STATE_JOURNAL",
+        "code_identity": "packages/kernel-node/src/trustedStateStore.ts (TrustedStateStore)",
+        "detail": "Crash-safe authority-consumption journal (consumed-ID / PREPARED state), primary-wired on the live ceremony path (apps/seed/src/durableCandidateMonitor.ts). Durable, so it is NAMED here — but it journals authority state, not memory rows; it is NOT a durable memory writer and never becomes canonical for memory. Its cross-process writer-lock + atomic-append discipline is the model the embedded prerequisite below reuses."
       },
       {
         "name": "embedded-kira-store",
         "role": "DESTINATION_NOT_PRESENT",
-        "detail": "The embedded KIRA store (SQLite/libSQL class). DOES NOT EXIST in-tree this round. It may only enter as SHADOW_FOLLOWER and may only become canonical through the phase machine below. Introducing it as a live writer outside this contract is forbidden (the R53 law: do not add a fourth live store)."
+        "code_identity": "(does not exist in-tree)",
+        "detail": "The embedded KIRA store (SQLite/libSQL class). DOES NOT EXIST this round. May only enter as a shadow follower and may only become canonical through the phase machine below. A live embedded writer outside this contract is forbidden (R53 law: do not add a fourth live store)."
       }
     ],
-    "fourth_store_forbidden": true
+    "fourth_store_forbidden": true,
+    "max_canonical_memory_writers": 1
   },
-  "laws": {
-    "single_writer": "Exactly one canonical durable memory writer at any instant. Every write names its writer epoch; overlapping epochs are a contract violation detected by the verifier and (live) by the checkpoint's writer-epoch fence.",
-    "transition_mode": "Convex→embedded uses SHADOW READS with parity measurement. The embedded follower is populated exclusively by reading the canonical store; it accepts no direct writes while following. DUAL WRITES ARE FORBIDDEN in every phase.",
-    "ordering": {
-      "scan_before_chain": "No record enters the chain without passing the immune/content scan first — preserved unchanged from the organism law.",
-      "receipt_before_effect": "Every durable effect commits its receipt before the effect row becomes visible — preserved unchanged."
-    },
-    "kill_switch": {
-      "env": "AUKORA_EMBEDDED_CUTOVER_KILL",
-      "armed_value": "1",
-      "semantics": "Fail-safe toward Convex: when set, cutover progress is REFUSED at every gate; if already EMBEDDED_CANONICAL, the only permitted transition is rollback to the checkpoint boundary. The switch can never force progress, only retreat."
-    },
-    "rollback_boundary": "Rollback restores Convex-canonical exactly at the recorded cutover checkpoint. Embedded-side writes accepted after the checkpoint are moved to a quarantined reconcile set — surfaced for governed re-application, never silently dropped and never silently merged.",
-    "idempotent_replay": "Applying the cutover checkpoint is idempotent: a second application (crash-recovery replay) produces byte-identical state and emits no duplicate receipts.",
-    "crash_canaries": "A crash (including kill-9) at any phase boundary must recover to a legal single-writer state derived from durable markers alone: a complete checkpoint implies embedded-canonical; anything less implies Convex-canonical. Acknowledged writes are never lost; zero-writer and two-writer recoveries are both violations."
+  "single_writer_invariant": {
+    "max_canonical_writers": 1,
+    "every_write_names_writer_epoch": true,
+    "overlapping_epochs_forbidden": true
+  },
+  "kill_switch": {
+    "env": "AUKORA_EMBEDDED_CUTOVER_KILL",
+    "armed_value": "1",
+    "direction": "FAIL_SAFE_TOWARD_CONVEX",
+    "direction_vocabulary": ["FAIL_SAFE_TOWARD_CONVEX", "FAIL_FORWARD_TO_EMBEDDED"],
+    "semantics": "When armed, cutover progress is REFUSED at every gate; if already EMBEDDED_CANONICAL the only permitted move is rollback to the checkpoint boundary. direction is TYPED (enum), so 'fail forward' cannot be smuggled in as prose — the verifier asserts direction === FAIL_SAFE_TOWARD_CONVEX."
+  },
+  "dual_writes": {
+    "allowed": false,
+    "detail": "Typed boolean, not a prose 'FORBIDDEN' substring. The Convex→embedded transition uses shadow reads with parity measurement; the follower accepts no direct writes while following. A tamper setting allowed:true (or any negation-smuggled prose) fails the verifier."
+  },
+  "ordering": {
+    "scan_before_chain": true,
+    "receipt_before_effect": true,
+    "detail": "Preserved unchanged from the organism law: no record chains without passing the immune/content scan first; every durable effect commits its receipt before the effect row is visible."
+  },
+  "writer_lock_prerequisite": {
+    "note": "EXECUTABLE prerequisite (answers Auma's documented current embedded-path race without pretending the store exists). The embedded follower cannot reach PARITY_PROVEN or CUTOVER_CHECKPOINT unless a cross-process writer lock + atomic-append capability is acquired and held. Modeled on trusted-state-store's discipline.",
+    "required_before_phases": ["PARITY_PROVEN", "CUTOVER_CHECKPOINT", "EMBEDDED_CANONICAL"],
+    "capabilities": {
+      "cross_process_exclusive_lock": true,
+      "atomic_append": true,
+      "lock_holder_is_writer_epoch": true
+    }
   },
   "checkpoint": {
-    "note": "The cutover checkpoint is ONE atomic artifact carrying every continuity anchor. A checkpoint missing any field group is incomplete and MUST refuse cutover.",
+    "note": "ONE atomic artifact carrying every continuity anchor. A checkpoint missing any required field group MUST refuse cutover. v2 extends v1 with the erase-authority and writer-epoch continuity the R60 audit (M3) found missing.",
     "required_field_groups": [
       "signed_heads_high_water",
-      "attestation_nonces",
-      "tombstones_no_resurrection",
       "record_id_derivation",
-      "receipt_chain_anchors"
+      "receipt_chain_anchors",
+      "no_resurrection_tombstone_set",
+      "erase_attestations_consumed_nonces",
+      "erase_root_registry",
+      "writer_epoch_fence"
     ],
     "field_semantics": {
-      "signed_heads_high_water": "The signedHeads high-water mark at cutover; the embedded store may never accept a head below it (rollback-attack fence).",
-      "attestation_nonces": "The consumed attestation-nonce set digest; consumed nonces stay consumed across the cutover (no replay window).",
-      "tombstones_no_resurrection": "The tombstone set digest; erased records stay erased in the embedded store (R44 no-resurrection carries over).",
-      "record_id_derivation": "The content-addressed recordId derivation rule identity (R34), pinned so both stores derive identical IDs for identical content — the parity comparator's join key.",
-      "receipt_chain_anchors": "The receipt-chain anchor digests at cutover, so the embedded receipt continuation chains from the exact Convex-era head."
+      "signed_heads_high_water": "signedHeads high-water at cutover; embedded may never accept a head below it (rollback-attack fence).",
+      "record_id_derivation": "content-addressed recordId derivation rule identity (R34), pinned so both stores derive identical IDs — the parity comparator's join key.",
+      "receipt_chain_anchors": "receipt-chain anchor digests at cutover; the embedded receipt continuation chains from the exact Convex-era head.",
+      "no_resurrection_tombstone_set": "tombstone set digest AND explicit no-resurrection continuity marker; erased records stay erased in the embedded store (R44 carries over, not merely re-derived).",
+      "erase_attestations_consumed_nonces": "consumed erase-attestation nonce set digest; consumed nonces stay consumed across cutover (no replay window opens on the new writer).",
+      "erase_root_registry": "digest + version of the registered erase-authority owner-root registry (Sam 2 M1); the embedded store inherits the exact root binding so cross-root erase cannot appear post-cutover.",
+      "writer_epoch_fence": "the monotonic writer-epoch/fence value; the pre-cutover epoch is fenced off so no stale Convex-epoch write is accepted after the flip (single-writer continuity across the boundary)."
     }
   },
   "phases": {
-    "order": [
-      "CONVEX_CANONICAL",
-      "SHADOW_READS",
-      "PARITY_PROVEN",
-      "CUTOVER_CHECKPOINT",
-      "EMBEDDED_CANONICAL"
+    "order": ["CONVEX_CANONICAL", "SHADOW_READS", "PARITY_PROVEN", "CUTOVER_CHECKPOINT", "EMBEDDED_CANONICAL"],
+    "transition_graph": [
+      { "from": "CONVEX_CANONICAL", "to": "SHADOW_READS", "guard": "attach_follower_read_only", "kind": "forward" },
+      { "from": "SHADOW_READS", "to": "PARITY_PROVEN", "guard": "three_clean_parity_windows_and_writer_lock", "kind": "forward" },
+      { "from": "PARITY_PROVEN", "to": "SHADOW_READS", "guard": "parity_mismatch", "kind": "demotion" },
+      { "from": "PARITY_PROVEN", "to": "CUTOVER_CHECKPOINT", "guard": "kill_switch_unset_and_complete_checkpoint_and_writer_lock", "kind": "forward" },
+      { "from": "CUTOVER_CHECKPOINT", "to": "EMBEDDED_CANONICAL", "guard": "atomic_writer_flip", "kind": "forward" },
+      { "from": "EMBEDDED_CANONICAL", "to": "CONVEX_CANONICAL", "guard": "rollback_at_checkpoint_boundary", "kind": "rollback" }
     ],
-    "transitions": {
-      "CONVEX_CANONICAL->SHADOW_READS": "Embedded follower attaches read-only. No write-path change.",
-      "SHADOW_READS->PARITY_PROVEN": "Requires consecutive clean parity windows (full recordId-set equality AND per-record content-digest equality, both directions). Any mismatch resets to SHADOW_READS.",
-      "PARITY_PROVEN->CUTOVER_CHECKPOINT": "Requires kill switch unset AND a complete checkpoint (all 5 field groups). Writes quiesce; checkpoint is written durably before the writer flips.",
-      "CUTOVER_CHECKPOINT->EMBEDDED_CANONICAL": "Atomic writer flip. Convex demotes to read-only shadow (for the rollback window).",
-      "EMBEDDED_CANONICAL->CONVEX_CANONICAL": "Rollback only, at the checkpoint boundary, per the rollback law."
-    }
+    "rollback_edge": { "from": "EMBEDDED_CANONICAL", "to": "CONVEX_CANONICAL" },
+    "forbidden_edges_note": "Any edge not in transition_graph is forbidden. In particular there is NO SHADOW_READS→EMBEDDED_CANONICAL or PARITY_PROVEN→EMBEDDED_CANONICAL edge that skips CUTOVER_CHECKPOINT, and no forward edge out of EMBEDDED_CANONICAL. The verifier reconstructs the legal graph from this typed list and rejects added/deleted edges."
   },
+  "crash_laws": {
+    "recover_from_durable_markers_only": true,
+    "complete_checkpoint_implies_writer": "embedded",
+    "incomplete_checkpoint_implies_writer": "convex",
+    "zero_writer_recovery_forbidden": true,
+    "two_writer_recovery_forbidden": true,
+    "acknowledged_writes_never_lost": true
+  },
+  "rollback_boundary": "Rollback restores Convex-canonical exactly at the recorded cutover checkpoint. Embedded-side writes accepted after the checkpoint move to a quarantined reconcile set — surfaced for governed re-application, never silently dropped and never silently merged.",
   "out_of_scope_this_round": [
     "Any SQLite/libSQL dependency or embedded store implementation",
     "Any live Convex schema/adaptor change",
