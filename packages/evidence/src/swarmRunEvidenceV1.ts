@@ -53,6 +53,7 @@ export const EPISTEMIC_SOURCES = [
   'EXTERNAL_RESEARCH',   // gathered from outside sources; advisory until locally reproduced
   'MODEL_GENERATED',     // produced by a model without local verification
   'SELF_REPORTED',       // asserted by the worker about itself without independent measurement
+  'REMOTE_ONLY',         // R58: executed on a remote service; receipts held, never re-run locally
 ] as const;
 export type EpistemicSourceV1 = typeof EPISTEMIC_SOURCES[number];
 
