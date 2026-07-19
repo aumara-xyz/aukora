@@ -17,9 +17,11 @@
    `POSSIBLY_STALE`** and name the base SHA from CURRENT_ROUND.md you relied on. Do not assert live
    equality — a mirror cannot prove it.
 3. **Execute, do not read:** run `npm ci` then `npm run test:all`; re-measure totals from the log
-   rather than trusting any published number. Run the public secret/PII scan. Reproduce any PoC in a
-   scratch dir; never mutate the tree, never write to any branch, never use credentials or paid/provider
-   inference.
+   rather than trusting any published number. Run the **canonical** public secret/PII scan — the exact
+   in-repo gate CI runs — `npx tsx apps/seed/scripts/scan-public-tree.ts` over the repository's tracked
+   public tree; it must report `PASS` with **0 blocking** findings (advisories are non-blocking). Do not
+   substitute an ad-hoc scan. Reproduce any PoC in a scratch dir; never mutate the tree, never write to
+   any branch, never use credentials or paid/provider inference.
 4. **Report** exact base SHA, gate outcomes, measured totals, and each finding with a VERIFIED /
    FALSIFIED / UNPROVEN / STALE / POSSIBLY_STALE label. Do not infer a result you did not run
    (the R60 Fugu pass produced **no output** — HTTP 500 ×2 — and must be recorded as transport failure

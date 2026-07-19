@@ -4,8 +4,10 @@
 > [issue #20](https://github.com/aumara-xyz/aukora/issues/20). A seat with no GitHub access reads THIS
 > file. The live issue always supersedes this mirror; the mirror is refreshed by Sam 1 at each round
 > start and never edited by other lanes.
-> Integrity: `docs/control/CURRENT_ROUND.sha256` carries the SHA-256 of every file in this directory
-> and is restated in the issue #20 checkpoint comment that lands this snapshot.
+> Integrity: `docs/control/CURRENT_ROUND.sha256` carries the SHA-256 of the control documents in this
+> directory — exactly `CURRENT_ROUND.md`, `CURRENT_AUDIT.md`, and `R58_AUDIT_SYNTHESIS.md` — and
+> **excludes the manifest itself** (a checksum file cannot stably hash its own digest line). Those
+> digests are restated in the issue #20 checkpoint comment that lands this snapshot.
 
 - **Round:** R60 — HOSTILE-INPUT HARDENING + EMBEDDED-KIRA PREREQUISITES
 - **Exact start base (public main):** `1e1bfcf437b7ee8ece1b4ecb66c859ee17377d2e`
@@ -15,6 +17,15 @@
 - **Prior-round R58 verdict:** [docs/control/R58_AUDIT_SYNTHESIS.md](./R58_AUDIT_SYNTHESIS.md)
 
 Truth class of this mirror: **CAPTURE_CONSISTENT** — equality with the live issue was true at the snapshot instant above and is not claimed afterwards.
+
+> **Totals rule (Sam 1, authoritative for this control-snapshot PR).** This snapshot is **docs-only and
+> regenerates NO totals** — it leaves the committed measured value untouched. The mirrored directive
+> below contains two *sequential, non-conflicting* steps for the R60 **convergence** PR (a different PR):
+> Sam 3's capture commit does **not** regenerate totals, and Sam 1 then regenerates **once** on the folded
+> convergence tree. That single regeneration already ran in the R60 convergence (#193): the live
+> public-main total is now **1672 passing + 2 gated skips**. So "regenerate totals once" (Sam 1 item 5)
+> and "do not regenerate totals" (Sam 3 item 3) are not contradictory — they are ordered steps of the
+> convergence, and neither applies to this docs-only snapshot.
 
 ---
 
@@ -73,7 +84,7 @@ Work in parallel with the other lanes:
 
 4. **Integration law:** do **not** serialize lanes through individual rebases/full gates. Freeze each qualified lane head. Build one fresh `sam/r60-convergence` branch from then-current public main; merge lane heads preserving provenance; resolve only real conflicts.
 
-5. After merging implementation heads, hand the convergence candidate to Sam 3 for one final Atlas capture commit. Fold that commit, regenerate totals once, run full clean-root Node 20/22 + public scan + provenance + continuity + no-overclaim once, and open **one final ready convergence PR**.
+5. After merging implementation heads, hand the convergence candidate to Sam 3 for one final Atlas capture commit. Fold that commit, regenerate totals once, run full clean-root Node 20/22 + public scan + provenance + continuity + no-overclaim once, and open **one final ready convergence PR**. ⟦Sam 1 annotation: this "regenerate totals once" governs the **convergence PR only** — see the *Totals rule* note above; this docs-only control snapshot regenerates nothing, and Sam 3 item 3 below (no regeneration) is the ordered capture-commit step, not a conflicting rule.⟧
 
 Only Sam 1 watches the queue. If a lane waits, it posts one HOLD and ends.
 
