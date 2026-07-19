@@ -86,8 +86,32 @@ describe('pre-R58 behavior preserved', () => {
     expect(scanAddedLines(diffOf('docs/other.md', ['The engine beats level 4 flawlessly.'])).length).toBeGreaterThan(0);
   });
 
-  it('the pattern table carries the four R58 ARC patterns exactly once each', () => {
+  it('the pattern table carries the R58+R59 ARC patterns exactly once each', () => {
     const arc = (OVERCLAIMS as { name: string }[]).filter((o) => o.name.startsWith('arc-')).map((o) => o.name).sort();
-    expect(arc).toEqual(['arc-game-solved', 'arc-level-beaten', 'arc-official-result', 'arc-size-boast']);
+    expect(arc).toEqual(['arc-bare-solved', 'arc-game-solved', 'arc-level-beaten', 'arc-official-result', 'arc-size-boast']);
+  });
+});
+
+describe('R59 bare-"ARC" bypass closed (R58 audit VERIFIED gap)', () => {
+  it('"solved the ARC game" is a violation (the exact audited bypass)', () => {
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['We solved the ARC game with pure source analysis.'])))).toContain('arc-bare-solved');
+  });
+  it('reversed form and other verbs fire too', () => {
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['The ARC game was finally won by the planner.'])))).toContain('arc-bare-solved');
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['Our engine beats ARC consistently.'])))).toContain('arc-bare-solved');
+  });
+  it('lowercase "arc" prose stays legal (case-sensitive token)', () => {
+    expect(scanAddedLines(diffOf('docs/x.md', ['the arc of the story was won by patience'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['she solved the arc-welding alignment problem'])).length).toBe(0);
+  });
+  it('ARC-AGI forms stay owned by arc-game-solved (patterns disjoint)', () => {
+    const v = names(scanAddedLines(diffOf('docs/x.md', ['Our engine beats ARC-AGI-3 with source analysis.'])));
+    expect(v).toContain('arc-game-solved');
+    expect(v).not.toContain('arc-bare-solved');
+  });
+  it('quoted / refuted / truth-labeled bare-ARC lines stay legal', () => {
+    expect(scanAddedLines(diffOf('docs/x.md', ['The claim "solved the ARC game" carries no receipts.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['We never solved the ARC game; the run was not reproducible.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['Solved the ARC game: UNPROVEN — no artifact on any branch.'])).length).toBe(0);
   });
 });
