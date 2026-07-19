@@ -1,5 +1,5 @@
 {
-  "schema": "aukora-branch-intake-ledger-v1",
+  "schema": "aukora-branch-intake-ledger-v2",
   "note": "R58 machine-readable intake ledger for the seven branches carrying content genuinely absent from public main, converted from the public R57A branch reconciliation. Every classification below was derived from direct in-lane inspection (git fetch + merge-base + diff against the exact base) — NEVER from branch presence, branch names, or report prose alone. The Avenger referee report is recorded as advisory evidence only (EXTERNAL_RESEARCH), per the standing coordinator memory that referee passes are never authority and never a substitute for local reproduction.",
   "law": {
     "no_blind_merge": true,
@@ -220,5 +220,11 @@
       ],
       "referee_advisory": "EXTERNAL_RESEARCH (Kimi §2): 'archival receipts/addenda'."
     }
-  ]
+  ],
+  "verification_scope": {
+    "offline_gate_proves": "structure, classification vocabulary, per-classification required-evidence fields, epistemic labeling, and internal consistency ONLY",
+    "external_truth_not_provable_offline": true,
+    "external_truth_rests_on": "the recorded evidence commands, each re-executable against the pinned branch heads and base; a semantically wrong classification inside valid vocabulary can only be caught by re-executing that evidence, which the R58 Avengers audit independently did for 3 of 7 entries",
+    "v2_hardening": "R59 (M3 repair-forward): per-classification required fields — ALREADY_INTEGRATED requires landed_reference (hex SHA on main); ADAPT requires narrow_extraction OR an explicit per-file intake rationale; REJECT requires reject_grounds and carries no extraction; entry-level MISSING_EVIDENCE requires missing_artifact; every evidence line must carry an epistemic prefix (VERIFIED/FALSIFIED/UNPROVEN/STALE/EXTERNAL_RESEARCH/INFERENCE)."
+  }
 }

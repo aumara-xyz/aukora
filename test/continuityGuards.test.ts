@@ -145,6 +145,29 @@ describe('R58 branch-intake ledger — inspected classifications only, no blind 
     expect(led.law.referee_is_advisory.length).toBeGreaterThan(0);
     for (const e of led.entries) expect(e.no_result_claims_adopted, `${e.branch} adopted a result claim`).toBe(true);
   });
+  it('R59 v2: the ledger honestly declares offline-gate scope and every evidence line carries an epistemic label', () => {
+    expect(led.schema).toBe('aukora-branch-intake-ledger-v2');
+    expect(led.verification_scope.external_truth_not_provable_offline).toBe(true);
+    expect(led.verification_scope.external_truth_rests_on.length).toBeGreaterThan(0);
+    const EPISTEMIC = ['VERIFIED', 'FALSIFIED', 'UNPROVEN', 'STALE', 'EXTERNAL_RESEARCH', 'INFERENCE'];
+    for (const e of led.entries) {
+      for (const line of e.evidence) {
+        expect(EPISTEMIC.some((t: string) => line.startsWith(t)), `${e.branch}: "${line.slice(0, 50)}"`).toBe(true);
+      }
+      if (e.referee_advisory) expect(e.referee_advisory.startsWith('EXTERNAL_RESEARCH')).toBe(true);
+    }
+  });
+  it('R59 v2: per-classification required fields hold for every entry', () => {
+    for (const e of led.entries) {
+      if (e.classification === 'ALREADY_INTEGRATED') expect(e.landed_reference).toMatch(/[0-9a-f]{7,40}/);
+      if (e.classification === 'ADAPT') expect(!!e.narrow_extraction || /per-file/i.test(e.rationale), e.branch).toBe(true);
+      if (e.classification === 'REJECT') {
+        expect(e.reject_grounds?.length).toBeGreaterThan(0);
+        expect(e.narrow_extraction).toBeUndefined();
+      }
+      if (e.classification === 'MISSING_EVIDENCE') expect(e.missing_artifact?.length).toBeGreaterThan(0);
+    }
+  });
   it('narrow extractions name their exact target (one-line provenance fix, archival receipts)', () => {
     const withExtraction = led.entries.filter((e: { narrow_extraction?: unknown }) => e.narrow_extraction);
     expect(withExtraction.length).toBeGreaterThanOrEqual(4);

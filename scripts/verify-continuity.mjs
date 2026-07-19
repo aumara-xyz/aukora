@@ -174,9 +174,16 @@ export function runContinuity() {
       `intake ${p.repo}#${p.number}: missing url or ISO captured_at anchor`);
   }
 
-  // ---- 9. R58 branch-intake ledger: inspected classifications, no blind merge, no result claims ----
+  // ---- 9. R58/R59 branch-intake ledger: inspected classifications, no blind merge, no result claims,
+  //         per-classification evidence requirements (M3 repair-forward). The offline gate proves
+  //         structure and internal consistency ONLY — external truth rests on the recorded
+  //         re-executable evidence commands, and the ledger must say so itself. ----
   const intake = read('docs/atlas/BRANCH_INTAKE_R58.json');
-  ok(intake.schema === 'aukora-branch-intake-ledger-v1', 'intake: wrong schema');
+  ok(intake.schema === 'aukora-branch-intake-ledger-v2', 'intake: wrong schema');
+  ok(intake.verification_scope && intake.verification_scope.external_truth_not_provable_offline === true
+    && typeof intake.verification_scope.external_truth_rests_on === 'string'
+    && intake.verification_scope.external_truth_rests_on.length > 0,
+    'intake: ledger must honestly declare that the offline gate cannot prove external truth');
   ok(intake.law.no_blind_merge === true, 'intake: the no-blind-merge law must be asserted');
   ok(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(intake.capture.captured_at), 'intake: captured_at is not an ISO-8601 UTC instant');
   ok(/^[0-9a-f]{40}$/.test(intake.capture.anchors.public_main_head), 'intake: public_main_head anchor is not a 40-hex SHA');
@@ -188,6 +195,7 @@ export function runContinuity() {
     `intake: ${intake.entries.length} entries != declared scope ${intake.source_survey.unique_content_branches_in_scope}`);
   const inames = intake.entries.map((e) => e.branch);
   ok(new Set(inames).size === inames.length, 'intake: duplicate branch entries');
+  const EPISTEMIC = ['VERIFIED', 'FALSIFIED', 'UNPROVEN', 'STALE', 'EXTERNAL_RESEARCH', 'INFERENCE'];
   for (const e of intake.entries) {
     ok(/^[0-9a-f]{40}$/.test(e.head_sha), `intake ${e.branch}: head_sha is not a 40-hex SHA`);
     ok(IVOCAB.has(e.classification), `intake ${e.branch}: classification "${e.classification}" not in vocabulary`);
@@ -200,6 +208,22 @@ export function runContinuity() {
       `intake ${e.branch}: narrow_extraction must name target and detail`);
     if (e.per_file_exception) for (const [f, v] of Object.entries(e.per_file_exception))
       ok([...IVOCAB].some((t) => String(v).includes(t)), `intake ${e.branch}: per-file exception "${f}" cites no vocabulary term`);
+    // v2: every evidence line carries a machine-checkable epistemic label prefix.
+    for (const line of e.evidence) ok(EPISTEMIC.some((t) => line.startsWith(t + ':') || line.startsWith(t + ' ')),
+      `intake ${e.branch}: evidence line lacks an epistemic prefix (${EPISTEMIC.join('/')}): "${String(line).slice(0, 60)}"`);
+    if (e.referee_advisory) ok(String(e.referee_advisory).startsWith('EXTERNAL_RESEARCH'),
+      `intake ${e.branch}: referee_advisory must be labeled EXTERNAL_RESEARCH`);
+    // v2: per-classification required fields — enforceable structure, no external-truth pretense.
+    if (e.classification === 'ALREADY_INTEGRATED') ok(typeof e.landed_reference === 'string' && /[0-9a-f]{7,40}/.test(e.landed_reference),
+      `intake ${e.branch}: ALREADY_INTEGRATED requires landed_reference citing a hex SHA on main`);
+    if (e.classification === 'ADAPT') ok(!!e.narrow_extraction || /per-file/i.test(e.rationale),
+      `intake ${e.branch}: ADAPT requires narrow_extraction or an explicit per-file intake rationale`);
+    if (e.classification === 'REJECT') {
+      ok(typeof e.reject_grounds === 'string' && e.reject_grounds.length > 0, `intake ${e.branch}: REJECT requires reject_grounds`);
+      ok(!e.narrow_extraction, `intake ${e.branch}: REJECT must not carry an extraction action`);
+    }
+    if (e.classification === 'MISSING_EVIDENCE') ok(typeof e.missing_artifact === 'string' && e.missing_artifact.length > 0,
+      `intake ${e.branch}: MISSING_EVIDENCE requires naming the missing artifact`);
   }
 
   return {
