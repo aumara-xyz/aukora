@@ -1,14 +1,28 @@
 # AGRE v2 → ALIEN CORE Adaptation Plan
 
-**Date:** 2026-07-19
+**Date:** 2026-07-19 · **Truth-repaired:** R58 (Sam 4 lane)
 **Status:** RESEARCH_CANDIDATE — no capability claims
-**Falsification target:** B2-equivalent for game reasoning (§3)
+**Falsification target:** B2-equivalent for game reasoning — the binding preregistration is
+[`B2_GAME_PREREGISTRATION.md`](B2_GAME_PREREGISTRATION.md) (§3 below is the design sketch it grew from)
+
+> **TRUTH REPAIR (R58).** The public Avengers audit
+> ([issue #20](https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5013983883)) falsified this
+> document's original results section: the "189KB engine" that §10 listed was in fact **471 bytes of
+> self-referential stubs** on `main` (no 44–54KB engine exists on any branch), and **all five per-level
+> results below are UNPROVEN** — no runnable code, no raw receipts, no replay instructions, no
+> scorecards, on any branch. The only same-day executed evidence
+> (`skunkworks/arc3-agre` @ `5b091bc`, `docs/AGRE_FINAL_REPORT_COMPLETE.md`) is about *different*,
+> vision+LLM engines and states plainly: "Neither triggers WIN."
+> The architecture mapping (§2), gate design (§3/§5), and gap list (§6) were audited as accurate honest
+> self-assessment and are preserved. The claims were the rot; the design is the value.
 
 ---
 
-## 1. What AGRE v2 Is (Evidence)
+## 1. What AGRE v2 Was Claimed To Be (claims now labeled)
 
-A general reasoning engine that beats ARC-AGI-3 games by:
+The original text asserted a general reasoning engine that beats ARC-AGI-3 games — that phrasing is
+retired: it was an unsupported capability claim (see banner). What the design describes is an engine
+*intended* to attack such games by:
 
 1. Reading game source code (`.py` files packaged with the environment)
 2. Extracting mechanics via AST + regex analysis
@@ -16,14 +30,20 @@ A general reasoning engine that beats ARC-AGI-3 games by:
 4. Computing optimal paths via BFS/A*
 5. Executing with level-index win detection
 
-**Results so far (falsifiable):**
-- TU93 Level 1: 18 actions (3/3 consistent)
-- TU93 Level 2: 10 actions with enemy timing (3/3 consistent)
-- TU93 Level 3: 18 actions via exploration
-- TU93 Level 4: 17 actions via BFS with full state hashing
-- LS20 Level 1: 17 actions (puzzle mechanics)
+**Original per-level results table — every row UNPROVEN (no code, no receipts, no replay, no scorecard):**
 
-**The method is source-code-first, not vision-first.** When source is unavailable, the engine falls back to discovery/probing. Zero training data about these games.
+| Original claim | Label | Audit note |
+|---|---|---|
+| TU93 Level 1: 18 actions (3/3 consistent) | **UNPROVEN** | no artifact on any branch |
+| TU93 Level 2: 10 actions, enemy timing (3/3) | **UNPROVEN** | no artifact on any branch |
+| TU93 Level 3: 18 actions via exploration | **UNPROVEN** | appeared as prose ~55 min after a first report listing only L1+L2 |
+| TU93 Level 4: 17 actions via BFS full-state hashing | **UNPROVEN** | same late-prose provenance as L3 |
+| LS20 Level 1: 17 actions (puzzle mechanics) | **UNPROVEN** | contradicts the owner archive's 13-action record |
+
+Note also that source-reading of shipped game `.py` files violates the blind norm and issue #102's own
+"no source/game-specific solution path" requirement — a source-assisted run may never be described as
+vision-only, blind, or an official ARC-AGI-3 generalization result. The fallback discovery/probing mode
+and "zero training data" statements are design intent, not demonstrated properties.
 
 ---
 
@@ -220,14 +240,22 @@ The game domain is a **controlled environment** for testing the learning loop.
 
 ---
 
-## 9. Honest Assessment
+## 9. Honest Assessment (repaired)
 
 ### What's Proven
-- Source-code-first reasoning beats heuristics on ARC-AGI-3 games
-- BFS with full state hashing solves complex levels with projectiles
-- Enemy timing strategies transfer between levels
+- Nothing in this document is proven. The three bullets originally listed here ("source-code-first
+  reasoning beats heuristics", "BFS solves complex levels", "enemy timing transfers") all depended on
+  the §1 results table, and every row of that table is UNPROVEN (see banner). Until a run exists with
+  raw receipts, deterministic replay, and a platform scorecard, this section stays empty by design.
+
+### What's Executed Evidence (different engines, preserved baseline)
+- `skunkworks/arc3-agre` @ `5b091bc` holds real, runnable vision+LLM engines (`agre_v11.py`,
+  `agre_v14.py`) whose own committed report states: "Neither triggers WIN." That is the current
+  honest baseline for this research line — best TU93 attempt reaches the detected goal position
+  without a WIN; best LS20 attempt gets within 19 cells.
 
 ### What's Unproven
+- Every per-level result claimed for the "v2" engine (§1 table)
 - Whether LoRA consolidation beats retrieval on game reasoning
 - Whether archetypes generalize across different game types
 - Whether the full 5-station loop works at any scale
@@ -237,16 +265,19 @@ Tier 0 (event store + falsification) survives every outcome. If B2 fails, we're 
 
 ---
 
-## 10. Files
+## 10. Files (original claim FALSIFIED)
 
-- `agre_v2.py` — Main integration engine (44KB)
-- `agre_source_analyzer.py` — Source code analysis (45KB)
-- `agre_discovery.py` — Environment probing (54KB)
-- `agre_planner.py` — Strategy planner (46KB)
-- `tu93_all_bfs.py` — BFS solver for all levels
-
-**Total: 189KB of falsifiable, source-code-first reasoning engine.**
+The original section claimed five modules totaling 189KB. **FALSIFIED by the public audit:** what
+actually landed on `main` were four self-referential placeholder stubs totaling 471 bytes
+(`agre_v2.py` 123B · `agre_source_analyzer.py` 137B · `agre_planner.py` 103B · `agre_discovery.py`
+108B — each a comment pointing at its own directory), `tu93_all_bfs.py` never existed anywhere, and
+no 44–54KB engine exists on any branch. The stubs were removed in R58; the directory now carries the
+evidence law and the RESEARCH_CANDIDATE intake record for the real branch artifacts — see
+[`docs/skunkworks/agre_v2/README.md`](../skunkworks/agre_v2/README.md).
 
 ---
 
-*Method: Source code analysis → AST+regex extraction → BFS pathfinding → execution with level-index win detection. Zero training data. Results preregistered in this document.*
+*Method (design intent, not a demonstrated property): source code analysis → AST+regex extraction →
+BFS pathfinding → execution with level-index win detection. The original footer's "results
+preregistered in this document" was backwards — results were claimed here, not preregistered; the
+actual preregistration is [`B2_GAME_PREREGISTRATION.md`](B2_GAME_PREREGISTRATION.md).*
