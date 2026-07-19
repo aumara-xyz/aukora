@@ -4,7 +4,7 @@
 production. Advisory only; grants no authority.
 
 ## Donor
-- **Source:** draft PR #121 (`convergence/kimi-overnight`) head `8a1107379ca7ebf4728fd7c353f3d6bde164521c`.
+- **Source:** draft PR #121 (`convergence/kimi-overnight`) — extracted from commit `8a1107379ca7ebf4728fd7c353f3d6bde164521c` (the `MERGE_BRIEF_IMMUNE_SYSTEM.md` extraction-source commit, NOT PR #121's head; that PR's current head is `70639ac01dcb`).
 - **Base of this package:** public `main@1394321fffd5de6296d44423d097e4e6199ab62b`.
 
 ## Extracted (adapted, not verbatim — so no CANONICAL_BLOBS pin claim)
