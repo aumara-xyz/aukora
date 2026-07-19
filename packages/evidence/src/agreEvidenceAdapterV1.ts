@@ -302,10 +302,18 @@ export function buildAgreSwarmEvidence(receipt: AgreRunReceiptV1, context: AgreR
 }
 
 /**
- * TOTAL anti-laundering pairing predicate: true only if the envelope verifies AND every derivable
- * field (taskId, epistemic label, inputDigest, outputDigest/replay pairing) matches this exact
- * receipt. A post-hoc label edit, outcome edit, or receipt swap — even one re-sealed into an
- * internally well-formed envelope — fails the pairing.
+ * TOTAL pairing predicate: true only if `env` is the UNGOVERNED run-evidence produced from this exact
+ * receipt. It re-derives every field that is a function of the receipt — taskId, epistemic label
+ * (from the closed origin), inputDigest, and outputDigest/replay — and requires the envelope to verify.
+ *
+ * R59 M2 correction (the prior docstring was FALSIFIED): the receipt describes a RUN; it says nothing
+ * about a governance DECISION, which is not derivable from it. So this predicate deliberately pairs only
+ * the ungoverned run stage — it asserts `governance.outcome === 'ungoverned'` and returns false for ANY
+ * governed envelope (accepted / rejected / quarantined), closing the earlier gap where a re-sealed
+ * axis edit (ungoverned→governed) still paired. Forged acceptance is barred at two other layers: the
+ * narrowed public seal cannot mint a governed envelope (only `governSwarmRunEvidence` can), and
+ * `validateSwarmRunBody` permits `accepted` only for LOCAL_* sources. A legitimately governed envelope
+ * is still bound to its run by `inputDigest`; callers needing that binding compare digests directly.
  */
 export function agreEnvelopeMatchesReceipt(env: SwarmRunEvidenceEnvelopeV1, receipt: AgreRunReceiptV1): boolean {
   try {
@@ -313,6 +321,7 @@ export function agreEnvelopeMatchesReceipt(env: SwarmRunEvidenceEnvelopeV1, rece
     const snap = JSON.parse(canonicalString(receipt)) as AgreRunReceiptV1;
     if (!validateAgreRunReceipt(snap).ok) return false;
     const b = env.body;
+    if (b.governance.outcome !== 'ungoverned') return false; // pairs the raw run stage only, never a decision
     if (b.taskId !== agreTaskId(snap)) return false;
     if (b.epistemicSource !== epistemicSourceForOrigin(snap.origin)) return false;
     if (b.inputDigest !== agreReceiptDigest(snap)) return false;

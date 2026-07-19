@@ -125,7 +125,7 @@ export const SWARM_ERROR_CODES = [
   'E_SCHEMA', 'E_NOT_OBJECT', 'E_PROTO', 'E_MISSING_FIELD', 'E_UNKNOWN_FIELD', 'E_WRONG_TYPE',
   'E_ADVISORY_LITERAL', 'E_BAD_ENUM', 'E_BAD_SHA', 'E_BAD_GITSHA', 'E_BAD_LABEL', 'E_SECRET_CONTENT',
   'E_BAD_INTEGER', 'E_TIME_RANGE', 'E_TIME_ORDER', 'E_OUTCOME_CONTRADICTION', 'E_EPISTEMIC_OVERCLAIM',
-  'E_GOVERNANCE_INCOMPLETE', 'E_DIGEST_MISMATCH',
+  'E_GOVERNANCE_INCOMPLETE', 'E_DIGEST_MISMATCH', 'E_SEAL_NOT_UNGOVERNED',
 ] as const;
 export type SwarmErrorCode = typeof SWARM_ERROR_CODES[number];
 
@@ -348,15 +348,33 @@ function deepFreeze<T>(o: T): T {
 }
 
 /**
- * Validate a body then seal it. Snapshot-first like the donor sealEnvelope: ONE canonical snapshot is
- * taken up front, and that exact snapshot is validated, digested, and frozen — an accessor cannot show
- * clean bytes to validation and dirty bytes to the digest. Throws `<code>:<path>` on invalid bodies.
+ * INTERNAL seal: validate a body then seal it. Snapshot-first like the donor sealEnvelope: ONE canonical
+ * snapshot is taken up front, and that exact snapshot is validated, digested, and frozen — an accessor
+ * cannot show clean bytes to validation and dirty bytes to the digest. Throws `<code>:<path>` on invalid
+ * bodies. NOT exported: only the public ungoverned seal and the governance door reach it, so a governed
+ * envelope can be minted ONLY through `governSwarmRunEvidence`.
  */
-export function sealSwarmRunEvidence(body: SwarmRunEvidenceV1): SwarmRunEvidenceEnvelopeV1 {
+function sealBodyChecked(body: SwarmRunEvidenceV1): SwarmRunEvidenceEnvelopeV1 {
   const snap = JSON.parse(canonicalString(body)) as SwarmRunEvidenceV1;
   const v = validateSwarmRunBody(snap);
   if (!v.ok) throw new Error(`${v.code}:${v.path}`);
   return deepFreeze({ body: snap, runDigest: swarmRunDigest(snap) });
+}
+
+/**
+ * Public seal — NARROWED (R59 M2): admits ONLY ungoverned evidence. Acceptance / rejection / quarantine
+ * exist solely through `governSwarmRunEvidence` (the governance door), so the exported seal API cannot
+ * self-certify a hand-built `accepted` body nor re-seal an axis-edited (ungoverned→governed) envelope.
+ * A governed `body.governance.outcome` is refused BEFORE full validation (`E_SEAL_NOT_UNGOVERNED`). This
+ * is the API-level chokepoint; the epistemic-promotion law in `validateSwarmRunBody` remains the
+ * value-level backstop (only LOCAL_* sources can ever validate as accepted). Throws `<code>:<path>`.
+ */
+export function sealSwarmRunEvidence(body: SwarmRunEvidenceV1): SwarmRunEvidenceEnvelopeV1 {
+  const outcome = (body as { governance?: { outcome?: unknown } } | null | undefined)?.governance?.outcome;
+  if (outcome !== 'ungoverned') {
+    throw new Error('E_SEAL_NOT_UNGOVERNED:body.governance.outcome');
+  }
+  return sealBodyChecked(body);
 }
 
 export function validateSwarmRunEnvelope(value: unknown): SwarmValidationResult {
@@ -467,5 +485,6 @@ export function governSwarmRunEvidence(
       decidedAtMs: decision.decidedAtMs,
     },
   };
-  return sealSwarmRunEvidence(body);
+  // Use the INTERNAL seal — the door is the sole minter of governed envelopes; the public seal refuses them.
+  return sealBodyChecked(body);
 }
