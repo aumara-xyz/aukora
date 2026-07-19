@@ -6,24 +6,150 @@
   "method": "Independent grep of production (non-test, non-barrel) importers on the integrated tree, plus each lane's requalification report. 'primary-wired' = at least one production consumer on the live ceremony path; 'foundation-only' = imported solely by the package barrel + its own tests.",
   "honestCaveat": "Pilot/effect durability is NOT primary-door durability. Every NEW durability/effect/trusted-state brick this round is FOUNDATION-ONLY — proven correct + crash-safe in isolation, but not yet imported by the primary runtime. The live effect path remains mindDoor -> localCeremonyRunner -> durableRecursion -> localCandidateStage (R37/R50), which enforces the equivalent owner-gate + kernel reference-monitor decide() before the disposable worktree. Wiring the new machine is a DEFERRED brick, out of scope for this convergence-only round.",
   "bricks": [
-    { "brick": "trusted-state / @aukora/kernel-node", "owner": "Sam 2", "path": "packages/kernel-node/src/trustedStateStore.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "kernel-node 23/23 incl. real kill-9 + concurrent exactly-one-PREPARED (Node 20 + 22)", "note": "no Convex/model/Fu/memory/private-key dependency; imports only node:fs, node:path, @aukora/kernel. Primary-door contract documented (PRIMARY_DOOR_CONTRACT.md); wiring deferred." },
-    { "brick": "effect-protocol state machine", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/effectProtocol.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453; r53 targeted 115", "note": "PreparedEffect.effectId is a governed-recursion keyspace, DISAMBIGUATED (namespace comment) from @aukora/brain's journal deriveEffectId — same name, different domain, no functional collision." },
-    { "brick": "effect-settlement (projection-only validator)", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/effectSettlement.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453", "note": "refuses committed-null-completion." },
-    { "brick": "effect-audit (closing invariant)", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/effectAudit.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453" },
-    { "brick": "effect-coordinator (canonical ordering)", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/effectCoordinator.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453", "note": "PREPARED strictly precedes runGitEffect(); effect runs exactly once (proven in the foundation coordinator, not yet the primary runtime)." },
-    { "brick": "recovery-planner (SIGKILL-per-phase)", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/recoveryPlanner.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453", "note": "resolves EXECUTING/RECONCILE_REQUIRED/PREPARED-consumed to RECONCILE_BY_OBSERVATION, never RESUME_FORWARD." },
-    { "brick": "hermetic-rehearsal", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/hermeticRehearsal.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453", "note": "caller may only NAME an approved plan id; no arbitrary shell." },
-    { "brick": "ref-snapshot (protected-ref isolation)", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/refSnapshot.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453" },
-    { "brick": "candidate-path-integrity (case/Unicode collisions)", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/candidatePathIntegrity.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453" },
-    { "brick": "gitconfig-threat detection", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/gitConfigThreat.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "in seed 453" },
-    { "brick": "git-hardening (candidate stage fence)", "owner": "Sam 3 (@aukora/seed)", "path": "apps/seed/src/localCandidateStage.ts", "productionConsumers": 2, "consumers": ["apps/seed/src/contracts.ts", "apps/seed/src/localCeremonyRunner.ts"], "reachability": "PRIMARY-WIRED", "tests": "in seed 453", "note": "THIS brick is on the live ceremony path — its realpath symlink re-fence + hardening reach production." },
-    { "brick": "durable effect-event store", "owner": "Sam 4 (@aukora/brain)", "path": "apps/brain/src/effectEventStore.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "brain 228; live real convex-local-backend kill-9 + destroy/rebuild re-run", "note": "10 identical writes -> one row; outage -> lossless retry; destroy+replay -> identical root. journal deriveEffectId keyspace (AUKORA-EFFECT/1), distinct from Sam 3's recursion effectId." },
-    { "brick": "effect-event log / settlement / audit-brain", "owner": "Sam 4 (@aukora/brain)", "path": "apps/brain/src/effectEvent*.ts", "productionConsumers": 0, "reachability": "foundation-only", "tests": "brain 228" }
+    {
+      "brick": "trusted-state / @aukora/kernel-node",
+      "owner": "Sam 2",
+      "path": "packages/kernel-node/src/trustedStateStore.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "kernel-node 23/23 incl. real kill-9 + concurrent exactly-one-PREPARED (Node 20 + 22)",
+      "note": "no Convex/model/Fu/memory/private-key dependency; imports only node:fs, node:path, @aukora/kernel. Primary-door contract documented (PRIMARY_DOOR_CONTRACT.md); wiring deferred.",
+      "r59_amendment": {
+        "amended_at": "2026-07-19T06:58:00Z",
+        "amended_by": "Sam 3 (recursion/Atlas lane), R59 directive item 3",
+        "verified_at_main": "c87880da79934559faf36515e84ffdc9ddd70f16",
+        "reachability_now": "primary-wired",
+        "production_consumers_now": [
+          "apps/seed/src/durableCandidateMonitor.ts:115 (TrustedStateStore.load on live consumption path)",
+          "apps/seed/src/durableCandidateMonitor.ts:130 (TrustedStateStore journalled consumption with crash hook)"
+        ],
+        "note": "The historical R53 values above (productionConsumers: 0, reachability: foundation-only) were true at the R53 base and are preserved unmodified; this amendment records the exact-main re-verification per the ledger's own primary-wired definition (>=1 production consumer on the live ceremony path). trustedStateStore became PRIMARY-WIRED in R54."
+      }
+    },
+    {
+      "brick": "effect-protocol state machine",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/effectProtocol.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453; r53 targeted 115",
+      "note": "PreparedEffect.effectId is a governed-recursion keyspace, DISAMBIGUATED (namespace comment) from @aukora/brain's journal deriveEffectId — same name, different domain, no functional collision."
+    },
+    {
+      "brick": "effect-settlement (projection-only validator)",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/effectSettlement.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453",
+      "note": "refuses committed-null-completion."
+    },
+    {
+      "brick": "effect-audit (closing invariant)",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/effectAudit.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453"
+    },
+    {
+      "brick": "effect-coordinator (canonical ordering)",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/effectCoordinator.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453",
+      "note": "PREPARED strictly precedes runGitEffect(); effect runs exactly once (proven in the foundation coordinator, not yet the primary runtime)."
+    },
+    {
+      "brick": "recovery-planner (SIGKILL-per-phase)",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/recoveryPlanner.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453",
+      "note": "resolves EXECUTING/RECONCILE_REQUIRED/PREPARED-consumed to RECONCILE_BY_OBSERVATION, never RESUME_FORWARD."
+    },
+    {
+      "brick": "hermetic-rehearsal",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/hermeticRehearsal.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453",
+      "note": "caller may only NAME an approved plan id; no arbitrary shell."
+    },
+    {
+      "brick": "ref-snapshot (protected-ref isolation)",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/refSnapshot.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453"
+    },
+    {
+      "brick": "candidate-path-integrity (case/Unicode collisions)",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/candidatePathIntegrity.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453"
+    },
+    {
+      "brick": "gitconfig-threat detection",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/gitConfigThreat.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "in seed 453"
+    },
+    {
+      "brick": "git-hardening (candidate stage fence)",
+      "owner": "Sam 3 (@aukora/seed)",
+      "path": "apps/seed/src/localCandidateStage.ts",
+      "productionConsumers": 2,
+      "consumers": [
+        "apps/seed/src/contracts.ts",
+        "apps/seed/src/localCeremonyRunner.ts"
+      ],
+      "reachability": "PRIMARY-WIRED",
+      "tests": "in seed 453",
+      "note": "THIS brick is on the live ceremony path — its realpath symlink re-fence + hardening reach production."
+    },
+    {
+      "brick": "durable effect-event store",
+      "owner": "Sam 4 (@aukora/brain)",
+      "path": "apps/brain/src/effectEventStore.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "brain 228; live real convex-local-backend kill-9 + destroy/rebuild re-run",
+      "note": "10 identical writes -> one row; outage -> lossless retry; destroy+replay -> identical root. journal deriveEffectId keyspace (AUKORA-EFFECT/1), distinct from Sam 3's recursion effectId."
+    },
+    {
+      "brick": "effect-event log / settlement / audit-brain",
+      "owner": "Sam 4 (@aukora/brain)",
+      "path": "apps/brain/src/effectEvent*.ts",
+      "productionConsumers": 0,
+      "reachability": "foundation-only",
+      "tests": "brain 228"
+    }
   ],
   "duplicationFindings": [
-    { "concept": "effectId", "status": "DECONFLICTED (not a fork)", "detail": "Sam 3 governed-recursion effectId (intentId/draftHash/nonce) vs Sam 4 journal deriveEffectId (rehearsalKey/step, domain AUKORA-EFFECT/1): same name, DIFFERENT keyspace, 0 exact exported-symbol collisions (Sam 4 symbol diff: 260 exported symbols in apps/brain/src/index.ts, 0 duplicated, 0 shadowed). Disambiguated with a namespace comment; wiring round will derive Sam 3's from the canonical recursion identity." },
-    { "concept": "projection-only/no-authority fence", "status": "shared pattern, two validators (validateSettlement vs validateEffectEvent)", "detail": "Convergence NOT taken (would be new shared surface, forbidden this round). Deferred." },
-    { "concept": "durable store seams", "status": "3 seams (PreparedEffectStore foundation-only, Sam 4 EffectIo, Sam 2 ConvexWorkflowStore/trustedStateStore)", "detail": "Recommendation for the wiring round: PreparedEffect persists via Sam 2's trusted-state contract — collapse to one canonical owner; do NOT add a 4th store." }
+    {
+      "concept": "effectId",
+      "status": "DECONFLICTED (not a fork)",
+      "detail": "Sam 3 governed-recursion effectId (intentId/draftHash/nonce) vs Sam 4 journal deriveEffectId (rehearsalKey/step, domain AUKORA-EFFECT/1): same name, DIFFERENT keyspace, 0 exact exported-symbol collisions (Sam 4 symbol diff: 260 exported symbols in apps/brain/src/index.ts, 0 duplicated, 0 shadowed). Disambiguated with a namespace comment; wiring round will derive Sam 3's from the canonical recursion identity."
+    },
+    {
+      "concept": "projection-only/no-authority fence",
+      "status": "shared pattern, two validators (validateSettlement vs validateEffectEvent)",
+      "detail": "Convergence NOT taken (would be new shared surface, forbidden this round). Deferred."
+    },
+    {
+      "concept": "durable store seams",
+      "status": "3 seams (PreparedEffectStore foundation-only, Sam 4 EffectIo, Sam 2 ConvexWorkflowStore/trustedStateStore)",
+      "detail": "Recommendation for the wiring round: PreparedEffect persists via Sam 2's trusted-state contract — collapse to one canonical owner; do NOT add a 4th store."
+    }
   ],
   "stopConditionsChecked": {
     "semanticDuplication": "NONE unresolved — effectId name-overlap deconflicted by both lanes (different packages/keyspaces, 0 symbol collisions, disambiguation comment)",

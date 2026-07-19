@@ -87,6 +87,38 @@ describe('aukoraFuGlyph: ~ operator + φ-governed shear decay', () => {
     expect(c.shearMagnitude).toBeCloseTo(1 / 1.618033988749894, 5);
   });
 
+  // R59 planted equality case — the shear-floor-at-creation law, pinned EXACTLY. Reproduces the
+  // externally reported "identical inputs yield ~1/φ disagreement" observation and pins it as the
+  // module's intended permanent-φ-gap law; the defect is the contradictory "0 = resolved" comment on
+  // Contradiction.shearMagnitude in aukoraFuGlyph.ts, not the clamp. THAT COMMENT CANNOT BE FIXED
+  // HERE: the module is one of the 10 donor-pinned provenance sources (byte-identical to donor
+  // b441edc4d17d, enforced by verify:provenance), so the one-line doc correction must land in the
+  // DONOR first. Until then, THIS block is the authoritative statement of the law:
+  //   shearMagnitude ∈ [SHEAR_FLOOR (1/φ ≈ 0.618), 1] at creation and under decay; identical
+  //   frameworks still register the permanent φ-gap; 0 is intentionally unreachable.
+  it('R59 equality law: identical inputs yield EXACTLY the floor, 0 is unreachable, and decay never drops below it', () => {
+    const FLOOR = 1 / 1.618033988749894;
+    const a = packet({ explore: 0.25, exploit: 0.25, verify: 0.25, abstain: 0.25 }, { modelId: 'a' });
+    const b = packet({ explore: 0.25, exploit: 0.25, verify: 0.25, abstain: 0.25 }, { modelId: 'b' });
+    const c = tilde(a, b);
+    expect(c.shearMagnitude).toBe(Math.max(1 - 1, FLOOR)); // exact clamp arithmetic: cos(identical)=1
+    expect(c.shearMagnitude).not.toBe(0);
+    // permanent gap: 30 days of decay still sits exactly on the floor
+    expect(decayShear(c, c.decayOrigin + 30 * 24 * 3600 * 1000)).toBeCloseTo(FLOOR, 9);
+    // creation range law across corner/mixed inputs: shear ∈ [floor, 1]
+    const corners = [
+      { explore: 1, exploit: 0, verify: 0, abstain: 0 },
+      { explore: 0, exploit: 1, verify: 0, abstain: 0 },
+      { explore: 0.7, exploit: 0.1, verify: 0.1, abstain: 0.1 },
+      { explore: 0.25, exploit: 0.25, verify: 0.25, abstain: 0.25 },
+    ];
+    for (const dA of corners) for (const dB of corners) {
+      const s = tilde(packet(dA, { modelId: 'x' }), packet(dB, { modelId: 'y' })).shearMagnitude;
+      expect(s).toBeGreaterThanOrEqual(FLOOR - 1e-9);
+      expect(s).toBeLessThanOrEqual(1 + 1e-9);
+    }
+  });
+
   it('decayShear(): an active (just-created) contradiction keeps its full shear', () => {
     const a = packet({ explore: 1, exploit: 0, verify: 0, abstain: 0 }, { modelId: 'a' });
     const b = packet({ explore: 0, exploit: 1, verify: 0, abstain: 0 }, { modelId: 'b' });

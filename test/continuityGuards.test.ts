@@ -46,12 +46,12 @@ describe('R57A capture layer — counts, anchors, uniqueness, gaps (independent 
   const snap = readJson('docs/atlas/CURRENT_OBJECTS.json');
   const objs: Array<{ number: number; type: string; state: string }> = cap.aukora.objects;
 
-  it('captures exactly 183 objects through max_object 183 (37 issues + 146 prs)', () => {
-    expect(r.r57aObjects).toBe(183);
-    expect(objs.length).toBe(183);
-    expect(cap.aukora.max_object).toBe(183);
+  it('captures exactly 191 objects through max_object 191 (37 issues + 154 prs)', () => {
+    expect(r.r57aObjects).toBe(191);
+    expect(objs.length).toBe(191);
+    expect(cap.aukora.max_object).toBe(191);
     expect(objs.filter((o) => o.type === 'issue').length).toBe(37);
-    expect(objs.filter((o) => o.type === 'pr').length).toBe(146);
+    expect(objs.filter((o) => o.type === 'pr').length).toBe(154);
   });
   it('object numbers are unique and contiguous 1..max (no gaps, no duplicates)', () => {
     const nums = objs.map((o) => o.number);
@@ -110,7 +110,7 @@ describe('R57A capture layer — state transitions and both-direction equality',
       atlas.rows.filter((row: { source: string }) => row.source === 'aukora').map((row: { number: number }) => row.number),
     );
     const pending = new Set<number>(cap.reconciliation_vs_r51.objects_pending_atlas_qualification);
-    expect(r.r57aPending).toBe(73); // #111–#183 await qualification evidence; dispositions are not invented
+    expect(r.r57aPending).toBe(81); // #111–#191 await qualification evidence; dispositions are not invented
     for (const n of pending) expect(qualified.has(n), `#${n} both qualified and pending`).toBe(false);
     for (const o of cap.aukora.objects) {
       expect(qualified.has(o.number) || pending.has(o.number), `captured #${o.number} unaccounted`).toBe(true);
@@ -144,6 +144,29 @@ describe('R58 branch-intake ledger — inspected classifications only, no blind 
     expect(led.law.branch_presence_is_not_results.length).toBeGreaterThan(0);
     expect(led.law.referee_is_advisory.length).toBeGreaterThan(0);
     for (const e of led.entries) expect(e.no_result_claims_adopted, `${e.branch} adopted a result claim`).toBe(true);
+  });
+  it('R59 v2: the ledger honestly declares offline-gate scope and every evidence line carries an epistemic label', () => {
+    expect(led.schema).toBe('aukora-branch-intake-ledger-v2');
+    expect(led.verification_scope.external_truth_not_provable_offline).toBe(true);
+    expect(led.verification_scope.external_truth_rests_on.length).toBeGreaterThan(0);
+    const EPISTEMIC = ['VERIFIED', 'FALSIFIED', 'UNPROVEN', 'STALE', 'EXTERNAL_RESEARCH', 'INFERENCE'];
+    for (const e of led.entries) {
+      for (const line of e.evidence) {
+        expect(EPISTEMIC.some((t: string) => line.startsWith(t)), `${e.branch}: "${line.slice(0, 50)}"`).toBe(true);
+      }
+      if (e.referee_advisory) expect(e.referee_advisory.startsWith('EXTERNAL_RESEARCH')).toBe(true);
+    }
+  });
+  it('R59 v2: per-classification required fields hold for every entry', () => {
+    for (const e of led.entries) {
+      if (e.classification === 'ALREADY_INTEGRATED') expect(e.landed_reference).toMatch(/[0-9a-f]{7,40}/);
+      if (e.classification === 'ADAPT') expect(!!e.narrow_extraction || /per-file/i.test(e.rationale), e.branch).toBe(true);
+      if (e.classification === 'REJECT') {
+        expect(e.reject_grounds?.length).toBeGreaterThan(0);
+        expect(e.narrow_extraction).toBeUndefined();
+      }
+      if (e.classification === 'MISSING_EVIDENCE') expect(e.missing_artifact?.length).toBeGreaterThan(0);
+    }
   });
   it('narrow extractions name their exact target (one-line provenance fix, archival receipts)', () => {
     const withExtraction = led.entries.filter((e: { narrow_extraction?: unknown }) => e.narrow_extraction);
