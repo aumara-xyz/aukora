@@ -17,7 +17,7 @@ memory, reasoning, homeostasis, evidence, and bounded adaptation. It is not a co
 > **The governing law:** intelligence may propose; evidence may advise; only the owner authorizes.
 
 [![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-81d4b4)](LICENSE)
-[![Tests: 1315 passing](https://img.shields.io/badge/tests-1315%20passing-96b4ff)](CLAIMS.md)
+[![Tests: 1361 passing](https://img.shields.io/badge/tests-1361%20passing-96b4ff)](CLAIMS.md)
 [![Authority: owner gated](https://img.shields.io/badge/authority-owner%20gated-d7b36a)](packages/kernel)
 [![Convex: local only](https://img.shields.io/badge/Convex-local%20%2F%20self--hosted-c4aaff)](apps/brain)
 
