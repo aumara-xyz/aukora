@@ -29,21 +29,21 @@
     }
   },
   "capture": {
-    "captured_at": "2026-07-19T02:08:18Z",
+    "captured_at": "2026-07-19T05:25:11Z",
     "captured_by": "Sam 3 (recursion/Atlas lane), round R57A",
     "method": "gh issue list + gh pr list (--state all, fields: number,state) against aumara-xyz/aukora; anchor head via git ls-remote at the same timestamp; donor object metadata via gh api with a jq filter that never materializes title/body/labels.",
     "truth_class": "CAPTURE_CONSISTENT",
     "anchors": {
-      "public_main_head": "e197df28a699bfa6ef98d6bff34e1ca7678073df",
+      "public_main_head": "0bb52071a3865f628ab00c45302a950b38e41b78",
       "r51_capture_head": "5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d",
       "lane_branch": "sam/lane3-recursion"
     }
   },
   "aukora": {
-    "max_object": 179,
-    "count": 179,
+    "max_object": 183,
+    "count": 183,
     "issues": 37,
-    "prs": 142,
+    "prs": 146,
     "gaps": [],
     "duplicates": [],
     "objects": [
@@ -930,7 +930,7 @@
       {
         "number": 177,
         "type": "pr",
-        "state": "OPEN"
+        "state": "MERGED"
       },
       {
         "number": 178,
@@ -939,6 +939,26 @@
       },
       {
         "number": 179,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 180,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 181,
+        "type": "pr",
+        "state": "OPEN"
+      },
+      {
+        "number": 182,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 183,
         "type": "pr",
         "state": "MERGED"
       }
@@ -1063,9 +1083,13 @@
       176,
       177,
       178,
-      179
+      179,
+      180,
+      181,
+      182,
+      183
     ],
-    "pending_note": "Objects #111–#179 are captured but have no Atlas disposition rows. Recording them as PENDING is deliberate: a disposition requires qualification evidence (landed SHA + behavioral test per the Atlas law); inventing 69 dispositions would overclaim."
+    "pending_note": "Objects #111–#183 are captured but have no Atlas disposition rows. Recording them as PENDING is deliberate: a disposition requires qualification evidence (landed SHA + behavioral test per the Atlas law); inventing 73 dispositions would overclaim."
   },
   "pending_intake": {
     "note": "Sanitized post-ratification donor intake. Entries here do NOT modify the ratified 191-row freeze; an object joins the preservation ledger only by explicit owner ratification. Donor-private titles, bodies, and labels are withheld by construction (never fetched into this artifact).",
@@ -1077,7 +1101,7 @@
         "state": "open",
         "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/405",
         "created_at_source": "2026-07-17T23:36:47Z",
-        "captured_at": "2026-07-19T02:08:18Z",
+        "captured_at": "2026-07-19T05:25:11Z",
         "sanitized": true,
         "title": null,
         "body": null,

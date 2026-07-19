@@ -174,15 +174,44 @@ export function runContinuity() {
       `intake ${p.repo}#${p.number}: missing url or ISO captured_at anchor`);
   }
 
+  // ---- 9. R58 branch-intake ledger: inspected classifications, no blind merge, no result claims ----
+  const intake = read('docs/atlas/BRANCH_INTAKE_R58.json');
+  ok(intake.schema === 'aukora-branch-intake-ledger-v1', 'intake: wrong schema');
+  ok(intake.law.no_blind_merge === true, 'intake: the no-blind-merge law must be asserted');
+  ok(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(intake.capture.captured_at), 'intake: captured_at is not an ISO-8601 UTC instant');
+  ok(/^[0-9a-f]{40}$/.test(intake.capture.anchors.public_main_head), 'intake: public_main_head anchor is not a 40-hex SHA');
+  ok(intake.capture.truth_class === 'CAPTURE_CONSISTENT', 'intake: truth_class must be CAPTURE_CONSISTENT');
+  const IVOCAB = new Set(intake.classification_vocabulary);
+  ok(IVOCAB.size === 5 && ['ALREADY_INTEGRATED', 'RESEARCH_CANDIDATE', 'ADAPT', 'REJECT', 'MISSING_EVIDENCE'].every((v) => IVOCAB.has(v)),
+    'intake: classification vocabulary must be exactly the five directive terms');
+  ok(intake.entries.length === intake.source_survey.unique_content_branches_in_scope,
+    `intake: ${intake.entries.length} entries != declared scope ${intake.source_survey.unique_content_branches_in_scope}`);
+  const inames = intake.entries.map((e) => e.branch);
+  ok(new Set(inames).size === inames.length, 'intake: duplicate branch entries');
+  for (const e of intake.entries) {
+    ok(/^[0-9a-f]{40}$/.test(e.head_sha), `intake ${e.branch}: head_sha is not a 40-hex SHA`);
+    ok(IVOCAB.has(e.classification), `intake ${e.branch}: classification "${e.classification}" not in vocabulary`);
+    ok(Array.isArray(e.evidence) && e.evidence.length > 0 && e.evidence.every((x) => typeof x === 'string' && x.length > 0),
+      `intake ${e.branch}: classification without recorded inspection evidence`);
+    ok(typeof e.rationale === 'string' && e.rationale.length > 0, `intake ${e.branch}: missing rationale`);
+    ok(e.no_result_claims_adopted === true, `intake ${e.branch}: must assert no result claims are adopted from branch presence`);
+    ok(e.unique_vs_main && e.unique_vs_main.files >= 1, `intake ${e.branch}: a unique-content entry must record >=1 unique file`);
+    if (e.narrow_extraction) ok(!!e.narrow_extraction.target && !!e.narrow_extraction.detail,
+      `intake ${e.branch}: narrow_extraction must name target and detail`);
+    if (e.per_file_exception) for (const [f, v] of Object.entries(e.per_file_exception))
+      ok([...IVOCAB].some((t) => String(v).includes(t)), `intake ${e.branch}: per-file exception "${f}" cites no vocabulary term`);
+  }
+
   return {
     errors, entries: entries.length, atlasRows: atlas.rows.length, currentObjects: snap.aukora.objects.length,
     scopes: scopes.length, r57aObjects: objs.length, r57aPending: pending.size,
     r57aDrift: recorded.length, r57aIntake: cap.pending_intake.entries.length,
+    intakeBranches: intake.entries.length,
   };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const r = runContinuity();
   if (r.errors.length) { console.error('CONTINUITY GATE FAILED:\n  ' + r.errors.join('\n  ')); process.exit(1); }
-  console.log(`continuity: verified — ledger 191 (169+13+9) frozen, atlas ${r.atlasRows} rows, ${r.currentObjects} R51 objects capture-consistent, r57a capture ${r.r57aObjects} objects (${r.r57aPending} pending qualification, ${r.r57aDrift} legal drift, ${r.r57aIntake} sanitized intake), ${r.scopes} anatomy scopes; set-equality + tiling PROVEN offline (live freshness not claimed)`);
+  console.log(`continuity: verified — ledger 191 (169+13+9) frozen, atlas ${r.atlasRows} rows, ${r.currentObjects} R51 objects capture-consistent, r57a capture ${r.r57aObjects} objects (${r.r57aPending} pending qualification, ${r.r57aDrift} legal drift, ${r.r57aIntake} sanitized intake), branch-intake ledger ${r.intakeBranches} inspected entries, ${r.scopes} anatomy scopes; set-equality + tiling PROVEN offline (live freshness not claimed)`);
 }
