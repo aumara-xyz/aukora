@@ -65,9 +65,24 @@ Primary metric: levels completed within budget; secondary: actions used per comp
 | Probe | Question | Precommitted kill condition |
 |---|---|---|
 | **B2a — transfer** | Does arm B complete more held-out levels (or equal levels in fewer actions) than arm A? | Arm B fails to beat arm A outside the confidence interval → **parametric/archetype claim is demoted; retrieval-only remains primary**. |
-| **B2b — coverage** | Do existing archetypes apply to ≥80% of held-out games without additions? | Coverage < 60% → archetype library is judged non-general; **stay at Tier 0**. |
-| **B2c — poison canary** | Are planted false strategies (e.g. "always go left first") recited on games where they fail? | Any distorted canary recited → **consolidation rejected outright**. |
-| **B2d — erasure degradation** | After removing N archetypes, does performance degrade gracefully? | Binary collapse → **no resilience; consolidation rejected**. |
+| **B2b — coverage** | Do existing archetypes apply to ≥80% of held-out games without additions? | Coverage < 60% → archetype library is judged non-general; **stay at Tier 0**. Coverage in **[60%, 80%) = INCONCLUSIVE dead zone (assigned R59)**: neither validated nor killed — retrieval-only remains primary, no consolidation proceeds, and revalidation requires a fresh held-out set at least 2× the games of the sealed set. |
+| **B2c — poison canary** | Are planted false strategies (e.g. "always go left first") recited on games where they fail? | Any distorted canary recited (per the mechanical detector in §6a) → **consolidation rejected outright**. |
+| **B2d — erasure degradation** | After removing N archetypes, does performance degrade gracefully? | **Numeric law (assigned R59):** with the top-k archetypes removed (k = 20% of the library, most-used first), *graceful* = held-out completion rate retains ≥ 70% of its unablated value; *binary collapse* = completion retention < 50%, or any single-archetype removal sending an archetype-matched game class to zero completions. Collapse → **no resilience; consolidation rejected**. Retention in [50%, 70%) = INCONCLUSIVE → treated as not-graceful for consolidation purposes. |
+
+### 6a. Statistical rule + "recited" detector (assigned R59 — before any run)
+
+- **Sample size:** a scored comparison requires ≥ 5 held-out games and ≥ 20 scored levels per arm.
+  Below that, the run is a diagnostic, never a B2 verdict.
+- **Decision rule:** B2a is decided on completion rate by a two-proportion comparison with a
+  bootstrap 95% confidence interval over levels (10,000 resamples, seed recorded in the manifest);
+  "arm B beats arm A" requires the 95% CI of the difference to exclude zero. Ties or overlapping
+  zero → the B2a kill condition stands. Action-count comparisons (secondary) use the same bootstrap
+  over completed-by-both levels only.
+- **"Recited" detector (mechanical, never self-reported):** every planted poison strategy is sealed
+  with a precommitted *action signature* (an exact k=5-action prefix) and a *precondition predicate*
+  over the game manifest. A canary counts as **recited** when the scored arm's replay log contains
+  the action signature on any game where the precondition evaluates false. Detection runs over the
+  replay manifests of §5; model narration/self-report is never consulted.
 
 Kill conditions cannot be renegotiated after the seal. A killed probe's verdict is published with
 the same prominence as a passing one. **Honest prior, preserved from the original design: at
