@@ -106,7 +106,7 @@ describe('convex-test: reactive receipt-chained growing memory (headless simulat
     const t = convexTest(schema, modules);
     await seedEraseRoot(t);
     const secretish = buildMemoryRecord({ content: 'private diary entry to forget', createdAt: at(1) });
-    await t.action(api.ingest.ingest, { record: secretish });
+    await t.action(api.ingest.ingest, { record: secretish, ownerRootId: 'owner-test' }); // R60 M1: bind record→root
     await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'kept memory', createdAt: at(2) }) });
 
     // Refuse without a signed erase attestation — still visible.
