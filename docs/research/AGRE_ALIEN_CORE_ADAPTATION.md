@@ -8,7 +8,7 @@
 > **TRUTH REPAIR (R58).** The public Avengers audit
 > ([issue #20](https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5013983883)) falsified this
 > document's original results section: the "189KB engine" that §10 listed was in fact **471 bytes of
-> self-referential stubs** on `main` (no 44–54KB engine exists on any branch), and **all five per-level
+> self-referential stubs** on `main` (a 44–54KB engine never existed on any branch), and **all five per-level
 > results below are UNPROVEN** — no runnable code, no raw receipts, no replay instructions, no
 > scorecards, on any branch. The only same-day executed evidence
 > (`skunkworks/arc3-agre` @ `5b091bc`, `docs/AGRE_FINAL_REPORT_COMPLETE.md`) is about *different*,
@@ -20,9 +20,9 @@
 
 ## 1. What AGRE v2 Was Claimed To Be (claims now labeled)
 
-The original text asserted a general reasoning engine that beats ARC-AGI-3 games — that phrasing is
-retired: it was an unsupported capability claim (see banner). What the design describes is an engine
-*intended* to attack such games by:
+The original text claimed a general reasoning engine that beats ARC-AGI-3 games — that claim is
+retired as unsupported (see banner). What the design describes is an engine *intended* to attack
+such games by:
 
 1. Reading game source code (`.py` files packaged with the environment)
 2. Extracting mechanics via AST + regex analysis
@@ -41,8 +41,9 @@ retired: it was an unsupported capability claim (see banner). What the design de
 | LS20 Level 1: 17 actions (puzzle mechanics) | **UNPROVEN** | contradicts the owner archive's 13-action record |
 
 Note also that source-reading of shipped game `.py` files violates the blind norm and issue #102's own
-"no source/game-specific solution path" requirement — a source-assisted run may never be described as
-vision-only, blind, or an official ARC-AGI-3 generalization result. The fallback discovery/probing mode
+"no source/game-specific solution path" requirement — a source-assisted run is not vision-only, is
+not blind, and is never an official ARC-AGI-3 generalization result.
+The fallback discovery/probing mode
 and "zero training data" statements are design intent, not demonstrated properties.
 
 ---
@@ -271,7 +272,7 @@ The original section claimed five modules totaling 189KB. **FALSIFIED by the pub
 actually landed on `main` were four self-referential placeholder stubs totaling 471 bytes
 (`agre_v2.py` 123B · `agre_source_analyzer.py` 137B · `agre_planner.py` 103B · `agre_discovery.py`
 108B — each a comment pointing at its own directory), `tu93_all_bfs.py` never existed anywhere, and
-no 44–54KB engine exists on any branch. The stubs were removed in R58; the directory now carries the
+a 44–54KB engine never existed on any branch. The stubs were removed in R58; the directory now carries the
 evidence law and the RESEARCH_CANDIDATE intake record for the real branch artifacts — see
 [`docs/skunkworks/agre_v2/README.md`](../skunkworks/agre_v2/README.md).
 

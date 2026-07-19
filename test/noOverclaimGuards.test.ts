@@ -54,6 +54,7 @@ describe('R58 allowance law — quoted / refuted / discussed / truth-labeled lin
   it('discussing the claim as a claim is allowed', () => {
     expect(scanAddedLines(diffOf('docs/x.md', ['The claim that the engine beats level 4 has no receipts.']))).toHaveLength(0);
     expect(scanAddedLines(diffOf('docs/x.md', ['They claimed 189KB of reasoning engine modules.']))).toHaveLength(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['The report asserted the engine beats level 4 of TU93.']))).toHaveLength(0);
   });
 
   it('an explicit UPPERCASE truth label unlocks the line (the labeling law in action)', () => {

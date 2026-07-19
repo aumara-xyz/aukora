@@ -52,7 +52,7 @@ export function allowedReason(line, phrase, idx, len) {
   const win = `${before} ${after}`;
   if (/\b(not|never|isn'?t|aren'?t|don'?t|do not|does not|without|no longer|non-?|refut|disclaim|false|untrue|incorrect|wrong)\b/.test(win)) return 'refuted/negated';
   const masked = (line.slice(0, idx) + ' '.repeat(len) + line.slice(idx + len)).toLowerCase();
-  if (/\b(claim|claims|claimed|word|term|phrase|label|overclaim|honesty|caveat|guard|scanner|banned|forbidden|do not use|never say|must not)\b/.test(masked)) return 'discussed';
+  if (/\b(claim|claims|claimed|assert(?:s|ed|ion)?|word|term|phrase|label|overclaim|honesty|caveat|guard|scanner|banned|forbidden|do not use|never say|must not)\b/.test(masked)) return 'discussed';
   // R58: a line that applies one of the repo's explicit truth labels IS the labeling law in action.
   // Deliberately case-sensitive on the UNmasked line: the law writes labels uppercase, and lowercase
   // "inference"/"stale" are ordinary prose that must NOT unlock an assertion.
