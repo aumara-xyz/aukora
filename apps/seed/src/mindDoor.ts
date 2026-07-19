@@ -26,7 +26,7 @@ import type { ReactiveMemoryStore } from '@aukora/brain';
 import type { AumlokAuthorityRootV2, SignedPromotionV2 } from '@aukora/kernel/schemas';
 import type { CouncilOutcome } from '@aukora/council';
 import { buildMemoryRecord } from '@aukora/memory';
-import { checkDoorGuard, headerReader, loopbackOrigins, newDoorToken, type DoorGuardReason } from './doorGuards.js';
+import { checkDoorGuard, headerReader, loopbackOrigins, newDoorToken, doorTokenIsWellFormed, type DoorGuardReason } from './doorGuards.js';
 import { validateProposalShape, deriveIntentId } from './proposal.js';
 import { runLocalRecursionCeremony, ceremonyWorkflowId, type LocalCeremonyEnv, type CeremonyRunResult } from './localCeremonyRunner.js';
 import { verdictFromCouncilOutcome } from './fuStructuredAdapter.js';
@@ -123,7 +123,10 @@ export class MindDoor {
 
   constructor(private readonly config: MindDoorConfig) {
     this.port = config.port ?? DOOR_PORT;
-    this.postGuard = config.postToken ?? newDoorToken();
+    // R60 P1: an empty/whitespace/malformed provisioned postToken must NOT become the guard's requiredToken
+    // (that was the fail-open — an empty token disabled the check). Treat malformed as ABSENT and self-mint a
+    // strong per-boot token, so a mis-set AUKORA_DOOR_TOKEN="" yields a door that still REQUIRES a real token.
+    this.postGuard = doorTokenIsWellFormed(config.postToken) ? config.postToken : newDoorToken();
     this.allowedOrigins = [...loopbackOrigins(this.port), ...(config.extraOrigins ?? [])];
   }
 

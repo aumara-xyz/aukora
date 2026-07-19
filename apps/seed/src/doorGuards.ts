@@ -18,6 +18,7 @@ export type DoorGuardReason =
   | 'guard:bad-referer'
   | 'guard:referer-not-allowed'
   | 'guard:missing-or-bad-token'
+  | 'guard:token-misprovisioned'
   | 'guard:no-browser-origin';
 
 export interface DoorGuardResult {
@@ -29,11 +30,35 @@ export interface DoorGuardResult {
 
 export interface DoorGuardOptions {
   readonly allowedOrigins: readonly string[];
-  /** Per-boot token required on POST; absent ⇒ token check skipped (still origin-guarded). */
+  /**
+   * Per-boot token required on POST.
+   *  - `undefined` (truly absent)     ⇒ UNPROVISIONED: token check skipped, still origin-guarded (R38 mode).
+   *  - a well-formed non-empty string  ⇒ PROVISIONED: presented token must match it (constant-time).
+   *  - `''` / whitespace / malformed   ⇒ MISPROVISIONED: fail CLOSED (503), never skip. (R60 P1: an empty
+   *    provisioned token used to be falsy and silently disabled authentication — the mind-door fail-open.)
+   */
   readonly requiredToken?: string;
   readonly tokenHeader?: string;
   /** Allow requests with no Origin AND no Referer (curl / local tools). Default true. */
   readonly allowNoBrowserOrigin?: boolean;
+}
+
+/** A well-formed provisioned POST token: a non-empty string with no whitespace or control characters. */
+export function doorTokenIsWellFormed(t: unknown): t is string {
+  if (typeof t !== 'string' || t.length === 0) return false;
+  for (let i = 0; i < t.length; i++) {
+    const c = t.charCodeAt(i);
+    if (c <= 0x20 || c === 0x7f) return false; // reject whitespace / control / space characters
+  }
+  return true;
+}
+
+/** Constant-time string equality (length-guarded; total, never throws). */
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
 }
 
 /** A minimal case-insensitive header reader over a plain record. */
@@ -77,9 +102,18 @@ export function checkDoorGuard(headers: HeaderReader, opts: DoorGuardOptions): D
   }
   if (!origin && !referer && !allowNoBrowserOrigin) return refuse(403, 'guard:no-browser-origin', 'refused: a browser request must carry an allowed Origin');
 
-  if (opts.requiredToken) {
+  // R60 P1 token gate. UNPROVISIONED (undefined) ⇒ skip (origin-only, R38 mode). Anything ELSE is PROVISIONED:
+  // a MISPROVISIONED (empty/whitespace/malformed) token fails CLOSED and can never disable authentication — the
+  // prior `if (opts.requiredToken)` truthiness let an empty token silently skip the whole check (the fail-open).
+  if (opts.requiredToken !== undefined) {
+    if (!doorTokenIsWellFormed(opts.requiredToken)) {
+      return refuse(503, 'guard:token-misprovisioned', 'refused: POST token is provisioned but malformed (fail-closed)');
+    }
     const headerName = opts.tokenHeader ?? 'x-aukora-door-token';
-    if (headers.get(headerName) !== opts.requiredToken) return refuse(403, 'guard:missing-or-bad-token', 'refused: missing or bad local POST token');
+    const presented = headers.get(headerName);
+    if (presented === null || !constantTimeEqual(presented, opts.requiredToken)) {
+      return refuse(403, 'guard:missing-or-bad-token', 'refused: missing or bad local POST token');
+    }
   }
   return OK;
 }
