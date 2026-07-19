@@ -1,12 +1,12 @@
 {
   "schema": "aukora-issue-atlas-v1",
-  "generated": "R51 current-object refresh (through merged head)",
+  "generated": "R51 current-object capture (capture-consistent through base 5aae90d6; disposition rows are qualified through object #110 — the R57A capture layer in docs/atlas/CURRENT_OBJECTS_R57A.json records objects #111 onward as pending qualification)",
   "base_main": "5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d",
   "law": "GitHub issue state is evidence, not proof. Proof = landed SHA + behavioral/negative test. Disagreement is recorded, never silently resolved.",
   "sources": [
     "docs/wave1/ASSEMBLY_MANIFEST.json v0.2",
     "docs/issue-preservation-ledger.json v2",
-    "aukora issues/PRs (fresh)",
+    "aukora issues/PRs (captured at R51 base 5aae90d6; capture-consistent, not live-fresh)",
     "aukora-symbiote/kernel/fu historical issues"
   ],
   "vocabulary": [
