@@ -44,6 +44,7 @@ beforeAll(() => {
   execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
   g(repoRoot, ['config', 'user.name', 'R54 Test']);
   g(repoRoot, ['config', 'user.email', 'r54@test.local']);
+  g(repoRoot, ['remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git']); // R57A canonical identity
   mkdirSync(join(repoRoot, 'apps/seed/src'), { recursive: true });
   writeFileSync(join(repoRoot, 'apps/seed/src/recursion.ts'), '// original content\n');
   g(repoRoot, ['add', '-A']);
@@ -331,6 +332,7 @@ describe('R54 · 8: exact primary-runtime import/reachability proof', () => {
     execFileSync('git', ['init', '-q', '-b', 'main', doorRepo]);
     g(doorRepo, ['config', 'user.name', 'R54 Door']);
     g(doorRepo, ['config', 'user.email', 'r54door@test.local']);
+    g(doorRepo, ['remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git']); // R57A canonical identity
     mkdirSync(join(doorRepo, 'apps/seed/src'), { recursive: true });
     writeFileSync(join(doorRepo, 'apps/seed/src/recursion.ts'), '// original content\n');
     g(doorRepo, ['add', '-A']); g(doorRepo, ['commit', '-q', '--no-gpg-sign', '-m', 'init']);

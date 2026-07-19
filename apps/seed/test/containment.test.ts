@@ -21,6 +21,7 @@ const RUNTIME_MODULES = [
   'src/ideSession.ts', 'src/selectionAcceptance.ts', 'src/spatialCeremonyAdapter.ts', 'src/contracts.ts',
   'src/durableRecursion.ts', 'src/fuStructuredAdapter.ts', 'src/localCeremonyRunner.ts',
   'src/doorGuards.ts', 'src/mindDoor.ts', 'src/candidateReferenceMonitor.ts',
+  'src/repoIdentity.ts',
 ];
 
 const FORBIDDEN_IMPORT = /\bfrom\s+['"](?:node:)?(?:fs|fs\/promises|child_process|net|tls|http|https|dns|dgram|worker_threads|cluster|vm|repl)['"]/;
@@ -68,6 +69,17 @@ describe('the candidate stage (the ONE effectful adapter) is contained by its ow
   it('no network module — fs + child_process(git) only', () => {
     const s = src();
     expect(/\bfrom\s+'(?:node:)?(?:net|tls|http|https|dns|dgram)'/.test(s)).toBe(false);
+  });
+
+  it('repository identity is wired before any effect (R57A): the pure verdict + the one read-only argv', () => {
+    const s = src();
+    expect(s).toContain("from './repoIdentity.js'");   // verdict logic is the PURE containment-listed module
+    expect(s).toContain('IDENTITY_READ_ARGV');          // the ONE hard-coded read-only identity read
+    expect(s).toContain("'candidate:wrong-repository'");// the typed wrong-repository outcome exists
+    // the guard must run before the reference monitor can consume the nonce: source order is proven
+    // behaviourally in r57.repo-identity.test.ts; here we pin that the identity block precedes decide()
+    expect(s.indexOf('evaluateRemoteConfig(identityRaw)')).toBeGreaterThan(0);
+    expect(s.indexOf('evaluateRemoteConfig(identityRaw)')).toBeLessThan(s.indexOf('.decide(candidate'));
   });
 });
 

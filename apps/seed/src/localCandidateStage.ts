@@ -15,7 +15,11 @@
  *   - RECEIPT-BEFORE-EFFECT: an attempt receipt is chained before any git mutation (an unrecordable receipt refuses
  *     the materialization), and the completion receipt binds the commit sha + intent lineage;
  *   - replay-safe: an existing candidate branch refuses (`candidate:already-materialized`); a dirty primary tree
- *     refuses (`candidate:dirty-tree`); forbidden targets are re-fenced here (defense in depth).
+ *     refuses (`candidate:dirty-tree`); forbidden targets are re-fenced here (defense in depth);
+ *   - CANONICAL REPOSITORY ONLY (R57A): the stage establishes the target's repository identity (toplevel +
+ *     byte-canonical origin, verdict from the pure `repoIdentity.ts`) BEFORE evaluating tree state, BEFORE the
+ *     reference monitor may consume the authorization nonce, and BEFORE any worktree/branch mutation — a wrong,
+ *     donor, missing, ambiguous, or rewritten origin refuses `candidate:wrong-repository`, fail closed.
  *
  * WAVE 3 candidate-write integrity (donor #99/#75/#4 law at the worktree write):
  *   - path IDENTITY: a candidate path must equal its own normalization, and no two candidate files may collide
@@ -47,6 +51,7 @@ import { buildMemoryRecord } from '@aukora/memory';
 import type { SignedPromotionV2 } from '@aukora/kernel/schemas';
 import { deriveDraftHash } from './proposal.js';
 import { classifyPath, candidateAllowed } from './pathFence.js';
+import { evaluateRemoteConfig } from './repoIdentity.js';
 import { scrubText } from './councilPack.js';
 import type { DurableEffectMonitor } from './candidateReferenceMonitor.js';
 import type { BranchCandidate } from './ideEnvelope.js';
@@ -57,6 +62,7 @@ export type CandidateReasonClass =
   | 'candidate:forbidden-target'
   | 'candidate:fresh-verification-failed'
   | 'candidate:not-a-repo'
+  | 'candidate:wrong-repository'
   | 'candidate:dirty-tree'
   | 'candidate:already-materialized'
   | 'candidate:reference-monitor-refused'
@@ -158,6 +164,11 @@ function hardenedGitEnv(): NodeJS.ProcessEnv {
 
 // Safety `-c` flags injected on EVERY invocation: repo `.git/hooks` never run; no fsmonitor daemon shells out.
 const GIT_SAFETY_CONFIG: readonly string[] = ['-c', 'core.hooksPath=/dev/null', '-c', 'core.fsmonitor=false'];
+
+// R57A repository-identity read — the ONE hard-coded READ-ONLY argv outside the general subcommand
+// allowlist (precedent: the one hard-coded ref mutation in cleanupFailedCandidate). `config -z
+// --get-regexp` can never write; the verdict over its raw bytes is the pure `repoIdentity.ts` law.
+const IDENTITY_READ_ARGV: readonly string[] = ['config', '-z', '--get-regexp', '^(remote|url)\\.'];
 
 /** The one hardened argv runner (arrays only — never a shell string). All git in this module goes through here. */
 function runTrustedGit(cwd: string, argv: readonly string[]): string {
@@ -277,6 +288,23 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
   if (tryGit(repoRoot, 'rev-parse', ['--is-inside-work-tree']) !== 'true') {
     return refuse('candidate:not-a-repo', 'refused: repoRoot is not a git working tree');
   }
+
+  // 4a. REPOSITORY IDENTITY (R57A) — established FIRST: before tree state is even evaluated, before
+  //     the reference monitor can consume the authorization nonce (4b), and before any worktree or
+  //     branch mutation (6). An identity that cannot be established refuses — fail closed.
+  const toplevel = tryGit(repoRoot, 'rev-parse', ['--show-toplevel']);
+  let rootIsToplevel = false;
+  try { rootIsToplevel = toplevel !== null && realpathSync(toplevel) === realpathSync(repoRoot); } catch { rootIsToplevel = false; }
+  if (!rootIsToplevel) {
+    return refuse('candidate:wrong-repository', 'refused: repoRoot is not the repository toplevel — identity cannot be established');
+  }
+  let identityRaw = '';
+  try { identityRaw = runTrustedGit(repoRoot, IDENTITY_READ_ARGV); } catch { identityRaw = ''; }
+  const identity = evaluateRemoteConfig(identityRaw);
+  if (!identity.ok) {
+    return refuse('candidate:wrong-repository', `refused: not the canonical repository (${identity.code}: ${identity.detail})`);
+  }
+
   const porcelain = tryGit(repoRoot, 'status', ['--porcelain']);
   if (porcelain === null) return refuse('candidate:git-error', 'refused: git status failed');
   if (porcelain.length > 0) return refuse('candidate:dirty-tree', 'refused: the primary working tree is dirty — commit or stash before materializing a candidate');
@@ -423,9 +451,14 @@ export function materializeCandidate(input: MaterializeInput): CandidateMaterial
   };
 }
 
-/** Dispose of a candidate WORKTREE (the branch and its commit remain as evidence). Receipted. */
+/** Dispose of a candidate WORKTREE (the branch and its commit remain as evidence). Receipted.
+ *  R57A: disposal is a repo mutation too, so the same identity law gates it — fail closed. */
 export function disposeCandidateWorktree(repoRoot: string, worktreePath: string, store: ReactiveMemoryStore, nowIso: string): { ok: boolean; text: string } {
   try {
+    let identityRaw = '';
+    try { identityRaw = runTrustedGit(resolve(repoRoot), IDENTITY_READ_ARGV); } catch { identityRaw = ''; }
+    const identity = evaluateRemoteConfig(identityRaw);
+    if (!identity.ok) return { ok: false, text: `dispose refused: not the canonical repository (${identity.code})` };
     git(resolve(repoRoot), 'worktree', ['remove', '--force', resolve(worktreePath)]);
     const ing = store.ingest(buildMemoryRecord({ content: `candidate-worktree-disposed · path=${worktreePath.slice(-64)}`, createdAt: nowIso, kind: 'receipt', consent: 'owner-only', provenance: 'candidate-stage' }));
     return { ok: true, text: ing.ok ? 'worktree disposed (receipted); the candidate branch remains as evidence' : 'worktree disposed; receipt refused' };
