@@ -42,7 +42,7 @@
     "workbench:readiness": "node scripts/workbench-readiness.mjs",
     "test:kernel-node": "npm test --workspace @aukora/kernel-node",
     "test:immune": "npm test --workspace @aukora/immune",
-    "typecheck:all": "npm run typecheck --workspaces --if-present",
+    "typecheck:all": "npm run build:kernel && npm run typecheck --workspaces --if-present",
     "verify:typecheck-coverage": "node scripts/verify-typecheck-coverage.mjs",
     "measure:test-totals": "node scripts/measure-test-totals.mjs",
     "verify:test-totals": "node scripts/verify-test-totals.mjs",
