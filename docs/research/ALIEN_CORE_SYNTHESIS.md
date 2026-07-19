@@ -1,12 +1,21 @@
 # ALIEN CORE + AGRE v2: The Synthesis
 
-## What's Been Pushed to AUKORA Main
+> **TRUTH REPAIR (R58).** The table below originally described the pushed `agre_v2/` directory as a
+> "189KB reasoning engine" — **FALSIFIED**: it was 471 bytes of self-referential stubs (removed in
+> R58) — and `ROUND1_RESULTS.md` as "5 levels beaten, falsifiable" — **UNPROVEN**: no code, receipts,
+> replay, or scorecard exists for any of the five claims, and the only executed same-day evidence
+> (`skunkworks/arc3-agre` report) says "Neither triggers WIN." Full audit:
+> [issue #20](https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5013983883). The
+> architecture synthesis below is preserved as design; every capability statement in it is
+> aspiration, not achievement.
 
-| File | Location | What It Is |
+## What's Been Pushed to AUKORA Main (repaired)
+
+| File | Location | What It Actually Is |
 |------|----------|-----------|
-| `AGRE_ALIEN_CORE_ADAPTATION.md` | `docs/research/` | Full 5-station architecture map |
-| `agre_v2/` (4 modules) | `docs/skunkworks/` | 189KB reasoning engine |
-| `ROUND1_RESULTS.md` | `docs/skunkworks/agre_v2/` | 5 levels beaten, falsifiable |
+| `AGRE_ALIEN_CORE_ADAPTATION.md` | `docs/research/` | 5-station architecture map (design; results section truth-repaired) |
+| `agre_v2/` | `docs/skunkworks/` | was 471B of placeholder stubs, claimed as a 189KB engine (FALSIFIED); now the evidence-law README + intake record |
+| `ROUND1_RESULTS.md` | `docs/skunkworks/agre_v2/` | five per-level claims, all UNPROVEN (truth-repaired in place) |
 
 **Status everywhere: RESEARCH_CANDIDATE — no capability claims.**
 
@@ -114,4 +123,8 @@ The alien brain is a bet, not a promise. Tier 0 is the floor.
 
 ---
 
-*Method: Source code analysis → AST+regex extraction → BFS pathfinding → execution with level-index win detection. Zero training data. Results preregistered. All claims tagged RESEARCH_CANDIDATE.*
+*Method (design intent, not demonstrated): source code analysis → AST+regex extraction → BFS
+pathfinding → execution with level-index win detection. The original footer said "results
+preregistered" — incorrect: no preregistration preceded the claims. The binding preregistration is
+[`B2_GAME_PREREGISTRATION.md`](B2_GAME_PREREGISTRATION.md). All claims tagged RESEARCH_CANDIDATE;
+Nebius/Tinker phases remain HOLD with no owner GO.*
