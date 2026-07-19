@@ -37,6 +37,10 @@ export const OVERCLAIMS = [
   // the ARC claims (coverage gap). Assertion forms only; quoted/refuted/labeled discussion stays legal.
   { name: 'arc-level-beaten', re: /\b(?:beats?|beaten|conquer(?:s|ed)?)\b[^.\n]{0,32}\blevels?\b|\blevels?\s+beaten\b/i },
   { name: 'arc-game-solved', re: /\b(?:solved?|beats?|beaten|cracked|wins?|won)\b[^.\n]{0,24}\b(?:TU93|LS20|ARC[- ]?AGI(?:-\d)?)\b/i },
+  // R59 (Sam 1): the R58 audit proved bare-"ARC" escapes the pattern above ("solved the ARC game" — no
+  // AGI/TU93/LS20 suffix). Case-SENSITIVE on the uppercase ARC token so ordinary prose ("the arc of the
+  // story was won") stays legal; the (?![\s-]?AGI) lookahead keeps it disjoint from arc-game-solved.
+  { name: 'arc-bare-solved', re: /\b(?:[Ss]olved?|SOLVED|[Bb]eats?|BEATS?|[Bb]eaten|BEATEN|[Cc]racked|CRACKED|[Ww]ins?|WINS?|[Ww]on|WON)\b[^.\n]{0,24}\bARC\b(?![\s-]?AGI)|\bARC\b(?![\s-]?AGI)[^.\n]{0,24}\b(?:[Ss]olved|SOLVED|[Bb]eaten|BEATEN|[Ww]on|WON)\b/ },
   { name: 'arc-official-result', re: /\bofficial\s+ARC(?:[- ]?AGI)?(?:-\d)?[^.\n]{0,16}\b(?:result|score|scorecard|win|generalization)/i },
   { name: 'arc-size-boast', re: /\b\d{2,4}\s?KB\b[^.\n]{0,40}\b(?:engine|reasoning|modules?)\b/i },
 ];
