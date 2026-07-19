@@ -1,94 +1,156 @@
-# CURRENT ROUND — R59 (canonical in-tree control snapshot)
+# CURRENT ROUND — R60 (canonical in-tree control snapshot)
 
 > **Purpose.** Pinned, network-isolated-readable mirror of the live coordinator state on
 > [issue #20](https://github.com/aumara-xyz/aukora/issues/20). A seat with no GitHub access reads THIS
-> file (Auma's pinned-snapshot path). The live issue always supersedes this mirror; the mirror is
-> refreshed by Sam 1 at each round start and never edited by other lanes.
-> Integrity: `docs/control/CURRENT_ROUND.sha256` carries the SHA-256 of this file and the audit
-> summary beside it, and is restated in the issue #20 checkpoint comment that lands this snapshot.
+> file. The live issue always supersedes this mirror; the mirror is refreshed by Sam 1 at each round
+> start and never edited by other lanes.
+> Integrity: `docs/control/CURRENT_ROUND.sha256` carries the SHA-256 of every file in this directory
+> and is restated in the issue #20 checkpoint comment that lands this snapshot.
 
-- **Round:** R59 — KIRAC HARDENING + NEBIUS CELL 0A PREP
-- **Exact start base (public main):** `c87880da79934559faf36515e84ffdc9ddd70f16`
-- **Snapshot taken (UTC):** 2026-07-19T06:55:00Z
-- **Directive source of truth:** <https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5014717259> (posted 2026-07-19T06:33:42Z by `aumara-xyz`)
-- **R58 verdict context:** [docs/control/R58_AUDIT_SYNTHESIS.md](./R58_AUDIT_SYNTHESIS.md) (mirror of <https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5014712885>)
-- **Prior-round Kimi report:** <https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5014683836>
+- **Round:** R60 — HOSTILE-INPUT HARDENING + EMBEDDED-KIRA PREREQUISITES
+- **Exact start base (public main):** `1e1bfcf437b7ee8ece1b4ecb66c859ee17377d2e`
+- **Snapshot taken (UTC):** 2026-07-19T11:26:00Z
+- **Directive source of truth:** <https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5015355638> (R60 ROUND_DIRECTIVE, `aumara-xyz`)
+- **R59 audit context:** [docs/control/CURRENT_AUDIT.md](./CURRENT_AUDIT.md) — sanitized R59 Avengers synthesis + auditor instructions
+- **Prior-round R58 verdict:** [docs/control/R58_AUDIT_SYNTHESIS.md](./R58_AUDIT_SYNTHESIS.md)
 
----
-
-## ROUND_DIRECTIVE R59 — KIRAC HARDENING + NEBIUS CELL 0A PREP (verbatim mirror)
-
-**SAM LANES READY — BASE `c87880da79934559faf36515e84ffdc9ddd70f16`**
-
-R58 is closed. Begin from this exact public-main SHA after the identity ritual. Re-read live main before every fold.
-
-### Operating law
-
-- **Fable seats only.** Do not switch to Opus or launch premium Codex subagents. If a task genuinely requires escalation, stop that brick and post `NEEDS_ESCALATION`; continue other bounded work.
-- One writer per permanent lane. Preserve dirty work; do not reset another seat.
-- No secrets, PII, credentials, owner keys, AUMLOK private bytes, or private memory in commits/logs/comments.
-- No Nebius/Tinker/provider call during implementation. R59 prepares and proves the disposable cell; actual Cell 0A arming follows an exact-main owner/coordinator GO.
-- Research/advisory output grants no authority. Convex remains the temporary live substrate; KIRA is the brain and destination. "Alien Core / AC" names this development wave; "KIRAC" is the nickname, not a second organism.
-- Publish continuously: open bounded PRs, run all gates, and integrate each green qualified brick immediately—do not batch the round. If no code PR is merge-ready within 30 minutes, publish the sanitized control/snapshot brick first.
-- Post exact heads and evidence to issue #20. Sam 1 never merges a moved or red head.
-
-### Sam 1 — CONTROL / INTEGRATION / CI
-
-1. **First public checkpoint:** mirror the current R59 directive and R58 synthesis into a canonical in-tree control snapshot readable by network-isolated seats (for example `docs/control/CURRENT_ROUND.md` plus a sanitized audit summary). Include exact base, timestamp, issue comment URL, and SHA-256 of the snapshot. This is Auma's pinned-snapshot path.
-2. Repair the bare-"ARC" no-overclaim bypass and plant positive/negative tests, including "solved the ARC game."
-3. Repair the gated-skip measurement regex so the published value equals the real test-level skip count; regenerate README/CLAIMS/generated totals from measurement only.
-4. Qualify and integrate every lane PR as soon as exact-head CI, public scan, no-overclaim, and review gates are green. Byte-verify every squash on main. No batching.
-5. Maintain the R59 integration ledger and post OWNER ACTION REQUIRED only when policy blocks an otherwise-qualified exact head.
-
-### Sam 2 — BRAIN / AUTHORITY / DOORS
-
-Work as small sequential security bricks; do not combine unrelated rewrites.
-
-1. **Evidence sealing boundary:** reproduce Kimi's two M2 PoCs. Make a hand-built `accepted` body and a re-sealed outcome edit fail closed, or narrow the exported seal API so it cannot impersonate door promotion. Correct the falsified docstring and plant regression tests.
-2. **Erase authority G1:** reproduce whether a caller-supplied ML-DSA key can authorize `forget`. If true, pin erase authority to a registered owner/capability root, preserve tombstones/nonces/no-resurrection, and prove forged/new-key, replay, wrong-record, and stale-head erasures fail before plaintext deletion.
-3. **Brain-door authentication:** reproduce the reported unauthenticated surface. Add service-capability/token custody equivalent to the governed door pattern, with missing/forged/replayed token tests. Never expose a token value.
-4. Keep every Convex row/adaptor non-authoritative; do not begin the database cutover here.
-
-Priority: erase authority → evidence seal → brain-door. Publish and integrate each independently when green.
-
-### Sam 3 — RECURSION / EFFECTS / ATLAS
-
-1. Write and gate the **single-writer embedded-KIRA cutover contract** before any SQLite/libSQL dependency lands:
-   - exactly one canonical durable memory writer at a time;
-   - Convex→embedded transition uses shadow reads/parity, never dual writes;
-   - carry `signedHeads` high-water, attestation nonces, tombstones/no-resurrection set, record-ID derivation, and receipt-chain anchors in one checkpoint;
-   - preserve scan-before-chain and receipt-before-effect;
-   - env kill switch, rollback boundary, idempotent replay, and crash/kill-9 canaries.
-   This round is contract + dry-run verifier only—no live third store.
-2. Reproduce Auma's shear-floor-at-creation claim against exact R59 base. If identical inputs incorrectly yield ~1/φ disagreement, fix the code or correct the contradictory documentation based on the law, with a planted equality case. If not reproducible, publish FALSIFIED evidence.
-3. Strengthen branch-intake validation with evidence-required fields per classification without pretending an offline gate proves external truth. Correct the stale R53 trusted-state row only after exact-main verification.
-4. Refresh Atlas at the final integration tip; preserve the frozen 191-row ledger and record all new R59 objects without invented dispositions.
-
-### Sam 4 — SPATIAL / CONSOLE / DOCS / SHADOW CELL
-
-1. Build the **Cell 0A deployable preflight packet**, default disabled:
-   - exact public-main/code/harness/image/model digest slots with strict 64-hex validation where SHA-256 is claimed;
-   - no public ingress, no GitHub egress, no Convex, Git credentials, private memory, owner root, or AUMLOK key in the workload;
-   - one inert synthetic prompt + one refusal probe only;
-   - hard TTL, remote kill, teardown, and zero-residual-resource proof;
-   - content-free request/response hashes, provider/model metadata, latency/token/cost fields, and a `SwarmRunEvidenceV1` envelope that remains ungoverned/quarantined;
-   - dry-run and planted failure tests. Do not make a provider call.
-2. Add a canonical `NEBIUS_GO_NO_GO` artifact generated from executable evidence, separating Cell 0A connectivity readiness from Cell 0B organism readiness.
-3. Repair B2 preregistration before any run: assign the 60–80% B2b dead zone, numeric B2d graceful/binary threshold, sample size/statistical rule, and "recited" detector. Caption the reused TU93/17-action schema values as hypothetical/unproven.
-4. Publish a canonical `ALIEN_CORE.md` index: KIRA is Aukora's brain; Alien Core is the current architecture wave; KIRAC is shorthand. Link rather than duplicate the governed architecture and keep VERIFIED/RESEARCH/UNPROVEN boundaries explicit.
-5. Ensure the public console cannot arm Cell 0A or expose secret values.
-
-### Exit sequence
-
-1. Integrate sanitized control snapshot first.
-2. Integrate small repair PRs continuously as green.
-3. Integrate Cell 0A preflight only after negative tests and all public gates.
-4. Sam 1 posts final exact-main report and `SAM LANES HOLD — R59 AVENGERS + FUGU PREFLIGHT REQUIRED`.
-5. Avengers audit exact main. Run exactly one bounded Fugu hostile pass over the sanitized public Cell 0A packet if the Fable seat has Fugu; advisory only, no authority/quorum. If invocation is impossible, report the concrete blocker—do not invent output.
-6. Only after that verdict may the coordinator post a one-canary Nebius Cell 0A GO on issue #15.
-
-**Target:** complete the repair/preflight integration within the next 3–4 hours. Target one disposable Nebius Cell 0A connectivity smoke by the morning of 2026-07-20 WITA, contingent on credentials/provisioning and an explicit hard cost/time cap. Cell 0A is not KIRA live, not an organism claim, and not a Convex cutover.
+Truth class of this mirror: **CAPTURE_CONSISTENT** — equality with the live issue was true at the snapshot instant above and is not claimed afterwards.
 
 ---
 
-*End of verbatim mirror. Truth class of this file: CAPTURE_CONSISTENT — equality with the live issue was true at the snapshot instant above and is not claimed afterwards.*
+## ROUND_DIRECTIVE R60 (verbatim mirror)
+
+# ROUND_DIRECTIVE R60 — HOSTILE-INPUT HARDENING + EMBEDDED-KIRA PREREQUISITES
+
+**Canonical base:** `1e1bfcf437b7ee8ece1b4ecb66c859ee17377d2e`  
+**Public main at directive time:** exact match  
+**Round mode:** Sams 2–4 parallel → Sam 1 one convergence branch/PR → owner exact-head merge → Avengers.  
+**Nebius:** HOLD / Cell 0A NOT_READY.  
+**Fugu:** HOLD after provider HTTP 500 ×2; no output exists, no finding may be inferred, and **no retry is authorized in R60**.
+
+## R59 Avengers synthesis — evidence weighting
+
+### Reproduced exact-base findings accepted
+- **H1 HIGH — evidence TOCTOU/accessor class:** seal, re-govern, and receipt pairing read live objects before/after canonical snapshotting; getter chameleons can reopen governed minting. `ACCEPTANCE_ELIGIBLE_SOURCES` is exported mutable.
+- **M1 — erase record→root isolation absent:** registered root A can erase a record belonging to root B because durable records do not pin `ownerRootId`.
+- **M2 — Cell 0A parser/egress gaps:** duplicate JSON keys pass; metadata/RFC1918/alternate-loopback/IP/IDN/port/host tricks pass substring checks.
+- **M3 — cutover verifier thinner than contract prose:** kill-switch direction and transition/seam identity are not derived from typed contract data; checkpoint omits erase-root registry, erase attestations, writer epoch, and explicit no-resurrection continuity.
+- **P1 — mind-door empty-token fail-open:** `AUKORA_DOOR_TOKEN=""` bypasses the R44 POST-token check. This is distinct from the R59 brain-door control-token repair, which held under attack.
+- **P1 — no-overclaim synonyms:** “solved/cleared/won/completed N levels” variants bypass the ARC guard that catches “beaten N levels.”
+- **Fu/council:** the donor-pinned 1/φ floor is real; `aukoraFuCouncil.ts:297 > 0.5` makes `mixed` unreachable for any ordinary multi-seat contradiction set. Council pluggability/advisory-only posture held.
+- **Diligence residue:** package-row counts and round headers are stale; minor SPDX coverage drift.
+
+### Standing truths preserved
+- 1542 passing + 2 gated skips at R59 base; CI/public scan/provenance/continuity green.
+- Embedded KIRA is **not implemented/live**; Convex is the one canonical durable-memory writer today.
+- Cell 0A is disabled/NOT_READY; no provider or Nebius call is authorized.
+- The frozen 191-row ledger remains untouched.
+- `verifySwarmRunEnvelope` currently proves digest integrity, not governance authenticity; any API/consumer wording that implies authority is unsafe.
+
+### Stale/contradicted seat notes
+- Gemini executed R58 `c87880d`, not R59; useful only as a stale baseline.
+- Auma explicitly audited a possibly-stale working tree. Its writer-lock/no-resurrection concerns are accepted as **prerequisites to test**, while its “Cell 0A absent” observation is stale.
+- Manus’s “brain-door lacks token” statement is falsified by R59 exact-base source/tests; Fable’s separate **mind-door empty-token** finding is retained.
+- Mistral did not receive the directive and therefore produced no R59 audit. R60 repairs this access path.
+
+# LANE ASSIGNMENTS
+
+All lanes perform the repository identity ritual, fetch origin, verify exact base `1e1bfcf4`, and state branch/worktree/status before writing. No lane edits another lane’s branch. No paid/provider/Nebius/Tinker call. No owner/private/AUMLOK key material. Donor repos remain read-only.
+
+## Sam 1 — control/accessibility, claims gates, and ONE integration
+
+Work in parallel with the other lanes:
+
+1. **Early bus/accessibility snapshot (publish first):**
+   - Update the canonical in-tree control mirror with this R60 directive and a sanitized R59 Avengers synthesis.
+   - Add/refresh `docs/control/CURRENT_AUDIT.md` (or the existing canonical equivalent) plus digest sidecar so Mistral and non-issue seats can read the full audit prompt from public main.
+   - The file must instruct git-capable auditors to fetch/detach at `origin/main`; non-git seats must label themselves POSSIBLY_STALE.
+   - Open one tiny docs-only snapshot PR immediately. Post one owner marker; no totals regeneration if truly docs-only.
+
+2. **No-overclaim hardening:** reproduce and block ARC “solved/cleared/won/completed N levels” variants without flagging ordinary prose. Plant positive and negative vectors.
+
+3. **Diligence repair:** regenerate measured per-workspace rows from the same totals artifact or remove unverifiable duplicated breakdowns; refresh stale round headers. SPDX cleanup only where license truth is unambiguous.
+
+4. **Integration law:** do **not** serialize lanes through individual rebases/full gates. Freeze each qualified lane head. Build one fresh `sam/r60-convergence` branch from then-current public main; merge lane heads preserving provenance; resolve only real conflicts.
+
+5. After merging implementation heads, hand the convergence candidate to Sam 3 for one final Atlas capture commit. Fold that commit, regenerate totals once, run full clean-root Node 20/22 + public scan + provenance + continuity + no-overclaim once, and open **one final ready convergence PR**.
+
+Only Sam 1 watches the queue. If a lane waits, it posts one HOLD and ends.
+
+## Sam 2 — authority / evidence / doors
+
+Deliver one frozen lane head with logical commits and adversarial tests:
+
+1. **H1 snapshot-first evidence boundary**
+   - Reproduce all live-accessor PoCs before repair.
+   - Canonicalize/snapshot once at function entry; every gate, validation, digest, govern, and pairing decision reads that same inert snapshot.
+   - Reject accessors/prototype tricks consistently with the existing `E_PROTO` law.
+   - Freeze exported law tables; callers cannot mutate acceptance eligibility.
+   - Ensure no alternate public minter or re-govern path remains.
+   - Split integrity from governance truth in naming/contracts: a bare digest verifier must never be consumed as authority. Add a governed-decision verification boundary or fail-closed consumer guard; do not paper over this with prose only.
+   - Plant the Kimi H1a–H1e and Fable hand-built-envelope vectors.
+
+2. **M1 record→root binding**
+   - Durable memory rows pin an immutable `ownerRootId`/record-root identity at ingest.
+   - Forget requires attestation root == record root before signature/deletion.
+   - Legacy/unbound rows fail closed or enter explicit quarantine; never guess ownership.
+   - Multi-root, consent-scope, replay, rotation/revocation, wrong-root, malformed-row, and no-plaintext-deletion vectors.
+
+3. **Mind-door empty-token**
+   - Empty/whitespace/malformed provisioned tokens can never disable authentication.
+   - Distinguish unprovisioned fail-closed from unauthorized; never echo token.
+   - Plant env `""`, whitespace, stale boot, header precedence, and missing-token tests.
+
+## Sam 3 — cutover law / no-resurrection / Fu semantics / final capture
+
+1. **M3 typed cutover hardening**
+   - Replace keyword/prose inference with typed, exact machine data for kill-switch direction, canonical seam identities, allowed transition graph, rollback edge, crash laws, and single-writer invariant.
+   - Negation-smuggling and delete/add-transition tamper vectors must fail.
+   - Extend the atomic checkpoint with: erase-root registry digest/version, erase-attestation/consumed-nonce state, writer epoch/fence, explicit no-resurrection/tombstone set, receipt-chain anchors, signed-head high-water, and record-ID derivation.
+   - Name TrustedStateStore and every durable writer/receipt seam; no unnamed fourth store.
+   - Make the **cross-process writer lock/atomic append prerequisite executable**: embedded cannot pass PARITY/CUTOVER readiness without it. This answers Auma’s documented current embedded-path race without pretending the store exists.
+   - No SQLite/libSQL dependency yet; this remains an executable prerequisite contract.
+
+2. **Fu semantic repair without breaking donor pins**
+   - Do not edit donor-pinned `aukoraFuGlyph.ts`.
+   - Preserve raw 1/φ floor as the tested glyph law, but derive an unpinned disagreement-above-floor measure for ranking/reason selection.
+   - Repair the unreachable `>0.5` branch using floor-relative semantics; plant identical-consensus, real-divergence, mixed, zero-contradiction, and adversarial roster tests.
+   - Preserve advisory-only/pluggable council; multiple LoRAs from one base count as one lineage unless explicitly proven otherwise.
+   - Record a donor-first documentation proposal; donor remains read-only from this round.
+
+3. **Final capture:** after Sam 1 publishes the convergence candidate, create one capture commit anchored to that candidate; frozen 191-row ledger byte-untouched; do not regenerate totals.
+
+## Sam 4 — Cell 0A hardening / B2 mechanics
+
+1. **Strict manifest parsing**
+   - Reject duplicate JSON keys at any depth before `JSON.parse` semantics can hide them.
+   - Missing/dangling `--manifest`, non-string host values, overlays, unknown fields, and schema drift fail non-zero.
+
+2. **Real egress validation**
+   - Parse/canonicalize scheme, hostname, IDNA/punycode, IP literals and ports.
+   - Exact provider allowlist only; reject link-local/cloud metadata, loopback in every notation, RFC1918/private/reserved/unspecified IPv4/IPv6, homoglyphs, raw GitHub hosts, redirects to forbidden targets, and arbitrary ports.
+   - No substring-based security decision.
+   - Plant every Kimi bypass plus redirect/DNS-resolution contract tests using offline fakes only.
+
+3. **Content/lifecycle evidence**
+   - Secret-shaped key names and error paths cannot leak into console/artifacts.
+   - Digest slots bind to declared artifact bytes/model/image identities, not arbitrary format-valid values.
+   - TTL/remote-kill/teardown/residual proof become structured, falsifiable evidence; no live provider call.
+   - Keep `enabled:false`, no arm mode, console cannot-arm, and REMOTE_ONLY→quarantine.
+
+4. **B2 cleanup if bounded:** add a mechanical archetype-applicability predicate and sealed budget source; do not run or claim game results.
+
+# INTEGRATION / EXIT LAW
+
+- Sams 2–4 work in parallel from the canonical R60 base; Sam 1 works in parallel and integrates once.
+- Lane branches/draft PRs may be pushed early for bus backup, but no lane asks for owner merges.
+- One early control-snapshot owner merge is permitted for bus/accessibility. One final integration owner merge closes R60.
+- No per-lane totals regeneration, repeated clean-clone jobs, or minute polling.
+- Final required truth: no secrets/PII; no unsupported ARC/AGI/capability claims; no Nebius/Fugu/provider action; Convex canonical; embedded destination absent; Cell 0A disabled.
+- If the round reaches 25 minutes without a public-main checkpoint, Sam 1 posts a concise status and opens a sanitized checkpoint rather than leaving work only on one machine.
+
+## Fugu disposition
+
+The validated packet produced **no referee output** because the provider returned HTTP 500 twice. Record transport failure only. Do not convert it into evidence, do not retry in R60, and do not block the reproduced HIGH/MED repairs on it.
+
+**SAM LANES READY — R60 BASE `1e1bfcf437b7ee8ece1b4ecb66c859ee17377d2e` — READ THIS FULL DIRECTIVE, ACK YOUR LANE, START IN PARALLEL.**
