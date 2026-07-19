@@ -317,10 +317,13 @@ export function buildAgreSwarmEvidence(receipt: AgreRunReceiptV1, context: AgreR
  */
 export function agreEnvelopeMatchesReceipt(env: SwarmRunEvidenceEnvelopeV1, receipt: AgreRunReceiptV1): boolean {
   try {
-    if (!verifySwarmRunEnvelope(env)) return false;
+    // R60 H1 snapshot-first: verify AND read from the SAME inert envelope snapshot, so a getter chameleon
+    // cannot pass integrity on one copy and present different taskId/label/digests to the pairing reads.
+    const envSnap = JSON.parse(canonicalString(env)) as SwarmRunEvidenceEnvelopeV1;
+    if (!verifySwarmRunEnvelope(envSnap)) return false;
     const snap = JSON.parse(canonicalString(receipt)) as AgreRunReceiptV1;
     if (!validateAgreRunReceipt(snap).ok) return false;
-    const b = env.body;
+    const b = envSnap.body;
     if (b.governance.outcome !== 'ungoverned') return false; // pairs the raw run stage only, never a decision
     if (b.taskId !== agreTaskId(snap)) return false;
     if (b.epistemicSource !== epistemicSourceForOrigin(snap.origin)) return false;

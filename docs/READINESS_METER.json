@@ -1,6 +1,6 @@
 {
   "schema": "aukora-readiness-meter-v2",
-  "head_basis": "Current round R56 over public savepoint main 2543044d93a943f050b6131e0c5e3ef8aee15ab2 (PR #165). Last fully-GATED integration remains R51 (base 5aae90d6 + PR heads #111/#112/#113; 900 canonical passing tests incl. protected supervisor). The R56 integration total is owned by Sam 1 generated gate artifact (consumed after integration) — not restated here. This meter score is unchanged: R56 lane work strengthens evidence, not milestone pass/fail.",
+  "head_basis": "Current round R60 over public main 1e1bfcf437b7ee8ece1b4ecb66c859ee17377d2e. Last fully-GATED integration remains R51 (base 5aae90d6 + PR heads #111/#112/#113; 900 canonical passing tests incl. protected supervisor). Post-R51 rounds (R52–R59) landed as gated lane integrations; the measured test total is owned by the generated gate artifact docs/generated/test-totals.json (1542 passing + 2 gated skips at R60 base) and is not restated here. This meter score is unchanged: later lane work strengthens evidence, not milestone pass/fail.",
   "denominator": 11,
   "score": "8/11",
   "score_law": "Each row is a named integration milestone, not a percentage of organism completion. A row passes only with canonical source, executable evidence, and honest runtime reachability.",

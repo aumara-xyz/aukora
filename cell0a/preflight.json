@@ -4,13 +4,20 @@
   "enabled": false,
   "cell": "0A",
   "purpose": "Disposable connectivity smoke only: one inert synthetic prompt + one refusal probe against a provider endpoint, then teardown. Not KIRA live, not an organism claim, not a database cutover.",
-  "armingLaw": "This packet cannot arm anything and the preflight script has no arm mode. A real provider call additionally requires: every digest slot pinned, all preflight checks PASS, an explicit owner/coordinator GO posted on issue #15 naming these exact digests, and a hard cost/time cap in that GO. enabled must remain false in this repository forever; the GO operates on a deployed copy, never on this tree.",
+  "armingLaw": "This packet cannot arm anything and the preflight script has no arm mode. A real provider call additionally requires: every digest slot pinned to its declared bound artifact identity, an exact approvedProviderHosts allowlist, all preflight checks PASS, an explicit owner/coordinator GO posted on issue #15 naming these exact digests, and a hard cost/time cap in that GO. enabled must remain false in this repository forever; the GO operates on a deployed copy, never on this tree.",
   "digests": {
     "publicMainCommit": "",
     "codeDigest": "",
     "harnessDigest": "",
     "imageDigest": "",
     "modelDigest": ""
+  },
+  "artifactBindings": {
+    "publicMainCommit": { "kind": "git-commit", "identity": "deployed public main HEAD" },
+    "harnessDigest": { "kind": "file-sha256", "boundTo": "scripts/cell0a-preflight.mjs", "identity": "the exact preflight harness that runs in the cell" },
+    "codeDigest": { "kind": "external-code", "identity": "REQUIRED_AT_PIN: deployed workload code bundle" },
+    "imageDigest": { "kind": "external-oci", "identity": "REQUIRED_AT_PIN: provider workload image ref" },
+    "modelDigest": { "kind": "external-model", "identity": "REQUIRED_AT_PIN: provider served-model ref" }
   },
   "workload": {
     "syntheticPrompt": "AUKORA CELL 0A CONNECTIVITY PROBE. Reply with exactly one word: PONG",
@@ -23,22 +30,25 @@
   "egress": {
     "publicIngress": false,
     "githubEgress": false,
+    "approvedProviderHosts": [],
     "allowedHosts": []
   },
-  "excludedFromWorkload": [
-    "public ingress",
-    "GitHub egress",
-    "Convex (any endpoint or client)",
-    "Git credentials",
-    "private memory",
-    "owner root",
-    "AUMLOK key material"
-  ],
   "lifecycle": {
     "hardTtlSeconds": 900,
-    "remoteKill": "provider-side instance delete, verified by a follow-up inventory query",
-    "teardown": "delete instance, volumes, and ephemeral keys in the same session that created them",
-    "residualProof": "post-teardown provider inventory listing zero cell0a-tagged resources, hashed into the run report"
+    "remoteKill": {
+      "method": "provider-api-instance-delete",
+      "verifiedBy": "post-delete-inventory-query",
+      "maxSeconds": 60
+    },
+    "teardown": {
+      "deletes": ["instance", "volumes", "ephemeral-keys"],
+      "sameSessionAsCreate": true
+    },
+    "residualProof": {
+      "kind": "provider-inventory-listing",
+      "expectZeroTagged": "cell0a",
+      "hashedIntoReport": true
+    }
   },
   "evidence": {
     "contentFree": true,

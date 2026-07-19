@@ -46,30 +46,34 @@ export type SwarmRunEvidenceSchema = typeof SWARM_RUN_EVIDENCE_SCHEMA;
 /** Domain separator for the envelope digest — distinct from the EvidencePack domain by construction. */
 export const SWARM_RUN_DIGEST_DOMAIN = 'aukora-swarm-run-evidence-v1';
 
-/** Closed epistemic source labels. Acceptance is reserved to the LOCAL_* members (KIRA boundary). */
-export const EPISTEMIC_SOURCES = [
+/**
+ * Closed epistemic source labels. Acceptance is reserved to the LOCAL_* members (KIRA boundary).
+ * R60 H1: every exported law table is Object.frozen — a caller cannot push a new source into
+ * `ACCEPTANCE_ELIGIBLE_SOURCES` (or any enum) to widen acceptance at runtime.
+ */
+export const EPISTEMIC_SOURCES = Object.freeze([
   'LOCAL_MEASUREMENT',   // measured directly against the base commit on this machine
   'LOCAL_REPRODUCTION',  // an external claim independently re-executed locally
   'EXTERNAL_RESEARCH',   // gathered from outside sources; advisory until locally reproduced
   'MODEL_GENERATED',     // produced by a model without local verification
   'SELF_REPORTED',       // asserted by the worker about itself without independent measurement
   'REMOTE_ONLY',         // R58: executed on a remote service; receipts held, never re-run locally
-] as const;
+] as const);
 export type EpistemicSourceV1 = typeof EPISTEMIC_SOURCES[number];
 
-/** Epistemic sources allowed to validate as governance-accepted (the promotion boundary). */
+/** Epistemic sources allowed to validate as governance-accepted (the promotion boundary). FROZEN (R60 H1). */
 export const ACCEPTANCE_ELIGIBLE_SOURCES: readonly EpistemicSourceV1[] =
-  ['LOCAL_MEASUREMENT', 'LOCAL_REPRODUCTION'];
+  Object.freeze(['LOCAL_MEASUREMENT', 'LOCAL_REPRODUCTION'] as const);
 
 /** What the harness observed. Transport truth only — says NOTHING about acceptability. */
-export const EXECUTION_OUTCOMES = ['completed', 'refused', 'timed-out', 'transport-failed'] as const;
+export const EXECUTION_OUTCOMES = Object.freeze(['completed', 'refused', 'timed-out', 'transport-failed'] as const);
 export type ExecutionOutcomeV1 = typeof EXECUTION_OUTCOMES[number];
 
 /** What governance decided. `ungoverned` = no decision yet — the ONLY state a builder may emit. */
-export const GOVERNANCE_OUTCOMES = ['ungoverned', 'accepted', 'rejected', 'quarantined'] as const;
+export const GOVERNANCE_OUTCOMES = Object.freeze(['ungoverned', 'accepted', 'rejected', 'quarantined'] as const);
 export type GovernanceOutcomeV1 = typeof GOVERNANCE_OUTCOMES[number];
 
-export const NETWORK_EGRESS = ['none', 'read-only', 'unrestricted'] as const;
+export const NETWORK_EGRESS = Object.freeze(['none', 'read-only', 'unrestricted'] as const);
 export type NetworkEgressV1 = typeof NETWORK_EGRESS[number];
 
 // ---------------------------------------------------------------------------------------------------
@@ -187,6 +191,52 @@ function exactKeys(v: Record<string, unknown>, keys: readonly string[], p: strin
   for (const k of keys) if (!(k in v)) return err('E_MISSING_FIELD', `${p}.${k}`, 'missing required field');
   for (const k of Object.keys(v)) if (!keys.includes(k)) return err('E_UNKNOWN_FIELD', `${p}.${k}`, 'unknown field');
   return OK;
+}
+
+/**
+ * R60 H1: recursively REJECT (not merely neutralize) accessor/prototype tricks BEFORE any value read.
+ * Walks own-property DESCRIPTORS only — it never invokes a getter — so a chameleon getter cannot return
+ * one value to a gate and another to the digest: such an object is refused here with `E_PROTO`. Consistent
+ * with the `ordinaryDataObject`/`E_PROTO` law already enforced inside `validateSwarmRunBody`. Total: a
+ * primitive/null leaf is fine; only objects/arrays are structurally screened.
+ */
+function rejectAccessorsDeep(v: unknown, p: string): SwarmValidationResult {
+  if (v === null || typeof v !== 'object') return OK; // primitive leaf — nothing to subvert
+  if (Array.isArray(v)) {
+    const proto = Object.getPrototypeOf(v);
+    if (proto !== Array.prototype) return err('E_PROTO', p, 'non-ordinary array prototype');
+    if (Object.getOwnPropertySymbols(v).length > 0) return err('E_PROTO', p, 'symbol own property');
+    const names = Object.getOwnPropertyNames(v).filter((k) => k !== 'length');
+    for (const k of names) {
+      const d = Object.getOwnPropertyDescriptor(v, k);
+      if (!d || d.get !== undefined || d.set !== undefined || d.enumerable === false) return err('E_PROTO', `${p}.${k}`, 'accessor/non-enumerable array index');
+      const r = rejectAccessorsDeep((v as unknown[])[Number(k)], `${p}[${k}]`);
+      if (!r.ok) return r;
+    }
+    return OK;
+  }
+  const proto = Object.getPrototypeOf(v);
+  if (proto !== Object.prototype && proto !== null) return err('E_PROTO', p, 'non-ordinary prototype');
+  if (Object.getOwnPropertySymbols(v).length > 0) return err('E_PROTO', p, 'symbol own property');
+  for (const k of Object.getOwnPropertyNames(v)) {
+    const d = Object.getOwnPropertyDescriptor(v, k);
+    if (!d || d.get !== undefined || d.set !== undefined) return err('E_PROTO', `${p}.${k}`, 'accessor property');
+    const r = rejectAccessorsDeep((v as Record<string, unknown>)[k], `${p}.${k}`);
+    if (!r.ok) return r;
+  }
+  return OK;
+}
+
+/**
+ * R60 H1 snapshot-first primitive: reject accessor/prototype tricks on the LIVE input, then take exactly
+ * ONE canonical snapshot. After this returns, every downstream gate/validation/digest/freeze reads the
+ * SAME inert plain object — there is no second read of the caller's live object, so no TOCTOU split.
+ * Throws `<code>:<path>` (E_PROTO or a canonicalization error) on hostile input.
+ */
+function inertSnapshotOrThrow<T>(value: unknown, p: string): T {
+  const g = rejectAccessorsDeep(value, p);
+  if (!g.ok) throw new Error(`${g.code}:${g.path}`);
+  return JSON.parse(canonicalString(value)) as T; // one read; getters already excluded, so faithful
 }
 
 function checkLabel(v: unknown, re: RegExp, p: string): SwarmValidationResult {
@@ -354,27 +404,36 @@ function deepFreeze<T>(o: T): T {
  * bodies. NOT exported: only the public ungoverned seal and the governance door reach it, so a governed
  * envelope can be minted ONLY through `governSwarmRunEvidence`.
  */
-function sealBodyChecked(body: SwarmRunEvidenceV1): SwarmRunEvidenceEnvelopeV1 {
-  const snap = JSON.parse(canonicalString(body)) as SwarmRunEvidenceV1;
+function sealSnapshot(snap: SwarmRunEvidenceV1): SwarmRunEvidenceEnvelopeV1 {
   const v = validateSwarmRunBody(snap);
   if (!v.ok) throw new Error(`${v.code}:${v.path}`);
   return deepFreeze({ body: snap, runDigest: swarmRunDigest(snap) });
 }
 
 /**
- * Public seal — NARROWED (R59 M2): admits ONLY ungoverned evidence. Acceptance / rejection / quarantine
- * exist solely through `governSwarmRunEvidence` (the governance door), so the exported seal API cannot
- * self-certify a hand-built `accepted` body nor re-seal an axis-edited (ungoverned→governed) envelope.
- * A governed `body.governance.outcome` is refused BEFORE full validation (`E_SEAL_NOT_UNGOVERNED`). This
- * is the API-level chokepoint; the epistemic-promotion law in `validateSwarmRunBody` remains the
- * value-level backstop (only LOCAL_* sources can ever validate as accepted). Throws `<code>:<path>`.
+ * INTERNAL seal: take ONE inert snapshot of the body (rejecting accessor/prototype tricks up front), then
+ * validate, digest, and freeze THAT SAME snapshot. NOT exported: only the public ungoverned seal and the
+ * governance door reach it, so a governed envelope can be minted ONLY through `governSwarmRunEvidence`.
+ * Throws `<code>:<path>` on invalid/hostile bodies.
+ */
+function sealBodyChecked(body: SwarmRunEvidenceV1): SwarmRunEvidenceEnvelopeV1 {
+  return sealSnapshot(inertSnapshotOrThrow<SwarmRunEvidenceV1>(body, 'body'));
+}
+
+/**
+ * Public seal — NARROWED (R59 M2) + SNAPSHOT-FIRST (R60 H1): admits ONLY ungoverned evidence. Acceptance /
+ * rejection / quarantine exist solely through `governSwarmRunEvidence` (the governance door), so the
+ * exported seal API cannot self-certify a hand-built `accepted` body nor re-seal an axis-edited
+ * (ungoverned→governed) envelope. The `ungoverned` gate reads the SAME inert snapshot that is validated,
+ * digested, and frozen — closing the R59 TOCTOU where the gate read a live getter and the digest read a
+ * different value. `validateSwarmRunBody`'s LOCAL_*-only law remains the value-level backstop. Throws.
  */
 export function sealSwarmRunEvidence(body: SwarmRunEvidenceV1): SwarmRunEvidenceEnvelopeV1 {
-  const outcome = (body as { governance?: { outcome?: unknown } } | null | undefined)?.governance?.outcome;
-  if (outcome !== 'ungoverned') {
+  const snap = inertSnapshotOrThrow<SwarmRunEvidenceV1>(body, 'body');
+  if (snap?.governance?.outcome !== 'ungoverned') {
     throw new Error('E_SEAL_NOT_UNGOVERNED:body.governance.outcome');
   }
-  return sealBodyChecked(body);
+  return sealSnapshot(snap);
 }
 
 export function validateSwarmRunEnvelope(value: unknown): SwarmValidationResult {
@@ -394,13 +453,55 @@ export function validateSwarmRunEnvelope(value: unknown): SwarmValidationResult 
   return OK;
 }
 
-/** TOTAL boolean predicate on hostile input — canonicalization or validation errors return false. */
-export function verifySwarmRunEnvelope(env: unknown): boolean {
+/**
+ * INTEGRITY ONLY (R60 H1 — do not confuse with authority). TOTAL boolean predicate on hostile input:
+ * true iff the envelope is structurally valid AND its runDigest matches its body. This proves the bytes
+ * are internally consistent and untampered since sealing — it does NOT prove that a governed
+ * `outcome: 'accepted'` was minted by the governance door: anyone can hand-build a valid `accepted` body
+ * for a LOCAL_* source and compute its digest. A consumer that treats `verify == true` as authorization
+ * is unsafe; read a governed decision only through `readGovernanceDecision` (which never yields authority).
+ */
+export function verifySwarmRunEnvelopeIntegrity(env: unknown): boolean {
   try {
     const snap = JSON.parse(canonicalString(env)) as unknown;
     return validateSwarmRunEnvelope(snap).ok;
   } catch {
     return false;
+  }
+}
+
+/** @deprecated Ambiguous name; use `verifySwarmRunEnvelopeIntegrity`. Integrity, NOT authenticity. */
+export const verifySwarmRunEnvelope = verifySwarmRunEnvelopeIntegrity;
+
+/**
+ * An ADVISORY governance reading. There is no `authorized: boolean` by construction — the envelope carries
+ * `grantsAuthority: false`, and integrity is not authenticity. Consumers get the decision plus the standing
+ * advisory literal; authenticity of the decision must come from the classifier's own signed attestation
+ * (out of scope here), never from this envelope.
+ */
+export interface AdvisoryGovernanceReadingV1 {
+  readonly outcome: GovernanceOutcomeV1;
+  readonly classifierVersion: string | null;
+  readonly decidedAtMs: number | null;
+  readonly advisoryOnly: true;
+  readonly grantsAuthority: false;
+}
+
+/**
+ * The fail-closed consumer guard: the ONE sanctioned way to read a governed outcome. Returns null unless
+ * the envelope passes integrity AND carries the advisory literals; otherwise returns the decision wrapped
+ * so it can never be mistaken for authority (no boolean authorization is exposed anywhere). This is the
+ * governed-decision verification boundary: a bare digest verifier must never be consumed as authority.
+ */
+export function readGovernanceDecision(env: unknown): AdvisoryGovernanceReadingV1 | null {
+  try {
+    const snap = JSON.parse(canonicalString(env)) as SwarmRunEvidenceEnvelopeV1;
+    if (!validateSwarmRunEnvelope(snap).ok) return null;               // integrity gate
+    if (snap.body.advisoryOnly !== true || snap.body.grantsAuthority !== false) return null; // literals gate
+    const g = snap.body.governance;
+    return { outcome: g.outcome, classifierVersion: g.classifierVersion, decidedAtMs: g.decidedAtMs, advisoryOnly: true, grantsAuthority: false };
+  } catch {
+    return null;
   }
 }
 
@@ -472,19 +573,24 @@ export function governSwarmRunEvidence(
   env: SwarmRunEvidenceEnvelopeV1,
   decision: SwarmGovernanceDecisionV1,
 ): SwarmRunEvidenceEnvelopeV1 {
-  const v = validateSwarmRunEnvelope(JSON.parse(canonicalString(env)));
+  // R60 H1 snapshot-first: take ONE inert snapshot of the input envelope and read EVERY decision from it —
+  // validation, the ungoverned precondition, and the spread that builds the governed body all read the same
+  // frozen bytes. The prior code validated a snapshot but then re-read `env.body` live, so a getter chameleon
+  // could pass validation clean yet spread a governed/edited body into the door.
+  const snap = inertSnapshotOrThrow<SwarmRunEvidenceEnvelopeV1>(env, 'envelope');
+  const v = validateSwarmRunEnvelope(snap);
   if (!v.ok) throw new Error(`${v.code}:${v.path}`);
-  if (env.body.governance.outcome !== 'ungoverned') {
+  if (snap.body.governance.outcome !== 'ungoverned') {
     throw new Error('E_OUTCOME_CONTRADICTION:body.governance.outcome');
   }
   const body: SwarmRunEvidenceV1 = {
-    ...env.body,
+    ...snap.body,
     governance: {
       outcome: decision.outcome,
       classifierVersion: decision.classifierVersion,
       decidedAtMs: decision.decidedAtMs,
     },
   };
-  // Use the INTERNAL seal — the door is the sole minter of governed envelopes; the public seal refuses them.
-  return sealBodyChecked(body);
+  // Seal the SNAPSHOT-derived body (already inert) — the door is the sole minter of governed envelopes.
+  return sealSnapshot(inertSnapshotOrThrow<SwarmRunEvidenceV1>(body, 'body'));
 }

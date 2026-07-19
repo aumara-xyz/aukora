@@ -28,6 +28,10 @@ export default defineSchema({
     recordKind: v.optional(v.string()),
     consent: v.optional(v.string()),
     provenance: v.optional(v.string()),
+    // R60 M1: the record→root binding. Pinned ONCE at first ingest of a memory row; erase authority is scoped to
+    // this root (forget requires attestation.ownerRootId === this). Absent ⇒ legacy/UNBOUND row ⇒ erase fails
+    // closed (never guessed). Content-free label; NOT part of the content-addressed recordId or chain commitment.
+    ownerRootId: v.optional(v.string()),
     // Recall PLAINTEXT for kind:'memory' rows — REMOVED (patched away) on governed forgetting. Never chained.
     content: v.optional(v.string()),
     advisoryOnly: v.literal(true),

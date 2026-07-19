@@ -75,10 +75,15 @@ async function recompute(ctx: any) {
 // so the scan lives in the Node runtime — see convex/ingest.ts). A client cannot reach this mutation directly,
 // so the secret gate cannot be bypassed (fail-closed by structure, not by a trusted flag).
 export const ingestValidated = internalMutation({
-  args: { record: v.any() },
-  handler: async (ctx, { record }) => {
+  args: { record: v.any(), ownerRootId: v.optional(v.string()) },
+  handler: async (ctx, { record, ownerRootId }) => {
     const r = validateMemoryRecord(record);
     if (r === null) return { ok: false, refusal: 'refused: malformed or authority-shaped memory' };
+    // R60 M1: bound the record→root identity, if supplied, at first ingest. Shape-check it like a label; a
+    // malformed binding is refused rather than silently dropped (an unbound row would then be un-erasable).
+    if (ownerRootId !== undefined && (typeof ownerRootId !== 'string' || ownerRootId.length === 0 || ownerRootId.length > 128)) {
+      return { ok: false, refusal: 'refused: malformed ownerRootId binding' };
+    }
     const chain = await chainRows(ctx);
     if (chain.length > 0 && !chainVerdict(chain).valid) return { ok: false, refusal: 'refused: corrupt store — chain verification failed (fail-closed)' };
     // NO RESURRECTION (R44): a governedly forgotten content id may not be re-admitted. Without this gate, a
@@ -110,6 +115,7 @@ export const ingestValidated = internalMutation({
       consent: r.consent,
       provenance: r.provenance,
       content: r.content, // recall plaintext — removable on forget
+      ...(ownerRootId !== undefined ? { ownerRootId } : {}), // R60 M1: pinned once, never rebound
       advisoryOnly: true,
       grantsAuthority: false,
     });
@@ -141,6 +147,19 @@ export const forget = mutation({
     const rows = await ctx.db.query('memoryChain').withIndex('by_record', (q: any) => q.eq('recordId', recordId)).collect();
     const memoryRows = rows.filter((row: any) => row.kind === 'memory');
     if (memoryRows.length === 0) return { ok: false, refusal: 'refused: unknown record' };
+    // R60 M1: record→root binding. A REGISTERED root may only erase records BOUND to it at ingest — otherwise
+    // registered root A could erase root B's record. Checked BEFORE nonce-consume / plaintext deletion. A row
+    // with no pinned ownerRootId is LEGACY/UNBOUND: fail closed (never guess ownership). A cross-root attempt is
+    // refused. Every memory row for this recordId must be bound to the SAME root as the attestation.
+    const attestationRoot = (attestation as { ownerRootId?: unknown }).ownerRootId;
+    for (const row of memoryRows) {
+      if (row.ownerRootId === undefined || row.ownerRootId === null) {
+        return { ok: false, refusal: 'refused: record is unbound to an owner root (legacy) — erase fails closed' };
+      }
+      if (row.ownerRootId !== attestationRoot) {
+        return { ok: false, refusal: 'refused: attestation root does not own this record (record→root mismatch)' };
+      }
+    }
     // ANTI-REPLAY: consume the attestation digest exactly once, atomically with the erase itself.
     const consumed = await ctx.db.query('attestationNonces').withIndex('by_nonce', (q: any) => q.eq('nonce', verdict.digest)).first();
     if (consumed) return { ok: false, refusal: 'refused: attestation already consumed (replay)' };
