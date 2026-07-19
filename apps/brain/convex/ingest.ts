@@ -30,8 +30,8 @@ function ingestCapabilityValid(presented: unknown): boolean {
 export const ingest = action({
   // R56: an optional door/service capability. A SENSITIVE (owner-only/private) self-attested consent REQUIRES it;
   // an OPEN (shared) ingest is admitted but its self-attested provenance is quarantined content-free.
-  args: { record: v.any(), capability: v.optional(v.string()) },
-  handler: async (ctx, { record, capability }): Promise<unknown> => {
+  args: { record: v.any(), capability: v.optional(v.string()), ownerRootId: v.optional(v.string()) },
+  handler: async (ctx, { record, capability, ownerRootId }): Promise<unknown> => {
     const content = (record as { content?: unknown } | null)?.content;
     if (typeof content === 'string' && textHasSecret(content)) {
       return { ok: false, refusal: 'refused: memory content carries a secret; not persisted in plaintext' };
@@ -49,6 +49,6 @@ export const ingest = action({
       : record;
     // Validation, corrupt-store gate, content-free receipt chain, and reactive snapshot all happen atomically
     // in the internal mutation (unreachable by a client — the only trusted path preserves attested provenance).
-    return await ctx.runMutation(internal.memory.ingestValidated, { record: toIngest });
+    return await ctx.runMutation(internal.memory.ingestValidated, { record: toIngest, ownerRootId });
   },
 });

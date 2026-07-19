@@ -68,9 +68,9 @@ describe('WAVE 2 — erase attestation law (donor-faithful)', () => {
 });
 
 describe('WAVE 2 — attestation-gated forgetting (convex, SIMULATED)', () => {
-  async function seedOne(t: ReturnType<typeof convexTest>, content: string) {
+  async function seedOne(t: ReturnType<typeof convexTest>, content: string, ownerRootId = 'owner-test') {
     const rec = buildMemoryRecord({ content, createdAt: at(1) });
-    await t.action(api.ingest.ingest, { record: rec });
+    await t.action(api.ingest.ingest, { record: rec, ownerRootId }); // R60 M1: bind record→root at ingest
     return rec;
   }
 

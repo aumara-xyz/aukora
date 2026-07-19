@@ -86,7 +86,7 @@ describe('R59 G1 — Convex forget honors the pin, and refusals delete NO plaint
   }
   async function seedOne(t: ReturnType<typeof convexTest>, content: string) {
     const rec = buildMemoryRecord({ content, createdAt: at(1) });
-    await t.action(api.ingest.ingest, { record: rec });
+    await t.action(api.ingest.ingest, { record: rec, ownerRootId: 'owner-root' }); // R60 M1: bind record→root
     return rec;
   }
   const stillPresent = async (t: ReturnType<typeof convexTest>, needle: string) => {
