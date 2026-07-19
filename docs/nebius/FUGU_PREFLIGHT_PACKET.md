@@ -11,16 +11,24 @@ no paid-inference authority).**
 ## 1. Material under review (digest-pinned, all public)
 
 Everything the referee receives is in the public tree — no credentials, no private memory, no
-non-public material exists in this packet. File digests are SHA-256 over exact bytes and remain
-stable across totals-only folds; the exact `main` SHA is filled by Sam 1 at invocation time.
+non-public material exists in this packet. File digests are SHA-256 over exact bytes; the exact
+`main` SHA is filled by Sam 1 at invocation time. **Refreshed R60:** the R59 packet was hardened
+for the Avengers M2 finding (strict duplicate-key JSON parsing + real canonical egress validation +
+digest binding + structured lifecycle), so these digests reflect the R60 material and supersede the
+R59 table. Fugu remains HOLD (provider HTTP 500 ×2; no retry authorized in R60) — this refresh keeps
+the prepared packet honest, it does not authorize a pass.
 
 | File | SHA-256 |
 |---|---|
-| `cell0a/preflight.json` | `95d9b3caf20a6ea3c5bde7b2da9925dbb4219860cef7714b38a32394fddceeda` |
-| `cell0a/README.md` | `1d189aad32569a80b65a8b42a02bcb2a045d3bd61056d57993334bd2427d4211` |
-| `scripts/cell0a-preflight.mjs` | `d20c890fc3413d90a27b043c17f3048c7dfad3f3e1a0055bada5901bcfdee7de` |
-| `docs/nebius/NEBIUS_GO_NO_GO.md` | `0357065c8be3d73332dc59ae0accd2e486933b6dc04e41683c978b16c1b37424` |
-| `test/cell0aPreflight.test.ts` | `bc1d71c81e4632026dce73b32a6fa8eef8760e72ccfe848003ac7d6942e4dc08` |
+| `cell0a/preflight.json` | `eb752412a88d46fd60b0eeca559558007e69f711265f6e4b73cfcc6f5bdf6988` |
+| `cell0a/README.md` | `dff819bb511fcd697ac1fff2936401391ff2108acb523c432612a7cf14afca55` |
+| `scripts/cell0a-preflight.mjs` | `9ea9a17a89aafc05ac4e3e75a2d46e007e7db61936c042fbdb66eca6e58c6051` |
+| `scripts/cell0a-egress.mjs` | `cee1425d3e35aba08d11dfa76d318779f00fea1e79fdce9f54facabd81126d8b` |
+| `scripts/strict-json.mjs` | `5a07326047a492280dbd738aa100e24741d09673c4a661e7ea0f48063218b271` |
+| `docs/nebius/NEBIUS_GO_NO_GO.md` | `f7033c2fd149b9a855b9a458f5ed279e06e73c9ef9876f66453bfddee97161c3` |
+| `test/cell0aPreflight.test.ts` | `aa51b0744cbabdf92a4f4b0f91c5585acbac1c4c53cb0a6e8dd4a801af55c25c` |
+| `test/cell0aEgress.test.ts` | `70afe9d3d0044ca198e91491791871c2a8238339960757d23d3b5464d8e8a9f9` |
+| `test/strictJson.test.ts` | `c362f26a8011d1b83f99ecfeb63459ad1832a8db66435566f66122142c226839` |
 
 Exact `main` SHA at invocation: `________________________________________` (Sam 1 fills; the pass
 is void if any file digest above disagrees with that tree).
