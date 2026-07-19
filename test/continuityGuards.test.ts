@@ -46,12 +46,12 @@ describe('R57A capture layer — counts, anchors, uniqueness, gaps (independent 
   const snap = readJson('docs/atlas/CURRENT_OBJECTS.json');
   const objs: Array<{ number: number; type: string; state: string }> = cap.aukora.objects;
 
-  it('captures exactly 179 objects through max_object 179 (37 issues + 142 prs)', () => {
-    expect(r.r57aObjects).toBe(179);
-    expect(objs.length).toBe(179);
-    expect(cap.aukora.max_object).toBe(179);
+  it('captures exactly 183 objects through max_object 183 (37 issues + 146 prs)', () => {
+    expect(r.r57aObjects).toBe(183);
+    expect(objs.length).toBe(183);
+    expect(cap.aukora.max_object).toBe(183);
     expect(objs.filter((o) => o.type === 'issue').length).toBe(37);
-    expect(objs.filter((o) => o.type === 'pr').length).toBe(142);
+    expect(objs.filter((o) => o.type === 'pr').length).toBe(146);
   });
   it('object numbers are unique and contiguous 1..max (no gaps, no duplicates)', () => {
     const nums = objs.map((o) => o.number);
@@ -110,12 +110,50 @@ describe('R57A capture layer — state transitions and both-direction equality',
       atlas.rows.filter((row: { source: string }) => row.source === 'aukora').map((row: { number: number }) => row.number),
     );
     const pending = new Set<number>(cap.reconciliation_vs_r51.objects_pending_atlas_qualification);
-    expect(r.r57aPending).toBe(69); // #111–#179 await qualification evidence; dispositions are not invented
+    expect(r.r57aPending).toBe(73); // #111–#183 await qualification evidence; dispositions are not invented
     for (const n of pending) expect(qualified.has(n), `#${n} both qualified and pending`).toBe(false);
     for (const o of cap.aukora.objects) {
       expect(qualified.has(o.number) || pending.has(o.number), `captured #${o.number} unaccounted`).toBe(true);
     }
     for (const n of [...qualified, ...pending]) expect(capBy.has(n), `#${n} claimed but not captured`).toBe(true);
+  });
+});
+
+describe('R58 branch-intake ledger — inspected classifications only, no blind merge, no borrowed results', () => {
+  const led = readJson('docs/atlas/BRANCH_INTAKE_R58.json');
+  const VOCAB = ['ALREADY_INTEGRATED', 'RESEARCH_CANDIDATE', 'ADAPT', 'REJECT', 'MISSING_EVIDENCE'];
+
+  it('carries exactly the seven unique-content branches, uniquely named, with real 40-hex heads and anchors', () => {
+    expect(r.intakeBranches).toBe(7);
+    expect(led.entries.length).toBe(7);
+    const names = led.entries.map((e: { branch: string }) => e.branch);
+    expect(new Set(names).size).toBe(7);
+    for (const e of led.entries) expect(e.head_sha).toMatch(/^[0-9a-f]{40}$/);
+    expect(led.capture.anchors.public_main_head).toMatch(/^[0-9a-f]{40}$/);
+    expect(led.capture.captured_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+  });
+  it('every classification is a directive vocabulary term backed by recorded inspection evidence', () => {
+    for (const e of led.entries) {
+      expect(VOCAB, `${e.branch}: ${e.classification}`).toContain(e.classification);
+      expect(e.evidence.length, `${e.branch} has no evidence`).toBeGreaterThan(0);
+      expect(e.rationale.length).toBeGreaterThan(0);
+    }
+  });
+  it('asserts the intake laws: no blind merge, branch presence is not results, referee is advisory', () => {
+    expect(led.law.no_blind_merge).toBe(true);
+    expect(led.law.branch_presence_is_not_results.length).toBeGreaterThan(0);
+    expect(led.law.referee_is_advisory.length).toBeGreaterThan(0);
+    for (const e of led.entries) expect(e.no_result_claims_adopted, `${e.branch} adopted a result claim`).toBe(true);
+  });
+  it('narrow extractions name their exact target (one-line provenance fix, archival receipts)', () => {
+    const withExtraction = led.entries.filter((e: { narrow_extraction?: unknown }) => e.narrow_extraction);
+    expect(withExtraction.length).toBeGreaterThanOrEqual(4);
+    for (const e of withExtraction) {
+      expect(e.narrow_extraction.target.length).toBeGreaterThan(0);
+      expect(e.narrow_extraction.detail.length).toBeGreaterThan(0);
+    }
+    const r55 = led.entries.find((e: { branch: string }) => e.branch === 'sam/r55-integration-v3');
+    expect(r55.narrow_extraction.target).toContain('PROVENANCE.md');
   });
 });
 

@@ -1,0 +1,224 @@
+{
+  "schema": "aukora-branch-intake-ledger-v1",
+  "note": "R58 machine-readable intake ledger for the seven branches carrying content genuinely absent from public main, converted from the public R57A branch reconciliation. Every classification below was derived from direct in-lane inspection (git fetch + merge-base + diff against the exact base) — NEVER from branch presence, branch names, or report prose alone. The Avenger referee report is recorded as advisory evidence only (EXTERNAL_RESEARCH), per the standing coordinator memory that referee passes are never authority and never a substitute for local reproduction.",
+  "law": {
+    "no_blind_merge": true,
+    "branch_presence_is_not_results": "A branch existing (or a report describing it) proves nothing about behavior; results require landed SHA + behavioral test through the governed intake path.",
+    "classification_requires_inspection": "Each entry records the executed commands and measured numbers its classification rests on.",
+    "referee_is_advisory": "Kimi per-file breakdowns are preserved as EXTERNAL_RESEARCH advisory context, not adopted as verified classifications."
+  },
+  "capture": {
+    "captured_at": "2026-07-19T03:54:40Z",
+    "captured_by": "Sam 3 (recursion/Atlas lane), round R58",
+    "truth_class": "CAPTURE_CONSISTENT",
+    "anchors": {
+      "public_main_head": "feb11bf179cff2fa9523f9471159da5b0473c1aa",
+      "lane_branch": "sam/lane3-recursion",
+      "referee_report": "https://github.com/aumara-xyz/aukora/issues/20#issuecomment-5013983883"
+    },
+    "method": "git fetch origin <branch>; git merge-base <branch> <base>; git rev-list --count for ahead/behind; git diff --name-only merge-base..branch | xargs git diff --stat <base> <branch> -- for content still unique vs main; targeted git show/grep for content-class evidence."
+  },
+  "classification_vocabulary": [
+    "ALREADY_INTEGRATED",
+    "RESEARCH_CANDIDATE",
+    "ADAPT",
+    "REJECT",
+    "MISSING_EVIDENCE"
+  ],
+  "source_survey": {
+    "referee_reported_total_branches": 134,
+    "referee_reported_prunable": 123,
+    "unique_content_branches_in_scope": 7,
+    "note": "Prune/delete decisions for the 123 belong to Sam 1/owner and are OUT of this ledger's scope; this ledger classifies only the seven unique-content branches. The referee's prunable count is advisory (EXTERNAL_RESEARCH), not re-verified here."
+  },
+  "entries": [
+    {
+      "branch": "skunkworks/arc3-agre",
+      "head_sha": "5b091bca82c3240e810ad4479365a818541e6d3f",
+      "ahead_of_merge_base": 2,
+      "behind_base": 8,
+      "unique_vs_main": {
+        "files": 4,
+        "insertions": 1092,
+        "deletions": 0,
+        "file_list": [
+          "docs/AGRE_FINAL_REPORT_COMPLETE.md",
+          "engines/agre_v11.py",
+          "engines/agre_v14.py",
+          "engines/arc_agi.py"
+        ]
+      },
+      "classification": "RESEARCH_CANDIDATE",
+      "rationale": "The only branch carrying actual AGRE engine code (17.4KB v11 + 18.3KB v14 + 4.2KB arc_agi harness, verified via git ls-tree -l). Its own committed same-day report states 'Neither triggers WIN.' — an honest negative baseline, verified by direct grep of the committed report blob. Intake as research candidate preserves the code AND its negative result together; adopting any success claim from it is prohibited (none exists).",
+      "no_result_claims_adopted": true,
+      "evidence": [
+        "VERIFIED: git ls-tree -l origin/skunkworks/arc3-agre engines/ → agre_v11.py 17372B, agre_v14.py 18327B, arc_agi.py 4158B, report 5344B (real code, not stubs — contrast: main's docs/skunkworks/agre_v2/*.py are 103–469B self-referential stubs per referee §3)",
+        "VERIFIED: git show origin/skunkworks/arc3-agre:docs/AGRE_FINAL_REPORT_COMPLETE.md | grep → '**Neither triggers WIN.**' present; report attributes non-completion to LS20 corridor structure and TU93 step limit",
+        "VERIFIED: git diff feb11bf..branch restricted to touched files → 4 files, +1092, none present on main"
+      ],
+      "referee_advisory": "EXTERNAL_RESEARCH (Kimi §3): engines are vision+LLM class, not the claimed source-first v2; local mock wrapper only, no API calls in repo. Not independently re-derived here."
+    },
+    {
+      "branch": "convergence/kimi-overnight",
+      "head_sha": "70639ac01dcb9434d4832fcd6e3311569e51b043",
+      "ahead_of_merge_base": 15,
+      "behind_base": 146,
+      "unique_vs_main": {
+        "files": 31,
+        "insertions": 7189,
+        "deletions": 235,
+        "file_list_note": "31 files spanning convergence/* (12 reports/specs + 7 TS modules), packages/immune/*, and 4 root reports; full list reproducible via the recorded method."
+      },
+      "classification": "ADAPT",
+      "rationale": "This is draft PR #121's head. Mixed-value content that must be intaken file-by-file through review, never blind-merged: part of its immune content already reached main via the governed R55 extraction (main's packages/immune/docs/PROVENANCE.md cites extraction commit 8a110737, verified an ancestor of this head), while other files are candidates or rejects. ADAPT = selective per-file intake only, each file through its own evidence gate.",
+      "no_result_claims_adopted": true,
+      "evidence": [
+        "VERIFIED: git rev-parse origin/convergence/kimi-overnight → 70639ac01 (equals draft PR #121 head cited in main's provenance dispute)",
+        "VERIFIED: git merge-base --is-ancestor 8a1107379ca7… origin/convergence/kimi-overnight → true (the immune extraction source is an ancestor of this branch)",
+        "VERIFIED: diff vs feb11bf restricted to its 31 touched files → +7189/−235 still unique (the landed immune salvage accounts for the difference from the branch's raw +8394)"
+      ],
+      "referee_advisory": "EXTERNAL_RESEARCH (Kimi §4): per-file breakdown 11 ALREADY_INTEGRATED · 5 RESEARCH_CANDIDATE · 3 ADAPT · 12 REJECT; 30/30 review threads unresolved; REJECT highlights include parallel council and fabricated-claim reports. Advisory only — per-file adoption requires per-file evidence at intake time."
+    },
+    {
+      "branch": "research/pre-nebus-rehearsal-2026-07-18",
+      "head_sha": "f8d937a4fbacc7455eb612d4e83fd8ed55119df8",
+      "ahead_of_merge_base": 4,
+      "behind_base": 68,
+      "unique_vs_main": {
+        "files": 5,
+        "insertions": 1169,
+        "deletions": 0,
+        "file_list": [
+          "research/arc-benchmark/ARC_BENCHMARK_REPORT.md",
+          "research/arc-benchmark/arc_tasks.json",
+          "research/pre-nebus/PRE_NEBIUS_EVIDENCE.json",
+          "research/pre-nebus/PRE_NEBIUS_REPORT.md",
+          "research/pre-nebus/SHADOW_CELL_INPUTS.json"
+        ]
+      },
+      "classification": "RESEARCH_CANDIDATE",
+      "per_file_exception": {
+        "research/arc-benchmark/ARC_BENCHMARK_REPORT.md": "MISSING_EVIDENCE — the report's results JSON was never shipped on any branch (task inputs arc_tasks.json present, outputs absent); the report may not be intaken as evidence of anything until its results artifact exists."
+      },
+      "rationale": "Four internally consistent pre-Nebius rehearsal artifacts (hostile-scenario inputs + evidence + report) worth preserving as research; one file carries a results claim without its results artifact and is pinned MISSING_EVIDENCE.",
+      "no_result_claims_adopted": true,
+      "evidence": [
+        "VERIFIED: diff vs feb11bf restricted to its 5 touched files → +1169, all absent from main",
+        "VERIFIED: branch tree research/arc-benchmark/ contains only ARC_BENCHMARK_REPORT.md + arc_tasks.json — no results JSON"
+      ],
+      "referee_advisory": "EXTERNAL_RESEARCH (Kimi §4): 4 RESEARCH_CANDIDATE · 1 MISSING_EVIDENCE; rehearsal receipts judged internally consistent with the honest verdict 'REFUSAL-CAPABLE but NOT GLYPH-RELIABLE'."
+    },
+    {
+      "branch": "sam/r55-integration-v3",
+      "head_sha": "7bd59976850993a79f8cf9f7953d19a6ac2f61a3",
+      "ahead_of_merge_base": 8,
+      "behind_base": 65,
+      "unique_vs_main": {
+        "files": 6,
+        "insertions": 30,
+        "deletions": 122,
+        "file_list": [
+          "apps/seed/scripts/provision-owner-root.ts",
+          "apps/seed/src/forbiddenContent.ts",
+          "apps/seed/src/index.ts",
+          "apps/seed/test/r55.owner-boundary.test.ts",
+          "docs/skunkworks/README.md",
+          "packages/immune/docs/PROVENANCE.md"
+        ]
+      },
+      "classification": "ADAPT",
+      "narrow_extraction": {
+        "target": "packages/immune/docs/PROVENANCE.md line 7 source attribution",
+        "detail": "Main's line 7 wrongly labels extraction commit 8a1107379ca7… as 'draft PR #121 head'; the branch carries the accurate wording: extracted from commit 8a110737 (the MERGE_BRIEF_IMMUNE_SYSTEM.md extraction-source commit, NOT PR #121's head; the PR's head is 70639ac01dcb). Apply exactly this one-line accuracy fix; owner of the apply/qualify step is Sam 1 per ROUND_DIRECTIVE R58 item 3.",
+        "verified_against": "git rev-parse origin/convergence/kimi-overnight → 70639ac01… confirms 8a110737 is NOT the head; merge-base --is-ancestor confirms it IS an ancestor (extraction-source)."
+      },
+      "rationale": "Everything else still differing on this branch is OLDER than main (the −122 side: main's PROVENANCE now carries the fuller R55.1–R55.3 behavioral-adaptation record this branch predates; seed/spatial files likewise superseded). The single live value is the one-line donor-accuracy correction — narrow extraction, not branch merge.",
+      "no_result_claims_adopted": true,
+      "evidence": [
+        "VERIFIED: git diff feb11bf..branch -- packages/immune/docs/PROVENANCE.md → main side (−) contains the richer R55.1–R55.3 adaptation record; branch side (+) contains the accurate extraction-commit line absent from main",
+        "VERIFIED: main line 7 says 'head `8a110737…`' (wrong); branch line 7 says extraction-source ≠ head, head = 70639ac01dcb (right)"
+      ],
+      "referee_advisory": "EXTERNAL_RESEARCH (Kimi §2): flagged as '1-line donor-accuracy fix — cherry-pick'. Independently re-verified here at line level."
+    },
+    {
+      "branch": "sam/overnight-integration-map",
+      "head_sha": "6ef28ef328de08faa5e58be372a674a690648328",
+      "ahead_of_merge_base": 1,
+      "behind_base": 145,
+      "unique_vs_main": {
+        "files": 1,
+        "insertions": 46,
+        "deletions": 0,
+        "file_list": [
+          "docs/overnight/2026-07-17/sam3/HANDOFF.json"
+        ]
+      },
+      "classification": "ADAPT",
+      "narrow_extraction": {
+        "target": "docs/overnight/2026-07-17/sam3/HANDOFF.json (verbatim archive-intake)",
+        "detail": "Single content-frozen lane handoff receipt (schema aukora-overnight-handoff-v1) recording the Sam 3 overnight effect-protocol mission state. Explicitly self-limiting: grantsAuthority:false, durabilityClaim 'NONE end-to-end'. Intake = verbatim copy into main's docs/overnight tree for continuity preservation; no behavior, no claims adopted."
+      },
+      "rationale": "Archival receipt in this lane's own continuity ownership; preserving it on main prevents capability-history loss; nothing in it asserts results.",
+      "no_result_claims_adopted": true,
+      "evidence": [
+        "VERIFIED: only 1 unique file (+46) vs main; git show of the file confirms handoff-receipt schema with grantsAuthority:false and an honest incomplete-mission status"
+      ],
+      "referee_advisory": "EXTERNAL_RESEARCH (Kimi §2): 'archival receipts/addenda'."
+    },
+    {
+      "branch": "sam/overnight-trusted-state",
+      "head_sha": "fc6e4b29e7d8eadc9563f09855e90bd283a66ead",
+      "ahead_of_merge_base": 10,
+      "behind_base": 138,
+      "unique_vs_main": {
+        "files": 3,
+        "insertions": 49,
+        "deletions": 182,
+        "file_list": [
+          "docs/overnight/2026-07-17/sam2/HANDOFF.json",
+          "package-lock.json",
+          "packages/kernel-node/src/trustedStateStore.ts"
+        ]
+      },
+      "classification": "ADAPT",
+      "narrow_extraction": {
+        "target": "docs/overnight/2026-07-17/sam2/HANDOFF.json (verbatim archive-intake)",
+        "detail": "The only additive unique file is the Sam 2 overnight handoff receipt. trustedStateStore.ts differs BEHIND main (+21/−170 against main → main's version is the fuller, newer one; branch code superseded) and package-lock drift is historical. Intake = the receipt only."
+      },
+      "rationale": "Trusted-state code from this line landed on main through governed rounds; the branch remainder is one archival receipt plus superseded code. Archive the receipt, adopt no code.",
+      "no_result_claims_adopted": true,
+      "evidence": [
+        "VERIFIED: unique remainder is 3 files (+49/−182); per-file diff of trustedStateStore.ts vs main → 21 added / 170 removed lines relative to main, i.e. the branch predates main's version",
+        "VERIFIED: sam2 HANDOFF.json absent from main (status A in name-status diff)"
+      ],
+      "referee_advisory": "EXTERNAL_RESEARCH (Kimi §2): 'archival receipts/addenda'."
+    },
+    {
+      "branch": "sam/r53-brain-union",
+      "head_sha": "4209d50ac6411ec5e5f2b5f423158a6328f9d528",
+      "ahead_of_merge_base": 12,
+      "behind_base": 138,
+      "unique_vs_main": {
+        "files": 2,
+        "insertions": 24,
+        "deletions": 1,
+        "file_list": [
+          "apps/brain/src/index.ts",
+          "docs/continuity/r53/SAM4_R52_UNION_REQUALIFICATION.md"
+        ]
+      },
+      "classification": "ADAPT",
+      "narrow_extraction": {
+        "target": "docs/continuity/r53/SAM4_R52_UNION_REQUALIFICATION.md addendum lines (verbatim archive-intake)",
+        "detail": "The continuity MD carries ~24 addendum lines absent from main's copy. apps/brain/src/index.ts differs only by LACKING main's receiptBridge re-export (branch predates it — superseded, adopt nothing). Intake = the MD addendum only."
+      },
+      "rationale": "Effect-event code from this line already landed on main; unique remainder is a continuity-document addendum (this lane's preservation duty) plus one superseded code line.",
+      "no_result_claims_adopted": true,
+      "evidence": [
+        "VERIFIED: unique remainder is 2 files (+24/−1); index.ts delta vs main is exactly the absence of `export * from './receiptBridge.js'` (main has it, branch does not → branch older)",
+        "VERIFIED: continuity MD addendum absent from main's copy of the same path"
+      ],
+      "referee_advisory": "EXTERNAL_RESEARCH (Kimi §2): 'archival receipts/addenda'."
+    }
+  ]
+}
