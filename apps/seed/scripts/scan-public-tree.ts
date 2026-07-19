@@ -23,6 +23,12 @@ const PII_PATTERNS: { id: string; re: RegExp }[] = [
   { id: 'pii-us-ssn', re: /\b\d{3}-\d{2}-\d{4}\b/ },
 ];
 
+// R57A: the ONE allowed email-shaped literal — the universal git-transport service identity of the
+// canonical origin's scp/ssh forms (`git@github.com:aumara-xyz/aukora`). It is a public service
+// account, not personal data. The allowance is EXACT-MATCH only: any other user or host
+// (deploy@…, git@evil.com, someone@gmail.com) still fails closed.
+const PII_EMAIL_ALLOWED: ReadonlySet<string> = new Set(['git@github.com']);
+
 // ADVISORY (reported, never fails the gate): `env-secret-assign` is the canonical scanner's HEURISTIC — it fires on
 // ordinary `token = value` / `apiKey = value` code across the repo. Distinctive-shape secrets (AKIA*, sk-*, ghp_*,
 // PEM, bearer, Google/Stripe/npm/GitLab/SendGrid/Azure/OpenRouter keys, JWTs) fail closed; this heuristic warns.
@@ -33,8 +39,10 @@ const ADVISORY_PATTERN_IDS: ReadonlySet<string> = new Set(['env-secret-assign'])
 // self-poisoning the gate. Product code and any non-fixture file is NOT exempt — a real leak there fails the gate.
 const SECRET_EXEMPT = /(^|\/)(test|tests|deferred-tests)\/|\.test\.[tj]s$|(^|\/)(catalogue|forbiddenContent|scan-public-tree|providerTransport)\.[tj]s$|SECURITY\.md$|README\.md$|_EVIDENCE\.md$/;
 // PII heuristics additionally exempt authored/generated data: canonical conformance vectors, SBOM/lockfiles,
-// provenance/CI scripts (expected hashes/timestamps), and markdown docs.
-const PII_EXEMPT = new RegExp(`${SECRET_EXEMPT.source}|(^|/)conformance/|SBOM\\.cdx\\.json$|package(-lock)?\\.json$|(^|/)scripts/[^/]+\\.mjs$|\\.md$`);
+// provenance/CI scripts (expected hashes/timestamps), markdown docs, and the repository-identity manifest
+// (R57A: its adversarial REJECT vectors enumerate userinfo-trick URL shapes on purpose — a fixture-vector
+// file exactly like the conformance vectors; the exemption is name-scoped to that one root manifest).
+const PII_EXEMPT = new RegExp(`${SECRET_EXEMPT.source}|(^|/)conformance/|SBOM\\.cdx\\.json$|package(-lock)?\\.json$|(^|/)scripts/[^/]+\\.mjs$|\\.md$|^repository-identity\\.json$`);
 // Vendored / minified / built assets are third-party or generated — not authored source; exempt from all scans.
 const VENDOR_EXEMPT = /(^|\/)(assets|vendor|dist|node_modules)\/|\.min\.(js|css)$/;
 const BINARY_EXT = /\.(png|jpg|jpeg|gif|webp|ico|pdf|zip|gz|tgz|woff2?|ttf|otf|mp4|mov|wasm|node|lock)$/i;
@@ -71,8 +79,14 @@ function scanFile(file: string): Finding[] {
   }
   if (!PII_EXEMPT.test(file)) {
     for (const { id, re } of PII_PATTERNS) {
-      const m = re.exec(text);
-      if (m) findings.push({ file, patternId: id, line: lineOf(text, m.index), advisory: false });
+      // scan ALL matches so an allowed literal cannot shadow a real finding later in the file;
+      // report the first non-allowed match (one finding per pattern per file, as before).
+      const g = new RegExp(re.source, `${re.flags.replace('g', '')}g`);
+      for (const m of text.matchAll(g)) {
+        if (id === 'pii-email' && PII_EMAIL_ALLOWED.has(m[0])) continue;
+        findings.push({ file, patternId: id, line: lineOf(text, m.index as number), advisory: false });
+        break;
+      }
     }
   }
   return findings;

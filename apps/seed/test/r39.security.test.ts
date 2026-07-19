@@ -121,6 +121,48 @@ describe('public secret + PII scanner — canonical, fail-closed, no content ech
       rmSync(dir, { recursive: true, force: true });
     }
   }, 60_000);
+
+  it('R57A email law: git@github.com scp form passes; any other email still fails; manifest exemption is name-scoped', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'aukora-scan-r57-'));
+    try {
+      execFileSync('git', ['init', '-q', dir]);
+      const scriptPath = join(process.cwd(), 'scripts', 'scan-public-tree.ts');
+      const run = (): { code: number; out: string } => {
+        try { const out = execFileSync('npx', ['tsx', scriptPath], { cwd: dir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); return { code: 0, out }; }
+        catch (e) { const err = e as { status?: number; stdout?: string; stderr?: string }; return { code: err.status ?? 1, out: `${err.stdout ?? ''}${err.stderr ?? ''}` }; }
+      };
+
+      // the canonical scp origin literal in PRODUCT code is allowed (public service identity, not PII)
+      writeFileSync(join(dir, 'origin.ts'), "export const CANON = 'git@github.com:aumara-xyz/aukora.git';\n");
+      execFileSync('git', ['-C', dir, 'add', '-A']);
+      expect(run().code).toBe(0);
+
+      // the root identity manifest may enumerate userinfo-trick vectors (name-scoped fixture exemption)
+      writeFileSync(join(dir, 'repository-identity.json'), '{ "vectors": { "reject": [{ "url": "deploy@github.com:aumara-xyz/aukora.git", "why": "scp-wrong-user" }] } }\n');
+      execFileSync('git', ['-C', dir, 'add', '-A']);
+      expect(run().code).toBe(0);
+
+      // the SAME vector content under any OTHER name still fails closed — the exemption does not travel
+      writeFileSync(join(dir, 'identity-vectors.json'), '{ "url": "deploy@github.com:aumara-xyz/aukora.git" }\n');
+      execFileSync('git', ['-C', dir, 'add', '-A']);
+      const wrongName = run();
+      expect(wrongName.code).toBe(1);
+      expect(wrongName.out).toContain('identity-vectors.json');
+      expect(wrongName.out).not.toContain('deploy@github.com'); // never echoed
+      execFileSync('git', ['-C', dir, 'rm', '-q', '--cached', 'identity-vectors.json']);
+      rmSync(join(dir, 'identity-vectors.json'));
+
+      // an allowed literal EARLIER in a file cannot shadow a real email later in the same file
+      writeFileSync(join(dir, 'shadow.ts'), "export const a = 'git@github.com:aumara-xyz/aukora';\nexport const b = 'sam.person@gmail.com';\n");
+      execFileSync('git', ['-C', dir, 'add', '-A']);
+      const shadowed = run();
+      expect(shadowed.code).toBe(1);
+      expect(shadowed.out).toContain('shadow.ts');
+      expect(shadowed.out).not.toContain('sam.person'); // never echoed
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, 60_000);
 });
 
 describe('owner-armed egress — content-free receipts, durable spend, non-votes grant nothing', () => {
