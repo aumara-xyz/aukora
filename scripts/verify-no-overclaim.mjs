@@ -37,6 +37,11 @@ export const OVERCLAIMS = [
   // the ARC claims (coverage gap). Assertion forms only; quoted/refuted/labeled discussion stays legal.
   { name: 'arc-level-beaten', re: /\b(?:beats?|beaten|conquer(?:s|ed)?)\b[^.\n]{0,32}\blevels?\b|\blevels?\s+beaten\b/i },
   { name: 'arc-game-solved', re: /\b(?:solved?|beats?|beaten|cracked|wins?|won)\b[^.\n]{0,24}\b(?:TU93|LS20|ARC[- ]?AGI(?:-\d)?)\b/i },
+  // R60 (Sam 1): the R59 audit found "solved / cleared / won / completed N levels" bypass arc-level-beaten
+  // (which only catches "beaten … levels"). Require a NUMERIC level count adjacent to the achievement verb,
+  // so ordinary prose ("level 2 support", "the second level of review", "3 levels of nesting", "cleared the
+  // cache at level 5") is NOT flagged; quoted/refuted/discussed/truth-labeled claims stay legal.
+  { name: 'arc-levels-cleared', re: /\b(?:solved?|cleared|won|completed)\s+(?:all\s+|both\s+|the\s+(?:first|last|next|final)\s+)?\d+\s+levels?\b|\b\d+\s+levels?\s+(?:were\s+|got\s+)?(?:solved|cleared|won|completed)\b/i },
   // R59 (Sam 1): the R58 audit proved bare-"ARC" escapes the pattern above ("solved the ARC game" — no
   // AGI/TU93/LS20 suffix). Case-SENSITIVE on the uppercase ARC token so ordinary prose ("the arc of the
   // story was won") stays legal; the (?![\s-]?AGI) lookahead keeps it disjoint from arc-game-solved.

@@ -88,7 +88,34 @@ describe('pre-R58 behavior preserved', () => {
 
   it('the pattern table carries the R58+R59 ARC patterns exactly once each', () => {
     const arc = (OVERCLAIMS as { name: string }[]).filter((o) => o.name.startsWith('arc-')).map((o) => o.name).sort();
-    expect(arc).toEqual(['arc-bare-solved', 'arc-game-solved', 'arc-level-beaten', 'arc-official-result', 'arc-size-boast']);
+    expect(arc).toEqual(['arc-bare-solved', 'arc-game-solved', 'arc-level-beaten', 'arc-levels-cleared', 'arc-official-result', 'arc-size-boast']);
+  });
+});
+
+describe('R60 ARC "solved/cleared/won/completed N levels" bypass closed (R59 audit P1)', () => {
+  it('the four achievement verbs with a numeric level count are violations', () => {
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['The agent solved 5 levels of TU93 blind.'])))).toContain('arc-levels-cleared');
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['We cleared 12 levels in the dojo.'])))).toContain('arc-levels-cleared');
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['The engine won 3 levels on the first try.'])))).toContain('arc-levels-cleared');
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['It completed all 5 levels unaided.'])))).toContain('arc-levels-cleared');
+  });
+  it('determiner and reversed forms fire', () => {
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['It solved the first 3 levels.'])))).toContain('arc-levels-cleared');
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['5 levels solved with pure BFS.'])))).toContain('arc-levels-cleared');
+    expect(names(scanAddedLines(diffOf('docs/x.md', ['12 levels were completed in one run.'])))).toContain('arc-levels-cleared');
+  });
+  it('ordinary prose with "level" but no achievement-verb+numeric-count stays legal', () => {
+    expect(scanAddedLines(diffOf('docs/x.md', ['The config has 3 levels of nesting.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['Escalated to level 2 support after triage.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['We completed the second level of review.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['The planner cleared the cache at level 5.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['The menu nests four levels deep.'])).length).toBe(0);
+  });
+  it('quoted / refuted / discussed / truth-labeled level-count claims stay legal', () => {
+    expect(scanAddedLines(diffOf('docs/x.md', ['The report "solved 5 levels" with no receipts attached.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['It never solved 5 levels; the run failed.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['The claim that it cleared 12 levels has no artifact.'])).length).toBe(0);
+    expect(scanAddedLines(diffOf('docs/x.md', ['Completed 5 levels: UNPROVEN — no scorecard on any branch.'])).length).toBe(0);
   });
 });
 

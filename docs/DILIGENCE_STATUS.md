@@ -1,4 +1,4 @@
-# DILIGENCE STATUS — public diligence projection (current round R56 / #106; last GATED integration R51)
+# DILIGENCE STATUS — public diligence projection (current round R60; last fully-GATED integration R51)
 
 The maximum safe **sanitized** projection of the integration tree. Every claim here is backed by an in-repo
 artifact and a gate; a Markdown document is never treated as proof. Sensitive titles, notes, paths, rationales,
@@ -21,14 +21,19 @@ Four labels:
 - **PARKED** — designed/prepared but deliberately inert (no live calls, weights, spend, or authority).
 - **MISSING** — a named gap with no current runtime counterpart; honest, and it blocks the next profile.
 
+**R60 diligence refresh (Sam 1).** Per-suite test counts were removed from the tables below: the only
+gate-owned measured truth is the aggregate in `docs/generated/test-totals.json` (**1542 passing + 2 gated
+skips**, enforced by `scripts/verify-test-totals.mjs`); hand-maintained per-workspace numbers duplicated it
+and drifted, so the Tests column now names the workspace/suite only. Round header refreshed to R60.
+
 ## PROVEN (pure packages, in-gate)
 
 | Capability | Source | Tests | Export |
 |---|---|---|---|
-| Deterministic authority verification + reducer, canonical encoding, Merkle, registries, schemas, conformance vectors | `packages/kernel/src` (10 blob-pinned) | kernel (21) + conformance | `@aukora/kernel` |
+| Deterministic authority verification + reducer, canonical encoding, Merkle, registries, schemas, conformance vectors | `packages/kernel/src` (10 blob-pinned) | kernel + conformance | `@aukora/kernel` |
 | EvidencePack schema, JCS canonical JSON, domain-separated digest; confusable-resistant secret scanners | `packages/evidence/src` | evidence | `@aukora/evidence` |
-| KIRA memory law: content-addressed envelope, deterministic recall, governed forgetting (content-free tombstone) | `packages/memory/src` | memory (17) | `@aukora/memory` |
-| Pure reasoning-loop organ (reply parse, bounded plan grammar, rigid-move law, rollout, trace) | `packages/mind/src` | mind (51) | `@aukora/mind` |
+| KIRA memory law: content-addressed envelope, deterministic recall, governed forgetting (content-free tombstone) | `packages/memory/src` | memory | `@aukora/memory` |
+| Pure reasoning-loop organ (reply parse, bounded plan grammar, rigid-move law, rollout, trace) | `packages/mind/src` | mind | `@aukora/mind` |
 | Advisory council (served-model verification, quorum, spend, claim-basis freeze); glyph perception | `packages/council/src` | council | `@aukora/council` |
 | Persistent daily spend ledger | `packages/council-node/src` | council-node | `@aukora/council-node` |
 | Continuity truth-compiler (191 ledger ↔ Atlas ↔ anatomy ↔ current objects) | `scripts/verify-continuity.mjs` | `test/continuityGuards.test.ts` | gate |
@@ -37,12 +42,12 @@ Four labels:
 
 | Capability | Source | Tests | Honesty caveat |
 |---|---|---|---|
-| Reactive receipt-chained memory + governed forgetting; production mind-door → **local** Convex persistence with real process-death acceptance | `apps/brain` | brain (171) | `convex-test` for determinism; the live path is **local/self-hosted** Convex, never managed cloud. #99 closed (PR #105/#110); durable-workflow hardening continues as **#108** |
-| Governed inward-out recursion: propose → ground → rehearse → advisory review → refuse → hybrid AUMLOK gate → isolated candidate | `apps/seed` | seed (338) | effects stop at an isolated local candidate branch; never direct `main`, push, or merge |
-| Read-only operator console (`apps/console`) over authority/memory/proposal/verdict/budget | `apps/console` | console (44) | renders a deterministic `DEMO_FIXTURE`; signs/applies/deploys/arms nothing |
-| Donor Spatial shell (subtractive transplant, 46 VERBATIM blobs); R50/#101 CONSOLE organ removed from the visible roster (file retained) | `apps/spatial` | spatial (57) | donor code, not a recreation; doors are supervisor-owned and fail honestly offline |
-| Supervisor lifecycle owner (process-group owned, restart-safe, foreign-occupant safe) | `apps/supervisor` | supervisor (31) | protected-class; records actual listeners, reaps owned trees, verifies empty owned ports, leaves foreign processes untouched |
-| **ARC-3 dojo** — replayable reasoning proof over the donor's **onboard** worlds through `@aukora/mind` | `apps/spatial/arc3-dojo` | in spatial (57) | **ONBOARD_ARC3_COMPATIBLE only — never an official ARC-AGI-3 win.** Deterministic replay; mutating one action/frame/terminal breaks it |
+| Reactive receipt-chained memory + governed forgetting; production mind-door → **local** Convex persistence with real process-death acceptance | `apps/brain` | brain | `convex-test` for determinism; the live path is **local/self-hosted** Convex, never managed cloud. #99 closed (PR #105/#110); durable-workflow hardening continues as **#108** |
+| Governed inward-out recursion: propose → ground → rehearse → advisory review → refuse → hybrid AUMLOK gate → isolated candidate | `apps/seed` | seed | effects stop at an isolated local candidate branch; never direct `main`, push, or merge |
+| Read-only operator console (`apps/console`) over authority/memory/proposal/verdict/budget | `apps/console` | console | renders a deterministic `DEMO_FIXTURE`; signs/applies/deploys/arms nothing |
+| Donor Spatial shell (subtractive transplant, 46 VERBATIM blobs); R50/#101 CONSOLE organ removed from the visible roster (file retained) | `apps/spatial` | spatial | donor code, not a recreation; doors are supervisor-owned and fail honestly offline |
+| Supervisor lifecycle owner (process-group owned, restart-safe, foreign-occupant safe) | `apps/supervisor` | supervisor | protected-class; records actual listeners, reaps owned trees, verifies empty owned ports, leaves foreign processes untouched |
+| **ARC-3 dojo** — replayable reasoning proof over the donor's **onboard** worlds through `@aukora/mind` | `apps/spatial/arc3-dojo` | in spatial | **ONBOARD_ARC3_COMPATIBLE only — never an official ARC-AGI-3 win.** Deterministic replay; mutating one action/frame/terminal breaks it |
 
 ## PARKED (prepared, deliberately inert)
 
