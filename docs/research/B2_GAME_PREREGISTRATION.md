@@ -84,9 +84,29 @@ Primary metric: levels completed within budget; secondary: actions used per comp
   the action signature on any game where the precondition evaluates false. Detection runs over the
   replay manifests of §5; model narration/self-report is never consulted.
 
+### 6b. Mechanical archetype-applicability predicate (assigned R60 — executable, not narrated)
+
+B2b coverage is computed, never asserted. Each sealed archetype declares `requires` (features it
+needs) and `excludes` (features that forbid it); each held-out game declares `features` in its
+sealed manifest. `archetypeApplies(archetype, game)` (in `scripts/b2-archetype.mjs`, unit-tested in
+`test/b2Archetype.test.ts`) is true IFF every required feature is present and no excluded feature
+is. B2b **coverage** is then `coverageFraction(sealedArchetypes, heldOutGames)` — the fraction of
+held-out games to which ≥1 sealed archetype applies. The [60%,80%) dead zone and <60% kill of §6
+read this mechanical number. A malformed archetype or game never "applies" (fail-closed), so a run
+cannot inflate coverage by hand-waving applicability.
+
+### 6c. Sealed budget source (assigned R60)
+
+The per-run compute budget (max actions/level, wall-clock ceiling, token budget, hardware class) is
+a table whose sha256 — `sealBudget(table)` — is committed to the run manifest of §5 **before**
+execution. `verifyBudget(table, seal)` refuses any table whose digest no longer matches the sealed
+value, so §4's "budgets may not be raised after the seal" is mechanically enforced, not promised.
+Both arms read the same sealed budget table by construction.
+
 Kill conditions cannot be renegotiated after the seal. A killed probe's verdict is published with
 the same prominence as a passing one. **Honest prior, preserved from the original design: at
-prototype scale, retrieval-only likely matches archetype guidance.**
+prototype scale, retrieval-only likely matches archetype guidance.** This document still runs no
+game and claims no ARC/AGI result; §6b/§6c are measurement machinery, not evidence of capability.
 
 ## 7. Evidence law
 
