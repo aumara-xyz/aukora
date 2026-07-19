@@ -89,8 +89,13 @@ describe('aukoraFuGlyph: ~ operator + φ-governed shear decay', () => {
 
   // R59 planted equality case — the shear-floor-at-creation law, pinned EXACTLY. Reproduces the
   // externally reported "identical inputs yield ~1/φ disagreement" observation and pins it as the
-  // module's intended permanent-φ-gap law (the repaired interface doc now states this range); the
-  // defect was the contradictory "0 = resolved" doc, not the clamp.
+  // module's intended permanent-φ-gap law; the defect is the contradictory "0 = resolved" comment on
+  // Contradiction.shearMagnitude in aukoraFuGlyph.ts, not the clamp. THAT COMMENT CANNOT BE FIXED
+  // HERE: the module is one of the 10 donor-pinned provenance sources (byte-identical to donor
+  // b441edc4d17d, enforced by verify:provenance), so the one-line doc correction must land in the
+  // DONOR first. Until then, THIS block is the authoritative statement of the law:
+  //   shearMagnitude ∈ [SHEAR_FLOOR (1/φ ≈ 0.618), 1] at creation and under decay; identical
+  //   frameworks still register the permanent φ-gap; 0 is intentionally unreachable.
   it('R59 equality law: identical inputs yield EXACTLY the floor, 0 is unreachable, and decay never drops below it', () => {
     const FLOOR = 1 / 1.618033988749894;
     const a = packet({ explore: 0.25, exploit: 0.25, verify: 0.25, abstain: 0.25 }, { modelId: 'a' });

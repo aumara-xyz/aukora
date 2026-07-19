@@ -44,11 +44,7 @@ export interface Contradiction {
   id: string;
   modelA: string;
   modelB: string;
-  /** Creation/decay law: shear ∈ [SHEAR_FLOOR (1/φ ≈ 0.618), 1]. Identical frameworks still
-   *  register the permanent φ-gap — 0 is intentionally unreachable ("the gap is permanent",
-   *  pinned by the equality tests). R59 doc repair: an earlier comment here claimed "0 = resolved",
-   *  contradicting the floor law this module tests and its phase-lock detector assumes. */
-  shearMagnitude: number;
+  shearMagnitude: number;       // 0 = resolved, 1 = maximal shear
   interferenceVector: number[];  // where and how they diverge
   phaseLockStatus: "open" | "decaying" | "stabilized";
   decayOrigin: number;           // timestamp — refreshed on query
