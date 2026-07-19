@@ -111,6 +111,7 @@ beforeAll(() => {
   execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
   execFileSync('git', ['-C', repoRoot, 'config', 'user.name', 'R47']);
   execFileSync('git', ['-C', repoRoot, 'config', 'user.email', 'r47@test.local']);
+  execFileSync('git', ['-C', repoRoot, 'remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git']); // R57A canonical identity
   writeFileSync(join(repoRoot, TARGET), '// original\n');
   execFileSync('git', ['-C', repoRoot, 'add', '-A']);
   execFileSync('git', ['-C', repoRoot, 'commit', '-q', '--no-gpg-sign', '-m', 'init']);

@@ -11,7 +11,7 @@
  *   2. the smallest complete LIVE loopback sequence over a REAL 127.0.0.1 socket: tokened /api/propose →
  *      durable awaiting-owner → fresh byte-bound hybrid AUMLOK authorization → explicit /api/materialize →
  *      DISPOSABLE candidate worktree only → receipts/plan projection. With controls: main HEAD/tree byte-identical,
- *      no remote exists to push/merge to, replay inert, stale/forged authorization refused, restart (fresh door,
+ *      the one remote is the canonical origin the stage cannot push/merge to, replay inert, stale/forged authorization refused, restart (fresh door,
  *      same durable stores, same port) emits the PLAN only with byte-identical durable state, and NO key/signature/
  *      token bytes in any response, receipt, or persisted row.
  *
@@ -144,6 +144,7 @@ beforeAll(async () => {
   execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
   git('config', 'user.name', 'R49');
   git('config', 'user.email', 'r49@test.local');
+  git('remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git'); // R57A canonical identity
   writeFileSync(join(repoRoot, TARGET), '// original\n');
   git('add', '-A');
   git('commit', '-q', '--no-gpg-sign', '-m', 'init');
@@ -262,8 +263,9 @@ describe('R49 · the complete live loopback ceremony (real 127.0.0.1 socket)', (
     branchesAfterMaterialize = git('branch', '--list', 'candidate/*');
   });
 
-  it('no push/merge is even possible: the repo has NO remote, and main’s log is untouched', () => {
-    expect(git('remote').trim()).toBe('');
+  it('no push/merge is even possible: the only remote is the canonical origin the stage cannot touch, and main’s log is untouched', () => {
+    expect(git('remote').trim()).toBe('origin'); // R57A: canonical identity is REQUIRED now — absence would refuse
+    expect(git('config', '--get', 'remote.origin.url').trim()).toBe('https://github.com/aumara-xyz/aukora.git');
     expect(git('rev-list', '--count', 'main').trim()).toBe('1'); // still only the init commit on main
   });
 

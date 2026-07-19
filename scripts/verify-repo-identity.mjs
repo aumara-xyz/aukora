@@ -137,4 +137,10 @@ function main() {
   console.log(`repo-identity: OK — ${out.root} is the canonical repository (origin ${out.originUrl})`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main();
+// Entry detection must survive symlinked paths (node realpaths the main module — a /var vs
+// /private/var invocation would otherwise silently skip main() and exit 0, an open-gate failure).
+const invokedDirectly = (() => {
+  if (!process.argv[1]) return false;
+  try { return pathToFileURL(realpathSync(resolve(process.argv[1]))).href === import.meta.url; } catch { return false; }
+})();
+if (invokedDirectly) main();

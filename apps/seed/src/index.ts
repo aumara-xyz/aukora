@@ -45,6 +45,7 @@ export * from './effectCoordinator.js';
 export * from './liveEffectOps.js';
 export * from './fuStructuredAdapter.js';
 export * from './localCandidateStage.js';
+export * from './repoIdentity.js';
 export * from './providerTransport.js';
 export * from './localCeremonyRunner.js';
 export * from './fuLiveSmoke.js';
