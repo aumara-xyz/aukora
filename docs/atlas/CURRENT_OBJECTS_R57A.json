@@ -29,903 +29,918 @@
     }
   },
   "capture": {
-    "captured_at": "2026-07-19T00:21:45Z",
+    "captured_at": "2026-07-19T02:08:18Z",
     "captured_by": "Sam 3 (recursion/Atlas lane), round R57A",
     "method": "gh issue list + gh pr list (--state all, fields: number,state) against aumara-xyz/aukora; anchor head via git ls-remote at the same timestamp; donor object metadata via gh api with a jq filter that never materializes title/body/labels.",
     "truth_class": "CAPTURE_CONSISTENT",
     "anchors": {
-      "public_main_head": "0ceb517398b34d99ed2c55d1d67c292d67e4a935",
+      "public_main_head": "e197df28a699bfa6ef98d6bff34e1ca7678073df",
       "r51_capture_head": "5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d",
       "lane_branch": "sam/lane3-recursion"
     }
   },
   "aukora": {
-    "max_object": 176,
-    "count": 176,
+    "max_object": 179,
+    "count": 179,
     "issues": 37,
-    "prs": 139,
+    "prs": 142,
     "gaps": [],
     "duplicates": [],
     "objects": [
       {
         "number": 1,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 2,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 3,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 4,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 5,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 6,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 7,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 8,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 9,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 10,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 11,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 12,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 13,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 14,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 15,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 16,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 17,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 18,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 19,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 20,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 21,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 22,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 23,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 24,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 25,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 26,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 27,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 28,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 29,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 30,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 31,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 32,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 33,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 34,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 35,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 36,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 37,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 38,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 39,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 40,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 41,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 42,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 43,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 44,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 45,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 46,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 47,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 48,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 49,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 50,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 51,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 52,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 53,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 54,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 55,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 56,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 57,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 58,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 59,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 60,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 61,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 62,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 63,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 64,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 65,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 66,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 67,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 68,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 69,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 70,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 71,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 72,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 73,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 74,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 75,
-        "state": "CLOSED",
-        "type": "issue"
+        "type": "issue",
+        "state": "CLOSED"
       },
       {
         "number": 76,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 77,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 78,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 79,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 80,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 81,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 82,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 83,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 84,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 85,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 86,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 87,
-        "state": "CLOSED",
-        "type": "issue"
+        "type": "issue",
+        "state": "CLOSED"
       },
       {
         "number": 88,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 89,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 90,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 91,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 92,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 93,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 94,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 95,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 96,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 97,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 98,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 99,
-        "state": "CLOSED",
-        "type": "issue"
+        "type": "issue",
+        "state": "CLOSED"
       },
       {
         "number": 100,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 101,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 102,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 103,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 104,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 105,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 106,
-        "state": "CLOSED",
-        "type": "issue"
+        "type": "issue",
+        "state": "CLOSED"
       },
       {
         "number": 107,
-        "state": "CLOSED",
-        "type": "issue"
+        "type": "issue",
+        "state": "CLOSED"
       },
       {
         "number": 108,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 109,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 110,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 111,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 112,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 113,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 114,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 115,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 116,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 117,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 118,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 119,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 120,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 121,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 122,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 123,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 124,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 125,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 126,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 127,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 128,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 129,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 130,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 131,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 132,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 133,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 134,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 135,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 136,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 137,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 138,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 139,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 140,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 141,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 142,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 143,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 144,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 145,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 146,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 147,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 148,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 149,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 150,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 151,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 152,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 153,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 154,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 155,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 156,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 157,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 158,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 159,
-        "state": "OPEN",
-        "type": "issue"
+        "type": "issue",
+        "state": "OPEN"
       },
       {
         "number": 160,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 161,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 162,
-        "state": "CLOSED",
-        "type": "pr"
+        "type": "pr",
+        "state": "CLOSED"
       },
       {
         "number": 163,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 164,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 165,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 166,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 167,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 168,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 169,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 170,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 171,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 172,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 173,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 174,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 175,
-        "state": "MERGED",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
       },
       {
         "number": 176,
-        "state": "OPEN",
-        "type": "pr"
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 177,
+        "type": "pr",
+        "state": "OPEN"
+      },
+      {
+        "number": 178,
+        "type": "pr",
+        "state": "MERGED"
+      },
+      {
+        "number": 179,
+        "type": "pr",
+        "state": "MERGED"
       }
     ]
   },
@@ -1045,9 +1060,12 @@
       173,
       174,
       175,
-      176
+      176,
+      177,
+      178,
+      179
     ],
-    "pending_note": "Objects #111–#176 are captured but have no Atlas disposition rows. Recording them as PENDING is deliberate: a disposition requires qualification evidence (landed SHA + behavioral test per the Atlas law); inventing 66 dispositions would overclaim."
+    "pending_note": "Objects #111–#179 are captured but have no Atlas disposition rows. Recording them as PENDING is deliberate: a disposition requires qualification evidence (landed SHA + behavioral test per the Atlas law); inventing 69 dispositions would overclaim."
   },
   "pending_intake": {
     "note": "Sanitized post-ratification donor intake. Entries here do NOT modify the ratified 191-row freeze; an object joins the preservation ledger only by explicit owner ratification. Donor-private titles, bodies, and labels are withheld by construction (never fetched into this artifact).",
@@ -1059,7 +1077,7 @@
         "state": "open",
         "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/405",
         "created_at_source": "2026-07-17T23:36:47Z",
-        "captured_at": "2026-07-19T00:24:42Z",
+        "captured_at": "2026-07-19T02:08:18Z",
         "sanitized": true,
         "title": null,
         "body": null,

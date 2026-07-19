@@ -46,12 +46,12 @@ describe('R57A capture layer — counts, anchors, uniqueness, gaps (independent 
   const snap = readJson('docs/atlas/CURRENT_OBJECTS.json');
   const objs: Array<{ number: number; type: string; state: string }> = cap.aukora.objects;
 
-  it('captures exactly 176 objects through max_object 176 (37 issues + 139 prs)', () => {
-    expect(r.r57aObjects).toBe(176);
-    expect(objs.length).toBe(176);
-    expect(cap.aukora.max_object).toBe(176);
+  it('captures exactly 179 objects through max_object 179 (37 issues + 142 prs)', () => {
+    expect(r.r57aObjects).toBe(179);
+    expect(objs.length).toBe(179);
+    expect(cap.aukora.max_object).toBe(179);
     expect(objs.filter((o) => o.type === 'issue').length).toBe(37);
-    expect(objs.filter((o) => o.type === 'pr').length).toBe(139);
+    expect(objs.filter((o) => o.type === 'pr').length).toBe(142);
   });
   it('object numbers are unique and contiguous 1..max (no gaps, no duplicates)', () => {
     const nums = objs.map((o) => o.number);
@@ -110,7 +110,7 @@ describe('R57A capture layer — state transitions and both-direction equality',
       atlas.rows.filter((row: { source: string }) => row.source === 'aukora').map((row: { number: number }) => row.number),
     );
     const pending = new Set<number>(cap.reconciliation_vs_r51.objects_pending_atlas_qualification);
-    expect(r.r57aPending).toBe(66); // #111–#176 await qualification evidence; dispositions are not invented
+    expect(r.r57aPending).toBe(69); // #111–#179 await qualification evidence; dispositions are not invented
     for (const n of pending) expect(qualified.has(n), `#${n} both qualified and pending`).toBe(false);
     for (const o of cap.aukora.objects) {
       expect(qualified.has(o.number) || pending.has(o.number), `captured #${o.number} unaccounted`).toBe(true);
