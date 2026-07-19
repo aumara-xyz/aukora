@@ -10,13 +10,14 @@
  * All on convex-test (SIMULATED); the live crash proof is transcripted in LOCAL_DEV_EVIDENCE.md.
  */
 import { convexTest } from 'convex-test';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeAll } from 'vitest';
 import schema from '../convex/schema';
 import { api, internal } from '../convex/_generated/api';
 import { buildMemoryRecord } from '@aukora/memory';
 import {
   signEraseAttestation, verifyEraseAttestation, serializeEraseV1, ERASE_DOMAIN_PREFIX, ERASE_FRESHNESS_MS,
   signChainHeadV3, verifyChainHeadV3, serializeSignedChainHeadV3, mlDsa65PublicKeyFromSeed,
+  buildEraseRootRegistry, type RegisteredEraseRoots,
 } from '../src/index.js';
 import { receiptHistoryRootHex } from '@aukora/kernel/merkle';
 
@@ -25,6 +26,20 @@ const SEED = 'a'.repeat(64);
 const at = (s: number) => `2026-07-16T00:00:${String(s).padStart(2, '0')}.000Z`;
 const eraseFor = (recordId: string, over: Record<string, unknown> = {}) =>
   signEraseAttestation(SEED, { ownerRootId: 'owner-test', key: recordId, eraseReason: 'test erase', timestamp: Date.now(), ...over });
+
+// R59 G1: the registered-root pin. Tests pin the SEED public key to the roots they exercise; the Convex `forget`
+// handler reads the pin from the `eraseRoots` allowlist table, seeded per-test via seedRoot().
+let SEED_PUB = '';
+let REGISTRY: RegisteredEraseRoots;
+beforeAll(async () => {
+  SEED_PUB = await mlDsa65PublicKeyFromSeed(SEED);
+  REGISTRY = buildEraseRootRegistry([['owner-test', SEED_PUB], ['o', SEED_PUB]]);
+});
+async function seedRoot(t: ReturnType<typeof convexTest>, ownerRootId = 'owner-test', publicKeyHex = SEED_PUB) {
+  await t.run(async (ctx) => {
+    await ctx.db.insert('eraseRoots', { ownerRootId, publicKeyHex, advisoryOnly: true as const, grantsAuthority: false as const });
+  });
+}
 
 describe('WAVE 2 — erase attestation law (donor-faithful)', () => {
   it('donor comparative vector: preimage is the exact "aukora-aumlok-memerase-v1|" sorted-key JSON shape', () => {
@@ -38,17 +53,17 @@ describe('WAVE 2 — erase attestation law (donor-faithful)', () => {
   it('a valid attestation verifies; forged / tampered / expired / wrong-scope all REFUSE', async () => {
     const now = Date.now();
     const a = await signEraseAttestation(SEED, { ownerRootId: 'o', key: 'f'.repeat(64), eraseReason: 'r', timestamp: now });
-    expect((await verifyEraseAttestation(a, now)).ok).toBe(true);
+    expect((await verifyEraseAttestation(a, now, REGISTRY)).ok).toBe(true);
     // forged signature
-    expect((await verifyEraseAttestation({ ...a, signatureHex: '0'.repeat(a.signatureHex.length) }, now)).ok).toBe(false);
+    expect((await verifyEraseAttestation({ ...a, signatureHex: '0'.repeat(a.signatureHex.length) }, now, REGISTRY)).ok).toBe(false);
     // tampered reason (signature no longer matches the preimage)
-    expect((await verifyEraseAttestation({ ...a, eraseReason: 'DIFFERENT' }, now)).ok).toBe(false);
+    expect((await verifyEraseAttestation({ ...a, eraseReason: 'DIFFERENT' }, now, REGISTRY)).ok).toBe(false);
     // expired (older than the donor 60s window)
-    const exp = await verifyEraseAttestation(a, now + ERASE_FRESHNESS_MS + 1);
+    const exp = await verifyEraseAttestation(a, now + ERASE_FRESHNESS_MS + 1, REGISTRY);
     expect(exp).toEqual({ ok: false, reason: 'expired' });
-    // wrong public key (different owner)
+    // wrong public key (different owner) — now refused as not-the-pinned-key (G1 pin), before signature check
     const otherPub = await mlDsa65PublicKeyFromSeed('b'.repeat(64));
-    expect((await verifyEraseAttestation({ ...a, publicKeyHex: otherPub }, now)).ok).toBe(false);
+    expect((await verifyEraseAttestation({ ...a, publicKeyHex: otherPub }, now, REGISTRY)).ok).toBe(false);
   });
 });
 
@@ -61,6 +76,7 @@ describe('WAVE 2 — attestation-gated forgetting (convex, SIMULATED)', () => {
 
   it('erase leaves NO plaintext residue and records a content-free evidence row + erasure receipt', async () => {
     const t = convexTest(schema, modules);
+    await seedRoot(t);
     const rec = await seedOne(t, 'a private thing to erase');
     const done = await t.mutation(api.memory.forget, { recordId: rec.recordId, at: at(2), attestation: await eraseFor(rec.recordId, { eraseReason: 'owner asked' }) });
     expect(done.ok).toBe(true);
@@ -84,6 +100,7 @@ describe('WAVE 2 — attestation-gated forgetting (convex, SIMULATED)', () => {
 
   it('anti-replay: the same attestation cannot erase twice', async () => {
     const t = convexTest(schema, modules);
+    await seedRoot(t);
     const rec = await seedOne(t, 'erase me once');
     const attestation = await eraseFor(rec.recordId);
     expect((await t.mutation(api.memory.forget, { recordId: rec.recordId, at: at(2), attestation })).ok).toBe(true);
@@ -95,6 +112,7 @@ describe('WAVE 2 — attestation-gated forgetting (convex, SIMULATED)', () => {
 
   it('scope mismatch: an attestation for another record cannot erase this one', async () => {
     const t = convexTest(schema, modules);
+    await seedRoot(t);
     const rec = await seedOne(t, 'scoped memory');
     const wrong = await eraseFor('c'.repeat(64)); // attests a different key
     const r = await t.mutation(api.memory.forget, { recordId: rec.recordId, at: at(2), attestation: wrong });
@@ -104,6 +122,7 @@ describe('WAVE 2 — attestation-gated forgetting (convex, SIMULATED)', () => {
 
   it('deletion closure: after erase, recall + snapshot + evidence agree, and the chain still verifies', async () => {
     const t = convexTest(schema, modules);
+    await seedRoot(t);
     const rec = await seedOne(t, 'closure target');
     await t.action(api.ingest.ingest, { record: buildMemoryRecord({ content: 'kept', createdAt: at(2) }) });
     await t.mutation(api.memory.forget, { recordId: rec.recordId, at: at(3), attestation: await eraseFor(rec.recordId) });

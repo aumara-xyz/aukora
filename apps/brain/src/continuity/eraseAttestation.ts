@@ -31,6 +31,7 @@ import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
 import { canonicalJson } from '@aukora/kernel/canonical';
 import { signChainHeadV3, verifyChainHeadV3, type ChainHeadFields } from './aukoraSignedHead.js';
 import { mlDsa65PublicKeyFromSeed } from './aukoraPqcSigner.js';
+import type { RegisteredEraseRoots } from './eraseRootRegistry.js';
 
 export const ERASE_DOMAIN_PREFIX = 'aukora-aumlok-memerase-v1'; // donor domain string, unchanged
 export const ERASE_FRESHNESS_MS = 60_000; // donor constant, unchanged
@@ -82,10 +83,17 @@ export async function signEraseAttestation(
 export type EraseVerifyResult = { readonly ok: true; readonly digest: string } | { readonly ok: false; readonly reason: string };
 
 /**
- * TOTAL verification (never throws): structure, bounds, freshness window, and the ML-DSA signature over the
- * donor-exact head. `nowMs` is caller-supplied (no ambient clock in the law). Expiry is a REFUSAL.
+ * TOTAL verification (never throws): structure, bounds, freshness window, REGISTERED-ROOT PIN, and the ML-DSA
+ * signature over the donor-exact head. `nowMs` is caller-supplied (no ambient clock in the law). Expiry is a
+ * REFUSAL.
+ *
+ * G1 repair: `registeredRoots` pins erase authority to a registered owner root. The attestation is honored only
+ * if its `ownerRootId` is registered AND its carried `publicKeyHex` byte-equals the pin for that root. The pin is
+ * checked BEFORE the signature, so a self-consistent forged/new-key attestation (valid signature over an
+ * attacker key) is refused as `unregistered_root` / `key_not_pinned` and never reaches deletion. An empty
+ * registry authorizes nothing (fail-closed).
  */
-export async function verifyEraseAttestation(a: unknown, nowMs: number): Promise<EraseVerifyResult> {
+export async function verifyEraseAttestation(a: unknown, nowMs: number, registeredRoots: RegisteredEraseRoots): Promise<EraseVerifyResult> {
   try {
     if (a === null || typeof a !== 'object') return { ok: false, reason: 'malformed' };
     const o = a as Record<string, unknown>;
@@ -97,6 +105,10 @@ export async function verifyEraseAttestation(a: unknown, nowMs: number): Promise
     if ((o.timestamp as number) > nowMs + 5_000) return { ok: false, reason: 'timestamp_future' };
     if (nowMs - (o.timestamp as number) > ERASE_FRESHNESS_MS) return { ok: false, reason: 'expired' };
     if (typeof o.signatureHex !== 'string' || typeof o.publicKeyHex !== 'string') return { ok: false, reason: 'signature_shape' };
+    // REGISTERED-ROOT PIN (before signature): the attestation's key must be the pinned owner key for its root.
+    const pinnedPub = registeredRoots.get(o.ownerRootId as string);
+    if (pinnedPub === undefined) return { ok: false, reason: 'unregistered_root' };
+    if ((o.publicKeyHex as string).toLowerCase() !== pinnedPub) return { ok: false, reason: 'key_not_pinned' };
     const fields = { ownerRootId: o.ownerRootId as string, key: o.key as string, eraseReason: o.eraseReason as string, timestamp: o.timestamp as number };
     const valid = await verifyChainHeadV3(o.publicKeyHex as string, eraseHead(fields), o.signatureHex as string, 'chainHead');
     if (!valid) return { ok: false, reason: 'signature_invalid' };
