@@ -133,13 +133,14 @@ describe('R58 class 1: forged acceptance', () => {
     expect(accepted.body.epistemicSource).toBe('LOCAL_REPRODUCTION');
   });
 
-  it('direct re-seal of a forged accepted+REMOTE_ONLY body fails closed at validation', () => {
+  it('direct re-seal of a forged accepted+REMOTE_ONLY body fails closed at the narrowed seal (R59 M2)', () => {
     const env = buildAgreSwarmEvidence(goodReceipt({ origin: 'REMOTE_ONLY' }), goodContext());
     const forgedBody = {
       ...env.body,
       governance: { outcome: 'accepted', classifierVersion: 'clf-1.3.0', decidedAtMs: T0 + 60_000 },
     } as SwarmRunEvidenceV1;
-    expect(() => sealSwarmRunEvidence(forgedBody)).toThrow(/E_EPISTEMIC_OVERCLAIM/);
+    // R59: the public seal now refuses ANY governed body before validation — it cannot mint acceptance.
+    expect(() => sealSwarmRunEvidence(forgedBody)).toThrow(/E_SEAL_NOT_UNGOVERNED/);
   });
 
   it('acceptance of a run whose transport did not complete is refused at the door', () => {
