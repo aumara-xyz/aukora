@@ -38,6 +38,7 @@ beforeAll(() => {
   execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
   g(repoRoot, ['config', 'user.name', 'R43 Test']);
   g(repoRoot, ['config', 'user.email', 'r43@test.local']);
+  g(repoRoot, ['remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git']); // R57A canonical identity
   g(repoRoot, ['config', 'core.symlinks', 'true']);
   mkdirSync(join(repoRoot, 'apps/seed/src'), { recursive: true });
   writeFileSync(join(repoRoot, 'apps/seed/src/recursion.ts'), '// original content\n');

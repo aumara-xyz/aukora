@@ -34,7 +34,7 @@
     "test:supervisor": "npm test --workspace @aukora/supervisor",
     "fixture:console": "npm run build:kernel && npm run fixture --workspace @aukora/console && git diff --exit-code -- apps/console/public/fixture.json apps/console/public/fixture.js apps/console/docs/spatial-map.svg",
     "test:organism": "npm run test:memory && npm run test:mind && npm run test:brain && npm run test:seed && npm run test:console && npm run test:spatial && npm run test:supervisor",
-    "test:all": "npm run verify:provenance && npm run verify:anatomy && npm run verify:continuity && npm run boundary && npm run typecheck:all && npm run verify:typecheck-coverage && npm run workbench:readiness && npm run verify:test-totals && npm run verify:no-overclaim && npm run test && npm run test:kernel && npm run test:kernel-node && npm run test:immune && npm run test:organism && npm run fixture:console",
+    "test:all": "npm run verify:repo-identity && npm run verify:provenance && npm run verify:anatomy && npm run verify:continuity && npm run boundary && npm run typecheck:all && npm run verify:typecheck-coverage && npm run workbench:readiness && npm run verify:test-totals && npm run verify:no-overclaim && npm run test && npm run test:kernel && npm run test:kernel-node && npm run test:immune && npm run test:organism && npm run fixture:console",
     "demo:organism": "npm run demo --workspace @aukora/seed",
     "test:spatial": "npm test --workspace @aukora/spatial",
     "verify:anatomy": "node scripts/verify-anatomy.mjs",
@@ -42,11 +42,12 @@
     "workbench:readiness": "node scripts/workbench-readiness.mjs",
     "test:kernel-node": "npm test --workspace @aukora/kernel-node",
     "test:immune": "npm test --workspace @aukora/immune",
-    "typecheck:all": "npm run typecheck --workspaces --if-present",
+    "typecheck:all": "npm run build:kernel && npm run typecheck --workspaces --if-present",
     "verify:typecheck-coverage": "node scripts/verify-typecheck-coverage.mjs",
     "measure:test-totals": "node scripts/measure-test-totals.mjs",
     "verify:test-totals": "node scripts/verify-test-totals.mjs",
-    "verify:no-overclaim": "node scripts/verify-no-overclaim.mjs"
+    "verify:no-overclaim": "node scripts/verify-no-overclaim.mjs",
+    "verify:repo-identity": "node scripts/verify-repo-identity.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

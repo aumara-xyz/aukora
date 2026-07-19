@@ -41,6 +41,7 @@ beforeAll(() => {
   mkdirSync(join(repoRoot, 'apps/seed/src'), { recursive: true });
   execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
   g(repoRoot, ['config', 'user.name', 'R54 Live']); g(repoRoot, ['config', 'user.email', 'r54@test.local']);
+  g(repoRoot, ['remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git']); // R57A canonical identity
   writeFileSync(join(repoRoot, 'apps/seed/src/notes.ts'), '// original\n');
   g(repoRoot, ['add', '-A']); g(repoRoot, ['commit', '-q', '--no-gpg-sign', '-m', 'init']);
   owner = new HybridOwnerAdapter('r54-live-owner');
@@ -177,7 +178,7 @@ describe('R54 live EffectOps — GENUINE cross-process concurrency → exactly o
     expect(new DurableCandidateReferenceMonitor(owner.root, stateDir).consumed().length).toBe(1);
     expect(g(repoRoot, ['rev-parse', 'HEAD'])).toBe(headBefore);
     expect(g(repoRoot, ['status', '--porcelain'])).toBe('');
-    expect(g(repoRoot, ['remote'])).toBe(''); // no remote exists → nothing could push
+    expect(g(repoRoot, ['remote'])).toBe('origin'); // canonical origin only — and the stage's allowlist still cannot push
   });
 });
 
@@ -357,6 +358,7 @@ describe('R54 live EffectOps — projection cannot describe the effect as absent
       mkdirSync(join(staleRepo, 'apps/seed/src'), { recursive: true });
       execFileSync('git', ['init', '-q', '-b', 'main', staleRepo]);
       g(staleRepo, ['config', 'user.name', 'R54 Stale']); g(staleRepo, ['config', 'user.email', 'stale@test.local']);
+      g(staleRepo, ['remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git']); // R57A canonical identity
       writeFileSync(join(staleRepo, 'apps/seed/src/notes.ts'), '// original\n');
       g(staleRepo, ['add', '-A']); g(staleRepo, ['commit', '-q', '--no-gpg-sign', '-m', 'A']);
       headA = g(staleRepo, ['rev-parse', 'HEAD']); // ← the base the owner approves against

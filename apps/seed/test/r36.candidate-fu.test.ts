@@ -33,6 +33,7 @@ beforeAll(() => {
   execFileSync('git', ['init', '-q', '-b', 'main', repoRoot]);
   g(repoRoot, ['config', 'user.name', 'R36 Test']);
   g(repoRoot, ['config', 'user.email', 'r36@test.local']);
+  g(repoRoot, ['remote', 'add', 'origin', 'https://github.com/aumara-xyz/aukora.git']); // R57A canonical identity
   mkdirSync(join(repoRoot, 'apps/seed/src'), { recursive: true });
   writeFileSync(join(repoRoot, 'apps/seed/src/recursion.ts'), '// original content\n');
   writeFileSync(join(repoRoot, 'apps/seed/src/proposal.ts'), '// original proposal\n');
@@ -86,14 +87,16 @@ describe('local candidate stage — real git, fresh verification, total isolatio
     expect(out.merged).toBe(false);
     expect(out.signedForOwner).toBe(false);
 
-    // isolation: primary checkout + refs untouched; worktree outside the repo; no remotes exist at all
+    // isolation: primary checkout + refs untouched; worktree outside the repo; the ONLY remote is the
+    // canonical origin (R57A identity law), and the stage's git surface still cannot push/fetch it
     expect(g(repoRoot, ['rev-parse', 'HEAD'])).toBe(headBefore);
     expect(g(repoRoot, ['rev-parse', 'refs/heads/main'])).toBe(mainBefore);
     expect(g(repoRoot, ['status', '--porcelain'])).toBe('');
     expect(readFileSync(join(repoRoot, TARGET), 'utf8')).toBe('// original content\n');
     expect(out.worktreePath!.startsWith(wtBase)).toBe(true);
     expect(readFileSync(join(out.worktreePath as string, TARGET), 'utf8')).toBe('// candidate happy');
-    expect(execFileSync('git', ['-C', repoRoot, 'remote'], { encoding: 'utf8' }).trim()).toBe('');
+    expect(execFileSync('git', ['-C', repoRoot, 'remote'], { encoding: 'utf8' }).trim()).toBe('origin');
+    expect(g(repoRoot, ['config', '--get', 'remote.origin.url'])).toBe('https://github.com/aumara-xyz/aukora.git');
 
     // exact receipt lineage — the receipt CHAIN is content-free by design (only recordId hashes), so lineage is
     // read via recall (full content) + the content-free chain proves ordering/integrity.
