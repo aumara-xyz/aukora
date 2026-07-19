@@ -1,0 +1,1074 @@
+{
+  "schema": "aukora-current-objects-capture-v2",
+  "note": "R57A capture layer of the canonical aukora GitHub object sequence (issues+PRs). This file is CAPTURE-CONSISTENT: equality with live GitHub was demonstrated only at captured_at and is not claimed afterwards. The R51 committed capture (docs/atlas/CURRENT_OBJECTS.json, head 5aae90d6) is preserved as the historical anchor — object set, counts, and head anchor unchanged; one factually wrong privacy-wording string was corrected there, declared (not silent) in the R57A PR. This file layers the R57A reconciliation on top without rewriting that capture.",
+  "strata": {
+    "frozen_ledger": {
+      "file": "docs/issue-preservation-ledger.json",
+      "status": "RATIFIED_FROZEN",
+      "rows": 191,
+      "note": "The 191-row (169 aukora-symbiote + 13 aukora-kernel + 9 aukora-fu) preservation ledger is owner-ratified and is NOT modified by this capture. Post-ratification donor objects enter via pending_intake below and join the ledger only by explicit owner ratification."
+    },
+    "r51_committed_capture": {
+      "file": "docs/atlas/CURRENT_OBJECTS.json",
+      "head_sha": "5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d",
+      "through_object": 110,
+      "status": "CAPTURE_CONSISTENT",
+      "note": "Historical capture anchor, preserved byte-identical except for one privacy-wording correction declared in PR; Atlas disposition rows are qualified through this capture."
+    },
+    "current_capture": {
+      "file": "docs/atlas/CURRENT_OBJECTS_R57A.json",
+      "status": "CAPTURE_CONSISTENT",
+      "note": "This file. Live equality demonstrated only at captured_at."
+    },
+    "pending_reconciliation": {
+      "note": "Objects in reconciliation_vs_r51.objects_pending_atlas_qualification are captured (number/type/state) but carry NO Atlas disposition row yet; qualifying them requires evidence, not invention. pending_intake holds sanitized post-ratification donor objects awaiting owner ratification."
+    },
+    "projection_evidence": {
+      "note": "Public issue projection (lane reports on aumara-xyz/aukora issue #20) is evidence of what was projected when, not proof of current live state. Round R57A report carries this capture’s anchors.",
+      "channel": "https://github.com/aumara-xyz/aukora/issues/20"
+    }
+  },
+  "capture": {
+    "captured_at": "2026-07-19T00:21:45Z",
+    "captured_by": "Sam 3 (recursion/Atlas lane), round R57A",
+    "method": "gh issue list + gh pr list (--state all, fields: number,state) against aumara-xyz/aukora; anchor head via git ls-remote at the same timestamp; donor object metadata via gh api with a jq filter that never materializes title/body/labels.",
+    "truth_class": "CAPTURE_CONSISTENT",
+    "anchors": {
+      "public_main_head": "0ceb517398b34d99ed2c55d1d67c292d67e4a935",
+      "r51_capture_head": "5aae90d6a84d2aedf9e5df3ebc5744d8b9c2fb7d",
+      "lane_branch": "sam/lane3-recursion"
+    }
+  },
+  "aukora": {
+    "max_object": 176,
+    "count": 176,
+    "issues": 37,
+    "prs": 139,
+    "gaps": [],
+    "duplicates": [],
+    "objects": [
+      {
+        "number": 1,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 2,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 3,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 4,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 5,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 6,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 7,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 8,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 9,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 10,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 11,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 12,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 13,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 14,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 15,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 16,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 17,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 18,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 19,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 20,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 21,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 22,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 23,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 24,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 25,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 26,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 27,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 28,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 29,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 30,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 31,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 32,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 33,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 34,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 35,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 36,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 37,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 38,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 39,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 40,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 41,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 42,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 43,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 44,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 45,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 46,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 47,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 48,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 49,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 50,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 51,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 52,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 53,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 54,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 55,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 56,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 57,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 58,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 59,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 60,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 61,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 62,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 63,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 64,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 65,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 66,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 67,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 68,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 69,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 70,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 71,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 72,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 73,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 74,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 75,
+        "state": "CLOSED",
+        "type": "issue"
+      },
+      {
+        "number": 76,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 77,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 78,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 79,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 80,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 81,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 82,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 83,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 84,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 85,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 86,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 87,
+        "state": "CLOSED",
+        "type": "issue"
+      },
+      {
+        "number": 88,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 89,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 90,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 91,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 92,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 93,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 94,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 95,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 96,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 97,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 98,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 99,
+        "state": "CLOSED",
+        "type": "issue"
+      },
+      {
+        "number": 100,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 101,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 102,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 103,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 104,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 105,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 106,
+        "state": "CLOSED",
+        "type": "issue"
+      },
+      {
+        "number": 107,
+        "state": "CLOSED",
+        "type": "issue"
+      },
+      {
+        "number": 108,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 109,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 110,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 111,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 112,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 113,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 114,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 115,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 116,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 117,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 118,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 119,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 120,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 121,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 122,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 123,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 124,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 125,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 126,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 127,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 128,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 129,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 130,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 131,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 132,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 133,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 134,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 135,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 136,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 137,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 138,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 139,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 140,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 141,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 142,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 143,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 144,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 145,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 146,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 147,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 148,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 149,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 150,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 151,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 152,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 153,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 154,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 155,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 156,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 157,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 158,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 159,
+        "state": "OPEN",
+        "type": "issue"
+      },
+      {
+        "number": 160,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 161,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 162,
+        "state": "CLOSED",
+        "type": "pr"
+      },
+      {
+        "number": 163,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 164,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 165,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 166,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 167,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 168,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 169,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 170,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 171,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 172,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 173,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 174,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 175,
+        "state": "MERGED",
+        "type": "pr"
+      },
+      {
+        "number": 176,
+        "state": "OPEN",
+        "type": "pr"
+      }
+    ]
+  },
+  "reconciliation_vs_r51": {
+    "basis": "docs/atlas/CURRENT_OBJECTS.json (R51, head 5aae90d6, through object 110)",
+    "transition_law": "An object’s type never changes; MERGED is terminal for PRs; an issue can never become MERGED. OPEN↔CLOSED moves are legal.",
+    "missing_objects": [],
+    "type_changes": [],
+    "state_transitions": [
+      {
+        "number": 1,
+        "type": "pr",
+        "from": "OPEN",
+        "to": "CLOSED",
+        "legal": true
+      },
+      {
+        "number": 17,
+        "type": "pr",
+        "from": "OPEN",
+        "to": "CLOSED",
+        "legal": true
+      },
+      {
+        "number": 18,
+        "type": "pr",
+        "from": "OPEN",
+        "to": "CLOSED",
+        "legal": true
+      },
+      {
+        "number": 19,
+        "type": "pr",
+        "from": "OPEN",
+        "to": "CLOSED",
+        "legal": true
+      },
+      {
+        "number": 106,
+        "type": "issue",
+        "from": "OPEN",
+        "to": "CLOSED",
+        "legal": true
+      },
+      {
+        "number": 107,
+        "type": "issue",
+        "from": "OPEN",
+        "to": "CLOSED",
+        "legal": true
+      }
+    ],
+    "atlas_qualified_through": 110,
+    "objects_pending_atlas_qualification": [
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154,
+      155,
+      156,
+      157,
+      158,
+      159,
+      160,
+      161,
+      162,
+      163,
+      164,
+      165,
+      166,
+      167,
+      168,
+      169,
+      170,
+      171,
+      172,
+      173,
+      174,
+      175,
+      176
+    ],
+    "pending_note": "Objects #111–#176 are captured but have no Atlas disposition rows. Recording them as PENDING is deliberate: a disposition requires qualification evidence (landed SHA + behavioral test per the Atlas law); inventing 66 dispositions would overclaim."
+  },
+  "pending_intake": {
+    "note": "Sanitized post-ratification donor intake. Entries here do NOT modify the ratified 191-row freeze; an object joins the preservation ledger only by explicit owner ratification. Donor-private titles, bodies, and labels are withheld by construction (never fetched into this artifact).",
+    "entries": [
+      {
+        "repo": "aukora-symbiote",
+        "number": 405,
+        "type": "issue",
+        "state": "open",
+        "url": "https://github.com/aumara-xyz/aukora-symbiote/issues/405",
+        "created_at_source": "2026-07-17T23:36:47Z",
+        "captured_at": "2026-07-19T00:24:42Z",
+        "sanitized": true,
+        "title": null,
+        "body": null,
+        "labels": null,
+        "status": "PENDING_OWNER_RATIFICATION"
+      }
+    ]
+  },
+  "privacy": {
+    "law": "Public object numbers and URLs may be visible in public artifacts; donor-private titles, bodies, and labels remain withheld. This corrects earlier wording that claimed donor object NUMBERS are held privately — the sanitized public Atlas and ledger rows already carry donor numbers/URLs, and the protected material is (and always was) titles, bodies, and labels."
+  }
+}

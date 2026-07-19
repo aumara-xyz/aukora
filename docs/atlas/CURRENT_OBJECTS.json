@@ -565,7 +565,7 @@
   "historical_issue_sets": {
     "aukora-symbiote": {
       "count": 169,
-      "note": "settled by owner ratification; numbers held privately in the sanitized ledger (title:null, redacted:true)"
+      "note": "settled by owner ratification; the sanitized public ledger rows carry object numbers/URLs (which may be publicly visible) while donor-private titles, bodies, and labels are withheld (title:null, redacted:true). Wording corrected R57A: an earlier version of this note wrongly claimed the numbers themselves were held privately."
     },
     "aukora-kernel": {
       "count": 13,
