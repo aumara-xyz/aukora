@@ -1,6 +1,6 @@
 {
   "schema": "aukora-test-totals-v1",
   "note": "MEASURED by scripts/measure-test-totals.mjs from a full `npm run test:all` run. The README badge and CLAIMS.md consume this number; scripts/verify-test-totals.mjs enforces equality in test:all. Do not hand-edit — regenerate.",
-  "passed": 1542,
+  "passed": 1672,
   "gatedSkips": 2
 }
