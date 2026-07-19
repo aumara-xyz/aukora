@@ -25,6 +25,7 @@ import { merkleRoot } from '@aukora/kernel/merkle';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';
 import { validateMemoryRecord, memoryCommitment, tombstoneCommitment } from '@aukora/memory';
 import { verifyEraseAttestation } from '../src/continuity/eraseAttestation.js';
+import { eraseRootsFromRows } from '../src/continuity/eraseRootRegistry.js';
 import { appendReceiptEvent } from './rehearsal.js';
 
 async function chainRows(ctx: any) {
@@ -128,7 +129,11 @@ export const ingestValidated = internalMutation({
 export const forget = mutation({
   args: { recordId: v.string(), at: v.string(), attestation: v.any() },
   handler: async (ctx, { recordId, at, attestation }) => {
-    const verdict = await verifyEraseAttestation(attestation, Date.now());
+    // G1 pin: build the registered-root allowlist from the store and require the attestation's carried key to be
+    // the pinned owner key for its root. Empty allowlist = fail-closed (every erase refused). Read before any
+    // deletion so a forged/unregistered key cannot reach the plaintext removal below.
+    const registeredRoots = eraseRootsFromRows(await ctx.db.query('eraseRoots').collect());
+    const verdict = await verifyEraseAttestation(attestation, Date.now(), registeredRoots);
     if (!verdict.ok) return { ok: false, refusal: `refused: erase attestation ${verdict.reason}` };
     if ((attestation as { key: string }).key !== recordId) return { ok: false, refusal: 'refused: attestation scope mismatch (key != recordId)' };
     const chain = await chainRows(ctx);

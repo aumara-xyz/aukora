@@ -33,6 +33,7 @@ export * from './composeLive.js';
 export * from './continuity/aukoraPqcSigner.js';
 export * from './continuity/aukoraSignedHead.js';
 export * from './continuity/eraseAttestation.js';
+export * from './continuity/eraseRootRegistry.js';
 export * from './continuity/locations.js';
 export * from './inklingCell.js';
 export * from './durableSession.js';
