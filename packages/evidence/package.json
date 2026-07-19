@@ -13,7 +13,8 @@
   "exports": {
     ".": { "types": "./src/index.ts", "import": "./src/index.ts" },
     "./providerTokenShapes": { "types": "./src/providerTokenShapes.ts", "import": "./src/providerTokenShapes.ts" },
-    "./swarmRunEvidenceV1": { "types": "./src/swarmRunEvidenceV1.ts", "import": "./src/swarmRunEvidenceV1.ts" }
+    "./swarmRunEvidenceV1": { "types": "./src/swarmRunEvidenceV1.ts", "import": "./src/swarmRunEvidenceV1.ts" },
+    "./agreEvidenceAdapterV1": { "types": "./src/agreEvidenceAdapterV1.ts", "import": "./src/agreEvidenceAdapterV1.ts" }
   },
   "files": ["src", "LICENSE", "NOTICE", "README.md"],
   "scripts": {
